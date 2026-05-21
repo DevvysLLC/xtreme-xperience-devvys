@@ -1,5 +1,5 @@
 {
-  "buildCommand": "pnpm run vercel-build",
+  "buildCommand": "TMP_DIR=/tmp pnpm run vercel-build",
   "framework": "nextjs",
-  "installCommand": "pnpm install"
+  "installCommand": "TMP_DIR=/tmp pnpm install"
 }

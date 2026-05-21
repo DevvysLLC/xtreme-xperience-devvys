@@ -16,6 +16,6 @@ else
   echo "Skipping database migration for environment: $target_env"
 fi
 
-./devops/bin/compile-ts.sh
+bash ./devops/bin/compile-ts.sh
 
 pnpm run build

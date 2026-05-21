@@ -31,6 +31,6 @@ swc --quiet --copy-files --include-dotfiles \
 
 cd "${project_root}"
 
-./devops/bin/predevops.sh
+bash ./devops/bin/predevops.sh
 
 echoerr 'DatocmsTypescript files compiled'
