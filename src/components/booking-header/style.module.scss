@@ -1,0 +1,43 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: sg.spacing(regular);
+  border-bottom: u.rem-calc(1) dashed sg.color(border-dark);
+
+  @include sg.min(tabletLandscape) {
+    padding: sg.spacing(small) sg.spacing(xlarge);
+  }
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: sg.spacing(xsmall);
+}
+
+.logo {
+  max-width: u.rem-calc(165);
+  font-size: 1px;
+  line-height: 1;
+
+  @include sg.min(tabletLandscape) {
+    max-width: u.rem-calc(235);
+  }
+}
+
+.backLink {
+  white-space: nowrap;
+}
+
+.cart {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 0;
+  background: transparent;
+}

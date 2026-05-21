@@ -1,0 +1,303 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+$border-radius-mobile: u.rem-calc(64);
+$border-radius-tablet: u.rem-calc(120);
+$border-radius-laptop: u.rem-calc(220);
+
+.section {
+  position: relative;
+  overflow: hidden;
+  background-color: sg.color(carrara);
+  color: sg.color(white);
+
+  &__inner {
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    width: 100%;
+    max-height: 100dvh;
+    border-bottom-right-radius: $border-radius-mobile;
+
+    @include sg.min(tabletLandscape) {
+      aspect-ratio: 1.5 / 1;
+      border-bottom-right-radius: $border-radius-tablet;
+    }
+
+    @include sg.min(laptopSmall) {
+      aspect-ratio: 1512 / 800;
+    }
+
+    @include sg.min(laptop) {
+      border-bottom-right-radius: $border-radius-laptop;
+    }
+  }
+}
+
+.media {
+  $media: &;
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+
+  @include sg.min(tabletPortrait) {
+    aspect-ratio: 1.5 / 1;
+  }
+
+  @include sg.min(tabletLandscape) {
+    position: absolute;
+    inset: 0;
+    aspect-ratio: unset;
+  }
+
+  &__gradient {
+    @include sg.max(tabletLandscape) {
+      background:
+        linear-gradient(180deg, rgba(0, 0, 0, 0) 73%, #000 100%),
+        linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 50%) !important;
+    }
+  }
+
+  &__imageMobile {
+    position: absolute;
+    inset: 0;
+
+    @include sg.min(tabletLandscape) {
+      display: none;
+    }
+  }
+
+  &__imageDesktop {
+    position: absolute;
+    inset: 0;
+    display: none;
+
+    @include sg.min(tabletLandscape) {
+      display: block;
+    }
+  }
+
+  .media__controls {
+    top: u.rem-calc(135);
+    z-index: 2;
+
+    @include sg.min(tabletLandscape) {
+      top: u.rem-calc(118);
+    }
+  }
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: sg.spacing(regular);
+  width: 100%;
+  padding-block: sg.spacing(xsmall) sg.spacing(regular);
+  padding-inline: sg.spacing(regular);
+  background-color: sg.color(black);
+
+  @include sg.min(tabletLandscape) {
+    padding-block: sg.spacing(large) sg.spacing(medium);
+    padding-inline: sg.spacing(large);
+    background-color: transparent;
+  }
+
+  &__inner {
+    display: flex;
+    flex-direction: column;
+    gap: sg.spacing(xsmall);
+    width: 100%;
+    text-align: center;
+
+    @include sg.min(tabletLandscape) {
+      gap: sg.spacing(regular);
+      text-align: left;
+    }
+  }
+}
+
+.map {
+  display: none;
+
+  @include sg.min(tabletLandscape) {
+    flex-shrink: 0;
+    display: block;
+    width: u.rem-calc(200);
+    height: u.rem-calc(200);
+  }
+}
+
+.header {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: sg.spacing(xsmall);
+  width: 100%;
+
+  @include sg.min(tabletLandscape) {
+    position: static;
+    gap: sg.spacing(regular);
+  }
+}
+
+.badges {
+  display: inline-flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: sg.spacing(xsmall);
+
+  @include sg.min(tabletLandscape) {
+    justify-content: flex-start;
+  }
+}
+
+.subtitle {
+  font-family: sg.font-family(barlow-semi-condensed);
+  font-size: sg.font-size(regular);
+  font-weight: sg.font-weight(500);
+  line-height: sg.line-height('120%');
+  letter-spacing: sg.letter-spacing('5%');
+  text-transform: uppercase;
+
+  @include sg.min(laptopSmall) {
+    font-size: sg.font-size('18px');
+  }
+}
+
+.title {
+  font-family: sg.font-family(anton);
+  font-size: sg.font-size(xlarge);
+  font-weight: sg.font-weight(400);
+  line-height: sg.line-height('110%');
+  text-transform: uppercase;
+
+  @include sg.min(laptopSmall) {
+    font-size: sg.font-size(xxxlarge);
+    letter-spacing: sg.letter-spacing('2%');
+  }
+}
+
+.largeText {
+  font-family: sg.font-family(barlow-semi-condensed);
+  font-size: sg.font-size(mediuml);
+  font-weight: sg.font-weight(600);
+  line-height: sg.line-height('110%');
+  text-transform: uppercase;
+
+  @include sg.min(laptopSmall) {
+    font-size: sg.font-size(medium);
+  }
+
+  [data-price] {
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+  }
+}
+
+.description {
+  margin-top: sg.spacing(small);
+  font-size: sg.font-size(mediuml);
+  line-height: sg.line-height('140%');
+
+  @include sg.min(laptopSmall) {
+    margin-top: sg.spacing(regular);
+  }
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: sg.spacing(regular);
+  padding-top: sg.spacing(small);
+  border-top: u.rem-calc(1) dashed sg.color(border-dark);
+  margin-top: sg.spacing(xxsmall);
+
+  @include sg.min(tabletLandscape) {
+    flex-direction: row;
+    align-items: center;
+    padding-top: sg.spacing(small);
+    margin-top: 0;
+  }
+}
+
+.events {
+  font-family: sg.font-family(anton);
+  font-size: sg.font-size(mediuml);
+  font-weight: sg.font-weight(400);
+  line-height: sg.line-height('110%');
+  text-transform: uppercase;
+
+  &__more {
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+    text-transform: inherit;
+    background: none;
+    border: none;
+    padding: 0;
+    color: inherit;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}
+
+.ctas {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: sg.spacing(regular);
+
+  @include sg.min(tabletPortrait) {
+    flex-direction: row;
+  }
+
+  @include sg.min(laptopSmall) {
+    justify-content: flex-start;
+  }
+
+  .cta {
+    width: 100%;
+
+    @include sg.min(tabletPortrait) {
+      width: auto;
+    }
+
+    &[data-size='small'] {
+      min-width: u.rem-calc(162);
+
+      @include sg.min(tabletLandscape) {
+        padding-block: u.rem-calc(5);
+      }
+    }
+  }
+}
+
+.marquee {
+  $gap: sg.spacing(xlarge);
+
+  z-index: 1;
+  padding-block: sg.spacing(xsmall);
+  background-color: sg.color(orange);
+  font-family: sg.font-family(barlow);
+  font-size: sg.font-size(regular);
+  font-weight: sg.font-weight(500);
+  line-height: sg.line-height('100%');
+  letter-spacing: sg.letter-spacing('1%');
+  color: sg.color(white);
+  text-transform: uppercase;
+
+  &__inner {
+    gap: $gap;
+    padding-left: $gap;
+  }
+}

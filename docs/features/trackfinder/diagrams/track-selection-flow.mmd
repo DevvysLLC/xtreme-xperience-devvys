@@ -1,0 +1,10 @@
+flowchart LR
+    UserSelects[User Selects Track] --> SetTrack[useLocationSetTrack]
+    SetTrack --> LocationStore[(Location Store)]
+    LocationStore --> UpdateLabel["Update Label<br/>Track State/City"]
+    UpdateLabel --> Persist[Persist to localStorage]
+    Persist --> ReactQuery[React Query Invalidate]
+    ReactQuery --> Components[Components Update]
+
+    style LocationStore fill:#d0d0d0,color:#000
+    style ReactQuery fill:#b0b0b0,color:#000

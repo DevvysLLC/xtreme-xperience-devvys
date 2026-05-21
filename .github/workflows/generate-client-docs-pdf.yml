@@ -1,0 +1,42 @@
+name: 'generate-client-docs-pdf'
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/features/**'
+      - 'devops/src/build-docs-pdf.sh'
+      - '.github/workflows/generate-client-docs-pdf.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'docs/features/**'
+      - 'devops/src/build-docs-pdf.sh'
+      - '.github/workflows/generate-client-docs-pdf.yml'
+  workflow_dispatch:
+
+jobs:
+  build-pdf:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install md2pdf-mermaid
+        run: |
+          python3 -m pip install --user md2pdf-mermaid
+          python3 -m playwright install chromium
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Build PDF
+        run: |
+          chmod +x devops/src/build-docs-pdf.sh
+          ./devops/src/build-docs-pdf.sh docs/
+
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: features-documentation
+          path: docs/features-documentation.pdf

@@ -1,0 +1,11 @@
+fragment LandingPage on LandingPageRecord {
+  id
+  _createdAt
+  _updatedAt
+  config {
+    ...LandingPageConfig
+  }
+  content {
+    ...PageSections
+  }
+}

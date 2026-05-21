@@ -1,0 +1,6 @@
+fragment SupercarModel on SupercarModelRecord {
+  ...SupercarModelBase
+  supercars {
+    ...SupercarBase
+  }
+}

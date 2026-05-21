@@ -1,0 +1,9 @@
+fragment SectionPressBrandGrid on SectionPressBrandGridRecord {
+  id
+  config {
+    ...SectionConfig
+  }
+  logos {
+    ...Image
+  }
+}

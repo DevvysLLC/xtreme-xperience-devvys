@@ -1,0 +1,12 @@
+fragment SectionFaq on SectionFaqRecord {
+  id
+  config {
+    ...SectionConfig
+  }
+  layout
+  title
+  subtitle
+  faqs {
+    ...Faq
+  }
+}

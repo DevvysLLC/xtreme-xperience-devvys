@@ -1,0 +1,7 @@
+fragment FaqModel on FaqModelRecord {
+  id
+  title
+  faqs {
+    ...CoreAccordion
+  }
+}

@@ -1,0 +1,34 @@
+meta {
+  name: Search
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{API_BASE_URL}}/api/v1/frontend/search?q=miami
+  body: none
+  auth: none
+}
+
+headers {
+  X-Middleware-Auth-Token: {{MIDDLEWARE_AUTH_TOKEN}}
+}
+
+query {
+  q: miami
+}
+
+tests {
+  test("Status code is 400", function() {
+    expect(res.getStatus()).to.equal(400);
+  });
+
+  test("Response has error status", function() {
+    expect(res.getBody()).to.have.property('status');
+    expect(res.getBody().status).to.equal('error');
+  });
+
+  test("Response has error message", function() {
+    expect(res.getBody()).to.have.property('message');
+  });
+}

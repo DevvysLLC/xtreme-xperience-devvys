@@ -1,0 +1,10 @@
+query getPost($handle: String) {
+  post(
+    filter: { config: { any: { postConfig: { handle: { eq: $handle } } } } }
+  ) {
+    ...Post
+    model {
+      ...PostModel
+    }
+  }
+}

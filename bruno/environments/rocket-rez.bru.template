@@ -1,0 +1,9 @@
+vars {
+  ROCKET_REZ_API_BASE_URL: https://qa.rocket-rez.com/api
+  ROCKET_REZ_JWT:
+  ROCKET_REZ_CLIENT_ID:
+  ROCKET_REZ_CLIENT_SECRET:
+  ROCKET_REZ_CART_ID:
+  ROCKET_REZ_CART_TOKEN:
+  ROCKET_REZ_SCOPE: read_products
+}

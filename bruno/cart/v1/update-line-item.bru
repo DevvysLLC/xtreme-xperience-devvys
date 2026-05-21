@@ -1,0 +1,43 @@
+meta {
+  name: Update Line Item
+  type: http
+  seq: 3
+}
+
+patch {
+  url: {{API_BASE_URL}}/api/v1/cart/update?lineItemId=123
+  body: json
+  auth: none
+}
+
+query {
+  lineItemId: 123
+}
+
+headers {
+  X-Middleware-Auth-Token: {{MIDDLEWARE_AUTH_TOKEN}}
+}
+
+body:json {
+  {
+    "quantity": 2
+  }
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Response has success status", function() {
+    expect(res.getBody()).to.have.property('status');
+    expect(res.getBody().status).to.equal('success');
+  });
+  
+  test("Response has data with cart", function() {
+    expect(res.getBody()).to.have.property('data');
+    expect(res.getBody().data).to.have.property('id');
+    expect(res.getBody().data).to.have.property('status');
+    expect(res.getBody().data).to.have.property('lineItems');
+  });
+}

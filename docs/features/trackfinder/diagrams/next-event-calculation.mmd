@@ -1,0 +1,12 @@
+flowchart TD
+    TrackSelected[Track Selected] --> GetEvents[Get Track Events]
+    GetEvents --> FilterEnabled[Filter Enabled Events]
+    FilterEnabled --> FilterFuture[Filter Future Dates]
+    FilterFuture --> SortByDate[Sort by Start Date]
+    SortByDate --> GetNext[Get Next Event]
+    GetNext --> CalculateRemaining[Calculate Remaining Count]
+    CalculateRemaining --> ReturnResult["Return Next Event<br/>+ Remaining Count"]
+
+    style FilterEnabled fill:#d0d0d0,color:#000
+    style SortByDate fill:#b0b0b0,color:#000
+    style ReturnResult fill:#a0a0a0,color:#000

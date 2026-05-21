@@ -1,0 +1,127 @@
+# Booking Feature Flow Diagrams
+
+> **Client-facing overview:** See [Booking — User Journey](./client/readme.md) for a digestible, non-technical summary.
+
+## Booking Wizard Flow
+
+[View diagram source](./diagrams/booking-wizard-flow.mmd)
+
+```mermaid
+flowchart TD
+    Start([User Starts Booking]) --> EntryMethod{Entry Method}
+
+    EntryMethod -->|URL with query params| ServerPage["/booking/page.tsx<br/>(Server Component)"]
+    EntryMethod -->|In-app navigation| SelectTrack[Select Track & Event]
+
+    ServerPage --> FetchTrack[Fetch Track from DatoCMS]
+    FetchTrack --> ValidTrack{Track Found?}
+    ValidTrack -->|No| RedirectLocation[Redirect to Location Page]
+    ValidTrack -->|Yes| BookingInitializer["BookingInitializer<br/>(Client Component)"]
+
+    BookingInitializer --> ResetState[useBookingResetAfter]
+    ResetState --> SetTrackEvent["useBookingSetTrack<br/>useBookingSetEvent"]
+    SetTrackEvent --> SetHome{setHomeTrack?}
+    SetHome -->|Yes| SetLocationTrack[useLocationSetTrack]
+    SetHome -->|No| SetIntended["setIntendedPage('date_and_car')"]
+    SetLocationTrack --> SetIntended
+
+    SelectTrack --> SetBookingState["useBookingSetTrack<br/>useBookingSetEvent"]
+    SetBookingState --> BookingStore[("Booking Store<br/>localStorage")]
+
+    SetIntended --> BookingStore
+
+    BookingStore --> Guard["BookingWizardGuard<br/>(sole routing authority)"]
+
+    Guard --> Step1{Loading?}
+    Step1 -->|Yes| ShowSpinner[Show Loading Overlay]
+    Step1 -->|No| Step2{Hard Redirect<br/>Needed?}
+
+    Step2 -->|HOME route| ResolveHome[Resolve intended or<br/>max accessible page]
+    Step2 -->|No event/track| GoLocation[→ Location]
+    Step2 -->|No cars in cart| GoDateCar[→ Date & Car]
+    Step2 -->|Beyond accessible| GoMaxPage[→ Max accessible]
+    Step2 -->|Page blocked| SkipBlocked[→ Next non-blocked]
+    Step2 -->|No| Step3{Back Request?}
+
+    Step3 -->|Yes| ComputePrev[Compute previous<br/>non-blocked page]
+    ComputePrev --> SetIntendedPrev["setIntendedPage(prev)"]
+    SetIntendedPrev --> Navigate["router.replace(path)"]
+    Step3 -->|No| Step4{Submit Event?}
+
+    Step4 -->|Yes| ComputeNext[Compute next<br/>non-blocked page]
+    ComputeNext --> SetIntendedNext["setIntendedPage(next)"]
+    SetIntendedNext --> Navigate
+    Step4 -->|No| Step5{intendedPageId<br/>set?}
+
+    Step5 -->|No| Canonicalize["Set to max accessible page"]
+    Canonicalize --> Navigate
+    Step5 -->|Yes| Step6{pathname matches<br/>intendedPage?}
+
+    Step6 -->|No| EnforceRedirect["router.replace(intendedPage.path)"]
+    Step6 -->|Yes| Ready([Guard Ready — Show Page])
+
+    ResolveHome --> Navigate
+    GoLocation --> Navigate
+    GoDateCar --> Navigate
+    GoMaxPage --> Navigate
+    SkipBlocked --> Navigate
+
+    Navigate --> BookingStore
+
+    Ready --> LocationPage[Location Page]
+    Ready --> DateCarPage[Date & Car Page]
+    Ready --> CoveragePage[Coverage Options Page]
+    Ready --> RideAlongPage[Ride Along Page]
+    Ready --> MediaPage[Media Packages Page]
+    Ready --> ReviewPage[Review Page]
+
+    style BookingStore fill:#d0d0d0,color:#000
+    style Guard fill:#b0b0b0,color:#000
+    style ServerPage fill:#c0c0c0,color:#000
+    style BookingInitializer fill:#c0c0c0,color:#000
+    style Ready fill:#90c090,color:#000
+    style ShowSpinner fill:#e0a0a0,color:#000
+    style Navigate fill:#a0a0d0,color:#000
+```
+
+## Booking State Management
+
+[View diagram source](./diagrams/booking-state-management.mmd)
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Component
+    participant Hook
+    participant Store
+    participant ReactQuery
+    participant localStorage
+
+    User->>Component: Interacts with wizard
+    Component->>Hook: Calls mutation hook
+    Hook->>Store: Updates Zustand store
+    Store->>localStorage: Persists state
+    Store->>ReactQuery: Triggers invalidation
+    ReactQuery->>Component: Refetches data
+    Component->>User: UI updates
+```
+
+## Location Change Reset Flow
+
+[View diagram source](./diagrams/location-change-reset-flow.mmd)
+
+```mermaid
+flowchart LR
+    LocationChange[Location Changes] --> ResetBooking[useBookingResetAfter]
+    ResetBooking --> ClearPages[Clear Downstream Pages]
+    ClearPages --> ClearCart{Clear Cart?}
+    ClearCart -->|Yes| CartStore[(Cart Store)]
+    ClearCart -->|No| BookingStore[(Booking Store)]
+    CartStore --> BookingStore
+    BookingStore --> UpdateUI[UI Updates]
+
+    style LocationChange fill:#a0a0a0,color:#000
+    style ResetBooking fill:#d0d0d0,color:#000
+    style BookingStore fill:#d0d0d0,color:#000
+    style CartStore fill:#a0a0a0,color:#000
+```

@@ -1,0 +1,6 @@
+fragment FooterSections on FooterContentRecord {
+  sections {
+    ...SectionSocialGrid
+    ...SectionUsp
+  }
+}

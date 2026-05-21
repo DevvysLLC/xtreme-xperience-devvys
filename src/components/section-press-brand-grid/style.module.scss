@@ -1,0 +1,72 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+/* ===================================================== */
+/* Section Press Brand Grid*/
+/* ===================================================== */
+
+.section {
+  @include sg.section-config;
+
+  & {
+    position: relative;
+    overflow: hidden;
+    padding: sg.spacing(xxlarge) 0;
+
+    @include sg.min(tabletLandscape) {
+      padding: sg.spacing(xxlarge) sg.spacing(xxlarge);
+    }
+
+    @include sg.min(laptopSmall) {
+      padding: sg.spacing(xxxlarge) sg.spacing(xxlarge);
+    }
+  }
+}
+
+/* ===================================================== */
+/* Marquee */
+/* ===================================================== */
+
+.marquee {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+
+  &__inner {
+    flex-shrink: 0;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: sg.spacing(xlarge);
+    padding-left: sg.spacing(xlarge);
+    animation-name: slide-left;
+    animation-duration: 12s;
+    animation-timing-function: linear;
+    animation-delay: 0s;
+    animation-iteration-count: infinite;
+    will-change: transform;
+
+    @include sg.min(tabletLandscape) {
+      gap: sg.spacing(xxxlarge);
+      padding-left: sg.spacing(xxxlarge);
+      animation-duration: 16s;
+    }
+  }
+
+  &__logo {
+    flex-shrink: 1;
+    height: u.rem-calc(40);
+
+    @include sg.min(tabletLandscape) {
+      height: u.rem-calc(50);
+    }
+  }
+}
+
+@keyframes slide-left {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-100%, 0, 0);
+  }
+}

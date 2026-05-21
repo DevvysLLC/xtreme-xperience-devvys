@@ -1,0 +1,12 @@
+fragment SupercarBase on SupercarRecord {
+  id
+  titleInternal
+  _createdAt
+  _updatedAt
+  config {
+    ...SupercarConfig
+  }
+  model {
+    ...SupercarModelBase
+  }
+}

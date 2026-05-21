@@ -1,0 +1,330 @@
+---
+description: USE WHEN adding user-facing strings to components or pages
+globs:
+alwaysApply: true
+---
+
+# Translation Requirements
+
+## Critical Rule
+**ALL strings displayed to users MUST come from translations**
+
+If a string is rendered in the UI, shown in error messages, displayed in logs visible to users, or appears in any user-facing context, it must use the translation system.
+
+## Current Locale Support
+- **Primary Locale**: `en` (English) - Only locale required for now
+- **Translation Files**: Create `translations/en.json` in component directories
+- **Future Locales**: Additional locales can be added later by creating corresponding translation files
+
+## When Translations Are Required
+
+### ✅ Must Use Translations
+- Error messages displayed to users
+- Button labels and text
+- Form labels and placeholders
+- Page titles and headings
+- User notifications and alerts
+- Validation messages
+- Empty states and "no results" messages
+- Loading states visible to users
+- Any text rendered in JSX/TSX
+
+### ❌ Exceptions (No Translations Needed)
+- Console logs (development/debugging only)
+- Technical error messages in server logs
+- Code comments
+- Test descriptions and assertions
+- Internal variable names
+- API response data (content from CMS)
+- Technical identifiers (IDs, handles, slugs)
+
+## Implementation Patterns
+
+### Client Components
+Use `useTranslations` hook from `next-intl`:
+
+```typescript
+'use client'
+
+import { useTranslations } from 'next-intl'
+import type { FC } from 'react'
+
+type Props = {
+  // ...
+}
+
+export const MyComponent: FC<Props> = () => {
+  const t = useTranslations('my_component')
+
+  return (
+    <div>
+      <h1>{t('title')}</h1>
+      <p>{t('description')}</p>
+      <button>{t('button.submit')}</button>
+    </div>
+  )
+}
+```
+
+### Server Components
+Use `getTranslations` from `next-intl/server`:
+
+```typescript
+import { getTranslations } from 'next-intl/server'
+
+export default async function MyPage() {
+  const t = await getTranslations('my_page')
+
+  return (
+    <div>
+      <h1>{t('title')}</h1>
+      <ErrorMessage message={t('error.not_found')} />
+    </div>
+  )
+}
+```
+
+### Translation with Interpolation
+Use variables for dynamic content:
+
+```typescript
+// Translation file: translations/en.json
+{
+  "my_component": {
+    "greeting": "Hello, {name}!",
+    "item_count": "You have {count} items"
+  }
+}
+
+// Component usage
+const t = useTranslations('my_component')
+<p>{t('greeting', { name: 'John' })}</p>
+<p>{t('item_count', { count: 5 })}</p>
+```
+
+## File Structure
+
+### Component Translations (Co-located)
+**Component translations MUST be co-located with the component:**
+
+```
+src/components/my-component/
+  ├── index.tsx
+  └── translations/
+      └── en.json
+```
+
+**Translation files must use snake_case namespace matching the component name:**
+
+```json
+{
+  "my_component": {
+    "title": "My Component Title",
+    "description": "Component description",
+    "button": {
+      "submit": "Submit",
+      "cancel": "Cancel"
+    },
+    "errors": {
+      "required": "This field is required",
+      "not_found": "Item not found"
+    }
+  }
+}
+```
+
+**Why co-located?**
+- Keeps translations close to the code that uses them
+- Easier to maintain and discover
+- Automatically gathered at build time
+- Follows component-based architecture
+
+### Non-Component Translations (Direct to Locale File)
+**For translations that are NOT component-specific, add them directly to `src/locales/en.json`:**
+
+- Shared error messages
+- Global UI strings
+- Page-level translations (if not using a component)
+- App-wide messages
+- Any translation that doesn't belong to a specific component
+
+```json
+// src/locales/en.json
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred"
+  },
+  "global": {
+    "site_name": "My Site"
+  }
+}
+```
+
+**Usage:**
+```typescript
+const t = await getTranslations('common')
+return <div>{t('loading')}</div>
+```
+
+### Page-Level Translations
+For pages, prefer using existing component namespaces:
+
+```typescript
+// Option 1: Use existing component namespace (preferred)
+const t = await getTranslations('error_message')
+return <ErrorMessage message={t('category_not_found', { handle })} />
+
+// Option 2: Add to src/locales/en.json if truly page-specific
+// Add to src/locales/en.json with a page-specific namespace
+```
+
+## Examples
+
+### ✅ Good - Using Translations
+
+```typescript
+// Component
+'use client'
+import { useTranslations } from 'next-intl'
+
+export const SearchForm: FC = () => {
+  const t = useTranslations('search_form')
+
+  return (
+    <form>
+      <label>{t('label.query')}</label>
+      <input placeholder={t('placeholder.enter_query')} />
+      <button>{t('button.search')}</button>
+    </form>
+  )
+}
+
+// Translation file: translations/en.json
+{
+  "search_form": {
+    "label": {
+      "query": "Search Query"
+    },
+    "placeholder": {
+      "enter_query": "Enter your search query"
+    },
+    "button": {
+      "search": "Search"
+    }
+  }
+}
+```
+
+### ❌ Bad - Hardcoded Strings
+
+```typescript
+// Bad - hardcoded user-facing strings
+export const SearchForm: FC = () => {
+  return (
+    <form>
+      <label>Search Query</label>
+      <input placeholder="Enter your search query" />
+      <button>Search</button>
+    </form>
+  )
+}
+
+// Bad - hardcoded error message
+if (!category) {
+  return <ErrorMessage message={`Category with handle "${handle}" not found`} />
+}
+```
+
+### ✅ Good - Error Messages with Translations
+
+```typescript
+// Server component
+import { getTranslations } from 'next-intl/server'
+
+export default async function BlogCategoryPage({ params }: Props) {
+  const { handle } = await params
+
+  if (!category) {
+    const t = await getTranslations('error_message')
+    return <ErrorMessage message={t('category_not_found', { handle })} />
+  }
+}
+
+// Translation file: src/components/error-message/translations/en.json
+{
+  "error_message": {
+    "category_not_found": "Category with handle \"{handle}\" not found"
+  }
+}
+```
+
+## Translation Key Naming
+
+Use descriptive, hierarchical keys:
+
+```json
+{
+  "component_name": {
+    "title": "Main title",
+    "section": {
+      "header": "Section header",
+      "description": "Section description"
+    },
+    "button": {
+      "primary": "Primary action",
+      "secondary": "Secondary action"
+    },
+    "errors": {
+      "validation": "Validation error",
+      "not_found": "Not found error"
+    }
+  }
+}
+```
+
+## Adding New Translations
+
+### For Component Translations
+
+1. **Create translation directory**: `src/components/[component-name]/translations/`
+2. **Create `en.json` file** with component namespace (co-located with component)
+3. **Add translation keys** following the structure above
+4. **Use translations** in component with `useTranslations` or `getTranslations`
+5. **Run build** - translations are automatically gathered at build time
+
+### For Non-Component Translations
+
+1. **Add directly to**: `src/locales/en.json`
+2. **Use appropriate namespace** (e.g., `common`, `global`, `errors`)
+3. **Use translations** with `useTranslations` or `getTranslations`
+4. **No build step needed** - file is already loaded
+
+## Common Patterns
+
+### Nested Translations
+```typescript
+const t = useTranslations('my_component')
+t('section.header')        // Access nested keys with dot notation
+t('button.primary')       // Nested button keys
+t('errors.validation')    // Nested error keys
+```
+
+### Conditional Translations
+```typescript
+const t = useTranslations('my_component')
+const message = isLoading
+  ? t('status.loading')
+  : t('status.ready')
+```
+
+### Translation Namespaces
+- Component translations: Use component name as namespace (`'my_component'`)
+- Shared translations: Use shared component namespace (`'error_message'`, `'common'`)
+- Page translations: Create page-specific component or use shared namespace
+
+## Cross-References
+- See [i18n/README.md](mdc:src/i18n/README.md) for complete translation system documentation
+- See [build-validation.mdc](mdc:.cursor/rules/build-validation.mdc) for build workflow (translations gathered at build time)
+- See [typescript.mdc](mdc:.cursor/rules/typescript.mdc) for TypeScript patterns
+- Translation files are automatically gathered at build time via `devops/bin/build-locales.ts`

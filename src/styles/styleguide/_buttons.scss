@@ -1,0 +1,404 @@
+@use 'sass:map';
+@use 'sass:string';
+@use 'sass:list';
+@use '../core/unit' as u;
+@use './color' as c;
+@use './typography' as t;
+@use './zindex' as z;
+@use './spacing' as s;
+@use './mixins' as m;
+@use './transitions' as tr;
+
+// if the key is a valid css property use dashes
+// otherwise use snake_case for the key
+$_config: (
+  // Button Sizes
+  button_sizes: (
+      small: (
+        min-width: u.rem-calc(110),
+        padding: u.rem-calc(7) s.spacing(regular),
+        --button-sweep-duration: #{tr.duration(600)}
+      ),
+      medium: (
+        min-width: u.rem-calc(240),
+        padding: u.rem-calc(10) s.spacing(medium),
+        --button-sweep-duration: #{tr.duration(500)}
+      ),
+      large: (
+        min-width: u.rem-calc(320),
+        padding: u.rem-calc(10) s.spacing(medium),
+        --button-sweep-duration: #{tr.duration(400)}
+      )
+    ),
+
+  // Button Colors
+  button_colors: (
+      black: (
+        background-color: c.color(black),
+        color: c.color(white),
+        hover_background-color: c.color(black),
+        hover_color: c.color(white)
+      ),
+      black-transparent: (
+        border-color: c.color(black),
+        background-color: c.color(transparent),
+        color: c.color(black),
+        hover_border-color: c.color(black),
+        hover_background-color: c.color(white),
+        hover_color: c.color(black)
+      ),
+      white: (
+        border-color: c.color(black),
+        background-color: c.color(white),
+        color: c.color(black),
+        hover_border-color: c.color(black),
+        hover_background-color: c.color(white),
+        hover_color: c.color(black)
+      ),
+      white-transparent: (
+        border-color: c.color(white),
+        background-color: c.color(transparent),
+        color: c.color(white),
+        hover_border-color: c.color(black),
+        hover_background-color: c.color(white),
+        hover_color: c.color(black)
+      ),
+      orange: (
+        background-color: c.color(orange),
+        color: c.color(white),
+        hover_background-color: c.color(orange),
+        hover_color: c.color(white)
+      )
+    ),
+
+  // Underline Colors
+  underline_colors: (
+      current: (
+        color: currentColor
+      ),
+      black: (
+        color: c.color(black)
+      ),
+      white: (
+        color: c.color(white)
+      ),
+      white-transparent: (
+        color: c.color(white)
+      ),
+      orange: (
+        color: c.color(orange)
+      )
+    ),
+
+  // Pill Sizes
+  pill_sizes: (
+      small: (
+        padding: u.rem-calc(4) s.spacing(regular) u.rem-calc(5)
+      ),
+      medium: (
+        padding: s.spacing(xsmall) s.spacing(regular)
+      ),
+      large: (
+        padding: s.spacing(small) s.spacing(xlarge)
+      )
+    ),
+
+  // Pill Colors
+  pill_colors: (
+      black: (
+        border-color: c.color(black),
+        background-color: c.color(black),
+        color: c.color(white),
+        hover_border-color: c.color(black),
+        hover_background-color: c.color(white),
+        hover_color: c.color(black)
+      ),
+      black-transparent: (
+        border-color: c.color(black),
+        background-color: c.color(transparent),
+        color: c.color(black),
+        hover_border-color: c.color(black),
+        hover_background-color: c.color(white),
+        hover_color: c.color(black)
+      ),
+      white: (
+        border-color: c.color(border-dark),
+        background-color: c.color(white),
+        color: c.color(black),
+        hover_border-color: c.color(white),
+        hover_background-color: c.color(black),
+        hover_color: c.color(white)
+      ),
+      border-white: (
+        border-color: c.color(white),
+        background-color: c.color(black),
+        color: c.color(white),
+        hover_border-color: c.color(white),
+        hover_background-color: c.color(white),
+        hover_color: c.color(black)
+      ),
+      white-transparent: (
+        border-color: c.color(white),
+        background-color: c.color(transparent),
+        color: c.color(white),
+        hover_border-color: c.color(black),
+        hover_background-color: c.color(white),
+        hover_color: c.color(black)
+      ),
+      orange: (
+        border-color: c.color(orange),
+        background-color: c.color(orange),
+        color: c.color(white),
+        hover_border-color: c.color(orange),
+        hover_background-color: c.color(white),
+        hover_color: c.color(orange)
+      )
+    )
+);
+
+@mixin apply-styles($style_config) {
+  // Apply non-hover properties directly
+  @each $property, $value in $style_config {
+    // Skip properties that start with "hover_" - they'll be applied in hover state
+    @if string.index($property, 'hover_') !=
+      1 and
+      string.index($property, 'hover-') !=
+      1
+    {
+      #{$property}: $value;
+    }
+  }
+
+  // Apply transitions only for properties that have hover states
+  // Dynamically detect all properties starting with "hover_" or "hover-" and add transitions
+  $transition_list: ();
+
+  @each $property, $value in $style_config {
+    $is_hover: string.index($property, 'hover_') ==
+      1 or
+      string.index($property, 'hover-') ==
+      1;
+    @if $is_hover {
+      // Remove "hover_" or "hover-" prefix (both are 6 characters) to get the CSS property name
+      $css_property: string.slice($property, 7);
+      $transition_list: list.append(
+        $transition_list,
+        (
+          property: $css_property
+        ),
+        comma
+      );
+    }
+  }
+
+  @if list.length($transition_list) > 0 {
+    @include tr.transitions($transition_list...);
+  }
+
+  // Apply hover states - loop through all properties starting with "hover_" or "hover-"
+  @each $property, $value in $style_config {
+    $is_hover: string.index($property, 'hover_') ==
+      1 or
+      string.index($property, 'hover-') ==
+      1;
+    @if $is_hover {
+      @include m.hover-state {
+        // Remove "hover_" or "hover-" prefix (both are 6 characters) and apply the CSS property
+        $hover_property: string.slice($property, 7);
+        #{$hover_property}: $value;
+      }
+    }
+  }
+}
+
+/* ===================================================== */
+/* Button */
+/* ===================================================== */
+
+@mixin button($animated: true) {
+  // reset
+  position: relative;
+  overflow: hidden;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: s.spacing(small);
+  border-width: u.rem-calc(1);
+  border-style: solid;
+  border-color: transparent;
+  border-bottom-right-radius: u.rem-calc(30);
+  background-color: c.color(black);
+  font-family: t.font-family(barlow);
+  font-size: t.font-size(mediuml);
+  font-weight: t.font-weight(700);
+  text-align: center;
+  text-transform: uppercase;
+  line-height: t.line-height('140%');
+  color: c.color(white);
+  cursor: pointer;
+  appearance: none;
+
+  // animated
+  @if $animated {
+    &::after {
+      content: '';
+      position: absolute;
+      top: -#{u.rem-calc(25)};
+      left: 0;
+      width: u.rem-calc(25);
+      height: u.rem-calc(100);
+      filter: blur(4px);
+      background-color: c.color(orange);
+      rotate: -30deg;
+      translate: u.rem-calc(-50) 0;
+      pointer-events: none;
+    }
+
+    @include m.hover-state {
+      &::after {
+        translate: u.rem-calc(750) 0;
+
+        @include tr.should-animate {
+          will-change: translate;
+          transition: translate var(--button-sweep-duration)
+            #{tr.easing('linear')};
+        }
+      }
+    }
+  }
+}
+
+@mixin button-animation-color($color_key: orange) {
+  &::after {
+    background-color: c.color($color_key);
+  }
+}
+
+@mixin button-size($size_key: small) {
+  // get maps and defaults
+  $sizes_map: map.get($_config, button_sizes);
+  $default_size: map.get($sizes_map, small);
+  $size: map.merge($default_size, map.get($sizes_map, $size_key));
+  @include apply-styles($size);
+}
+
+@mixin button-color($color_key: black) {
+  // get maps and defaults
+  $colors_map: map.get($_config, button_colors);
+  $default_color: map.get($colors_map, black);
+  $color: map.merge($default_color, map.get($colors_map, $color_key));
+  @include apply-styles($color);
+}
+
+/* ===================================================== */
+/* Button Transparent */
+/* ===================================================== */
+
+@mixin button-transparent() {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background-color: transparent;
+  border-color: transparent;
+  color: transparent;
+}
+
+/* ===================================================== */
+/* Underline */
+/* ===================================================== */
+
+@mixin underline($animated: true) {
+  // reset
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: s.spacing(small);
+  width: auto;
+  padding-bottom: s.spacing(xxsmall);
+  background: none;
+  font-family: t.font-family(barlow);
+  font-size: t.font-size(regular);
+  font-weight: t.font-weight(600);
+  line-height: t.line-height('100%');
+  text-transform: uppercase;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  appearance: none;
+
+  @if $animated {
+    // underline
+    &:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 200%;
+      border-bottom: u.rem-calc(1.5) dashed currentColor;
+      @include tr.transition(transform, 600);
+    }
+
+    @include m.hover-state {
+      &::after {
+        animation: road 2s infinite linear;
+      }
+    }
+
+    // Animations
+    @keyframes road {
+      from {
+        transform: translate3d(0, 0, 0);
+      }
+      to {
+        transform: translate3d(-50%, 0, 0);
+      }
+    }
+  }
+}
+
+@mixin underline-color($color_key: black) {
+  $colors_map: map.get($_config, underline_colors);
+  @include apply-styles(map.get($colors_map, $color_key));
+}
+
+/* ===================================================== */
+/* Pill */
+/* ===================================================== */
+
+@mixin pill($size_key: default, $color_key: black) {
+  // reset
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: s.spacing(small);
+  width: fit-content;
+  border-width: u.rem-calc(1);
+  border-style: solid;
+  border-radius: u.rem-calc(100);
+  background: none;
+  font-family: t.font-family(barlow);
+  font-size: t.font-size(regular);
+  font-weight: t.font-weight(400);
+  line-height: t.line-height('100%');
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  appearance: none;
+}
+
+@mixin pill-size($size_key: small) {
+  $sizes_map: map.get($_config, pill_sizes);
+  $default_size: map.get($sizes_map, small);
+  $size: map.merge($default_size, map.get($sizes_map, $size_key));
+  @include apply-styles($size);
+}
+
+@mixin pill-color($color_key: black) {
+  $colors_map: map.get($_config, pill_colors);
+  @include apply-styles(map.get($colors_map, $color_key));
+}

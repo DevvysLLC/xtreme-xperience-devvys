@@ -1,0 +1,77 @@
+@use '../../../../styles/styleguide' as sg;
+@use '../../../../styles/core/unit' as u;
+
+.root {
+  display: grid;
+  gap: sg.spacing(regular);
+}
+
+.header {
+  display: grid;
+  gap: sg.spacing(xsmall);
+}
+
+.title {
+  margin: 0;
+}
+
+.description {
+  margin: 0;
+}
+
+.body {
+  display: grid;
+  gap: sg.spacing(small);
+}
+
+.iframeBox {
+  position: relative;
+  aspect-ratio: 1 / 2;
+  border: 1px solid sg.color(black-10);
+  border-radius: u.rem-calc(8);
+  position: relative;
+  overflow: hidden;
+  margin-left: -#{sg.spacing(regular)};
+  margin-right: -#{sg.spacing(regular)};
+  width: calc(100% + #{sg.spacing(regular)} * 2);
+
+  @include sg.min(laptopSmall) {
+    aspect-ratio: 16 / 10;
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+.iframeLoadingOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  background-color: sg.color(white-80);
+}
+
+.iframeSpinner {
+  width: 100%;
+  height: 100%;
+}
+
+.iframe {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.status {
+  font-size: sg.font-size(small);
+}
+
+.actions {
+  display: flex;
+  gap: sg.spacing(small);
+  align-items: center;
+}

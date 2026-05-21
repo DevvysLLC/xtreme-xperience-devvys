@@ -1,0 +1,6 @@
+fragment Addon on AddonRecord {
+  id
+  model {
+    ...AddonModel
+  }
+}

@@ -1,0 +1,30 @@
+flowchart TD
+    Start([Sort Tracks]) --> HasExplicit{"Has Explicit<br/>Coordinates?"}
+
+    HasExplicit -->|Yes| UseExplicit[Use Provided Coordinates]
+    HasExplicit -->|No| HasSearch{"Has Search<br/>Query?"}
+
+    HasSearch -->|Yes| Geocode[Geocode Search Query]
+    HasSearch -->|No| HasStored{"Location Store<br/>Has Coords?"}
+
+    Geocode --> GeocodeOk{"Geocode<br/>Success?"}
+    GeocodeOk -->|Yes| UseGeocoded[Use Geocoded Coordinates]
+    GeocodeOk -->|No| HasStored
+
+    HasStored -->|Yes| UseStored[Use Stored Coordinates]
+    HasStored -->|No| NoCoords[Set Distance = Infinity]
+
+    UseExplicit --> CalculateDistances["Calculate Distances<br/>Turf.js"]
+    UseGeocoded --> CalculateDistances
+    UseStored --> CalculateDistances
+
+    NoCoords --> SortTracks[Sort Tracks]
+    CalculateDistances --> SortTracks
+
+    SortTracks --> MarkNearest[Mark Nearest Track]
+    MarkNearest --> PrependHome["Prepend Home Track<br/>if exists"]
+    PrependHome --> ReturnSorted[Return Sorted Tracks]
+
+    style HasExplicit fill:#d0d0d0,color:#000
+    style CalculateDistances fill:#b0b0b0,color:#000
+    style SortTracks fill:#a0a0a0,color:#000

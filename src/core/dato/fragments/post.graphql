@@ -1,0 +1,12 @@
+fragment Post on PostRecord {
+  id
+  titleInternal
+  _createdAt
+  _updatedAt
+  config {
+    ...PostConfig
+  }
+  model {
+    ...PostModelBase
+  }
+}

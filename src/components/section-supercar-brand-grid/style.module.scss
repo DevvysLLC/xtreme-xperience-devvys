@@ -1,0 +1,72 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+/* ===================================================== */
+/* Section Supercar Brand Grid*/
+/* ===================================================== */
+
+.section {
+  @include sg.section-config;
+
+  & {
+    position: relative;
+    overflow: hidden;
+    padding: sg.spacing(medium) sg.spacing(regular);
+
+    @include sg.min(tabletLandscape) {
+      padding: sg.spacing(xlarge);
+    }
+  }
+
+  &__header {
+    margin-bottom: sg.spacing(medium);
+    text-align: center;
+
+    @include sg.min(tabletLandscape) {
+      margin-bottom: sg.spacing(xlarge);
+    }
+  }
+
+  &__title {
+    font-family: sg.font-family(anton);
+    font-size: sg.font-size(large);
+    font-weight: sg.font-weight(400);
+    line-height: sg.line-height('100%');
+    text-transform: uppercase;
+
+    @include sg.min(tabletLandscape) {
+      font-size: sg.font-size(xlarge);
+      line-height: sg.line-height('110%');
+      letter-spacing: sg.letter-spacing('2%');
+    }
+  }
+
+  &__description {
+    max-width: u.rem-calc(720);
+    margin-top: sg.spacing(regular);
+    margin-inline: auto;
+    line-height: sg.line-height('120%');
+    letter-spacing: sg.letter-spacing('1%');
+  }
+}
+
+.logos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  row-gap: sg.spacing(large);
+  column-gap: sg.spacing(xlarge);
+
+  @include sg.min(mobileLarge) {
+    flex-wrap: nowrap;
+  }
+}
+
+.logo {
+  max-width: u.rem-calc(70);
+  max-height: u.rem-calc(100);
+
+  @include sg.min(mobileLarge) {
+    max-width: 100%;
+  }
+}

@@ -1,0 +1,124 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+$border-radius-mobile: u.rem-calc(64);
+$border-radius-tablet: u.rem-calc(120);
+$border-radius-laptop: u.rem-calc(220);
+
+.section {
+  position: relative;
+  overflow: hidden;
+  background-color: sg.color(black);
+  color: sg.color(white);
+  border-bottom-right-radius: $border-radius-mobile;
+
+  @include sg.min(tabletPortrait) {
+    padding-top: u.rem-calc(102);
+    border-bottom-right-radius: $border-radius-tablet;
+  }
+
+  @include sg.min(laptop) {
+    border-bottom-right-radius: $border-radius-laptop;
+  }
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  gap: 0;
+
+  @include sg.min(tabletPortrait) {
+    flex-direction: row;
+    padding: sg.spacing(large);
+    gap: sg.spacing(xxlarge);
+  }
+}
+
+.link {
+  z-index: sg.zindex('base');
+}
+
+.media {
+  position: relative;
+  width: 100%;
+  padding-block: 0;
+
+  @include sg.min(tabletPortrait) {
+    width: 60%;
+    padding-block: sg.spacing(large);
+  }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: sg.spacing(regular);
+  padding: sg.spacing(medium) sg.spacing(medium) sg.spacing(xlarge)
+    sg.spacing(medium);
+
+  @include sg.min(tabletPortrait) {
+    padding: 0;
+  }
+}
+
+.eyebrow {
+  font-family: sg.font-family(barlow-semi-condensed);
+  font-size: sg.font-size('18px');
+  letter-spacing: sg.letter-spacing('5%');
+  text-transform: uppercase;
+}
+
+.title {
+  font-family: sg.font-family(anton);
+  font-size: sg.font-size(large);
+  line-height: sg.line-height('110%');
+  max-width: u.rem-calc(440);
+  text-transform: uppercase;
+}
+
+.cta {
+  align-self: flex-start;
+  z-index: sg.zindex('base');
+  width: 100%;
+
+  @include sg.min(tabletPortrait) {
+    width: auto;
+  }
+}
+
+.coreMedia {
+  @include sg.min(tabletPortrait) {
+    border-radius: u.rem-calc(8);
+  }
+
+  img,
+  video {
+    aspect-ratio: 1 / 1.1;
+    object-fit: cover;
+
+    @include sg.min(tabletPortrait) {
+      aspect-ratio: 1.5 / 1;
+    }
+  }
+}
+
+.fade {
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 100%;
+  height: 30%;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.85) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+
+  @include sg.min(tabletPortrait) {
+    display: none;
+  }
+}

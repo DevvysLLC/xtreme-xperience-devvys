@@ -1,0 +1,47 @@
+meta {
+  name: Update Contacts
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{ROCKET_REZ_API_BASE_URL}}/v1/headless/cart/contact
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{cartToken}}
+}
+
+body:json {
+  {
+    "contacts": [
+      {
+        "isPrimary": true,
+        "firstName": "Jane",
+        "lastName": "Boe",
+        "email": "test2@example.com",
+        "phone": "5555555555",
+        "billingAddress": {
+          "addressLine1": "123 Fake Avenue",
+          "addressLine2": "Apartment 456",
+          "city": "Winnipeg",
+          "province": "Manitoba",
+          "postalCode": "H0H0H0",
+          "country": "Canada"
+        }
+      }
+    ]
+  }
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Response has cart data", function() {
+    expect(res.getBody()).to.have.property('data');
+  });
+}

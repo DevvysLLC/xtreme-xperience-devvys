@@ -1,0 +1,4 @@
+fragment CoreAnnouncement on CoreAnnouncementRecord {
+  id
+  title
+}

@@ -1,0 +1,4 @@
+vars {
+  TYPESENSE_BASE_URL: http://localhost:8108
+  TYPESENSE_API_KEY: xyz
+}

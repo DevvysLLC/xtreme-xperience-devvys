@@ -1,0 +1,25 @@
+meta {
+  name: Remove All Contacts
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{ROCKET_REZ_API_BASE_URL}}/v1/headless/cart/contact
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{cartToken}}
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Response has cart data", function() {
+    expect(res.getBody()).to.have.property('data');
+  });
+}

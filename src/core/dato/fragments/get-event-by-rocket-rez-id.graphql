@@ -1,0 +1,22 @@
+# Query to get an event by RocketRez ID
+# Filters by rocketRezId and rocketRezType = 'Event' on EventModelRecord
+# Returns up to 10 events matching both criteria
+query getEventByRocketRezId($id: String!) {
+  allEvents(
+    filter: {
+      model: {
+        any: {
+          eventModel: {
+            AND: [
+              { rocketRezId: { eq: $id } }
+              { rocketRezType: { eq: "Event" } }
+            ]
+          }
+        }
+      }
+    }
+    first: 10
+  ) {
+    ...Event
+  }
+}

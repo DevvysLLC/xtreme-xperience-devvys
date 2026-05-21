@@ -1,0 +1,36 @@
+meta {
+  name: Refresh Cart Token
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{ROCKET_REZ_API_BASE_URL}}/v1/oauth2/token/headless/cart/refresh
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "client_id": "{{ROCKET_REZ_CLIENT_ID}}",
+    "client_secret": "{{ROCKET_REZ_CLIENT_SECRET}}",
+    "scope": "read_products read_carts write_carts",
+    "grant_type": "client_credentials",
+    "cart_id": "{{cartId}}"
+  }
+}
+
+script:post-response {
+  bru.setVar("cartToken", res.getBody().data.access_token);
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Response has access_token", function() {
+    expect(res.getBody()).to.have.property('data');
+    expect(res.getBody().data).to.have.property('access_token');
+  });
+}

@@ -1,0 +1,5 @@
+query getAllTracks {
+  allTracks(first: 100) {
+    ...Track
+  }
+}

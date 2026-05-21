@@ -1,0 +1,16 @@
+# Add "open:form" action to CoreCta: a
+- reference first plan: .cursor/plans/001_add_form_dialog.md
+- note new iframeEmbed field on the form model
+- update dialog to render this field if provided
+- this field should take precedence
+  - if iframeEmbed
+    - iframeEmbed will be a full iframe html string
+    - return an error if the string is not an iframe
+    - wrap in an 1:1 aspect ratio box
+    - render an iframe inline
+    - position iframe absolute within parent
+    - iframe should scroll within parent aspect ratio box
+  - if hubspotEmbed
+    - render CoreHubspotForm
+  - else
+    - render CoreForm

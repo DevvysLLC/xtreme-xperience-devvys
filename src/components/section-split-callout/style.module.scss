@@ -1,0 +1,132 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+.section {
+  @include sg.section-config;
+
+  & {
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    display: grid;
+    grid-template-areas: 'media' 'content';
+    grid-template-columns: 1fr;
+    padding-bottom: sg.spacing(large);
+
+    @include sg.min(laptopSmall) {
+      grid-template-areas: 'content media';
+      grid-template-columns: 29% calc(71% - sg.spacing(xxlarge));
+      gap: sg.spacing(xxlarge);
+      padding-block: sg.spacing(xlarge) sg.spacing(xxxlarge);
+      padding-inline: sg.spacing(xlarge);
+    }
+  }
+
+  &--reverse {
+    @include sg.min(laptopSmall) {
+      grid-template-areas: 'media content';
+      grid-template-columns: calc(71% - sg.spacing(xxlarge)) 29%;
+    }
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: -1;
+    width: 100%;
+    height: u.rem-calc(60);
+    background-image: url('/images/tire-track-pattern.png');
+    background-size: u.rem-calc(12) u.rem-calc(31);
+    background-repeat: repeat;
+    filter: brightness(0);
+
+    @include sg.min(laptopSmall) {
+      height: u.rem-calc(137);
+      background-size: u.rem-calc(19) u.rem-calc(46);
+    }
+  }
+
+  &--black::after,
+  &--gray::after {
+    filter: invert(1);
+  }
+}
+
+.media {
+  grid-area: media;
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 375 / 233;
+
+  @include sg.min(laptopSmall) {
+    aspect-ratio: 952 / 570;
+    border-bottom-right-radius: u.rem-calc(120);
+  }
+
+  video {
+    @include sg.min(laptopSmall) {
+      border-bottom-right-radius: u.rem-calc(120);
+    }
+  }
+}
+
+.content {
+  grid-area: content;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-block: sg.spacing(medium) 0;
+  padding-inline: sg.spacing(medium);
+  max-width: u.rem-calc(640);
+  margin-inline: auto;
+  text-align: center;
+
+  @include sg.min(laptopSmall) {
+    align-items: flex-start;
+    padding: 0;
+    text-align: left;
+  }
+}
+
+.title {
+  font-family: sg.font-family(anton);
+  font-size: sg.font-size(xlarge);
+  font-weight: sg.font-weight(400);
+  line-height: sg.line-height('110%');
+  text-transform: uppercase;
+
+  @include sg.min(laptopSmall) {
+    font-size: sg.font-size(xxlarge);
+    line-height: sg.line-height('100%');
+    letter-spacing: sg.letter-spacing('2%');
+  }
+}
+
+.subtitle {
+  margin-top: sg.spacing(xsmall);
+  font-family: sg.font-family(anton);
+  font-size: sg.font-size(medium);
+  font-weight: sg.font-weight(400);
+  line-height: sg.line-height('110%');
+  text-transform: uppercase;
+
+  @include sg.min(laptopSmall) {
+    font-size: sg.font-size(xlarge);
+    letter-spacing: sg.letter-spacing('2%');
+  }
+}
+
+.description {
+  margin-top: sg.spacing(regular);
+  line-height: sg.line-height('140%');
+}
+
+.ctas {
+  margin-top: sg.spacing(large);
+  display: flex;
+  flex-wrap: wrap;
+  gap: sg.spacing(regular);
+}

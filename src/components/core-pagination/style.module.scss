@@ -1,0 +1,75 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: sg.spacing(xsmall);
+  flex-wrap: wrap;
+
+  @include sg.min(tabletPortrait) {
+    gap: sg.spacing(small);
+  }
+}
+
+.button {
+  flex-shrink: 0;
+  width: u.rem-calc(40);
+  height: u.rem-calc(40);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+
+  &.is-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  &__text {
+    @include sg.visually-hidden();
+  }
+}
+
+.list {
+  display: flex;
+  align-items: center;
+  gap: sg.spacing(xxsmall);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  @include sg.min(tabletPortrait) {
+    gap: sg.spacing(xsmall);
+  }
+
+  &__item {
+    width: u.rem-calc(28);
+    height: u.rem-calc(28);
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    font-family: sg.font-family(barlow-semi-condensed);
+    font-size: sg.font-size(regular);
+    font-weight: sg.font-weight(500);
+    line-height: sg.line-height('100%');
+    letter-spacing: sg.letter-spacing('5%');
+    text-transform: uppercase;
+
+    &.is-active {
+      background-color: sg.color(black-10);
+    }
+  }
+
+  &__ellipsis {
+    font-family: sg.font-family(barlow-semi-condensed);
+    font-size: sg.font-size(regular);
+    font-weight: sg.font-weight(500);
+    line-height: sg.line-height('100%');
+    letter-spacing: sg.letter-spacing('5%');
+    text-transform: uppercase;
+  }
+}

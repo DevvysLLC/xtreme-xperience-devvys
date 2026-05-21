@@ -1,0 +1,41 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1767732261455,
+      "tag": "0000_loving_chat",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1770646144473,
+      "tag": "0001_cool_carlie_cooper",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1771314000000,
+      "tag": "0002_add_metadata_to_orders",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1771314060000,
+      "tag": "0003_add_viewed_at_to_orders",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1772830855519,
+      "tag": "0004_abnormal_madrox",
+      "breakpoints": true
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+fragment SectionContact on SectionContactRecord {
+  id
+  config {
+    ...SectionConfig
+  }
+  title
+  subtitle
+  description
+  form {
+    ...Form
+  }
+}

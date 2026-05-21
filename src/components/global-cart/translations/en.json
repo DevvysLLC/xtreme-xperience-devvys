@@ -1,0 +1,57 @@
+{
+  "global_cart": {
+    "icon": {
+      "aria_label": "Cart with {count, plural, one {# item} other {# items}}"
+    },
+    "header": {
+      "title": "My Cart",
+      "item_count": "{count, plural, one {# item} other {# items}}"
+    },
+    "item": {
+      "quantity": "Qty: {quantity}",
+      "each": "each",
+      "remove": "Remove",
+      "decrease_quantity": "Decrease quantity",
+      "increase_quantity": "Increase quantity"
+    },
+    "summary": {
+      "title": "Order Summary",
+      "subtotal": "Subtotal",
+      "discount": "Discount",
+      "tax": "Tax",
+      "ticketing_fee": "Ticketing Fee",
+      "house_service_charge": "Maintenance Fee",
+      "total": "Total"
+    },
+    "totals": {
+      "subtotal": "Subtotal",
+      "discount": "Discount",
+      "fees": "Fees",
+      "tax": "Tax",
+      "total": "Total"
+    },
+    "actions": {
+      "checkout": "Continue to Checkout",
+      "add_another": "Add Another Car",
+      "clear": "Clear Cart"
+    },
+    "empty": {
+      "title": "Your cart is empty",
+      "message": "Looks like you haven't added any experiences to your cart yet.",
+      "browse": "Browse Experiences"
+    },
+    "aside": {
+      "title": "Cart Summary"
+    },
+    "location": {
+      "title": "Event Location"
+    },
+    "policy": {
+      "cancelation": "##Cancellation Policy \n\nAll Xtreme Xperience Bookings are refundable within 7 calendar days from the purchase date. Note, this does not mean 7 days after your Xperience date. Gift vouchers are final sale and non-refundable. \n\n ALL 7-Day refund requests MUST be submitted by email to info@xxspeed.com within 7 days of the original purchase, and are subject to a 5% bank processing fee.\n\n7-DAY REFUND GUARANTEE is not applicable if the reserved Event Day is within 7 days of the purchase date.\n\nTICKETS MAY NOT BE RESCHEDULED OUTSIDE OF THE EVENT WEEKEND. This ticket is fully transferable to another individual and may be gifted or sold. \n\nSee our FAQ page for all agreed upon Refund, Reschedule, and Weather policies and procedures.\n\nIf you have any other questions, feel free to call (866) 273-7727 or email info@xxspeed.com. \n\nSee you on the track!"
+    },
+    "upsells": {
+      "title": "Add a Pit Pass",
+      "description": "Cras justo odio, dapibus ac facilisis in, egestas eget quam. Sed posuere consectetur est at."
+    }
+  }
+}

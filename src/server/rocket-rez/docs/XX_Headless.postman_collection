@@ -1,0 +1,937 @@
+{
+	"info": {
+		"_postman_id": "cf6103b4-68a0-4bf2-8c14-9bbfcaefbf2a",
+		"name": "Headless",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "42439533"
+	},
+	"item": [
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "Get Products",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "clientId",
+								"value": "Josh",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "clientSecret",
+								"value": "klassen",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "scopes",
+								"value": "read_orders",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{apiHost}}/v1/headless/products",
+							"host": [
+								"{{apiHost}}"
+							],
+							"path": [
+								"v1",
+								"headless",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Retail Product Details",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "clientId",
+								"value": "Josh",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "clientSecret",
+								"value": "klassen",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "scopes",
+								"value": "read_orders",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{apiHost}}/v1/headless/products/retail/100063",
+							"host": [
+								"{{apiHost}}"
+							],
+							"path": [
+								"v1",
+								"headless",
+								"products",
+								"retail",
+								"100063"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Membership Product Details",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "clientId",
+								"value": "Josh",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "clientSecret",
+								"value": "klassen",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "scopes",
+								"value": "read_orders",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{apiHost}}/v1/headless/products/membership/1",
+							"host": [
+								"{{apiHost}}"
+							],
+							"path": [
+								"v1",
+								"headless",
+								"products",
+								"membership",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get GiftCard Product Details",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "clientId",
+								"value": "Josh",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "clientSecret",
+								"value": "klassen",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "scopes",
+								"value": "read_orders",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{apiHost}}/v1/headless/products/giftcard/1",
+							"host": [
+								"{{apiHost}}"
+							],
+							"path": [
+								"v1",
+								"headless",
+								"products",
+								"giftcard",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Event Product Details",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "clientId",
+								"value": "Josh",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "clientSecret",
+								"value": "klassen",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "scopes",
+								"value": "read_orders",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{apiHost}}/v1/headless/products/event/1",
+							"host": [
+								"{{apiHost}}"
+							],
+							"path": [
+								"v1",
+								"headless",
+								"products",
+								"event",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Event Schedules",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "clientId",
+								"value": "Josh",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "clientSecret",
+								"value": "klassen",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "scopes",
+								"value": "read_orders",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{apiHost}}/v1/headless/products/event/11/schedules?startDate=2025-05-21&endDate=2029-09-07",
+							"host": [
+								"{{apiHost}}"
+							],
+							"path": [
+								"v1",
+								"headless",
+								"products",
+								"event",
+								"11",
+								"schedules"
+							],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2025-05-21"
+								},
+								{
+									"key": "endDate",
+									"value": "2029-09-07"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Carts",
+			"item": [
+				{
+					"name": "Cart",
+					"item": [
+						{
+							"name": "Get Cart",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{cartToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{apiHost}}/v1/headless/cart",
+									"host": [
+										"{{apiHost}}"
+									],
+									"path": [
+										"v1",
+										"headless",
+										"cart"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Cart",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = JSON.parse(responseBody);\r",
+											"\r",
+											"pm.environment.set(\"cartToken\", jsonData['data']['cartToken'])"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{jwt}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"lineItems\": [\r\n        {\r\n            \"id\": 2,\r\n            \"quantity\": 1,\r\n            \"type\": \"giftcard\"\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiHost}}/v1/headless/cart",
+									"host": [
+										"{{apiHost}}"
+									],
+									"path": [
+										"v1",
+										"headless",
+										"cart"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Line Items",
+					"item": [
+						{
+							"name": "Add Line Item",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{cartToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"lineItems\": [\r\n        {\r\n            \"id\": 1,\r\n            \"type\": \"membership\",\r\n            \"quantity\": 1\r\n        }\r\n    ]\r\n}\r\n\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiHost}}/v1/headless/cart/lineitems",
+									"host": [
+										"{{apiHost}}"
+									],
+									"path": [
+										"v1",
+										"headless",
+										"cart",
+										"lineitems"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Line Item",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{cartToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"quantity\": 1200\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiHost}}/v1/headless/cart/lineitems/137",
+									"host": [
+										"{{apiHost}}"
+									],
+									"path": [
+										"v1",
+										"headless",
+										"cart",
+										"lineitems",
+										"137"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Remove Line Item",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{cartToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{apiHost}}/v1/headless/cart/lineitems/137",
+									"host": [
+										"{{apiHost}}"
+									],
+									"path": [
+										"v1",
+										"headless",
+										"cart",
+										"lineitems",
+										"137"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Remove All Line Items",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{cartToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{apiHost}}/v1/headless/cart/lineitems",
+									"host": [
+										"{{apiHost}}"
+									],
+									"path": [
+										"v1",
+										"headless",
+										"cart",
+										"lineitems"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Coupon",
+					"item": [
+						{
+							"name": "Add Coupon",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{cartToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"code\": \"fe519a55-c455-42cf-a77b-f6d5bd96b950\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiHost}}/v1/headless/cart/coupons",
+									"host": [
+										"{{apiHost}}"
+									],
+									"path": [
+										"v1",
+										"headless",
+										"cart",
+										"coupons"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Remove Coupon",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{cartToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{apiHost}}/v1/headless/cart/coupons/1",
+									"host": [
+										"{{apiHost}}"
+									],
+									"path": [
+										"v1",
+										"headless",
+										"cart",
+										"coupons",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Remove All Coupons",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{cartToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{apiHost}}/v1/headless/cart/coupons",
+									"host": [
+										"{{apiHost}}"
+									],
+									"path": [
+										"v1",
+										"headless",
+										"cart",
+										"coupons"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Contact",
+					"item": [
+						{
+							"name": "Add Contact",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{cartToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n   \"contacts\": [\r\n        {\r\n            \"isPrimary\": false,\r\n            \"firstName\": \"John\",\r\n            \"lastName\": \"Doe\",\r\n            \"email\": \"test@example.com\",\r\n            \"phone\": \"5555555555\",\r\n            \"billingAddress\": {\r\n                \"addressLine1\": \"123 Fake Street\",\r\n                \"addressLine2\": \"Apartment 123\",\r\n                \"city\": \"Winnipeg\",\r\n                \"province\": \"Manitoba\",\r\n                \"postalCode\": \"H0H0H0\",\r\n                \"country\": \"Canada\"\r\n            }\r\n        },\r\n        {\r\n        \"isPrimary\": true,\r\n        \"firstName\": \"Jane\",\r\n        \"lastName\": \"Boe\",\r\n        \"email\": \"test2@example.com\",\r\n        \"phone\": \"5555555555\",\r\n        \"billingAddress\": {\r\n            \"addressLine1\": \"123 Fake Avenue\",\r\n            \"addressLine2\": \"Apartment 456\",\r\n            \"city\": \"Winnipeg\",\r\n            \"province\": \"Manitoba\",\r\n            \"postalCode\": \"H0H0H0\",\r\n            \"country\": \"Canada\"\r\n        }\r\n    }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiHost}}/v1/headless/cart/contact",
+									"host": [
+										"{{apiHost}}"
+									],
+									"path": [
+										"v1",
+										"headless",
+										"cart",
+										"contact"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Contact",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{cartToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"contacts\": [\r\n        {\r\n            \"isPrimary\": true,\r\n            \"firstName\": \"Jane\",\r\n            \"lastName\": \"Boe\",\r\n            \"email\": \"test2@example.com\",\r\n            \"phone\": \"5555555555\",\r\n            \"billingAddress\": {\r\n                \"addressLine1\": \"123 Fake Avenue\",\r\n                \"addressLine2\": \"Apartment 456\",\r\n                \"city\": \"Winnipeg\",\r\n                \"province\": \"Manitoba\",\r\n                \"postalCode\": \"H0H0H0\",\r\n                \"country\": \"Canada\"\r\n            }\r\n        }\r\n    ]\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiHost}}/v1/headless/cart/contact",
+									"host": [
+										"{{apiHost}}"
+									],
+									"path": [
+										"v1",
+										"headless",
+										"cart",
+										"contact"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Remove Contact",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{cartToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{apiHost}}/v1/headless/cart/contact/11",
+									"host": [
+										"{{apiHost}}"
+									],
+									"path": [
+										"v1",
+										"headless",
+										"cart",
+										"contact",
+										"11"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Remove All Contacts",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{cartToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{apiHost}}/v1/headless/cart/contact",
+									"host": [
+										"{{apiHost}}"
+									],
+									"path": [
+										"v1",
+										"headless",
+										"cart",
+										"contact"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Process",
+					"item": [
+						{
+							"name": "Process cart",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{cartToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{apiHost}}/v1/headless/cart/process",
+									"host": [
+										"{{apiHost}}"
+									],
+									"path": [
+										"v1",
+										"headless",
+										"cart",
+										"process"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Authenticate",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"pm.environment.set(\"jwt\", jsonData['data']['access_token']);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"client_id\": \"{{clientId}}\",\r\n    \"client_secret\": \"{{clientSecret}}\",\r\n    \"scope\": \"read_orders read_products read_carts write_carts\",\r\n    \"grant_type\": \"client_credentials\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{apiHost}}/v1/oauth2/token",
+					"host": [
+						"{{apiHost}}"
+					],
+					"path": [
+						"v1",
+						"oauth2",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Refresh Cart Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"pm.environment.set(\"cartToken\", jsonData['data']['access_token']);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"client_id\": \"{{clientId}}\",\r\n    \"client_secret\": \"{{clientSecret}}\",\r\n    \"scope\": \"read_products read_carts write_carts\",\r\n    \"grant_type\": \"client_credentials\",\r\n    \"cart_id\": \"{{cartToken}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{apiHost}}/v1/oauth2/token/headless/cart/refresh",
+					"host": [
+						"{{apiHost}}"
+					],
+					"path": [
+						"v1",
+						"oauth2",
+						"token",
+						"headless",
+						"cart",
+						"refresh"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

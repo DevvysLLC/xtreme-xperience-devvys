@@ -1,0 +1,13 @@
+fragment CoreHighlight on CoreHighlightRecord {
+  id
+  body
+  icon {
+    id
+    icon
+  }
+  subtitle
+  title
+  ctas {
+    ...CoreCta
+  }
+}

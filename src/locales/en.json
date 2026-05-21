@@ -1,0 +1,1599 @@
+{
+  "error_not_found": {
+    "title": "Page Not found",
+    "subtitle": "Looks like you got off track"
+  },
+  "search": {
+    "icon": {},
+    "drawer": {
+      "placeholder": "Search...",
+      "aria": {
+        "search_label": "Search",
+        "clear": "Clear search"
+      },
+      "loading": "Searching...",
+      "error": "Search failed",
+      "results_found": "Found {count} results",
+      "no_results": {
+        "message": "No results found for \"{query}\""
+      }
+    },
+    "hooks": {
+      "error": {
+        "invalid_response": "Invalid response format",
+        "search_failed": "Failed to perform search",
+        "invalid_data": "Invalid search results data structure"
+      }
+    },
+    "api": {
+      "error": {
+        "query_required": "Query parameter \"q\" is required",
+        "internal_server_error": "Internal server error"
+      }
+    },
+    "utils": {
+      "missing_title": "Missing title"
+    }
+  },
+  "core_svg_upload": {
+    "no_aria_label": "Aria label not provided"
+  },
+  "core_video_controls": {
+    "aria": {
+      "play": "Play video",
+      "pause": "Pause video",
+      "sound_off": "Sound off",
+      "sound_on": "Sound on"
+    }
+  },
+  "core_date": {
+    "months": {
+      "long": {
+        "jan": "January",
+        "feb": "February",
+        "mar": "March",
+        "apr": "April",
+        "may": "May",
+        "jun": "June",
+        "jul": "July",
+        "aug": "August",
+        "sep": "September",
+        "oct": "October",
+        "nov": "November",
+        "dec": "December"
+      },
+      "short": {
+        "jan": "Jan.",
+        "feb": "Feb.",
+        "mar": "Mar.",
+        "apr": "Apr.",
+        "may": "May",
+        "jun": "Jun.",
+        "jul": "Jul.",
+        "aug": "Aug.",
+        "sep": "Sept.",
+        "oct": "Oct.",
+        "nov": "Nov.",
+        "dec": "Dec."
+      }
+    }
+  },
+  "booking_wizard": {
+    "cart": {
+      "title": "In Your Cart ({count})",
+      "continue": "Continue with Booking"
+    },
+    "guard": {
+      "loading": "Loading..."
+    },
+    "pages": {
+      "experience": {
+        "title": "Choose Your xperience",
+        "description": "August 2025 Utah Motorsports Campus",
+        "label": {
+          "experience": "Xperience"
+        },
+        "placeholder": {
+          "experience": "Enter xperience"
+        },
+        "button": {
+          "saving": "Saving...",
+          "continue": "Continue",
+          "choose_experience": "Choose Experience",
+          "back": "Back"
+        },
+        "validation": {
+          "required": "Please select an experience"
+        },
+        "progress_bar": {
+          "title": "Choose Xperience"
+        },
+        "status": {
+          "loading": "Loading experience..."
+        },
+        "legend": {
+          "experience": "Select an experience"
+        },
+        "footer": {
+          "title": "Drive Your Dream Supercar"
+        }
+      },
+      "confirmation": {
+        "title": "Thank You for Your Order",
+        "description": "Order Number: #{orderNumber}",
+        "heading": "Booking Confirmed",
+        "label": {
+          "confirmation_note": "Confirmation Note"
+        },
+        "placeholder": {
+          "confirmation_note": "Enter confirmation note"
+        },
+        "button": {
+          "submit": "Submit"
+        },
+        "section": {
+          "location": "Location",
+          "experience": "Experience",
+          "date_and_car": "Date and Car",
+          "coverage_options": "Coverage Options",
+          "ride_along": "Ride Along",
+          "media_packages": "Media Packages",
+          "review": "Review"
+        },
+        "field": {
+          "date": "Date",
+          "car": "Car",
+          "experience": "Experience",
+          "selected": "Selected",
+          "enabled": "Enabled",
+          "passengers": "Passengers",
+          "yes": "Yes",
+          "no": "No",
+          "laps_at_time": "{laps} laps at {time}",
+          "car_laps_at_time": "{carName}: {laps} laps at {time}",
+          "car_sessions_at_time": "{carName}: {sessions, plural, one {# session} other {# sessions}} at {time}"
+        },
+        "progress_bar": {
+          "title": "Confirmation"
+        }
+      },
+      "coverage_options": {
+        "title": "Choose Insurance",
+        "description": "Track Insurance is required for all Driving Participants. It is not required for Ride-Along participants. Note, your personal auto insurance does not cover our cars or driving experiences like this. Please choose the option that's best for you.",
+        "footer": {
+          "title": "Drive Your Dream Supercar",
+          "subtitle": {
+            "select_car": "Select a car",
+            "cars_added": "{count, plural, one {# Car added} other {# Cars added}}"
+          }
+        },
+        "label": {
+          "coverage_note": "Coverage Options (comma-separated IDs)",
+          "coverage_options": "Coverage Options"
+        },
+        "placeholder": {
+          "coverage_note": "1, 2, 3"
+        },
+        "button": {
+          "back": "Back",
+          "saving": "Saving...",
+          "continue": "Continue"
+        },
+        "validation": {
+          "required": "Coverage options is required"
+        },
+        "progress_bar": {
+          "title": "Coverage Options"
+        },
+        "legend": {
+          "insurance": "Insurance",
+          "coverage": "Coverage",
+          "cost_per_car": "Cost Per Car",
+          "total": "Total"
+        },
+        "card": {
+          "price_badge": "x {quantity} Sessions",
+          "total": "Total Cost",
+          "cost_per_car": "Cost Per Car",
+          "learn_more": "Learn More"
+        },
+        "notifications": {
+          "error_saving": "Something went wrong while saving. Please try again."
+        }
+      },
+      "date_and_car": {
+        "title": "Select Car, Date, & Time",
+        "footer": {
+          "title": "Drive Your Dream Supercar",
+          "subtitle": {
+            "select_car": "Select a car",
+            "cars_added": "{count, plural, one {# Car added} other {# Cars added}}"
+          }
+        },
+        "cart_subtitle": {
+          "single": "Track Xperience",
+          "multi": "Multi-Car Xperience",
+          "ride": "Ride Along Xperience"
+        },
+        "label": {
+          "date_select": "Choose a Date"
+        },
+        "placeholder": {
+          "car_name": "Enter car name"
+        },
+        "button": {
+          "back": "Back",
+          "saving": "Saving...",
+          "continue": "Continue",
+          "select_a_drive": "Select a Drive",
+          "book_sessions": "Book {count, plural, one {# Session} other {# Sessions}}"
+        },
+        "validation": {
+          "required": "Date and car is required"
+        },
+        "description_dynamic": "<link>{location}</link> • {date}",
+        "progress_bar": {
+          "title": "Choose Date & Car"
+        },
+        "supercar_options": {
+          "info": "Choose all sessions before continuing booking.",
+          "tabs": {
+            "single": "Single Cars",
+            "multi": "Multi-Car Packages",
+            "ride": "Ride-Along"
+          }
+        },
+        "supercar_options_card": {
+          "button": {
+            "select": "View Availability",
+            "remove": "Close Selection",
+            "add_to_cart": "Add to Cart"
+          },
+          "badge": {
+            "sold_out": "Sold Out",
+            "spots_left": "{count, plural, one {# Spot left} other {# Spots left}}",
+            "not_enough_spots": "Not enough spots"
+          },
+          "could_not_load_schedules_error": "Could not load schedules",
+          "label": {
+            "quantity": "Choose Laps",
+            "schedules": "Choose Time"
+          },
+          "description": {
+            "selected_laps": "{laps} laps = {sessions} session(s)"
+          },
+          "sessions": {
+            "available": "{count, plural, one {# session available} other {# sessions available}}"
+          }
+        },
+        "supercar_options_lap": {
+          "legend": "Choose Laps",
+          "laps": "{count} Laps",
+          "most_popular": "Most Popular"
+        },
+        "supercar_options_time": {
+          "legend": "Choose Time",
+          "sold_out": "Sold Out"
+        },
+        "add_another_car_dialog": {
+          "title": "Add Another Car",
+          "description": "Drive and compare multiple cars in a single Day and save!",
+          "button": {
+            "confirm": "Book Another Car",
+            "cancel": "No thanks, Continue with my booking"
+          }
+        },
+        "date_tab": {
+          "sold_out": "Sold Out"
+        },
+        "change_dialog": {
+          "title": "Changing date?",
+          "description": "Changing date will clear your current cart. Are you sure you want to continue?",
+          "button": {
+            "confirm": "Confirm",
+            "cancel": "Cancel"
+          }
+        },
+        "notifications": {
+          "error_saving": "Something went wrong while saving. Please try again."
+        }
+      },
+      "location": {
+        "title": "Choose Location",
+        "description": "Select the location where you'd like to book your experience",
+        "label": {
+          "location": "Location (latitude, longitude)"
+        },
+        "placeholder": {
+          "location": "51.5074, -0.1278"
+        },
+        "button": {
+          "saving": "Saving...",
+          "continue": "Continue",
+          "back": "Back",
+          "select_event": "Select Event",
+          "select": "Select"
+        },
+        "validation": {
+          "required": "Please select an event location"
+        },
+        "progress_bar": {
+          "title": "Choose Location"
+        },
+        "change_dialog": {
+          "title": "Changing Track?",
+          "description": "Changing your track will clear your current cart. Are you sure you want to continue?",
+          "button": {
+            "confirm": "Continue",
+            "cancel": "Cancel"
+          }
+        },
+        "loading": "Loading events...",
+        "no_events": "No events found for the selected criteria.",
+        "event": {
+          "date_label": "Event Date:",
+          "select": "Choose Event",
+          "sold_out": "Sold Out"
+        },
+        "legend": {
+          "events": "Select an event"
+        },
+        "footer": {
+          "title": "Drive Your Dream Supercar"
+        }
+      },
+      "media_packages": {
+        "title": "Make your experience memorable",
+        "description": "",
+        "label": {
+          "package_ids": "Media Package IDs (comma-separated)",
+          "media_packages": "Media Packages"
+        },
+        "placeholder": {
+          "package_ids": "1, 2, 3"
+        },
+        "button": {
+          "saving": "Saving...",
+          "continue": "Continue",
+          "back": "Back"
+        },
+        "validation": {
+          "required": "Media packages is required"
+        },
+        "progress_bar": {
+          "title": "Media Packages"
+        },
+        "footer": {
+          "title": "Drive Your Dream Supercar",
+          "subtitle": {
+            "select_car": "Select a car",
+            "cars_added": "{count, plural, one {# Car added} other {# Cars added}}"
+          }
+        },
+        "notifications": {
+          "error_saving": "Something went wrong while saving. Please try again."
+        }
+      },
+      "review": {
+        "title": "My Cart",
+        "description": "",
+        "label": {
+          "review_note": "Review Note",
+          "review": "Review"
+        },
+        "placeholder": {
+          "review_note": "Enter review note"
+        },
+        "button": {
+          "processing": "Processing...",
+          "confirm_booking": "Confirm Booking",
+          "back": "Back",
+          "continue": "Continue",
+          "saving": "Saving..."
+        },
+        "validation": {
+          "required": "Review is required"
+        },
+        "section": {
+          "location": "Location",
+          "experience": "Experience",
+          "date_and_car": "Date and Car",
+          "coverage_options": "Coverage Options",
+          "ride_along": "Ride Along",
+          "media_packages": "Media Packages"
+        },
+        "field": {
+          "date": "Date",
+          "car": "Car",
+          "experience": "Experience",
+          "selected": "Selected",
+          "enabled": "Enabled",
+          "passengers": "Passengers",
+          "yes": "Yes",
+          "no": "No"
+        },
+        "progress_bar": {
+          "title": "Review"
+        },
+        "heading": "Review Your Booking",
+        "footer": {
+          "title": "Drive Your Dream Supercar"
+        },
+        "notifications": {
+          "error_saving": "Something went wrong while saving. Please try again."
+        }
+      },
+      "ride_along": {
+        "card": {
+          "add": "Add Xperience"
+        },
+        "title": "Hellcat Ride-Along",
+        "description": "Get a feel for the track and ride along with 2 others friends or family members. Experience a breathtaking, high-speed journey as one of our elite professional drivers takes you on a pulse-pounding and educational ride around the racetrack",
+        "label": {
+          "passenger_count": "Passenger Count",
+          "ride_along": "Ride Along"
+        },
+        "placeholder": {
+          "passenger_count": "0",
+          "ride_along": "0"
+        },
+        "button": {
+          "saving": "Saving...",
+          "continue": "Continue",
+          "back": "Back"
+        },
+        "validation": {
+          "required": "Ride along is required"
+        },
+        "progress_bar": {
+          "title": "Ride Along"
+        },
+        "footer": {
+          "title": "Drive Your Dream Supercar",
+          "subtitle": {
+            "select_car": "Select a car",
+            "cars_added": "{count, plural, one {# Car added} other {# Cars added}}"
+          }
+        },
+        "notifications": {
+          "added_to_cart": "Ride-along added to cart",
+          "error_adding_to_cart": "Error adding ride-along to cart",
+          "not_available": "This ride-along is not available for the selected date",
+          "unable_to_add": "Unable to add ride-along. Please try again.",
+          "error_saving": "Something went wrong while saving. Please try again."
+        }
+      },
+      "save_progress": {
+        "title": "Your Information",
+        "description": "Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum.",
+        "label": {
+          "save_progress": "Save Progress",
+          "first_name": "First Name",
+          "last_name": "Last Name",
+          "email": "Email",
+          "phone": "Phone Number"
+        },
+        "placeholder": {
+          "save_progress": "Enter email or identifier to save progress",
+          "first_name": "First Name",
+          "last_name": "Last Name",
+          "email": "Email Address",
+          "phone": "Phone Number"
+        },
+        "button": {
+          "saving": "Saving...",
+          "continue": "Continue",
+          "back": "Back"
+        },
+        "validation": {
+          "required": "This field is required",
+          "invalid_email": "Please enter a valid email address"
+        },
+        "progress_bar": {
+          "title": "Save Progress"
+        },
+        "footer": {
+          "title": "Save your progress to continue later",
+          "subtitle": {
+            "select_car": "Select a car",
+            "cars_added": "{count, plural, one {# Car added} other {# Cars added}}"
+          }
+        }
+      }
+    },
+    "progress_bar": {
+      "aria_label": "Booking progress",
+      "ariaLabel": "Booking progress"
+    },
+    "pit_pass": {
+      "add_to_cart": "Add to Cart"
+    },
+    "quantity": {
+      "decrease": "Decrease quantity",
+      "increase": "Increase quantity"
+    },
+    "supercar_options": {
+      "tabs": {
+        "single": "Single Cars",
+        "multi": "Multi-Car Packages",
+        "ride": "Ride-Along"
+      }
+    },
+    "supercar_options_card": {
+      "button": {
+        "select": "Select car",
+        "remove": "Remove Drive"
+      },
+      "badge": {
+        "going_fast": "Going fast"
+      }
+    },
+    "supercar_options_lap": {
+      "legend": "Choose Laps",
+      "laps": "{count} Laps",
+      "most_popular": "Most Popular"
+    },
+    "supercar_options_time": {
+      "legend": "Choose Time"
+    },
+    "dialog_cannot_add_car_for_different_date": {
+      "title": "Changing Date?",
+      "description": "Changing date will clear your current cart. Are you sure you want to continue?",
+      "confirm": "Continue",
+      "cancel": "Cancel"
+    },
+    "notifications": {
+      "added_to_cart": "Item added to cart",
+      "removed_from_cart": "Item removed from cart",
+      "error_adding_to_cart": "Someone else has your spot in their cart, please try another time.",
+      "error_removing_from_cart": "Error removing item from cart"
+    },
+    "booking_announcement": {
+      "button": {
+        "close": "Close announcement"
+      }
+    },
+    "booking_initializer": {
+      "error_initializing": "Something went wrong. Please try again or choose a different location."
+    }
+  },
+  "global_header": {
+    "call_us": "Call us",
+    "copyright": "Copyright © {year}",
+    "brand_name": "Xtreme Xperience",
+    "follow_us": "Follow Us",
+    "track_finder": "Track Finder",
+    "find_my_location": "Find My Location",
+    "menu": "Menu",
+    "back": "Back",
+    "location": "Location",
+    "cart": "Cart",
+    "search": "Search",
+    "supercars": {
+      "view_all": "Explore All Cars"
+    }
+  },
+  "core_icon": {
+    "3d": "3D",
+    "account": "Account",
+    "arrow_down": "Arrow down",
+    "arrow_right": "Arrow right",
+    "arrow_up": "Arrow up",
+    "arrow_up_right": "Arrow up right",
+    "bag": "Bag",
+    "car": "Car",
+    "cart": "Cart",
+    "check": "Check",
+    "chevron_down": "Down",
+    "chevron_left": "Previous",
+    "chevron_right": "Next",
+    "circle_play": "Play",
+    "close": "Close",
+    "date": "Date",
+    "double_column": "Double column",
+    "fallback": "Icon",
+    "full_screen": "Full screen",
+    "heart": "Heart",
+    "location": "Location",
+    "menu": "Menu",
+    "minus": "Minus",
+    "mute": "Mute",
+    "ok": "OK",
+    "pause": "Pause",
+    "pin": "Pin",
+    "play": "Play",
+    "plus": "Plus",
+    "premium": "Premium",
+    "reviews": "Reviews",
+    "search": "Search",
+    "security": "Security",
+    "shipping": "Shipping",
+    "single_column": "Single column",
+    "sound_on": "Sound on",
+    "star_empty": "Star empty",
+    "star_full": "Star full",
+    "star_half": "Star half",
+    "travel": "Travel",
+    "view_password": "View password",
+    "map": "Map",
+    "calendar": "Calendar",
+    "speed": "Speed",
+    "horsepower": "Horsepower",
+    "mph": "MPH",
+    "turnkey_orange": "Turnkey",
+    "pro_intrusctions_orange": "Pro Intrusctions",
+    "arrow_left": "Arrow left",
+    "info": "Info",
+    "handshake_v2": "Handshake",
+    "helmet_v2": "Helmet",
+    "marker_v2": "Marker",
+    "ratings_v2": "Ratings",
+    "speedometer_v2": "Speedometer",
+    "track_v2": "Track"
+  },
+  "section_usp": {
+    "title": "USPs Items"
+  },
+  "section_supercar_fleet_grid": {
+    "package_type": {
+      "single_car": "Single Cars",
+      "multi_car": "Multi-car Packages"
+    },
+    "empty_state": {
+      "no_cars": "No cars available"
+    }
+  },
+  "core_price": {
+    "prefix": "From",
+    "price_format": "${price}",
+    "suffix": "*"
+  },
+  "core_rating": {
+    "rating": "Rating: {rating} out of 5"
+  },
+  "cart": {
+    "title": "Cart",
+    "description": "Cart description"
+  },
+  "error_message": {
+    "general": "An error occurred while loading this page. Please try again later.",
+    "category_not_found": "Category with handle \"{handle}\" not found"
+  },
+  "section_track_hero": {
+    "ride_along_prefix": "Ride-Alongs Starting at",
+    "ride_along_suffix": "",
+    "supercar_xperiences_prefix": "Supercar Xperiences Starting at",
+    "supercar_xperiences_suffix": "",
+    "events_more": "{count} More Dates",
+    "book_now": "Book Now",
+    "buy_gift_card": "Buy a Gift Card"
+  },
+  "core_newsletter_signup_form": {
+    "title": "Subscribe to our newsletter",
+    "description": "Receive updates on new arrivals, special offers and other discounts.",
+    "info": "By subscribing, you agree to receive emails from us. Unsubscribe anytime.",
+    "label": {
+      "email": "Email Address"
+    },
+    "placeholder": {
+      "email": "Enter your email"
+    },
+    "validation": {
+      "required": "Email is required",
+      "invalid": "Please enter a valid email address"
+    },
+    "button": {
+      "submit": "Submit",
+      "submitting": "Submitting..."
+    },
+    "message": {
+      "success": "Successfully subscribed to newsletter"
+    }
+  },
+  "template_blog_detail_page": {
+    "post_not_found": "Post not found"
+  },
+  "track_finder": {
+    "widget": {
+      "title": "Global Track Finder Widget",
+      "loading": "Loading location...",
+      "error": "Error",
+      "accuracy": "Accuracy",
+      "location": "Location",
+      "no_location": "No location set",
+      "button": {
+        "get_browser_location": "Get Browser Location",
+        "set_mock_location": "Set Mock Location"
+      },
+      "fallback": "Find a Track",
+      "book_now": "Book Now",
+      "view_track": "View Track",
+      "aria": {
+        "widget_label": "Track finder widget",
+        "open_track_finder": "Open track finder. Current selection: {track}",
+        "book_now": "Book now for selected track",
+        "view_track": "View track details for {track}"
+      },
+      "remaining_count": "+{count} more"
+    },
+    "drawer": {
+      "title": "Find an event",
+      "loading": "Loading location...",
+      "error": "Error",
+      "current_location": "Current Location",
+      "accuracy": "Accuracy",
+      "updated": "Updated",
+      "no_location": "No location set",
+      "button": {
+        "get_browser_location": "Get Browser Location",
+        "clear_location": "Clear Location"
+      },
+      "find_my_location": "Find My Location",
+      "update_my_location": "Update My Location",
+      "clear_location": "Clear Location",
+      "view_map": "View Map",
+      "search_placeholder": "Search Zip Code, City, or Date",
+      "search_label": "Search for tracks",
+      "clear_search": "Clear"
+    },
+    "label": {
+      "fallback": "Find My Location",
+      "change_location": "Change Location",
+      "aria": {
+        "open_track_finder": "Open track finder. Current selection: {track}"
+      }
+    },
+    "tracks_list": {
+      "title": "Tracks",
+      "loading": "Loading tracks...",
+      "error": "Error loading tracks",
+      "no_tracks": "No tracks available",
+      "unknown_error": "Unknown error"
+    },
+    "track_card": {
+      "untitled_track": "Untitled Track",
+      "location_not_available": "Location not available",
+      "label": {
+        "location": "Location",
+        "coordinates": "Coordinates",
+        "address": "Address",
+        "region": "Region"
+      },
+      "set_as_home_track": "Set as my home track",
+      "view_track": "View Track",
+      "next_event": "Next event: ",
+      "remaining_count": "+{count} more",
+      "nearest": "Nearest",
+      "home_track_set": "Home track set successfully",
+      "home_track": "Home Track",
+      "book_now": "Book Now"
+    }
+  },
+  "core_event_card": {
+    "view_track": "View Track",
+    "months": {
+      "jan": "Jan.",
+      "feb": "Feb.",
+      "mar": "Mar.",
+      "apr": "Apr.",
+      "may": "May",
+      "jun": "Jun.",
+      "jul": "Jul.",
+      "aug": "Aug.",
+      "sep": "Sept.",
+      "oct": "Oct.",
+      "nov": "Nov.",
+      "dec": "Dec."
+    },
+    "badge": {
+      "sold_out": "Sold Out",
+      "nearest": "Nearest"
+    }
+  },
+  "section_supercar_brand_hero": {
+    "button_text_play": "Play Engine Sound",
+    "button_text_mute": "Play Engine Sound",
+    "button_text_unmute": "Mute Engine Sound"
+  },
+  "global_drawer": {
+    "aria": {
+      "close": "Close drawer"
+    }
+  },
+  "global_footer": {
+    "call_us": "Call us",
+    "copyright": "Copyright © {year}",
+    "brand_name": "Xtreme Xperience",
+    "follow_us": "Follow Us"
+  },
+  "core_brand": {
+    "name": "Xtreme Xperience"
+  },
+  "section_supercar_spec": {
+    "ride_along_prefix": "Ride-Alongs Starting at",
+    "ride_along_suffix": "",
+    "supercar_xperiences_prefix": "Supercar Xperiences Starting at",
+    "supercar_xperiences_suffix": "",
+    "view_specs": "View Full Specs",
+    "top_speed": "Top Speed",
+    "horsepower": "Horsepower",
+    "max_participant_height": "Max Participant Height",
+    "zero_to_sixty": "0-60 mph",
+    "value": "Value",
+    "drawer": {
+      "title": "Full Specs",
+      "engine": "Engine",
+      "top_speed": "Top Speed",
+      "horsepower": "Horsepower",
+      "max_participant_height": "Max Participant Height",
+      "torque": "Torque",
+      "zero_to_sixty": "0-60 mph",
+      "weight": "Weight",
+      "origin": "Origin",
+      "transmission": "Transmission",
+      "vehicle_layout": "Vehicle Layout",
+      "value": "Value",
+      "starting_price": "Starting Tour Price",
+      "book_now": "Book Now",
+      "give_as_gift": "Give as a Gift"
+    }
+  },
+  "template_blog_listing_page": {
+    "title": "Xtreme Blog",
+    "no_posts": "No blog posts found.",
+    "all_posts": "All Posts",
+    "loading": "Loading...",
+    "pagination": {
+      "label": "Blog pagination",
+      "previous": "Previous",
+      "next": "Next"
+    }
+  },
+  "core_supercar_card": {
+    "card_simple": {
+      "view_details_seo": "View Details for {title}"
+    },
+    "card_stats": {
+      "book_now": "Book Now",
+      "view_details": "View Car",
+      "view_details_seo": "View Details for {title}",
+      "value": "Value:",
+      "horsepower": "Horsepower:",
+      "zero_to_sixty": "0-60:",
+      "top_speed": "Top speed:"
+    },
+    "card_package": {
+      "book_now": "Book Now",
+      "view_details": "View Package",
+      "view_details_seo": "View Details for {title}"
+    }
+  },
+  "core_map": {
+    "loading": "Loading map...",
+    "error": {
+      "failed": "Failed to load map",
+      "api_key_missing": "Mapbox API key is not configured"
+    }
+  },
+  "section_track_spec": {
+    "marquee": {
+      "text": "Watch A Full Lap"
+    },
+    "media": {
+      "play_video": "Play video"
+    },
+    "specifications": {
+      "lap_length": "1-Lap Length",
+      "number_of_laps": "# of Laps",
+      "elevation_change": "Elevation Change",
+      "longest_straight": "Longest Straightaway",
+      "number_of_turns": "# of Turns"
+    },
+    "events": {
+      "title": "Upcoming Dates",
+      "badge": "Notify Me",
+      "book_now": "Book Now"
+    }
+  },
+  "blog_card_carousel": {
+    "title": "Read Also"
+  },
+  "section_supercar_showcase": {
+    "carousel": {
+      "explore_car": "Explore Car",
+      "view_all_cars": "View All Cars",
+      "top_speed": "Top Speed",
+      "horsepower": "Horsepower",
+      "zero_to_sixty": "0-60 mph",
+      "starting_at": "Starting at",
+      "previous": "Previous slide",
+      "next": "Next slide",
+      "package_type": {
+        "single_cars": "Single Cars",
+        "multi_car": "Multi-car Packages",
+        "single": "Single Cars",
+        "multi": "Multi-car Packages"
+      }
+    }
+  },
+  "global_toast": {
+    "close": "Close notification"
+  },
+  "booking_header": {
+    "cart": "Cart"
+  },
+  "global_cart": {
+    "upsells": {
+      "title": "Add a Pit Pass",
+      "description": "Cras justo odio, dapibus ac facilisis in, egestas eget quam. Sed posuere consectetur est at."
+    },
+    "icon": {
+      "aria_label": "Cart with {count, plural, one {# item} other {# items}}"
+    },
+    "header": {
+      "title": "My Cart",
+      "item_count": "{count, plural, one {# item} other {# items}}"
+    },
+    "item": {
+      "quantity": "Qty: {quantity}",
+      "each": "each",
+      "remove": "Remove",
+      "decrease_quantity": "Decrease quantity",
+      "increase_quantity": "Increase quantity"
+    },
+    "totals": {
+      "subtotal": "Subtotal",
+      "discount": "Discount",
+      "tax": "Tax",
+      "total": "Total",
+      "fees": "Fees"
+    },
+    "actions": {
+      "checkout": "Continue to Checkout",
+      "add_another": "Add Another Car",
+      "clear": "Clear Cart"
+    },
+    "empty": {
+      "title": "Your cart is empty",
+      "message": "Looks like you haven't added any experiences to your cart yet.",
+      "browse": "Browse Experiences"
+    },
+    "summary": {
+      "empty": "No items in cart",
+      "title": "Order Summary",
+      "subtotal": "Subtotal",
+      "discount": "Discount",
+      "tax": "Tax",
+      "ticketing_fee": "Ticketing Fee",
+      "total": "Total",
+      "house_service_charge": "Maintenance Fee"
+    },
+    "aside": {
+      "title": "Cart Summary",
+      "empty": "No items in cart",
+      "view_cart": "View Cart",
+      "location_title": "Event Location"
+    },
+    "page": {
+      "order_summary": "Order Summary"
+    },
+    "location": {
+      "title": "Event Location"
+    },
+    "policy": {
+      "cancelation": "##Cancellation Policy \n\nAll Xtreme Xperience Bookings are refundable within 7 calendar days from the purchase date. Note, this does not mean 7 days after your Xperience date. Gift vouchers are final sale and non-refundable. \n\n ALL 7-Day refund requests MUST be submitted by email to info@xxspeed.com within 7 days of the original purchase, and are subject to a 5% bank processing fee.\n\n7-DAY REFUND GUARANTEE is not applicable if the reserved Event Day is within 7 days of the purchase date.\n\nTICKETS MAY NOT BE RESCHEDULED OUTSIDE OF THE EVENT WEEKEND. This ticket is fully transferable to another individual and may be gifted or sold. \n\nSee our FAQ page for all agreed upon Refund, Reschedule, and Weather policies and procedures.\n\nIf you have any other questions, feel free to call (866) 273-7727 or email info@xxspeed.com. \n\nSee you on the track!"
+    },
+    "coupon": {
+      "label": {
+        "code": "Enter coupon or voucher code"
+      },
+      "placeholder": {
+        "enter_code": "Enter coupon or voucher code"
+      },
+      "button": {
+        "apply": "Apply",
+        "applying": "Applying...",
+        "remove": "Remove coupon"
+      },
+      "validation": {
+        "code_required": "Coupon code is required"
+      },
+      "success": {
+        "applied": "Coupon applied successfully",
+        "removed": "Coupon removed successfully"
+      },
+      "error": {
+        "code_required": "Please enter a coupon code",
+        "generic": "An error occurred processing your coupon"
+      }
+    }
+  },
+  "core_pagination": {
+    "label": "Pagination",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "section_location_picker": {
+    "search": {
+      "placeholder": "Search Zip Code, City, or Date",
+      "label": "Search for locations",
+      "clear": "Clear"
+    },
+    "date_range": {
+      "start_date": {
+        "label": "Start Date",
+        "placeholder": "MM/DD/YYYY"
+      },
+      "end_date": {
+        "label": "End Date",
+        "placeholder": "MM/DD/YYYY"
+      },
+      "clear": "Clear",
+      "divider": "to"
+    },
+    "event": {
+      "book_now": "Book Now",
+      "view_track": "View Track",
+      "sold_out": "Sold Out",
+      "date": "Event Date:",
+      "popular": "Popular"
+    },
+    "loading": "Loading events...",
+    "no_events": "No events found for the selected criteria.",
+    "sort": {
+      "label": "Sort by",
+      "distance_asc": "Nearest",
+      "date_asc": "Soonest"
+    }
+  },
+  "tools_login": {
+    "title": "Tools Login",
+    "label": {
+      "password": "Password"
+    },
+    "button": {
+      "submit": "Login",
+      "loading": "Logging in..."
+    },
+    "error": {
+      "invalid_password": "Invalid password",
+      "generic": "An error occurred. Please try again."
+    }
+  },
+  "tools_search": {
+    "title": "Search Tools",
+    "label": {
+      "type": "Search Type",
+      "search": "Search Term"
+    },
+    "option": {
+      "events": "Events",
+      "retail": "Retail",
+      "giftcard": "Giftcard"
+    },
+    "placeholder": {
+      "search": "Enter name to search"
+    },
+    "button": {
+      "search": "Search",
+      "loading": "Searching..."
+    },
+    "error": {
+      "generic": "An error occurred. Please try again."
+    },
+    "results": {
+      "title": "Results"
+    }
+  },
+  "styleguide": {
+    "getting_started": "Getting Started",
+    "overview": "Overview",
+    "styles": "Styles",
+    "typography": {
+      "title": "Typography",
+      "anton": {
+        "name": "Anton",
+        "example": "The quick brown fox jumps over the lazy dog"
+      },
+      "barlow": {
+        "name": "Barlow",
+        "example": "The quick brown fox jumps over the lazy dog"
+      },
+      "barlow_semi_condensed": {
+        "name": "Barlow Semi Condensed",
+        "example": "The quick brown fox jumps over the lazy dog"
+      },
+      "xxxlarge_anton_regular": "XXXLarge Anton Regular",
+      "xxlarge_anton_regular": "XXLarge Anton Regular",
+      "xlarge_anton_regular": "XLarge Anton Regular",
+      "xlarge_barlow_medium": "XLarge Barlow Medium",
+      "xlarge_barlow_bold": "XLarge Barlow Bold",
+      "xlarge_barlow_bold_italic": "XLarge Barlow Bold Italic",
+      "large_anton_regular": "Large Anton Regular",
+      "medium_anton_regular": "Medium Anton Regular",
+      "medium_barlow_regular": "Medium Barlow Regular",
+      "medium_barlow_bold": "Medium Barlow Bold",
+      "regular_anton_regular": "Regular Anton Regular",
+      "regular_barlow_regular": "Regular Barlow Regular",
+      "regular_barlow_bold": "Regular Barlow Bold",
+      "small_barlow_regular": "Small Barlow Regular",
+      "small_barlow_bold": "Small Barlow Bold",
+      "xsmall_barlow_regular": "XSmall Barlow Regular",
+      "xsmall_barlow_bold": "XSmall Barlow Bold",
+      "xxsmall_barlow_regular": "XXSmall Barlow Regular",
+      "xxsmall_barlow_bold": "XXSmall Barlow Bold"
+    },
+    "spacing": {
+      "title": "Spacing",
+      "scale": "Scale",
+      "rem": "rem",
+      "px": "px",
+      "spec": "Spec",
+      "xxsmall": "XXSmall",
+      "xsmall": "XSmall",
+      "small": "Small",
+      "regular": "Regular",
+      "medium": "Medium",
+      "large": "Large",
+      "xlarge": "XLarge",
+      "xxlarge": "XXLarge",
+      "xxxlarge": "XXXLarge",
+      "xxxxlarge": "XXXXLarge"
+    },
+    "colors": {
+      "title": "Colors",
+      "brand": "Brand",
+      "basic": "Basic",
+      "backgrounds_and_borders": "Backgrounds & Borders",
+      "support": "Support",
+      "spec": "Spec",
+      "black": "Black",
+      "white": "White",
+      "orange": "Orange",
+      "black_80": "Black 80%",
+      "black_50": "Black 50%",
+      "black_20": "Black 20%",
+      "black_10": "Black 10%",
+      "white_80": "White 80%",
+      "white_50": "White 50%",
+      "white_20": "White 20%",
+      "carrara": "Carrara",
+      "border_dark": "Border Dark",
+      "border_light": "Border Light",
+      "success": "Success",
+      "success_20": "Success 20%",
+      "error": "Error",
+      "error_20": "Error 20%"
+    },
+    "buttons": {
+      "title": "Buttons",
+      "styles": "Styles",
+      "book_now": "Book Now",
+      "button_layouts": {
+        "button": "Button",
+        "underline": "Underline",
+        "pill": "Pill"
+      },
+      "button_sizes": {
+        "large": "Large",
+        "medium": "Medium",
+        "small": "Small"
+      },
+      "button_styles": {
+        "black": "Black",
+        "white": "White",
+        "orange": "Orange"
+      }
+    },
+    "iconography": {
+      "title": "Iconography"
+    },
+    "components": {
+      "title": "Components",
+      "sections": {
+        "core_badge": {
+          "title": "Core Badge"
+        },
+        "core_price": {
+          "title": "Core Price"
+        },
+        "core_countdown": {
+          "title": "Core Countdown"
+        }
+      }
+    }
+  },
+  "order_confirmation": {
+    "title": "Thank You for Your Order",
+    "description": "Order Number: #{orderNumber}",
+    "error": {
+      "not_found": "Order not found. Please check your order ID and try again.",
+      "missing_order_id": "Order ID is required."
+    }
+  },
+  "core_add_to_cart_form": {
+    "button": {
+      "add": "Add to Cart",
+      "adding": "Adding..."
+    },
+    "error": {
+      "generic": "Failed to add item to cart",
+      "missing_required": "Missing required product information",
+      "missing_event_fields": "Missing required event details"
+    },
+    "aria": {
+      "form_label": "Add to cart form"
+    },
+    "notifications": {
+      "added_to_cart": "Item added to cart",
+      "error_adding_to_cart": "Could not add to cart, try again later"
+    }
+  },
+  "core_addons_card": {
+    "button": {
+      "add_to_cart": "Add to Cart"
+    }
+  },
+  "booking_legacy": {
+    "error": {
+      "load_failed": "Unable to load booking widget. Please try again later.",
+      "missing_params": "Missing required booking parameters."
+    },
+    "loading": "Loading booking widget..."
+  },
+  "checkout_details": {
+    "title": "Contact Information",
+    "button": {
+      "back": "Back"
+    }
+  },
+  "checkout_form": {
+    "contact": {
+      "title": "Contact Details",
+      "firstName": "First Name",
+      "firstNamePlaceholder": "Enter your first name",
+      "lastName": "Last Name",
+      "lastNamePlaceholder": "Enter your last name",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email address",
+      "phone": "Phone",
+      "phonePlaceholder": "Enter your phone number",
+      "addressLine1": "Address Line 1",
+      "addressLine1Placeholder": "Street address",
+      "addressLine2": "Address Line 2",
+      "addressLine2Placeholder": "Apartment, suite, etc. (optional)",
+      "city": "City",
+      "cityPlaceholder": "Enter your city",
+      "province": "State / Province",
+      "provincePlaceholder": "Enter your state or province",
+      "postalCode": "Postal Code",
+      "postalCodePlaceholder": "Enter your postal code",
+      "country": "Country",
+      "countryPlaceholder": "Enter your country",
+      "provinceRequired": "State / Province is required",
+      "provinceSelectPlaceholder": "Select state"
+    },
+    "terms": {
+      "title": "Terms and Conditions"
+    },
+    "button": {
+      "submit": "Submit",
+      "update": "Update",
+      "submitting": "Submitting..."
+    }
+  },
+  "template_supercar_detail_page": {
+    "supercar_not_found": "Supercar not found"
+  },
+  "template_track_detail_page": {
+    "track_not_found": "Track not found"
+  },
+  "core_event_tile": {
+    "date_label": "Event Date:",
+    "select": "Select",
+    "badge": {
+      "sold_out": "Sold Out",
+      "popular": "Popular"
+    },
+    "book_now": "Book Now",
+    "view_track": "View Track"
+  },
+  "booking_event_card": {
+    "date_label": "Event Date:",
+    "select": "Select",
+    "book_now": "Book Now",
+    "view_track": "View Track",
+    "badge": {
+      "sold_out": "Sold Out",
+      "popular": "Popular"
+    }
+  },
+  "core_rocketrez_price": {
+    "prefix": "From",
+    "price_format": "${price}",
+    "suffix": "*"
+  },
+  "section_event_finder": {
+    "search": {
+      "placeholder": "Search Zip Code, City, or Date",
+      "label": "Search for locations",
+      "clear": "Clear"
+    },
+    "date_range": {
+      "start_date": {
+        "label": "Start Date",
+        "placeholder": "MM/DD/YYYY"
+      },
+      "end_date": {
+        "label": "End Date",
+        "placeholder": "MM/DD/YYYY"
+      },
+      "divider": "to",
+      "clear": "Clear"
+    },
+    "event": {
+      "date": "Event Date:",
+      "book_now": "Book Now",
+      "view_track": "View Track",
+      "sold_out": "Sold Out",
+      "popular": "Popular"
+    },
+    "loading": "Loading events...",
+    "no_events": "No events found for the selected criteria.",
+    "sort": {
+      "label": "Sort by",
+      "distance_asc": "Nearest",
+      "date_asc": "Soonest"
+    }
+  },
+  "core_form": {
+    "validation": {
+      "required": "This field is required"
+    },
+    "error": {
+      "submission_failed": "Form submission failed. Please try again."
+    }
+  },
+  "core_loading_spinner": {
+    "label": "Loading..."
+  },
+  "booking_announcement": {
+    "button": {
+      "close": "Close announcement"
+    }
+  },
+  "payment": {
+    "title": "Payment",
+    "description": "Complete your booking with a secure payment form.",
+    "iframe": {
+      "title": "Secure payment"
+    },
+    "status": {
+      "idle": "Payment is ready to start.",
+      "loading_iframe": "Loading secure payment form…",
+      "ready": "Secure payment form is ready.",
+      "processing_payment": "Processing payment…",
+      "authorizing": "Authorizing payment…",
+      "success": "Payment complete. Order ID: {orderId}",
+      "error": "We couldn't process your payment. Please try again.",
+      "loading": "Loading payment information…",
+      "loading_cart": "Loading cart information…"
+    },
+    "button": {
+      "pay_now": "Pay now",
+      "back": "Back"
+    }
+  },
+  "complete": {
+    "title": "Thank You for Your Order",
+    "description": "Order Number: #{orderNumber}"
+  },
+  "details": {
+    "title": "Contact Information",
+    "button": {
+      "back": "Back"
+    }
+  },
+  "details_form": {
+    "contact": {
+      "title": "Contact Details",
+      "first_name": "First Name",
+      "first_name_placeholder": "Enter your first name",
+      "last_name": "Last Name",
+      "last_name_placeholder": "Enter your last name",
+      "email": "Email",
+      "email_placeholder": "Enter your email address",
+      "phone": "Phone",
+      "phone_placeholder": "Enter your phone number",
+      "phone_required": "Phone is required",
+      "address_line_1": "Address Line 1",
+      "address_line_1_placeholder": "Street address",
+      "address_line_2": "Address Line 2",
+      "address_line_2_placeholder": "Apartment, suite, etc. (optional)",
+      "city": "City",
+      "city_placeholder": "Enter your city",
+      "province": "State / Province",
+      "province_placeholder": "Enter your state or province",
+      "province_required": "State / Province is required",
+      "province_select_placeholder": "Select state",
+      "postal_code": "Postal Code",
+      "postal_code_placeholder": "Enter your postal code",
+      "country": "Country",
+      "country_placeholder": "Enter your country",
+      "first_name_error": "Please enter a valid first name",
+      "first_name_error_required": "First name is required",
+      "last_name_error": "Please enter a valid last name",
+      "last_name_error_required": "Last name is required",
+      "email_error": "Please enter a valid email address",
+      "email_error_required": "Email is required",
+      "phone_error": "Please enter a valid phone number",
+      "phone_error_required": "Phone is required",
+      "address_line_1_error": "Please enter a valid address",
+      "address_line_1_error_required": "Address is required",
+      "address_line_2_error": "Please enter a valid address",
+      "address_line_2_error_required": "Address line 2 is required",
+      "city_error": "Please enter a valid city",
+      "city_error_required": "City is required",
+      "province_error": "Please enter a valid state or province",
+      "province_error_required": "State / Province is required",
+      "postal_code_error": "Please enter a valid postal code",
+      "postal_code_error_required": "Postal code is required",
+      "country_error": "Please enter a valid country",
+      "country_error_required": "Country is required"
+    },
+    "terms": {
+      "title": "Terms and Conditions",
+      "required": "I agree to the terms and conditions"
+    },
+    "button": {
+      "submit": "Save Contact Information",
+      "update": "Update Contact Information",
+      "submitting": "Saving..."
+    },
+    "cart_actions": {
+      "checkout_text": "Continue to Payment"
+    }
+  },
+  "order_wizard": {
+    "page_complete": {
+      "title": "Thank You for Your Order",
+      "description": "Order Number: #{orderNumber}",
+      "button": {
+        "home": "Home"
+      },
+      "error": {
+        "missing_order_id": "Could not find your order. Please check your order ID and try again."
+      },
+      "status": {
+        "loading": "Loading your order..."
+      }
+    },
+    "order_summary": {
+      "title": "Order Summary",
+      "subtotal": "Subtotal",
+      "discount": "Discount",
+      "ticketing_fee": "Ticketing Fee",
+      "total": "Total"
+    }
+  },
+  "contacts_page": {
+    "title": "Contact Information",
+    "button": {
+      "back": "Back"
+    }
+  },
+  "contacts_form": {
+    "cart_actions": {
+      "checkout_text": "Continue to Payment"
+    },
+    "fields": {
+      "title": "Contact Details",
+      "first_name": "First Name",
+      "first_name_placeholder": "Enter your first name",
+      "first_name_error": "Please enter a valid first name",
+      "first_name_error_required": "First name is required",
+      "last_name": "Last Name",
+      "last_name_placeholder": "Enter your last name",
+      "last_name_error": "Please enter a valid last name",
+      "last_name_error_required": "Last name is required",
+      "email": "Email",
+      "email_placeholder": "Enter your email address",
+      "email_error": "Please enter a valid email address",
+      "email_error_required": "Email is required",
+      "phone": "Phone",
+      "phone_placeholder": "Enter your phone number",
+      "phone_required": "Phone is required",
+      "phone_error": "Please enter a valid phone number",
+      "phone_error_required": "Phone is required",
+      "address_line_1": "Address Line 1",
+      "address_line_1_placeholder": "Street address",
+      "address_line_1_error": "Please enter a valid address",
+      "address_line_1_error_required": "Address is required",
+      "address_line_2": "Address Line 2",
+      "address_line_2_placeholder": "Apartment, suite, etc. (optional)",
+      "address_line_2_error": "Please enter a valid address",
+      "address_line_2_error_required": "Address line 2 is required",
+      "city": "City",
+      "city_placeholder": "Enter your city",
+      "city_error": "Please enter a valid city",
+      "city_error_required": "City is required",
+      "province": "State / Province",
+      "province_placeholder": "Enter your state or province",
+      "province_required": "State / Province is required",
+      "province_select_placeholder": "Select state",
+      "province_error": "Please enter a valid state or province",
+      "province_error_required": "State / Province is required",
+      "postal_code": "Postal Code",
+      "postal_code_placeholder": "Enter your postal code",
+      "postal_code_error": "Please enter a valid postal code",
+      "postal_code_error_required": "Postal code is required",
+      "country": "Country",
+      "country_placeholder": "Enter your country",
+      "country_error": "Please enter a valid country",
+      "country_error_required": "Country is required"
+    },
+    "terms": {
+      "title": "Terms and Conditions",
+      "required": "I agree to the terms and conditions"
+    },
+    "button": {
+      "submit": "Continue",
+      "update": "Continue",
+      "submitting": "Saving..."
+    }
+  },
+  "payment_page": {
+    "title": "Payment",
+    "description": "Complete your booking with a secure payment form.",
+    "iframe": {
+      "title": "Secure payment"
+    },
+    "status": {
+      "idle": "Payment is ready to start.",
+      "loading": "Loading payment information…",
+      "loading_cart": "Loading cart information…",
+      "loading_iframe": "Loading secure payment form…",
+      "ready": "Secure payment form is ready.",
+      "processing_payment": "Processing payment…",
+      "authorizing": "Authorizing payment…",
+      "success": "Payment complete. Order ID: {orderId}",
+      "error": "We couldn't process your payment. Please try again."
+    },
+    "button": {
+      "back": "Back",
+      "pay_now": "Pay now",
+      "retry": "Retry",
+      "checkout": "Checkout"
+    },
+    "error": {
+      "complete_failed": "Failed to complete your order. Please try again."
+    },
+    "toast": {
+      "success": "Payment complete.",
+      "error": "We couldn't process your payment. Please try again."
+    }
+  },
+  "booking_location_cta": {
+    "find_my_location": "Find My Location",
+    "clear_my_location": "Clear My Location"
+  },
+  "complete_page": {
+    "title": "Thank You for Your Order",
+    "description": "Order Number: #{orderNumber}",
+    "button": {
+      "home": "Home",
+      "view_order": "View Order Details"
+    },
+    "status": {
+      "loading": "Loading your order..."
+    },
+    "error": {
+      "missing_order_id": "Could not find your order. Please check your order ID and try again."
+    }
+  },
+  "global_form_dialog": {
+    "loading": "Loading form...",
+    "error_invalid_embed": "Invalid or unsafe form embed. Please check the form configuration.",
+    "error_load_failed": "Unable to load the form. Please try again later."
+  }
+}

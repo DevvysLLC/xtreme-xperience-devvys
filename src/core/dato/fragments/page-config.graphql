@@ -1,0 +1,13 @@
+fragment PageConfig on PageConfigRecord {
+  id
+  handle
+  seo {
+    title
+    description
+    image {
+      ...Image
+    }
+    noIndex
+    twitterCard
+  }
+}

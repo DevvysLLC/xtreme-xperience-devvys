@@ -1,0 +1,31 @@
+fragment CoreVideo on CoreVideoRecord {
+  id
+  controls
+  autoplay
+  loop
+  videoRawMp4FileUrl
+  desktopVideoRawMp4FileUrl
+  customPosterImage {
+    url
+    alt
+    responsiveImage {
+      width
+      webpSrcSet
+      title
+      srcSet
+      src
+      sizes
+      height
+      bgColor
+      base64
+      aspectRatio
+      alt
+    }
+  }
+  video {
+    ...Video
+  }
+  desktopVideo {
+    ...Video
+  }
+}

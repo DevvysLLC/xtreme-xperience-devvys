@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Headless Checkout Implementation Guide | RocketRez</title>
+    <style>
+        :root {
+            --primary-color: #2c5aa0;
+            --primary-dark: #1e3d6f;
+            --secondary-color: #4a90e2;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --light-bg: #f8f9fa;
+            --dark-text: #212529;
+            --light-text: #6c757d;
+            --border-color: #e0e0e0;
+            --code-bg: #2d2d2d;
+            --code-text: #f8f8f2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-text);
+            background-color: #fff;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 3rem 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Navigation */
+        nav {
+            position: sticky;
+            top: 0;
+            background: white;
+            border-bottom: 2px solid var(--border-color);
+            padding: 1rem 2rem;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        nav a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+            font-size: 0.9rem;
+        }
+
+        nav a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        /* Main Content */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        section {
+            margin-bottom: 4rem;
+            scroll-margin-top: 80px;
+        }
+
+        h2 {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--secondary-color);
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        h4 {
+            font-size: 1.2rem;
+            color: var(--dark-text);
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--dark-text);
+        }
+
+        /* Code Blocks */
+        pre {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            border: 1px solid #444;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        code {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Inline code */
+        p code, li code, td code {
+            background: #f4f4f4;
+            color: #c7254e;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.85rem;
+            border: 1px solid #e0e0e0;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th {
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background: var(--light-bg);
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 1rem 0 1rem 2rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Alert Boxes */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            border-left: 4px solid;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            border-color: #0c5460;
+            color: #0c5460;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border-color: #856404;
+            color: #856404;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            border-color: #721c24;
+            color: #721c24;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border-color: #155724;
+            color: #155724;
+        }
+
+        .alert strong {
+            font-weight: 600;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.6rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 4px;
+            margin-left: 0.5rem;
+        }
+
+        .badge-required {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .badge-optional {
+            background: var(--light-text);
+            color: white;
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-header {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        /* Endpoint Badge */
+        .endpoint {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--light-bg);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .method {
+            font-weight: 700;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+
+        .method-get {
+            background: #61affe;
+            color: white;
+        }
+
+        .method-post {
+            background: #49cc90;
+            color: white;
+        }
+
+        .method-patch {
+            background: #fca130;
+            color: white;
+        }
+
+        .method-delete {
+            background: #f93e3e;
+            color: white;
+        }
+
+        /* Checklist */
+        .checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .checklist li {
+            padding-left: 2rem;
+            position: relative;
+        }
+
+        .checklist li:before {
+            content: "☐";
+            position: absolute;
+            left: 0;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--light-bg);
+            padding: 2rem;
+            text-align: center;
+            border-top: 2px solid var(--border-color);
+            margin-top: 4rem;
+        }
+
+        footer p {
+            color: var(--light-text);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            nav ul {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            main {
+                padding: 2rem 1rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            pre {
+                padding: 1rem;
+                font-size: 0.8rem;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: 0.75rem;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            nav {
+                display: none;
+            }
+
+            section {
+                page-break-inside: avoid;
+            }
+
+            pre {
+                page-break-inside: avoid;
+            }
+        }
+
+        /* Syntax Highlighting */
+        .json-key {
+            color: #9cdcfe;
+        }
+
+        .json-string {
+            color: #ce9178;
+        }
+
+        .json-number {
+            color: #b5cea8;
+        }
+
+        .json-boolean {
+            color: #569cd6;
+        }
+
+        /* Back to Top Button */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--primary-color);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .back-to-top:hover {
+            background: var(--primary-dark);
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🚀 Headless Checkout Implementation Guide</h1>
+        <p>Complete integration guide for RocketRez Headless Payment API</p>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="#prerequisites">Prerequisites</a></li>
+            <li><a href="#authentication">Authentication</a></li>
+            <li><a href="#cart-management">Cart Management</a></li>
+            <li><a href="#contacts">Contacts & Billing</a></li>
+            <li><a href="#payment">Payment Processing</a></li>
+            <li><a href="#errors">Error Handling</a></li>
+            <li><a href="#security">Security</a></li>
+            <li><a href="#testing">Testing</a></li>
+            <li><a href="#example">Complete Example</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <!-- Overview -->
+        <section id="overview">
+            <h2>Overview</h2>
+            <p>This guide provides comprehensive instructions for implementing the RocketRez Headless Checkout system on your frontend application. It covers all necessary API integrations, payment processing, and client-side requirements.</p>
+
+            <div class="alert alert-info">
+                <strong>Note:</strong> This guide assumes you have received OAuth credentials from RocketRez. Contact support if you need assistance obtaining these credentials.
+            </div>
+        </section>
+
+        <!-- Prerequisites -->
+        <section id="prerequisites">
+            <h2>1. Prerequisites & Dependencies</h2>
+
+            <h3>Required JavaScript Libraries</h3>
+
+            <div class="card">
+                <div class="card-header">Stripe.js v3 <span class="badge badge-required">REQUIRED</span></div>
+                <pre><code>&lt;script src="https://js.stripe.com/v3/"&gt;&lt;/script&gt;</code></pre>
+                <p>Stripe.js is required for secure payment processing. This library handles sensitive card data and ensures PCI compliance.</p>
+            </div>
+        </section>
+
+        <!-- Authentication -->
+        <section id="authentication">
+            <h2>2. Authentication & Configuration</h2>
+
+            <h3>OAuth 2.0 Token <span class="badge badge-required">REQUIRED</span></h3>
+
+            <p>All API calls require OAuth 2.0 authentication using the client credentials flow.</p>
+
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span>{apiBaseUrl}/oauth2/token</span>
+            </div>
+
+            <h4>Request</h4>
+            <pre><code>{
+  "client_id": "your-client-id",
+  "client_secret": "your-client-secret",
+  "scope": "read_orders read_products read_carts write_carts",
+  "grant_type": "client_credentials"
+}</code></pre>
+
+            <h4>Headers</h4>
+            <pre><code>{
+  "Content-Type": "application/json"
+}</code></pre>
+
+            <h4>Response</h4>
+            <pre><code>{
+  "data": {
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "token_type": "Bearer",
+    "expires_in": 3600
+  }
+}</code></pre>
+
+            <div class="alert alert-warning">
+                <strong>Important:</strong> Store the <code>access_token</code> for use in subsequent API calls. The token expires after the time specified in <code>expires_in</code> (seconds).
+            </div>
+
+            <h3>User GUID Management</h3>
+
+            <p>Each user session requires a unique GUID for tracking cart operations.</p>
+
+            <h4>Implementation Steps:</h4>
+            <ol>
+                <li>Generate a UUID using <code>crypto.randomUUID()</code></li>
+                <li>Convert to Base64 format</li>
+                <li>Store in localStorage for session persistence</li>
+                <li>Include in <code>RocketRezUserGuid</code> header for all cart operations</li>
+            </ol>
+
+            <h4>Example Implementation</h4>
+            <pre><code>function generateUserGuid() {
+  const guid = crypto.randomUUID();
+  const userGuid = btoa(
+    guid.replace(/-/g, '')
+      .match(/.{2}/g)
+      .map(byte => String.fromCharCode(parseInt(byte, 16)))
+      .join('')
+  );
+  localStorage.setItem('headlessUserGuid', userGuid);
+  return userGuid;
+}</code></pre>
+        </section>
+
+        <!-- Cart Management -->
+        <section id="cart-management">
+            <h2>3. Cart Management Flow</h2>
+
+            <h3>Step 1: Create Cart</h3>
+
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span>{apiBaseUrl}/headless/cart</span>
+            </div>
+
+            <h4>Headers</h4>
+            <pre><code>{
+  "Authorization": "Bearer {jwtToken}",
+  "Content-Type": "application/json"
+}</code></pre>
+
+            <h4>Request Body</h4>
+            <pre><code>{
+  "lineItems": [
+    {
+      "id": 1,
+      "type": "Event",
+      "quantity": 1,
+      "scheduleId": 10325,
+      "rateId": 1,
+      "rateType": "Adult"
+    }
+  ]
+}</code></pre>
+
+            <div class="card">
+                <div class="card-header">Item Types</div>
+                <ul>
+                    <li><code>Event</code> - Event tickets</li>
+                    <li><code>Retail</code> - Retail products</li>
+                    <li><code>Giftcard</code> - Gift cards</li>
+                    <li><code>Unknown</code> - Other items</li>
+                </ul>
+            </div>
+
+            <h4>Response</h4>
+            <pre><code>{
+  "data": {
+    "cart": {
+      "id": "cart-id-123",
+      "lineItems": [...],
+      "total": 100.00
+    },
+    "cartToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "userGuid": "base64-encoded-guid"
+  }
+}</code></pre>
+
+            <div class="alert alert-danger">
+                <strong>Critical:</strong> Store <code>cartId</code>, <code>cartToken</code>, and <code>userGuid</code> - they are required for all subsequent operations!
+            </div>
+
+            <h3>Step 2: Add Line Items <span class="badge badge-optional">OPTIONAL</span></h3>
+
+            <p>Add additional items to an existing cart.</p>
+
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span>{apiBaseUrl}/headless/cart/lineitems</span>
+            </div>
+
+            <h4>Headers</h4>
+            <pre><code>{
+  "Authorization": "Bearer {cartToken}",
+  "RocketRezUserGuid": "{userGuid}",
+  "Content-Type": "application/json"
+}</code></pre>
+
+            <h4>Request Body</h4>
+            <pre><code>{
+  "lineItems": [
+    {
+      "id": 1,
+      "type": "Event",
+      "quantity": 1,
+      "scheduleId": 10325,
+      "rateId": 1,
+      "rateType": "Adult"
+    }
+  ]
+}</code></pre>
+
+            <h3>Step 3: Update Line Items <span class="badge badge-optional">OPTIONAL</span></h3>
+
+            <p>Modify quantity or other properties of existing line items.</p>
+
+            <div class="endpoint">
+                <span class="method method-patch">PATCH</span>
+                <span>{apiBaseUrl}/headless/cart/lineitems/{lineItemId}</span>
+            </div>
+
+            <h4>Headers</h4>
+            <pre><code>{
+  "Authorization": "Bearer {cartToken}",
+  "RocketRezUserGuid": "{userGuid}",
+  "Content-Type": "application/json"
+}</code></pre>
+
+            <h4>Request Body</h4>
+            <pre><code>{
+  "quantity": 2,
+  "scheduleId": 10325,  // optional
+  "rateId": 1,          // optional
+  "rateType": "Adult"   // optional
+}</code></pre>
+
+            <div class="alert alert-info">
+                <strong>Note:</strong> All fields except <code>quantity</code> are optional. Include only fields you want to update.
+            </div>
+
+            <h3>Step 4: Delete Line Items <span class="badge badge-optional">OPTIONAL</span></h3>
+
+            <p>Remove items from the cart.</p>
+
+            <div class="endpoint">
+                <span class="method method-delete">DELETE</span>
+                <span>{apiBaseUrl}/headless/cart/lineitems/{lineItemId}</span>
+            </div>
+
+            <h4>Headers</h4>
+            <pre><code>{
+  "Authorization": "Bearer {cartToken}",
+  "RocketRezUserGuid": "{userGuid}"
+}</code></pre>
+        </section>
+
+        <!-- Contacts & Billing -->
+        <section id="contacts">
+            <h2>4. Contact & Billing Information</h2>
+
+            <h3>Add Contacts to Cart <span class="badge badge-required">REQUIRED</span></h3>
+
+            <p>Customer contact information must be added to the cart before processing payment.</p>
+
+            <div class="endpoint">
+                <span class="method method-post">POST</span>
+                <span>{apiBaseUrl}/headless/cart/contact</span>
+            </div>
+
+            <h4>Headers</h4>
+            <pre><code>{
+  "Authorization": "Bearer {cartToken}",
+  "RocketRezUserGuid": "{userGuid}",
+  "Content-Type": "application/json"
+}</code></pre>
+
+            <h4>Request Body</h4>
+            <pre><code>{
+  "contacts": [
+    {
+      "isPrimary": true,
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "customer@example.com",
+      "phone": "5555555555",
+      "billingAddress": {
+        "addressLine1": "123 Main St",
+        "addressLine2": "Apt 4B",
+        "city": "City Name",
+        "province": "Province/State",
+        "postalCode": "12345",
+        "country": "Country"
+      }
+    }
+  ]
+}</code></pre>
+
+            <h3>Required Fields</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>isPrimary</code></td>
+                        <td>boolean</td>
+                        <td>Must be <code>true</code> for at least one contact</td>
+                    </tr>
+                    <tr>
+                        <td><code>firstName</code></td>
+                        <td>string</td>
+                        <td>Customer's first name</td>
+                    </tr>
+                    <tr>
+                        <td><code>lastName</code></td>
+                        <td>string</td>
+                        <td>Customer's last name</td>
+                    </tr>
+                    <tr>
+                        <td><code>email</code></td>
+                        <td>string</td>
+                        <td>Valid email address</td>
+                    </tr>
+                    <tr>
+                        <td><code>phone</code></td>
+                        <td>string</td>
+                        <td>Contact phone number</td>
+                    </tr>
+                    <tr>
+                        <td><code>billingAddress.addressLine1</code></td>
+                        <td>string</td>
+                        <td>Street address</td>
+                    </tr>
+                    <tr>
+                        <td><code>billingAddress.city</code></td>
+                        <td>string</td>
+                        <td>City name</td>
+                    </tr>
+                    <tr>
+                        <td><code>billingAddress.postalCode</code></td>
+                        <td>string</td>
+                        <td>ZIP/Postal code</td>
+                    </tr>
+                    <tr>
+                        <td><code>billingAddress.country</code></td>
+                        <td>string</td>
+                        <td>Country name</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Payment Processing -->
+        <section id="payment">
+            <h2>5. Payment Processing</h2>
+
+            <h3>Step 1: Get Gateway Client Secret</h3>
+
+            <p>Retrieve a client secret from your payment gateway (e.g., Stripe) to initialize payment.</p>
+
+            <div class="endpoint">
+                <span class="method method-get">GET</span>
+                <span>{apiBaseUrl}/headless/payment/gateway-client-secret</span>
+            </div>
+
+            <h4>Query Parameters</h4>
+            <ul>
+                <li><code>paymentMethodId</code> <span class="badge badge-required">REQUIRED</span> - Your payment method ID</li>
+                <li><code>isCardOnFile</code> <span class="badge badge-required">REQUIRED</span> - <code>true</code> or <code>false</code> (Leave as false for now as card on file is not implemented in Headless yet)</li>
+                <li><code>gatewayPaymentMethod</code> <span class="badge badge-optional">OPTIONAL</span> - e.g., <code>"card"</code></li>
+            </ul>
+
+            <h4>Headers</h4>
+            <pre><code>{
+  "Authorization": "Bearer {cartToken}",
+  "RocketRezUserGuid": "{userGuid}"
+}</code></pre>
+
+            <h4>Example Request</h4>
+            <pre><code>GET {apiBaseUrl}/headless/payment/gateway-client-secret?paymentMethodId=66&isCardOnFile=false</code></pre>
+
+            <h4>Response</h4>
+            <pre><code>{
+  "result": {
+    "data": {
+      "clientSecret": "pi_xxxxxxxxxxxxx_secret_xxxxxxxxxxxxx"
+    }
+  }
+}</code></pre>
+
+            <div class="alert alert-warning">
+                <strong>Important:</strong> Store the <code>clientSecret</code> - it's required for Stripe payment confirmation.
+            </div>
+
+            <h3>Step 2: Integrate Payment Iframe</h3>
+
+            <p>The RocketRez Headless Client provides an iframe for secure payment processing.</p>
+
+            <h4>Load the Iframe</h4>
+            <pre><code>&lt;iframe id="checkout-iframe" src="{iframeUrl}" frameborder="0"&gt;&lt;/iframe&gt;</code></pre>
+
+            <h4>Initialize Communication</h4>
+            <pre><code>const iframe = document.getElementById('checkout-iframe');
+
+iframe.onload = function() {
+  iframe.contentWindow.postMessage({
+    type: 'INIT',
+    cartId: cartId
+  }, '*');
+};</code></pre>
+
+The React App will respond to the Parent window with a message of type <code>READY</code> at which point you can 
+send a PROCESS_PAYMENT message type with the appropriate information (next step).  
+
+            <h3>Step 3: Process Payment via Iframe</h3>
+
+            <p>Send payment details to the iframe for processing.</p>
+
+            <h4>Example Payment Request</h4>
+            <pre><code>iframe.contentWindow.postMessage({
+  type: 'PROCESS_PAYMENT',
+  clientSecret: clientSecret,
+  cartToken: cartToken,
+  userGuid: userGuid,
+  paymentRequest: {
+    PaymentMethodId: 66,
+    CartId: cartId,
+    PaymentTotal: 100.00,
+    RecaptchaToken: null,  // optional
+    FirstName: "John",
+    LastName: "Doe",
+    Email: "customer@example.com",
+    CompanyName: null,
+    MobilePhoneNumber: null,
+    HomePhoneNumber: null,
+    BillingAddress: {
+      Address1: "123 Main St",
+      Address2: null,
+      City: "City Name",
+      CountryShortName2: "US",
+      ProvinceId: null,
+      PostalCode: "12345"
+    },
+    SMSConsent: false,
+    CreditCard: {
+      Type: null,
+      Cvv: null,
+      Expiry: null,
+      Name: "John Doe",
+      Number: null
+    },
+    allowSecondaryPayments: false,
+    SecondaryPayments: []
+  }
+}, '*');</code></pre>
+
+            <h3>Step 4: Listen for Payment Events</h3>
+
+            <p>Handle responses from the iframe.</p>
+
+            <pre><code>window.addEventListener('message', function(event) {
+  // Filter out Stripe internal messages
+  if (event.origin && event.origin.includes('.stripe.com')) return;
+
+  switch(event.data.type) {
+    case 'READY':
+      // Iframe is ready for communication
+      console.log('Iframe ready');
+      break;
+
+    case 'PAYMENT_AUTH_SUCCESS':
+      // Stripe payment authorization successful
+      console.log('Payment authorized!');
+      console.log('Payment Intent ID:', event.data.paymentIntentId);
+      console.log('Status:', event.data.status);
+      // Show loading indicator - order is being created
+      break;
+
+    case 'PAYMENT_AUTH_ERROR':
+      // Stripe payment authorization failed
+      console.error('Payment authorization failed:', event.data.error);
+      // Show error message to user
+      break;
+
+    case 'PAYMENT_SUCCESS':
+      // Payment fully processed and order created
+      console.log('Payment complete! Order created.');
+      console.log('Payment Intent ID:', event.data.paymentIntentId);
+      console.log('Order ID:', event.data.orderId);
+      console.log('Status:', event.data.status);
+      // Redirect to confirmation page
+      window.location.href = `/confirmation?orderId=${event.data.orderId}`;
+      break;
+
+    case 'PAYMENT_ERROR':
+      // Payment processing or order creation failed
+      console.error('Payment processing failed:', event.data.error);
+      // Show error message to user
+      break;
+
+    case 'UNKNOWN_MESSAGE_TYPE':
+      // Iframe received an unrecognized message
+      console.warn('Iframe received unknown message type');
+      break;
+  }
+});</code></pre>
+
+            <h4>PostMessage Communication Reference</h4>
+
+            <p>The parent window and iframe communicate via the <code>postMessage</code> API. Below are all message types currently in use:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Message Type</th>
+                        <th>Sender</th>
+                        <th>Description</th>
+                        <th>Data Properties</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>INIT</code></td>
+                        <td>Parent → Iframe</td>
+                        <td>Initialize the iframe with cart information</td>
+                        <td><code>cartId</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>READY</code></td>
+                        <td>Iframe → Parent</td>
+                        <td>Iframe is loaded and ready to receive messages</td>
+                        <td>None</td>
+                    </tr>
+                    <tr>
+                        <td><code>PROCESS_PAYMENT</code></td>
+                        <td>Parent → Iframe</td>
+                        <td>Send payment details to process payment</td>
+                        <td><code>clientSecret</code>, <code>paymentRequest</code>, <code>cartToken</code>, <code>userGuid</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>PAYMENT_AUTH_SUCCESS</code></td>
+                        <td>Iframe → Parent</td>
+                        <td>Stripe payment authorization successful (payment intent confirmed)</td>
+                        <td><code>paymentIntentId</code>, <code>status</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>PAYMENT_AUTH_ERROR</code></td>
+                        <td>Iframe → Parent</td>
+                        <td>Stripe payment authorization failed</td>
+                        <td><code>error</code> (error message)</td>
+                    </tr>
+                    <tr>
+                        <td><code>PAYMENT_SUCCESS</code></td>
+                        <td>Iframe → Parent</td>
+                        <td>Payment fully processed and order created successfully</td>
+                        <td><code>paymentIntentId</code>, <code>orderId</code>, <code>status</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>PAYMENT_ERROR</code></td>
+                        <td>Iframe → Parent</td>
+                        <td>Payment processing or order creation failed</td>
+                        <td><code>error</code> (error message)</td>
+                    </tr>
+                    <tr>
+                        <td><code>UNKNOWN_MESSAGE_TYPE</code></td>
+                        <td>Iframe → Parent</td>
+                        <td>Iframe received an unrecognized message type</td>
+                        <td>None</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="alert alert-info">
+                <strong>Payment Flow:</strong> The typical successful payment flow is: <code>INIT</code> → <code>READY</code> → <code>PROCESS_PAYMENT</code> → <code>PAYMENT_AUTH_SUCCESS</code> → <code>PAYMENT_SUCCESS</code>
+            </div>
+        </section>
+
+        <!-- Error Handling -->
+        <section id="errors">
+            <h2>6. Error Handling</h2>
+
+            <h3>Common Error Scenarios</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Error Type</th>
+                        <th>Possible Causes</th>
+                        <th>Handling</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>401 Unauthorized</strong></td>
+                        <td>Invalid or expired token</td>
+                        <td>Refresh OAuth token and retry</td>
+                    </tr>
+                    <tr>
+                        <td><strong>404 Not Found</strong></td>
+                        <td>Invalid cart ID or line item ID</td>
+                        <td>Verify IDs and create new cart if needed</td>
+                    </tr>
+                    <tr>
+                        <td><strong>400 Bad Request</strong></td>
+                        <td>Missing required fields or invalid data</td>
+                        <td>Validate input and show user-friendly errors</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Network Error</strong></td>
+                        <td>Connection timeout or server down</td>
+                        <td>Show retry option or maintenance message</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Stripe Error</strong></td>
+                        <td>Card declined, insufficient funds, etc.</td>
+                        <td>Display Stripe error message to user</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Example Error Handling</h3>
+
+            <pre><code>async function createCart(lineItems) {
+  try {
+    const response = await fetch(`${apiBaseUrl}/headless/cart`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${jwtToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ lineItems })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.errorMessage || 'Failed to create cart');
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error creating cart:', error);
+    showErrorMessage('Unable to create cart. Please try again.');
+    return null;
+  }
+}</code></pre>
+        </section>
+
+        <!-- Security -->
+        <section id="security">
+            <h2>7. Security Considerations</h2>
+
+            <h3>Client-Side Security</h3>
+
+            <div class="alert alert-danger">
+                <strong>Never expose</strong> OAuth client secrets or API keys in client-side code!
+            </div>
+
+            <ul>
+                <li>Use environment variables or secure configuration management</li>
+                <li>Validate all postMessage events by checking <code>event.origin</code></li>
+            </ul>
+
+            <h4>Example Origin Validation</h4>
+            <pre><code>window.addEventListener('message', function(event) {
+  // Only accept messages from trusted origins
+  const trustedOrigins = [
+    'https://your-domain.com',
+    'https://pr5532.dev.aws.rocket-rez.com'
+  ];
+
+  if (!trustedOrigins.includes(event.origin)) {
+    console.warn('Rejected message from untrusted origin:', event.origin);
+    return;
+  }
+
+  // Process the message
+  handlePaymentMessage(event.data);
+});</code></pre>
+
+            <h3>HTTPS</h3>
+
+            <div class="alert alert-warning">
+                <strong>Always</strong> use HTTPS in production. Stripe requires HTTPS for payment processing.
+            </div>
+
+            <h3>Token Storage</h3>
+
+            <ul>
+                <li>Store tokens securely</li>
+                <li>Use <code>sessionStorage</code> or secure cookies (not plain <code>localStorage</code> in production)</li>
+            </ul>
+        </section>
+
+        <!-- Testing -->
+        <section id="testing">
+            <h2>8. Testing Checklist</h2>
+
+            <h3>Pre-Flight Checks</h3>
+
+            <ul class="checklist">
+                <li>OAuth credentials configured correctly</li>
+                <li>API base URL is correct for environment (dev/staging/production)</li>
+            </ul>
+
+            <h3>Functional Testing</h3>
+
+            <ul class="checklist">
+                <li><strong>OAuth Token:</strong> Successfully acquire access token</li>
+                <li><strong>Cart Creation:</strong> Create cart with line items</li>
+                <li><strong>Add Line Items:</strong> Add additional items to cart</li>
+                <li><strong>Update Line Items:</strong> Modify quantities and properties</li>
+                <li><strong>Delete Line Items:</strong> Remove items from cart</li>
+                <li><strong>Add Contacts:</strong> Submit customer and billing information</li>
+                <li><strong>Get Client Secret:</strong> Retrieve gateway client secret</li>
+                <li><strong>Iframe Communication:</strong> INIT message sent and READY received</li>
+                <li><strong>Payment Success:</strong> Complete successful test payment</li>
+                <li><strong>Payment Failure:</strong> Handle declined card scenario</li>
+                <li><strong>Error Handling:</strong> Gracefully handle network errors</li>
+            </ul>
+
+            <h3>Payment Gateway Testing</h3>
+
+            <p>Use Stripe test cards for different scenarios:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Card Number</th>
+                        <th>Scenario</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>4242 4242 4242 4242</code></td>
+                        <td>Successful payment</td>
+                    </tr>
+                    <tr>
+                        <td><code>4000 0000 0000 0002</code></td>
+                        <td>Card declined</td>
+                    </tr>
+                    <tr>
+                        <td><code>4000 0000 0000 9995</code></td>
+                        <td>Insufficient funds</td>
+                    </tr>
+                    <tr>
+                        <td><code>4000 0025 0000 3155</code></td>
+                        <td>Requires authentication (3D Secure)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Complete Example -->
+        <section id="example">
+            <h2>9. Complete Integration Example</h2>
+
+            <h3>Full Checkout Flow</h3>
+
+            <pre><code>// 1. Get OAuth Token
+async function authenticate() {
+  const response = await fetch(`${apiBaseUrl}/oauth2/token`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      client_id: clientId,
+      client_secret: clientSecret,
+      scope: 'read_orders read_products read_carts write_carts',
+      grant_type: 'client_credentials'
+    })
+  });
+  const data = await response.json();
+  return data.data.access_token;
+}
+
+// 2. Create Cart
+async function createCart(jwtToken, lineItems) {
+  const response = await fetch(`${apiBaseUrl}/headless/cart`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${jwtToken}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ lineItems })
+  });
+  const data = await response.json();
+  return data.data;
+}
+
+// 3. Add Contacts
+async function addContacts(cartToken, userGuid, contactInfo) {
+  const response = await fetch(`${apiBaseUrl}/headless/cart/contact`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${cartToken}`,
+      'RocketRezUserGuid': userGuid,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ contacts: [contactInfo] })
+  });
+  return await response.json();
+}
+
+// 4. Get Client Secret
+async function getClientSecret(cartToken, userGuid, paymentMethodId) {
+  const response = await fetch(
+    `${apiBaseUrl}/headless/payment/gateway-client-secret?paymentMethodId=${paymentMethodId}&isCardOnFile=false`,
+    {
+      headers: {
+        'Authorization': `Bearer ${cartToken}`,
+        'RocketRezUserGuid': userGuid
+      }
+    }
+  );
+  const data = await response.json();
+  return data.result.data.clientSecret;
+}
+
+// 5. Complete Checkout Flow
+async function completeCheckout() {
+  try {
+    // Step 1: Authenticate
+    const jwtToken = await authenticate();
+
+    // Step 2: Create cart
+    const cartData = await createCart(jwtToken, [
+      {
+        id: 1,
+        type: 'Event',
+        quantity: 2,
+        scheduleId: 10325,
+        rateId: 1,
+        rateType: 'Adult'
+      }
+    ]);
+
+    const { cart, cartToken, userGuid } = cartData;
+
+    // Step 3: Add contacts
+    await addContacts(cartToken, userGuid, {
+      isPrimary: true,
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'customer@example.com',
+      phone: '5555555555',
+      billingAddress: {
+        addressLine1: '123 Main St',
+        city: 'City Name',
+        postalCode: '12345',
+        country: 'USA'
+      }
+    });
+
+    // Step 4: Get client secret
+    const clientSecret = await getClientSecret(cartToken, userGuid, 66);
+
+    // Step 5: Load iframe and process payment
+    loadIframe(cart.id, clientSecret, cartToken, userGuid);
+
+  } catch (error) {
+    console.error('Checkout error:', error);
+    showErrorMessage('Checkout failed. Please try again.');
+  }
+}</code></pre>
+        </section>
+
+        <!-- API Reference -->
+        <section id="api-reference">
+            <h2>10. API Reference Summary</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Endpoint</th>
+                        <th>Method</th>
+                        <th>Purpose</th>
+                        <th>Auth</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>/oauth2/token</code></td>
+                        <td><span class="method method-post">POST</span></td>
+                        <td>Get access token</td>
+                        <td>Client credentials</td>
+                    </tr>
+                    <tr>
+                        <td><code>/headless/cart</code></td>
+                        <td><span class="method method-post">POST</span></td>
+                        <td>Create cart</td>
+                        <td>JWT Bearer</td>
+                    </tr>
+                    <tr>
+                        <td><code>/headless/cart/lineitems</code></td>
+                        <td><span class="method method-post">POST</span></td>
+                        <td>Add line items</td>
+                        <td>Cart Token + UserGuid</td>
+                    </tr>
+                    <tr>
+                        <td><code>/headless/cart/lineitems/{id}</code></td>
+                        <td><span class="method method-patch">PATCH</span></td>
+                        <td>Update line item</td>
+                        <td>Cart Token + UserGuid</td>
+                    </tr>
+                    <tr>
+                        <td><code>/headless/cart/lineitems/{id}</code></td>
+                        <td><span class="method method-delete">DELETE</span></td>
+                        <td>Delete line item</td>
+                        <td>Cart Token + UserGuid</td>
+                    </tr>
+                    <tr>
+                        <td><code>/headless/cart/contact</code></td>
+                        <td><span class="method method-post">POST</span></td>
+                        <td>Add contacts</td>
+                        <td>Cart Token + UserGuid</td>
+                    </tr>
+                    <tr>
+                        <td><code>/headless/payment/gateway-client-secret</code></td>
+                        <td><span class="method method-get">GET</span></td>
+                        <td>Get payment secret</td>
+                        <td>Cart Token + UserGuid</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Support -->
+        <section id="support">
+            <h2>11. Support & Resources</h2>
+
+            <h3>Test Environments</h3>
+
+            <ul>
+                <li><strong>Development:</strong> <code>https://QA.rocket-rez.com/api/v1</code></li>
+                <li><strong>Staging:</strong> Contact your RocketRez representative</li>
+                <li><strong>Production:</strong> Contact your RocketRez representative</li>
+            </ul>
+
+            <h3>Additional Documentation</h3>
+
+            <ul>
+                <li><a href="https://stripe.com/docs/js" target="_blank">Stripe.js Documentation</a></li>
+                <li><a href="https://oauth.net/2/" target="_blank">OAuth 2.0 Specification</a></li>
+            </ul>
+
+            <h3>Getting Help</h3>
+
+            <div class="card">
+                <div class="card-header">Technical Support</div>
+                <p>For technical support or questions about implementation:</p>
+                <ul>
+                    <li><strong>Email:</strong> support@rocketrez.com</li>
+                    <li><strong>Include:</strong> Environment, API endpoint, request/response details</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p><strong>Document Version:</strong> 1.0</p>
+        <p><strong>Last Updated:</strong> 2025-10-30</p>
+        <p>&copy; 2025 RocketRez. All rights reserved.</p>
+    </footer>
+
+    <a href="#" class="back-to-top" title="Back to top">↑</a>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                target.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        // Show/hide back to top button
+        const backToTop = document.querySelector('.back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTop.style.display = 'flex';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+
+        // Back to top smooth scroll
+        backToTop.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>

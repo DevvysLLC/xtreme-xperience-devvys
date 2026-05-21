@@ -1,0 +1,6 @@
+fragment CoreEventCard on EventRecord {
+  id
+  model {
+    ...EventModel
+  }
+}

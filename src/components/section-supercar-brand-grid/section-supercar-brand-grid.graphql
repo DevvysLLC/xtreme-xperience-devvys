@@ -1,0 +1,11 @@
+fragment SectionSupercarBrandGrid on SectionSupercarBrandGridRecord {
+  id
+  config {
+    ...SectionConfig
+  }
+  title
+  description
+  logos {
+    ...Image
+  }
+}

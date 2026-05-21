@@ -1,0 +1,31 @@
+@use '../../../../styles/styleguide' as sg;
+@use '../../../../styles/core/unit' as u;
+
+.section {
+  &__container {
+    display: flex;
+    flex-direction: column;
+    gap: sg.spacing(xsmall);
+    max-width: u.rem-calc(504);
+    margin-inline: auto;
+  }
+
+  &__dates {
+    list-style-type: none;
+    overflow-x: auto;
+    display: flex;
+    gap: sg.spacing(xsmall);
+    padding-top: sg.spacing(small);
+    padding-inline: sg.spacing(regular);
+    margin-inline: calc(sg.spacing(regular) * -1);
+  }
+
+  &__cars {
+    margin-top: sg.spacing(medium);
+  }
+
+  &__loading {
+    min-height: auto;
+    padding: sg.spacing(medium);
+  }
+}

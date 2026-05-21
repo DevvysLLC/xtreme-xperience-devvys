@@ -1,0 +1,15 @@
+{
+  "recommendations": [
+    "biomejs.biome",
+    "bruno.bruno",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "bruno-api-client.bruno"
+  ],
+  "unwantedRecommendations": [
+    "ms-azuretools.vscode-azureappservice",
+    "ms-azuretools.vscode-docker",
+    "ms-kubernetes-tools.vscode-kubernetes-tools",
+    "ms-vscode.PowerShell"
+  ]
+}

@@ -1,0 +1,11 @@
+fragment AddonModelContent on AddonModelRecord {
+  thumbnail {
+    ...CoreImage
+  }
+  badge {
+    ...CoreBadge
+  }
+  price {
+    ...CorePrice
+  }
+}

@@ -1,0 +1,9 @@
+fragment TrackData on TrackRecord {
+  id
+  config {
+    ...TrackConfig
+  }
+  model {
+    ...TrackModelData
+  }
+}

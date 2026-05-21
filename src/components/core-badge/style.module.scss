@@ -1,0 +1,21 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+.root {
+  display: inline-block;
+  padding: sg.spacing(xsmall);
+  background-color: sg.color(black);
+  align-self: flex-start;
+  line-height: 1;
+}
+
+.label {
+  font-family: sg.font-family('barlow-semi-condensed');
+  font-weight: sg.font-weight(500);
+  line-height: 1;
+  letter-spacing: sg.letter-spacing('5%');
+  text-transform: uppercase;
+  font-size: sg.font-size(xsmall);
+  color: sg.color(white);
+  display: block;
+}

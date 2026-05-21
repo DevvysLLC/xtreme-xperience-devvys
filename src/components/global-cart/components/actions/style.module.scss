@@ -1,0 +1,11 @@
+@use '../../../../styles/styleguide' as sg;
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: sg.spacing(xsmall);
+
+  &__button {
+    width: 100%;
+  }
+}

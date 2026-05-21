@@ -1,0 +1,19 @@
+meta {
+  name: List Supercars
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{TYPESENSE_BASE_URL}}/collections/supercars/documents/search?q=*
+  body: none
+  auth: none
+}
+
+query {
+  q: *
+}
+
+headers {
+  X-TYPESENSE-API-KEY: {{TYPESENSE_API_KEY}}
+}

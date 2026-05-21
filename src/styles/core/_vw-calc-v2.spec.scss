@@ -1,0 +1,14 @@
+/* prettier-ignore */
+
+@use './vw-calc-v2' as u;
+@use './mq' as mq;
+
+.element {
+  width: u.vw-calc(150 200, $clamp: true, $mobile: true);
+  height: u.vw-calc(40 48);
+  padding: u.vw-calc(8 12) u.vw-calc(12 24);
+
+  @include mq.min(largexx) {
+    width: u.vw-calc(180 220 275, $width: 1800);
+  }
+}

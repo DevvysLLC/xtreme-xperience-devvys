@@ -1,0 +1,14 @@
+fragment FaqConfig on FaqConfigRecord {
+  id
+  title
+  handle
+  seo {
+    title
+    description
+    image {
+      ...Image
+    }
+    noIndex
+    twitterCard
+  }
+}

@@ -1,0 +1,43 @@
+@use '../../../../styles/styleguide' as sg;
+@use '../../../../styles/core/unit' as u;
+
+.cart-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: u.rem-calc(40);
+  height: u.rem-calc(40);
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  @include sg.transition(opacity);
+
+  @include sg.hover-state {
+    opacity: 0.7;
+  }
+
+  svg {
+    width: u.rem-calc(24);
+    height: u.rem-calc(24);
+  }
+
+  &__badge {
+    position: absolute;
+    top: u.rem-calc(2);
+    right: u.rem-calc(2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: u.rem-calc(18);
+    height: u.rem-calc(18);
+    padding: 0 sg.spacing(xxsmall);
+    border-radius: u.rem-calc(9);
+    background-color: sg.color(orange);
+    font-family: sg.font-family(barlow);
+    font-size: sg.font-size(xxsmall);
+    font-weight: sg.font-weight(bold);
+    color: sg.color(white);
+  }
+}

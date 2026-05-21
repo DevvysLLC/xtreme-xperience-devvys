@@ -1,0 +1,153 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.4.5/schema.json",
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  },
+  "files": {
+    "includes": [
+      "**",
+      "!**/*.css",
+      "!**/*.html",
+      "!**/*.typegen.ts",
+      "!.next/**/*",
+      "!.vscode/**/*.json",
+      "!db/migrations/**/*",
+      "!datocms/lib/migrations/**/*",
+      "!src/graphql/shopify-admin-api/base-types.ts",
+      "!src/graphql/shopify-admin-api/blueprint.ts",
+      "!src/core/dato/base-types.ts",
+      "!src/core/dato/base-schemas.ts",
+      "!src/core/dato/sdk/blueprint.ts",
+      "!src/core/dato/fragments/**/*.schema.ts",
+      "!src/components/**/*.schema.ts"
+    ],
+    "maxSize": 2097152
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 80
+  },
+  "javascript": {
+    "formatter": {
+      "arrowParentheses": "always",
+      "bracketSpacing": true,
+      "enabled": true,
+      "quoteStyle": "single",
+      "semicolons": "asNeeded",
+      "trailingCommas": "none"
+    }
+  },
+  "json": {
+    "formatter": {
+      "enabled": true,
+      "trailingCommas": "none"
+    }
+  },
+  "linter": {
+    "domains": {
+      "next": "recommended",
+      "project": "recommended",
+      "react": "none"
+    },
+    "enabled": true,
+    "rules": {
+      "a11y": "warn",
+      "complexity": {
+        "noExcessiveCognitiveComplexity": {
+          "level": "warn",
+          "options": {
+            "maxAllowedComplexity": 60
+          }
+        },
+        "noUselessRename": {
+          "level": "warn"
+        },
+        "useArrowFunction": {
+          "level": "warn"
+        }
+      },
+      "correctness": {
+        "noUnusedImports": {
+          "level": "off"
+        },
+        "useImportExtensions": {
+          "level": "off",
+          "options": {
+            "extensionMappings": {
+              "ts": "js",
+              "tsx": "js"
+            }
+          }
+        }
+      },
+      "style": {
+        "useArrayLiterals": {
+          "level": "error"
+        },
+        "useFilenamingConvention": {
+          "level": "error",
+          "options": {
+            "filenameCases": ["kebab-case"],
+            "requireAscii": true
+          }
+        },
+        "useImportType": {
+          "level": "warn"
+        },
+        "useNumberNamespace": {
+          "level": "error"
+        },
+        "useThrowOnlyError": {
+          "level": "warn"
+        }
+      },
+      "suspicious": {
+        "noArrayIndexKey": {
+          "level": "warn"
+        },
+        "noControlCharactersInRegex": {
+          "level": "warn"
+        },
+        "noDoubleEquals": {
+          "level": "error"
+        },
+        "noImplicitAnyLet": {
+          "level": "warn"
+        },
+        "noImportCycles": {
+          "level": "error"
+        },
+        "useIterableCallbackReturn": {
+          "level": "warn"
+        }
+      }
+    }
+  },
+  "overrides": [
+    {
+      "formatter": {
+        "enabled": false
+      },
+      "includes": ["datocms/src/migrations/**/*.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useFilenamingConvention": "off"
+          }
+        }
+      }
+    }
+  ],
+  "vcs": {
+    "clientKind": "git",
+    "defaultBranch": "main",
+    "enabled": true,
+    "useIgnoreFile": true
+  }
+}

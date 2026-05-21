@@ -1,0 +1,193 @@
+{:min-bb-version "1.3.190"
+ :tasks
+ {:enter
+  (binding [*out* *err*]
+    (do (swap! task-start-times assoc (:name (current-task)) (System/currentTimeMillis))
+        (when-not (or (clojure.string/starts-with? (:doc (current-task)) "Alias")
+                      (clojure.string/starts-with? (:doc (current-task)) "Shortcut"))
+          (println "[BB] Task started:" (:name (current-task)))
+          (if (:doc (current-task))
+            (println "     --"
+                     (clojure.string/trim
+                      (clojure.string/replace (:doc (current-task)) "[Essentials]" "")))))
+        (if (> (count *command-line-args*) 0)
+          (let [max-args-to-show 5
+                arg-count        (count *command-line-args*)]
+            (if (>= arg-count max-args-to-show)
+              (println "[BB] Task arguments:"
+                       (str (clojure.string/join " " (take max-args-to-show *command-line-args*))
+                            " (+"
+                            (- arg-count max-args-to-show)
+                            " more)"))
+              (println "[BB] Task arguments:" (clojure.string/join " " *command-line-args*)))))))
+  :init
+  (do (defn shelly
+        "Wrapper for shell that adds error reporting with task context"
+        [& args]
+        (let [;; Capture task name at function call time
+              task-name     (:name (current-task))
+              ;; Parse args to separate options map from command args
+              has-opts?     (map? (first args))
+              opts          (if has-opts? (first args) {})
+              cmd-args      (if has-opts? (rest args) args)
+              ;; Build command string for display
+              cmd-string    (clojure.string/join " " cmd-args)
+              ;; Create enhanced options with exit-fn
+              enhanced-opts (assoc opts
+                                   :exit-fn
+                                   (fn [{:keys [exit proc cmd]}]
+                                     (when (not= exit 0)
+                                       (binding [*out* *err*]
+                                         (println)
+                                         (println "[BB] Command failed:")
+                                         (println "     Task:" task-name)
+                                         (println "     Command:" cmd-string)
+                                         (println "     Exit code:" exit)
+                                         (println)))
+                                     ;; Call original exit-fn if provided
+                                     (when-let [original-exit-fn (:exit-fn opts)]
+                                       (original-exit-fn {:exit exit :proc proc :cmd cmd}))))]
+          ;; Call shell with enhanced options
+          (apply shell enhanced-opts cmd-args)))
+      (defn print-alias-warning
+        []
+        (println "[BB] Deprecation:" (str "\"" (:name (current-task)) "\"")
+                 "is an alias for"   (str "\"" (first (:depends (current-task))) "\"")))
+      (def task-start-times (atom {}))
+      (defn format-duration
+        [ms]
+        (cond (< ms 1000)  (str ms "ms")
+              (< ms 60000) (str (format "%.1f" (/ ms 1000.0)) "s")
+              :else        (let [seconds (/ ms 1000.0)
+                                 minutes (int (/ seconds 60))
+                                 remaining-seconds (mod seconds 60)]
+                             (str minutes "m " (format "%.1f" remaining-seconds) "s"))))
+      (defn get-changed-files-for-task
+        [task-name]
+        (let [result (-> (shelly {:out :string}
+                                 "bun"
+                                 "run"    "devops/src/print-changed-files-for-task.ts"
+                                 "--task" task-name)
+                         :out
+                         clojure.string/trim)]
+          (if (clojure.string/blank? result) [] (clojure.string/split result (re-pattern "\\s+")))))
+      (defn run-task-with-changed-files
+        [base-task-name file-description]
+        (let [changed-files (get-changed-files-for-task base-task-name)]
+          (if (seq changed-files)
+            (apply shell "bb" base-task-name (concat changed-files *command-line-args*))
+            (println (str "[BB] Skipped: "
+                          (:name (current-task))
+                          " - "
+                          file-description
+                          " (0 files changed)")))))
+      (defn run-task-if-changed
+        [base-task-name file-description]
+        (let [changed-files (get-changed-files-for-task base-task-name)]
+          (cond (and (= 1 (count changed-files)) (= "RUN_TASK" (first changed-files)))
+                (shell "bb" base-task-name)
+                :else (println (str "[BB] Skipped: "
+                                    (:name (current-task))
+                                    " - "
+                                    file-description
+                                    " (0 files changed)"))))))
+  :leave
+  (binding [*out* *err*]
+    (do (when-not (= "Alias" (:doc (current-task)))
+          (let [task-name  (:name (current-task))
+                start-time (get (deref task-start-times) task-name)
+                end-time   (System/currentTimeMillis)
+                duration   (if start-time (- end-time start-time) 0)]
+            ;; Always show task finished, but only include timing
+            ;; for tasks that ran for more than 5ms
+            ;; (filters out parent tasksthat just spawn subtasks)
+            (if (> duration 5)
+              (println "[BB] Task finished:" task-name (str "(" (format-duration duration) ")"))
+              (println "[BB] Task finished:" task-name))
+            (swap! task-start-times dissoc task-name)))))
+  build
+  {:depends [compile-ts] :doc "Build project [Essentials]" :task (do (shelly "pnpm" "run" "build"))}
+  ci {:doc  "Run all CI checks [Essentials]"
+      :task (binding [*command-line-args* []]
+              (do (run 'lint-fs)
+                  (run 'prettify)
+                  (run 'lint-changed)
+                  (run 'typecheck-changed)
+                  (run 'test-changed)))}
+  ci-full {:doc  "Run CI checks on all files"
+           :task (binding [*command-line-args* []]
+                   (do (run 'lint-fs) (run 'prettify) (run 'lint) (run 'typecheck) (run 'test)))}
+  ci-ai {:doc  "Run CI checks without circular dependency detection"
+         :task (binding [*command-line-args* []] (do (run 'ci)))}
+  ; Use pnpm run typegen instead of codegen-graphql
+  compile-ts {:doc "Compile TypeScript files" :task (shelly "./devops/bin/compile-ts.sh")}
+  db-generate-migrations
+  {:doc  "Generate database migrations"
+   :task (shelly {:extra-env {"DATABASE_URL_NON_POOLING" "placeholder"}} "drizzle-kit" "generate")}
+  db-migrate {:doc "Apply database migrations" :task (shelly "pnpm" "run" "db-migrate")}
+  db-push {:depends [compile-ts]
+           :doc     "Push database changes to local database [Essentials]"
+           :task    (shelly "drizzle-kit" "push")}
+  deploy-to-production {:depends [compile-ts]
+                        :doc     "Trigger deploy to production"
+                        :task    (do (shelly "bun" "./devops/src/deploy-to-production/index.ts"))}
+  detect-unused-files {:depends [compile-ts]
+                       :doc     "Detect unused source files and exports"
+                       :task    (do (apply shelly
+                                           "knip"
+                                           "--config=./devops/src/knip.config.ts"
+                                           "--fix-type=files,exports,types"
+                                           "--allow-remove-files" "--no-progress"
+                                           "--no-exit-code"       *command-line-args*))}
+  dev {:depends [compile-ts]
+       :doc     "Watch and rebuild project files [Essentials]"
+       :task    (shelly "next" "dev")}
+  devops-prepare {:doc  "Run preparation tasks for devops"
+                  :task (shelly "./devops/bin/predevops.sh")}
+  jobs-prune-all-deleted-products {:doc  "Prune all deleted products [CAN TAKE DAYS]"
+                                   :task (shelly "bun"
+                                                 "./src/jobs/sync/prune-all-deleted-products.ts")}
+  jobs-sync-full {:doc  "Sync all data from Shopify [Essentials]"
+                  :task (shelly "bun" "./src/jobs/sync/index.ts" "--mode=full")}
+  jobs-sync-partial
+  {:doc  "Sync partial data from Shopify (lookback parameter required) [Essentials]"
+   :task (apply shelly "bun" "./src/jobs/sync/index.ts" "--mode=partial" *command-line-args*)}
+  lint
+  {:doc  "Lint the code"
+   :task (do (apply shelly
+                    "eslint"
+                    "--report-unused-disable-directives-severity=off"
+                    "--report-unused-inline-configs=warn"
+                    "--config=./eslint.config.mjs" *command-line-args*)
+             (shelly "biome" "check" "--write" "--diagnostic-level=error" "--max-diagnostics=100"))}
+  lint-changed {:doc  "Run lint for changed files only"
+                :task (run-task-with-changed-files "lint" "No modified files in scope")}
+  lint-fs {:doc "Lint filesystem" :task (shelly "./devops/lint/lint-filesystem.sh")}
+  lint-strict
+  {:doc  "Lint the code with strict rules"
+   :task (do (apply shelly
+                    "eslint"
+                    "--report-unused-disable-directives-severity=warn"
+                    "--report-unused-inline-configs=warn"
+                    "--config=./eslint-strict.config.mjs" *command-line-args*)
+             (shelly "biome" "check" "--write" "--diagnostic-level=error" "--max-diagnostics=100")
+             ; Avoid passing command-line-args to prettify
+             (run 'prettify))}
+  prettify {:doc "Format files with Prettier" :task (shelly "./devops/bin/prettify.sh")}
+  test {:doc  "Run unit test suite"
+        :task (do (shelly "./devops/bin/pretest.sh")
+                  (apply shelly
+                         {:extra-env {"NODE_ENV" "test"}}
+                         "ava"
+                         (->> *command-line-args*
+                              (map (fn [arg]
+                                     (-> arg
+                                         (clojure.string/replace "devops/src" "devops/dist")
+                                         (clojure.string/replace "src/" ".test-build/")))))))}
+  test-changed {:doc  "Run unit tests for changed files only"
+                :task (run-task-with-changed-files "test" "No test files affected by changes")}
+  test-failure {:doc "Test ci" :task (shelly "false")}
+  typecheck {:doc "Check files with Typescript" :task (shelly "tsc" "--noEmit")}
+  typecheck-changed {:doc  "Run Typescript check for changed files only"
+                     :task (run-task-if-changed "typecheck" "No TypeScript files modified")}
+  watch {:depends [dev] :doc "Alias" :task (print-alias-warning)}}}

@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "default": {
+      "logLevel": "BASIC",
+      "migrations": {
+        "directory": "src/migrations",
+        "modelApiKey": "schema_migration"
+      }
+    }
+  }
+}

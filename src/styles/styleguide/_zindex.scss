@@ -1,0 +1,20 @@
+@use '../core/stdlib/map' as map;
+
+$_config: (
+  drawer: 30,
+  header: 28,
+  context: 25,
+  foreground: 20,
+  midground: 15,
+  background: 10,
+  lcp-content: 3,
+  lcp-video: 2,
+  lcp-poster: 1,
+  base: 1,
+  neutral: 0,
+  negative: -1
+);
+
+@function zindex($key) {
+  @return map.get-strict($_config, $key);
+}

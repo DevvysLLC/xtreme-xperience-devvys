@@ -1,0 +1,15 @@
+fragment SectionAccordion on SectionAccordionRecord {
+  id
+  title
+  subtitle
+  layout
+  config {
+    ...SectionConfig
+  }
+  accordion {
+    ...CoreAccordion
+  }
+  ctas {
+    ...CoreCta
+  }
+}

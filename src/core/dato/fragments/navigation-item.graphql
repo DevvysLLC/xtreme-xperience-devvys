@@ -1,0 +1,38 @@
+fragment NavigationItemFields on NavigationItemRecord {
+  id
+  label
+  path
+  target
+  link {
+    ... on PageRecord {
+      id
+      entry: config {
+        handle
+      }
+    }
+    ... on SupercarRecord {
+      ...SupercarNavigation
+    }
+    ... on TrackRecord {
+      id
+      entry: config {
+        handle
+      }
+    }
+  }
+  media {
+    ... on CoreImageRecord {
+      ...CoreImage
+    }
+    ... on CoreVideoRecord {
+      ...CoreVideo
+    }
+  }
+}
+
+fragment NavigationItem on NavigationItemRecord {
+  ...NavigationItemFields
+  children {
+    ...NavigationItemFields
+  }
+}

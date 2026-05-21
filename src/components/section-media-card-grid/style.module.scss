@@ -1,0 +1,121 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+/* ===================================================== */
+/* Section */
+/* ===================================================== */
+
+.section {
+  @include sg.section-config;
+
+  & {
+    position: relative;
+    overflow: hidden;
+    padding-block: sg.spacing(xxlarge);
+    padding-inline: sg.spacing(regular);
+
+    @include sg.min(tabletLandscape) {
+      padding-block: sg.spacing(xxxlarge);
+      padding-inline: sg.spacing(xlarge);
+    }
+  }
+
+  &__header {
+    margin-bottom: sg.spacing(medium);
+    text-align: center;
+
+    @include sg.min(tabletLandscape) {
+      margin-bottom: sg.spacing(xlarge);
+    }
+  }
+
+  &__title {
+    font-family: sg.font-family(anton);
+    font-size: sg.font-size(large);
+    font-weight: sg.font-weight(400);
+    line-height: sg.line-height('110%');
+    text-transform: uppercase;
+
+    @include sg.min(tabletLandscape) {
+      font-size: sg.font-size(xxlarge);
+      letter-spacing: sg.letter-spacing('2%');
+    }
+  }
+
+  &__description {
+    max-width: u.rem-calc(720);
+    margin-inline: auto;
+    margin-top: sg.spacing(regular);
+    line-height: sg.line-height('120%');
+    letter-spacing: sg.letter-spacing('1%');
+  }
+
+  &__grid {
+    display: grid;
+    gap: sg.spacing(regular);
+    grid-template-columns: 1fr;
+
+    @include sg.min(tabletPortrait) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @include sg.min(laptopSmall) {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  &__grid__card {
+    min-width: unset;
+  }
+
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: sg.spacing(medium);
+    align-items: center;
+    margin-top: sg.spacing(medium);
+
+    @include sg.min(tabletLandscape) {
+      margin-top: sg.spacing(xlarge);
+    }
+  }
+}
+
+/* ===================================================== */
+/* Slider */
+/* ===================================================== */
+
+.slider {
+  :global(.swiper-wrapper) {
+    transition-timing-function: #{sg.easing('easeOutExpo')};
+  }
+
+  &:global(.swiper) {
+    contain: layout paint;
+    isolation: isolate;
+    padding-inline: calc(sg.spacing(regular) - sg.spacing(regular))
+      sg.spacing(regular);
+    margin-inline: calc(sg.spacing(regular) * -1);
+
+    @include sg.min(tabletLandscape) {
+      padding-inline: calc(sg.spacing(xlarge) - sg.spacing(regular))
+        sg.spacing(xlarge);
+      margin-inline: calc(sg.spacing(xlarge) * -1);
+    }
+  }
+
+  &__slide {
+    flex: 1 0 25%;
+    padding-left: sg.spacing(regular);
+  }
+
+  &__actions {
+    padding-left: sg.spacing(regular);
+    margin-top: sg.spacing(xxsmall);
+
+    @include sg.min(tabletLandscape) {
+      padding-left: 0;
+    }
+  }
+}

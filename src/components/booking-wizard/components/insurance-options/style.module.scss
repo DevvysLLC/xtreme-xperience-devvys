@@ -1,0 +1,50 @@
+@use '../../../../styles/styleguide' as sg;
+@use '../../../../styles/core/unit' as u;
+
+.desktop {
+  display: none;
+
+  @include sg.min(laptopSmall) {
+    display: block;
+  }
+}
+
+.header {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: sg.spacing(xlarge);
+  margin-bottom: sg.spacing(small);
+
+  @include sg.min(laptopSmall) {
+    grid-template-columns: 1.8fr 1.2fr 1.2fr 0.5fr 1fr;
+    gap: sg.spacing(regular);
+    padding-inline: sg.spacing(regular);
+  }
+}
+
+.title {
+  padding-inline: sg.spacing(regular);
+  font-size: sg.font-size(regular);
+  font-weight: sg.font-weight(500);
+  line-height: sg.line-height('120%');
+  color: sg.color(black-50);
+
+  @include sg.min(laptopSmall) {
+    padding-inline: 0;
+  }
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: sg.spacing(small);
+}
+
+.error {
+  margin-top: sg.spacing(regular);
+  padding-inline: sg.spacing(regular);
+  color: sg.color(orange);
+  font-family: sg.font-family(barlow-semi-condensed);
+  font-size: sg.font-size(regular);
+  text-align: center;
+}

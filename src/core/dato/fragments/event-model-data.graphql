@@ -1,0 +1,43 @@
+fragment EventModelData on EventModelRecord {
+  id
+  title
+  startDate
+  endDate
+  enabled
+  soldOut
+  popular
+  rocketRezId
+  rocketRezType
+  rocketRezRootId
+  media {
+    ... on CoreImageRecord {
+      ...CoreImage
+    }
+    ... on CoreVideoRecord {
+      ...CoreVideo
+    }
+  }
+  gradient {
+    ...CoreGradient
+  }
+  track {
+    config {
+      id
+      title
+      handle
+    }
+    model {
+      title
+      nickname
+      city
+      state
+      location {
+        latitude
+        longitude
+      }
+      trackSvg {
+        ...Image
+      }
+    }
+  }
+}

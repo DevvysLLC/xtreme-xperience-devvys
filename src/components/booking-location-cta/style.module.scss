@@ -1,0 +1,20 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+.action {
+  display: flex;
+  align-items: center;
+  gap: sg.spacing(xsmall);
+
+  &__icon {
+    color: sg.color(orange);
+  }
+
+  &__label {
+    font-family: sg.font-family(barlow-semi-condensed);
+    font-size: sg.font-size(small);
+    font-weight: sg.font-weight(500);
+    line-height: sg.line-height('100%');
+    text-transform: uppercase;
+  }
+}

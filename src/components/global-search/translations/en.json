@@ -1,0 +1,34 @@
+{
+  "search": {
+    "icon": {},
+    "drawer": {
+      "placeholder": "Search...",
+      "aria": {
+        "search_label": "Search",
+        "clear": "Clear search"
+      },
+      "loading": "Searching...",
+      "error": "Search failed",
+      "results_found": "Found {count} results",
+      "no_results": {
+        "message": "No results found for \"{query}\""
+      }
+    },
+    "hooks": {
+      "error": {
+        "invalid_response": "Invalid response format",
+        "search_failed": "Failed to perform search",
+        "invalid_data": "Invalid search results data structure"
+      }
+    },
+    "api": {
+      "error": {
+        "query_required": "Query parameter \"q\" is required",
+        "internal_server_error": "Internal server error"
+      }
+    },
+    "utils": {
+      "missing_title": "Missing title"
+    }
+  }
+}

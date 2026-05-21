@@ -1,0 +1,427 @@
+---
+description: USE WHEN writing SCSS/CSS for components or styleguide pages
+globs:
+alwaysApply: false
+---
+
+# Styleguide CSS Requirements
+
+## Critical Rule
+**ALWAYS use styleguide functions and mixins instead of hardcoded values**
+
+The styleguide system provides centralized design tokens for colors, spacing, typography, and more. Never hardcode these values directly in component styles.
+
+## Import Pattern
+
+Always import the styleguide system at the top of SCSS files:
+
+```scss
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+```
+
+**Note:** Adjust the relative path (`../../`) based on your file location relative to `src/styles/`.
+
+## Colors
+
+**NEVER hardcode colors. ALWAYS use `sg.color()` function:**
+
+```scss
+// ✅ Good - Using styleguide color function
+.my-component {
+  background-color: sg.color(black);
+  color: sg.color(white);
+  border-color: sg.color(black-10);
+}
+
+// ❌ Bad - Hardcoded colors
+.my-component {
+  background-color: #000000;
+  color: #ffffff;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+```
+
+### Available Color Keys
+- `black`, `white`, `orange`
+- `black-80`, `black-50`, `black-20`, `black-10`
+- `white-80`, `white-50`, `white-20`, `white-10`
+- `background`, `carrara`
+- `border-dark`, `border-light`
+- `success`, `success-20`
+- `error`, `error-20`
+- `transparent`
+
+## Spacing
+
+**NEVER hardcode spacing values. ALWAYS use `sg.spacing()` function:**
+
+```scss
+// ✅ Good - Using styleguide spacing function
+.my-component {
+  padding: sg.spacing(large);
+  margin: sg.spacing(small);
+  gap: sg.spacing(regular);
+}
+
+// ❌ Bad - Hardcoded spacing
+.my-component {
+  padding: 32px;
+  margin: 12px;
+  gap: 16px;
+}
+```
+
+### Available Spacing Keys
+- `xxxxlarge` (120px)
+- `xxxlarge` (80px)
+- `xxlarge` (64px)
+- `xlarge` (40px)
+- `large` (32px)
+- `medium` (24px)
+- `regular` (16px)
+- `small` (12px)
+- `xsmall` (8px)
+- `xxsmall` (4px)
+
+## Typography
+
+**NEVER hardcode typography values. ALWAYS use styleguide typography functions:**
+
+```scss
+// ✅ Good - Using styleguide typography functions
+.my-component {
+  font-family: sg.font-family(barlow);
+  font-size: sg.font-size(regular);
+  font-weight: sg.font-weight(medium);
+  font-style: sg.font-style(italic);
+  line-height: sg.line-height('120%');
+  letter-spacing: sg.letter-spacing('5%');
+}
+
+// ❌ Bad - Hardcoded typography
+.my-component {
+  font-family: 'Barlow', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+```
+
+### Typography Functions
+
+**Font Families:**
+- `sg.font-family(anton)`
+- `sg.font-family(barlow)`
+- `sg.font-family(barlow-semi-condensed)`
+
+**Font Sizes:**
+- `sg.font-size(xxxlarge)` - 80px
+- `sg.font-size(xxlarge)` - 64px
+- `sg.font-size(xlarge)` - 40px
+- `sg.font-size(large)` - 32px
+- `sg.font-size(medium)` - 24px
+- `sg.font-size(regular)` - 16px
+- `sg.font-size(small)` - 14px
+- `sg.font-size(xsmall)` - 12px
+- `sg.font-size(xxsmall)` - 10px
+
+**Font Weights:**
+- `sg.font-weight(light)` - 200
+- `sg.font-weight(regular)` - 400
+- `sg.font-weight(medium)` - 500
+- `sg.font-weight(semibold)` - 600
+- `sg.font-weight(bold)` - 700
+- `sg.font-weight(extrabold)` - 800
+- Or use numeric: `sg.font-weight(400)`, `sg.font-weight(700)`, etc.
+
+**Line Heights:**
+- `sg.line-height('100%')` - 1.0
+- `sg.line-height('110%')` - 1.1
+- `sg.line-height('120%')` - 1.2
+- `sg.line-height('130%')` - 1.3
+- `sg.line-height('140%')` - 1.4
+
+**Letter Spacing:**
+- `sg.letter-spacing('1%')` - 0.01em
+- `sg.letter-spacing('2%')` - 0.02em
+- `sg.letter-spacing('5%')` - 0.05em
+
+## Units
+
+**Use `u.rem-calc()` for pixel-to-rem conversion:**
+
+```scss
+// ✅ Good - Using unit conversion function
+.my-component {
+  width: u.rem-calc(300);
+  height: u.rem-calc(200);
+  border-radius: u.rem-calc(10);
+}
+
+// ❌ Bad - Hardcoded rem values or pixels
+.my-component {
+  width: 18.75rem;
+  height: 12.5rem;
+  border-radius: 0.625rem;
+}
+```
+
+## Mixins
+
+### Transitions
+
+```scss
+// ✅ Good - Using styleguide transition mixin
+.my-component {
+  @include sg.transition(transform, 200, 'easeOutQuart');
+  @include sg.transition(opacity, 300);
+}
+
+// ❌ Bad - Hardcoded transitions
+.my-component {
+  transition: transform 200ms ease-out;
+  transition: opacity 300ms;
+}
+```
+
+### Hover States
+
+```scss
+// ✅ Good - Using hover-state mixin
+.my-component {
+  @include sg.hover-state {
+    background-color: sg.color(orange);
+    transform: scale(1.05);
+  }
+}
+
+// With focus support
+.my-component {
+  @include sg.hover-state($focus: true) {
+    outline: 2px solid sg.color(orange);
+  }
+}
+```
+
+### Container
+
+```scss
+// ✅ Good - Using container mixin
+.my-section {
+  @include sg.container(); // Default max-width: 1512px
+  @include sg.container(1200); // Custom max-width
+}
+```
+
+### Section Padding
+
+```scss
+// ✅ Good - Using section-padding mixin
+.my-section {
+  @include sg.section-padding();
+}
+```
+
+## Button Styles
+
+Use styleguide button mixins for consistent button styling:
+
+```scss
+// ✅ Good - Using button mixins
+.my-button {
+  @include sg.button($animated: true);
+  @include sg.button-size(medium);
+  @include sg.button-color(orange);
+  @include sg.button-animation-color(orange);
+}
+
+// Underline button
+.my-link {
+  @include sg.underline($animated: true);
+  @include sg.underline-color(black);
+}
+
+// Pill button
+.my-pill {
+  @include sg.pill(small, black);
+  @include sg.pill-size(small);
+  @include sg.pill-color(black);
+}
+```
+
+## Media Queries
+
+Use styleguide media query mixins:
+
+```scss
+// ✅ Good - Using media query mixins
+.my-component {
+  font-size: sg.font-size(small);
+
+  @include sg.min(laptopSmall) {
+    font-size: sg.font-size(regular);
+  }
+
+  @include sg.max(tablet) {
+    padding: sg.spacing(small);
+  }
+}
+```
+
+## File Naming
+
+- **Component styles**: Use `.module.scss` extension (e.g., `style.module.scss`)
+- **Global styles**: Use `.scss` extension (e.g., `main.scss`)
+- **Styleguide files**: Located in `src/styles/styleguide/` with `_` prefix (e.g., `_color.scss`)
+
+## BEM Naming Convention
+
+Use BEM (Block Element Modifier) naming for CSS classes:
+
+```scss
+// ✅ Good - BEM naming
+.my-component {
+  &__header {
+    // Element
+  }
+
+  &--active {
+    // Modifier
+  }
+
+  &__item {
+    &--highlighted {
+      // Nested modifier
+    }
+  }
+}
+```
+
+## Examples
+
+### Complete Component Example
+
+```scss
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: sg.spacing(regular);
+  padding: sg.spacing(large);
+  background-color: sg.color(white);
+  border: 1px solid sg.color(black-10);
+  border-radius: u.rem-calc(10);
+
+  &__header {
+    font-family: sg.font-family(barlow);
+    font-size: sg.font-size(large);
+    font-weight: sg.font-weight(bold);
+    color: sg.color(black);
+  }
+
+  &__content {
+    font-size: sg.font-size(regular);
+    line-height: sg.line-height('120%');
+    color: sg.color(black-50);
+  }
+
+  &__button {
+    @include sg.button();
+    @include sg.button-size(medium);
+    @include sg.button-color(orange);
+
+    @include sg.hover-state {
+      transform: translateY(u.rem-calc(-2));
+    }
+  }
+
+  &--featured {
+    background-color: sg.color(orange);
+    border-color: sg.color(orange);
+  }
+
+  @include sg.min(laptopSmall) {
+    padding: sg.spacing(xlarge);
+  }
+}
+```
+
+### Styleguide Page Example
+
+```scss
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+.colors {
+  display: flex;
+  flex-direction: column;
+  gap: sg.spacing(large);
+
+  &__example {
+    display: block;
+    width: u.rem-calc(40);
+    height: u.rem-calc(40);
+    border: 1px solid sg.color(black-10);
+
+    &--black {
+      background-color: sg.color(black);
+    }
+
+    &--orange {
+      background-color: sg.color(orange);
+    }
+  }
+}
+```
+
+## Common Mistakes to Avoid
+
+### ❌ Don't Hardcode Values
+```scss
+// Bad
+.component {
+  padding: 20px;
+  color: #000;
+  font-size: 18px;
+}
+```
+
+### ❌ Don't Use Direct Color Values
+```scss
+// Bad
+.component {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: #ffffff;
+}
+```
+
+### ❌ Don't Skip Unit Conversion
+```scss
+// Bad
+.component {
+  width: 300px;
+  margin: 16px;
+}
+```
+
+### ✅ Always Use Styleguide Functions
+```scss
+// Good
+.component {
+  padding: sg.spacing(medium);
+  color: sg.color(black);
+  font-size: sg.font-size(regular);
+  width: u.rem-calc(300);
+  margin: sg.spacing(regular);
+}
+```
+
+## Cross-References
+- Styleguide files: `src/styles/styleguide/`
+- Core unit functions: `src/styles/core/unit`
+- See [build-validation.mdc](mdc:.cursor/rules/build-validation.mdc) for build workflow (run CI after SCSS changes)
+- See [typescript.mdc](mdc:.cursor/rules/typescript.mdc) for TypeScript patterns
+- See [translations.mdc](mdc:.cursor/rules/translations.mdc) for translation requirements

@@ -1,0 +1,35 @@
+{
+  "section_event_finder": {
+    "search": {
+      "placeholder": "Search Zip Code, City, or Date",
+      "label": "Search for locations",
+      "clear": "Clear"
+    },
+    "date_range": {
+      "start_date": {
+        "label": "Start Date",
+        "placeholder": "MM/DD/YYYY"
+      },
+      "end_date": {
+        "label": "End Date",
+        "placeholder": "MM/DD/YYYY"
+      },
+      "divider": "to",
+      "clear": "Clear"
+    },
+    "event": {
+      "date": "Event Date:",
+      "book_now": "Book Now",
+      "view_track": "View Track",
+      "sold_out": "Sold Out",
+      "popular": "Popular"
+    },
+    "loading": "Loading events...",
+    "no_events": "No events found for the selected criteria.",
+    "sort": {
+      "label": "Sort by",
+      "distance_asc": "Nearest",
+      "date_asc": "Soonest"
+    }
+  }
+}

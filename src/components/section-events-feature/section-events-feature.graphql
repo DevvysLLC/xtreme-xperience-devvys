@@ -1,0 +1,15 @@
+fragment SectionEventsFeature on SectionEventsFeatureRecord {
+  id
+  config {
+    ...SectionConfig
+  }
+  title
+  subtitle
+  description
+  events {
+    ...Event
+  }
+  ctas {
+    ...CoreCta
+  }
+}

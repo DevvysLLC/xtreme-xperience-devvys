@@ -1,0 +1,35 @@
+@use '../../../../styles/styleguide' as sg;
+@use '../../../../styles/core/unit' as u;
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: sg.spacing(regular);
+  min-height: calc(100dvh - u.rem-calc(85));
+  padding: sg.spacing(xlarge);
+
+  @include sg.min(tabletLandscape) {
+    min-height: calc(100dvh - u.rem-calc(65));
+  }
+
+  &__spinner {
+    width: u.rem-calc(40);
+    height: u.rem-calc(40);
+    border: u.rem-calc(3) solid sg.color(border-light);
+    border-top-color: sg.color(black);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  &__text {
+    font-size: sg.font-size(medium);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

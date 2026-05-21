@@ -1,0 +1,5 @@
+query getAllLandingPages {
+  allLandingPages(first: 100) {
+    ...LandingPage
+  }
+}

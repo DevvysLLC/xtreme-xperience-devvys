@@ -1,0 +1,51 @@
+@use '../../../../styles/styleguide' as sg;
+@use '../../../../styles/core/unit' as u;
+
+.cart-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: sg.spacing(xlarge) sg.spacing(regular);
+  min-height: u.rem-calc(200);
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: u.rem-calc(64);
+    height: u.rem-calc(64);
+    margin-bottom: sg.spacing(regular);
+    border-radius: 50%;
+    background-color: sg.color(black-10);
+    color: sg.color(black-50);
+
+    svg {
+      width: u.rem-calc(32);
+      height: u.rem-calc(32);
+    }
+  }
+
+  &__title {
+    margin: 0 0 sg.spacing(xsmall);
+    font-family: sg.font-family(barlow);
+    font-size: sg.font-size(medium);
+    font-weight: sg.font-weight(semibold);
+    color: sg.color(black);
+  }
+
+  &__message {
+    margin: 0 0 sg.spacing(regular);
+    font-family: sg.font-family(barlow);
+    font-size: sg.font-size(small);
+    color: sg.color(black-50);
+    line-height: sg.line-height('140%');
+  }
+
+  &__button {
+    @include sg.button();
+    @include sg.button-size(small);
+    @include sg.button-color(orange);
+  }
+}

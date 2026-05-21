@@ -1,0 +1,24 @@
+{
+  "order_wizard": {
+    "page_complete": {
+      "title": "Thank You for Your Order",
+      "description": "Order Number: #{orderNumber}",
+      "button": {
+        "home": "Home"
+      },
+      "status": {
+        "loading": "Loading your order..."
+      },
+      "error": {
+        "missing_order_id": "Could not find your order. Please check your order ID and try again."
+      }
+    },
+    "order_summary": {
+      "title": "Order Summary",
+      "subtotal": "Subtotal",
+      "discount": "Discount",
+      "ticketing_fee": "Ticketing Fee",
+      "total": "Total"
+    }
+  }
+}

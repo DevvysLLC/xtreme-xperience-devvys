@@ -1,0 +1,23 @@
+flowchart TD
+    CartUpdate[Cart State Updates] --> CheckContents[useCart Checks Contents]
+
+    CheckContents --> HasCars{Has Cars?}
+    HasCars -->|No| HasInsurance1{Has Insurance?}
+    HasInsurance1 -->|Yes| RemoveAll[Remove All Insurance]
+    HasInsurance1 -->|No| Done1[Done]
+
+    HasCars -->|Yes| HasInsurance2{Has Insurance?}
+    HasInsurance2 -->|No| Done2[Done]
+    HasInsurance2 -->|Yes| CheckQty{"Qty Matches<br/>Sessions?"}
+
+    CheckQty -->|Yes| Done3[Done]
+    CheckQty -->|No| RemoveMismatch[Remove Insurance]
+    RemoveMismatch --> Redirect["Redirect to<br/>Coverage Options"]
+
+    RemoveAll --> Done1
+    Redirect --> Done4[Done]
+
+    style CheckContents fill:#d0d0d0,color:#000
+    style RemoveAll fill:#a0a0a0,color:#000
+    style RemoveMismatch fill:#a0a0a0,color:#000
+    style Redirect fill:#b0b0b0,color:#000

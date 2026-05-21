@@ -1,0 +1,69 @@
+@use '../../../../styles/styleguide' as sg;
+@use '../../../../styles/core/unit' as u;
+
+.select {
+  display: flex;
+  flex-direction: column;
+  gap: sg.spacing(xsmall);
+
+  &__label {
+    font-family: sg.font-family(barlow-semi-condensed);
+    font-size: sg.font-size(regular);
+    font-weight: sg.font-weight(600);
+    line-height: sg.line-height('120%');
+    text-transform: uppercase;
+  }
+
+  &__container {
+    position: relative;
+  }
+
+  &__icon {
+    position: absolute;
+    top: 50%;
+    right: sg.spacing(small);
+    transform: translateY(-50%);
+  }
+
+  &__select {
+    width: 100%;
+    height: u.rem-calc(40);
+    padding: 0 sg.spacing(small);
+    border: u.rem-calc(1) solid sg.color(border-dark);
+    font-family: sg.font-family(barlow);
+    font-size: sg.font-size(small);
+    font-weight: sg.font-weight(400);
+    line-height: sg.line-height('120%');
+    appearance: none;
+
+    &::-ms-expand {
+      display: none;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: sg.color(black);
+    }
+
+    &::placeholder {
+      color: sg.color(dove);
+    }
+  }
+
+  &--has-error {
+    input {
+      border-color: sg.color(error);
+
+      &:focus {
+        border-color: sg.color(error);
+      }
+    }
+  }
+
+  &__error {
+    color: sg.color(error);
+    font-family: sg.font-family(barlow);
+    font-size: sg.font-size(small);
+    line-height: sg.line-height('120%');
+  }
+}

@@ -1,0 +1,21 @@
+fragment SectionSplitCalloutCollage on SectionSplitCalloutCollageRecord {
+  id
+  config {
+    ...SectionConfig
+  }
+  layout
+  title
+  subtitle
+  description
+  gallery {
+    ... on CoreImageRecord {
+      ...CoreImage
+    }
+    ... on CoreVideoRecord {
+      ...CoreVideo
+    }
+  }
+  ctas {
+    ...CoreCta
+  }
+}

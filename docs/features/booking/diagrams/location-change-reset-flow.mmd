@@ -1,0 +1,13 @@
+flowchart LR
+    LocationChange[Location Changes] --> ResetBooking[useBookingResetAfter]
+    ResetBooking --> ClearPages[Clear Downstream Pages]
+    ClearPages --> ClearCart{Clear Cart?}
+    ClearCart -->|Yes| CartStore[(Cart Store)]
+    ClearCart -->|No| BookingStore[(Booking Store)]
+    CartStore --> BookingStore
+    BookingStore --> UpdateUI[UI Updates]
+
+    style LocationChange fill:#a0a0a0,color:#000
+    style ResetBooking fill:#d0d0d0,color:#000
+    style BookingStore fill:#d0d0d0,color:#000
+    style CartStore fill:#a0a0a0,color:#000

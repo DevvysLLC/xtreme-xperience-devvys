@@ -1,0 +1,9 @@
+query getPostsByCategory($categoryId: ItemId) {
+  allPosts(
+    filter: {
+      model: { any: { postModel: { categories: { anyIn: [$categoryId] } } } }
+    }
+  ) {
+    ...Post
+  }
+}

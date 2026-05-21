@@ -1,0 +1,48 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+.spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: sg.spacing(regular);
+  padding: sg.spacing(large);
+
+  &--16-9 {
+    aspect-ratio: 16 / 9;
+  }
+
+  &--1-1 {
+    aspect-ratio: 1 / 1;
+  }
+
+  &--2-1 {
+    aspect-ratio: 2 / 1;
+  }
+
+  &--4-1 {
+    aspect-ratio: 4 / 1;
+  }
+
+  &__icon {
+    width: u.rem-calc(40);
+    height: u.rem-calc(40);
+    border: u.rem-calc(3) solid sg.color(border-light);
+    border-top-color: sg.color(black);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  &__label {
+    font-family: sg.font-family(barlow);
+    font-size: sg.font-size(medium);
+    color: sg.color(black);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

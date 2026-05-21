@@ -1,0 +1,5 @@
+query getFooter {
+  footer {
+    ...Footer
+  }
+}

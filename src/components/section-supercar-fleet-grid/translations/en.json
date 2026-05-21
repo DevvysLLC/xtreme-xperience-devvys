@@ -1,0 +1,11 @@
+{
+  "section_supercar_fleet_grid": {
+    "package_type": {
+      "single_car": "Single Cars",
+      "multi_car": "Multi-car Packages"
+    },
+    "empty_state": {
+      "no_cars": "No cars available"
+    }
+  }
+}

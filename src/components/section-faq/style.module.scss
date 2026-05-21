@@ -1,0 +1,125 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+.section {
+  @include sg.section-config;
+
+  & {
+    position: relative;
+    padding-block: sg.spacing(xxlarge);
+    padding-inline: sg.spacing(regular);
+
+    @include sg.min(laptopSmall) {
+      padding-block: sg.spacing(xxxxlarge);
+      padding-inline: sg.spacing(xlarge);
+    }
+  }
+}
+
+.container {
+  max-width: u.rem-calc(710);
+  margin-inline: auto;
+
+  @include sg.min(laptopSmall) {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+
+  &--2-column {
+    max-width: 100%;
+
+    @include sg.min(laptopSmall) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+}
+
+.content {
+  margin-bottom: sg.spacing(large);
+
+  .container--2-column & {
+    @include sg.min(laptopSmall) {
+      padding-right: sg.spacing(xlarge);
+      margin-bottom: 0;
+    }
+  }
+}
+
+.title {
+  font-family: sg.font-family(anton);
+  font-size: sg.font-size(xlarge);
+  font-weight: sg.font-weight(400);
+  line-height: sg.line-height('110%');
+  text-transform: uppercase;
+
+  @include sg.min(laptopSmall) {
+    font-size: sg.font-size(xxxlarge);
+    line-height: sg.line-height('100%');
+  }
+
+  .container--2-column & {
+    @include sg.min(laptopSmall) {
+      max-width: u.rem-calc(350);
+    }
+  }
+}
+
+.subtitle {
+  margin-top: sg.spacing(small);
+  font-family: sg.font-family(barlow-semi-condensed);
+  font-size: sg.font-size(medium);
+  font-weight: sg.font-weight(400);
+  line-height: sg.line-height('140%');
+}
+
+.tabs {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  display: flex;
+  gap: sg.spacing(xsmall);
+  padding-inline: sg.spacing(regular);
+  margin-top: sg.spacing(large);
+  margin-inline: calc(#{sg.spacing(regular)} * -1);
+  white-space: nowrap;
+
+  @include sg.min(laptopSmall) {
+    padding-inline: 0;
+    margin-inline: 0;
+  }
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  .container--2-column & {
+    @include sg.min(laptopSmall) {
+      flex-direction: column;
+      padding-inline: 0;
+      margin-inline: 0;
+    }
+  }
+
+  li {
+    scroll-snap-align: center;
+  }
+}
+
+.tab {
+  &.active {
+    border-color: sg.color(black);
+    background-color: sg.color(black);
+    color: sg.color(white);
+  }
+
+  .section--black & {
+    border-color: sg.color(white);
+    background-color: sg.color(black);
+    color: sg.color(white);
+
+    &.active {
+      border-color: sg.color(white);
+      background-color: sg.color(white);
+      color: sg.color(black);
+    }
+  }
+}

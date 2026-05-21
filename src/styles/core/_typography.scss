@@ -1,0 +1,11 @@
+$system-font-stack:
+  -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu,
+  Cantarell, 'Helvetica Neue', sans-serif;
+
+$header-font-family: $system-font-stack;
+$controls-font-family: $system-font-stack;
+
+$font-weight-normal: normal;
+$font-weight-bold: bold;
+
+$button-radius: 0.25em;

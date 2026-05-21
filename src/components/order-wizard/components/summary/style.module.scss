@@ -1,0 +1,55 @@
+@use '../../../../styles/styleguide' as sg;
+@use '../../../../styles/core/unit' as u;
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: sg.spacing(regular);
+
+  &__title {
+    margin: 0;
+    font-family: sg.font-family(anton);
+    font-size: sg.font-size(medium);
+    font-weight: sg.font-weight(400);
+    line-height: sg.line-height('100%');
+    text-transform: uppercase;
+  }
+
+  &__divider {
+    margin: 0;
+    border: none;
+    border-top: u.rem-calc(1) solid sg.color(border-light);
+  }
+
+  &__data {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    line-height: sg.line-height('100%');
+  }
+
+  &__total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: sg.font-size(mediuml);
+    line-height: sg.line-height('100%');
+  }
+
+  &__coupons {
+    display: flex;
+    flex-direction: column;
+    gap: sg.spacing(xsmall);
+  }
+
+  &__coupon {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: sg.font-size(small);
+  }
+
+  &__couponDescription {
+    color: sg.color(black-50);
+  }
+}

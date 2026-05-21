@@ -1,0 +1,4 @@
+fragment TrackModel on TrackModelRecord {
+  ...TrackModelData
+  ...TrackModelContent
+}

@@ -1,0 +1,66 @@
+name: 'Deploy to production'
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy-to-production:
+    runs-on: 'ubuntu-latest'
+    environment:
+      name: production
+    concurrency:
+      group: 'deploy-to-production'
+      cancel-in-progress: true
+    env:
+      COMPOSE_BAKE: 1
+      COMPOSE_DOCKER_CLI_BUILD: 1
+      COMPOSE_PROJECT_NAME: 'deploy-to-production'
+      DOCKER_BUILDKIT: 1
+    steps:
+      - name: 'Checkout everything'
+        uses: 'actions/checkout@v4'
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CHECKOUT_ACTION_PAT }}
+
+      - name: 'Init git config'
+        run: |
+          git config --global user.name 'Autobot'
+          git config --global user.email 'engineering@vaangroup.com'
+        # Workaround for No TTY issue
+        shell: 'script -qec "bash {0}"'
+
+      - name: 'Bootstrap TMP_DIR'
+        run: |
+          ./devops/github/bootstrap-tmp-dir.sh
+        shell: 'script -qec "bash {0}"'
+
+      - name: 'Build and start `main_ci` container'
+        run: |
+          touch .env
+          docker compose build \
+              --build-arg GROUP_ID=$(id -g) --build-arg USER_ID=$(id -u) \
+              --progress=plain main_ci \
+            && docker compose up -d main_ci
+        shell: 'script -qec "bash {0}"'
+
+      - name: 'Install npm packages'
+        run: |
+          docker compose exec main_ci ./docker-entrypoint.sh
+        shell: 'script -qec "bash {0}"'
+
+      - name: 'Deploy to production'
+        run: |
+          docker compose exec main_ci /bin/bash -c 'bb run deploy-to-production'
+        shell: 'script -qec "bash {0}"'
+
+      - name: 'Deploy to production'
+        run: |
+          git push --all origin \
+            && echo 'Deployed to production successfully'
+        shell: 'script -qec "bash {0}"'
+
+      - name: 'Shutdown containers'
+        run: |
+          ./devops/ci/shutdown-ci-container.sh
+        shell: 'script -qec "bash {0}"'

@@ -1,0 +1,22 @@
+@use 'sass:meta';
+@use '../core/stdlib/map' as map;
+@use '../core/unit' as u;
+
+$_config: (
+  page-max-width: 2056,
+  // MacBook Pro 16-inch - max width
+  // https://vaangroup.slack.com/archives/C06D6V19SC8/p1731498608607179
+  header-height-desktop: 65,
+  header-height-mobile: 55,
+  announcement-bar-height-desktop: 37,
+  announcement-bar-height-mobile: 31,
+  hero-min-height: 320
+);
+
+@function unit($key) {
+  $value: map.get-strict($_config, $key);
+  @if meta.type-of($value) != 'number' {
+    @error "Value for key `#{$key}` must be a number. Received `#{$value}`. Use pixel values without the unit.";
+  }
+  @return u.rem-calc($value);
+}

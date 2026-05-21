@@ -1,0 +1,10 @@
+fragment SectionConfig on SectionConfigRecord {
+  id
+  customId
+  enabled
+  mode
+  highlightColor
+  contrastColor
+  addBottomBorder
+  addFlagPattern
+}

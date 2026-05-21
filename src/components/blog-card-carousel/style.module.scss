@@ -1,0 +1,71 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+/* ===================================================== */
+/* Section Blog Card Carousel */
+/* ===================================================== */
+
+.section {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  padding-block: sg.spacing(xlarge);
+  padding-inline: sg.spacing(regular);
+  border-top: 1px dashed sg.color(black-20);
+
+  @include sg.min(laptopSmall) {
+    padding-block: sg.spacing(xlarge);
+    padding-inline: sg.spacing(xlarge);
+  }
+}
+
+.title {
+  display: block;
+  margin-bottom: sg.spacing(regular);
+  font-family: sg.font-family(anton);
+  font-size: sg.font-size(medium);
+  font-weight: sg.font-weight(medium);
+  line-height: sg.line-height('100%');
+  color: sg.color(black);
+  text-transform: uppercase;
+
+  @include sg.min(tabletPortrait) {
+    margin-bottom: sg.spacing(medium);
+    font-size: sg.font-size(xlarge);
+  }
+}
+
+/* ===================================================== */
+/* Slider */
+/* ===================================================== */
+
+.slider {
+  $gap: sg.spacing(xsmall);
+
+  :global(.swiper-wrapper) {
+    transition-timing-function: sg.easing('easeOutExpo');
+  }
+
+  &:global(.swiper) {
+    contain: layout paint;
+    isolation: isolate;
+    margin-inline: calc(sg.spacing(large) * -1);
+    padding-inline: calc(sg.spacing(large) - $gap) sg.spacing(large);
+
+    @include sg.min(laptopSmall) {
+      padding-inline: calc(sg.spacing(xlarge) - $gap) sg.spacing(xlarge);
+      margin-inline: calc(sg.spacing(xlarge) * -1);
+    }
+  }
+
+  &__slide {
+    flex-direction: column;
+    flex: 1 0 33%;
+    height: auto;
+    padding-left: $gap;
+  }
+
+  &__actions {
+    margin-top: sg.spacing(medium);
+  }
+}

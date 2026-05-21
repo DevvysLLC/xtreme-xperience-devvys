@@ -1,0 +1,19 @@
+{
+  "section_track_spec": {
+    "marquee": {
+      "text": "Watch A Full Lap"
+    },
+    "specifications": {
+      "lap_length": "1-Lap Length",
+      "number_of_laps": "# of Laps",
+      "elevation_change": "Elevation Change",
+      "longest_straight": "Longest Straightaway",
+      "number_of_turns": "# of Turns"
+    },
+    "events": {
+      "title": "Upcoming Dates",
+      "badge": "Notify Me",
+      "book_now": "Book Now"
+    }
+  }
+}

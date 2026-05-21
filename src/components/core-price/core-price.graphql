@@ -1,0 +1,5 @@
+fragment CorePrice on CorePriceRecord {
+  id
+  compareAtPrice
+  price
+}

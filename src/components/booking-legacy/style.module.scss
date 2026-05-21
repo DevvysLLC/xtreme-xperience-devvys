@@ -1,0 +1,44 @@
+@use '../../styles/styleguide' as sg;
+
+.container {
+  width: 100%;
+  min-height: 600px;
+  position: relative;
+  padding: sg.spacing(regular);
+
+  @include sg.min(tabletPortrait) {
+    padding: sg.spacing(xlarge);
+  }
+}
+
+.engine {
+  width: 100%;
+  min-height: 600px;
+
+  :global(iframe) {
+    width: 100%;
+    min-height: 600px;
+    border: none;
+  }
+}
+
+.error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  padding: sg.spacing(large);
+  text-align: center;
+  color: sg.color(error);
+  font-size: sg.font-size(medium);
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  padding: sg.spacing(large);
+  text-align: center;
+  font-size: sg.font-size(medium);
+}

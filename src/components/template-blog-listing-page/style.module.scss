@@ -1,0 +1,48 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+.container {
+  padding-block: sg.spacing(xlarge);
+  padding-inline: sg.spacing(regular);
+
+  @include sg.min(tabletPortrait) {
+    padding-block: sg.spacing(xxxlarge);
+    padding-inline: sg.spacing(xlarge);
+  }
+}
+
+.title {
+  margin-bottom: sg.spacing(medium);
+  font-family: sg.font-family(anton);
+  font-size: sg.font-size(xlarge);
+  font-weight: sg.font-weight(medium);
+  line-height: sg.line-height('100%');
+  color: sg.color(black);
+  text-transform: uppercase;
+
+  @include sg.min(tabletPortrait) {
+    margin-bottom: sg.spacing(large);
+    font-size: sg.font-size(xxlarge);
+  }
+}
+
+.categoryList {
+  display: flex;
+  gap: sg.spacing(xxsmall);
+  padding-bottom: sg.spacing(medium);
+}
+
+.categoryLink {
+  &.is-active {
+    border: 0;
+    background: sg.color(black-10);
+  }
+}
+
+.pagination {
+  margin-top: sg.spacing(xlarge);
+
+  @include sg.min(tabletPortrait) {
+    margin-top: sg.spacing(xxlarge);
+  }
+}

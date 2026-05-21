@@ -1,0 +1,13 @@
+fragment CoreAccordion on CoreAccordionRecord {
+  id
+  title
+  body
+  media {
+    ... on CoreImageRecord {
+      ...CoreImage
+    }
+    ... on CoreVideoRecord {
+      ...CoreVideo
+    }
+  }
+}

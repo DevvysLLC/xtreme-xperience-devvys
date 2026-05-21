@@ -1,0 +1,16 @@
+fragment HeaderConfig on HeaderConfigRecord {
+  id
+  navigation {
+    ...NavigationItem
+  }
+  showCart
+  showSearch
+  showTrackFinder
+  relativePaths
+  featuredMobileNavigation {
+    ...NavigationItem
+  }
+  quickLinks {
+    ...NavigationItem
+  }
+}

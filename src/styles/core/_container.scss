@@ -1,0 +1,8 @@
+@use 'unit' as u;
+
+@mixin container {
+  width: 100%;
+  max-width: u.rem-calc(1200);
+  margin: 0 auto;
+  padding: 0 u.rem-calc(12);
+}

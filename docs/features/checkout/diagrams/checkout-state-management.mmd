@@ -1,0 +1,72 @@
+sequenceDiagram
+    participant User
+    participant Guard as CheckoutWizardGuard
+    participant ContactsPage
+    participant CheckoutStore as Checkout Store<br/>(Zustand + localStorage)
+    participant PaymentPage
+    participant PaymentV2 as PaymentV2 + useRocketRezPayment
+    participant SessionStorage
+    participant BrowserURL
+    participant CartAPI as Cart API
+    participant CompletePage
+    participant OrderAPI as Order API
+    participant ClearHook as useCartClearAfterComplete
+
+    User->>Guard: Navigate to /checkout/contacts
+    Guard->>Guard: Check cart.totalItems > 0
+    Guard->>ContactsPage: Allow access
+
+    ContactsPage->>CheckoutStore: useCheckoutPageDetails.set(details)
+    ContactsPage->>User: Navigate to /checkout/payment
+
+    User->>Guard: Navigate to /checkout/payment
+    Guard->>Guard: Check checkout.details != null
+    Guard->>PaymentPage: Allow access
+
+    PaymentPage->>PaymentV2: Render iframe + send INIT
+    PaymentV2-->>PaymentPage: READY
+    alt Redirect resume context exists
+        PaymentPage->>PaymentV2: RESUME_PAYMENT
+    else Normal payment start
+        PaymentPage->>SessionStorage: Persist redirect state
+        PaymentPage->>PaymentV2: PROCESS_PAYMENT
+    end
+
+    alt Redirect-based payment returns
+        BrowserURL-->>PaymentPage: payment_intent_client_secret + redirect_status
+        PaymentPage->>SessionStorage: Restore saved redirect state
+        PaymentPage->>BrowserURL: history.replaceState (strip payment params)
+        PaymentPage->>PaymentV2: INIT
+        PaymentV2-->>PaymentPage: READY
+        PaymentPage->>PaymentV2: RESUME_PAYMENT
+    end
+
+    PaymentV2-->>PaymentPage: PAYMENT_AUTH_SUCCESS / PAYMENT_AUTH_ERROR
+    PaymentV2-->>PaymentPage: PAYMENT_SUCCESS / PAYMENT_ERROR
+    PaymentPage->>SessionStorage: Clear redirect state on terminal outcome
+    alt Payment success
+    PaymentPage->>CartAPI: useCartComplete (POST /api/v1/cart/complete)
+    CartAPI-->>PaymentPage: Order created (orderId)
+    else Payment failure
+        PaymentPage-->>User: Show payment error toast
+    end
+
+    Note over PaymentPage: Stores are NOT cleared here<br/>to prevent guard redirect race condition
+
+    PaymentPage->>CheckoutStore: useCheckoutPagePayment.save(orderId)
+
+    User->>Guard: Navigate to /checkout/complete/[id]
+    Guard->>Guard: isCompletePage → bypass all checks
+    Guard->>CompletePage: Allow access
+
+    CompletePage->>OrderAPI: useOrder (GET /api/v1/booking/order/[id])
+    OrderAPI-->>CompletePage: Order data
+    CompletePage->>CompletePage: analytics.trackPurchase
+    CompletePage->>CompletePage: Wait 5s for analytics flush
+
+    CompletePage->>ClearHook: clearAfterComplete()
+    ClearHook->>ClearHook: clearCart() + clearBooking() + clearCheckout()
+    ClearHook->>ClearHook: Invalidate React Query caches
+
+    CompletePage->>OrderAPI: markOrderViewed (PATCH)
+    CompletePage->>User: router.push(/order/[id])

@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Rocket Headless – Affirm Redirect Integration Guide</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 24px;
+      background-color: #f7f7fb;
+      color: #222;
+      line-height: 1.6;
+    }
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 32px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.08);
+    }
+    h1, h2, h3 {
+      color: #111827;
+      margin-top: 1.6em;
+      margin-bottom: 0.4em;
+    }
+    h1 { font-size: 1.8rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.2rem; }
+
+    p { margin: 0.4em 0 0.8em; }
+
+    ol, ul { margin: 0.4em 0 0.8em 1.4em; }
+
+    code {
+      font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.9em;
+      background: #f3f4f6;
+      padding: 0.1em 0.25em;
+      border-radius: 3px;
+    }
+
+    pre {
+      background: #0b1020;
+      color: #e5e7eb;
+      padding: 14px 16px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: 0.85rem;
+      line-height: 1.45;
+      margin: 0.75em 0 1.25em;
+    }
+    pre code {
+      background: transparent;
+      padding: 0;
+      border-radius: 0;
+      color: inherit;
+    }
+
+    .note {
+      border-left: 3px solid #2563eb;
+      background: #eff6ff;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      margin: 0.75em 0 1em;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid #e5e7eb;
+      margin: 1.75em 0;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Rocket Headless Checkout – Payments With Redirect Integration Guide</h1>
+    <p>
+      This document describes how to integrate the Rocket Headless payment iframe with Stripe payments that use redirects (like Affirm):
+    </p>
+    <ul>
+      <li>Affirm (our use case in this document) redirects back to your site (the parent page) where the Rocket Headless payment project is embedded.</li>
+      <li>The embedded Headless Checkout project automatically resumes and completes the payment.</li>
+      <li>Sensitive Stripe query parameters are not left in the final URL.</li>
+    </ul>
+
+    <hr />
+
+    <h2>1. Overall Flow</h2>
+    <ol>
+      <li>Your page (the parent) hosts the Rocket Headless payment project in an <code>&lt;iframe&gt;</code>.</li>
+      <li>You create a cart, obtain a Stripe <code>clientSecret</code>, and send a <code>PROCESS_PAYMENT</code> message to the iframe with:
+        <ul>
+          <li>A <code>paymentRequest</code> object that includes cart and customer details.</li>
+          <li>A <code>returnUrl</code> that points back to your parent page (this is a new property of the paymentRequest object).</li>
+        </ul>
+      </li>
+      <li>The user chooses Affirm; Stripe/Affirm redirects the <strong>top-level window</strong> to the <code>returnUrl</code>.</li>
+      <li>Your parent page:
+        <ul>
+          <li>Reads Stripe/Affirm query params (e.g. <code>payment_intent_client_secret</code>, <code>redirect_status</code>).</li>
+          <li>Immediately strips those params from the URL (using <code>history.replaceState</code>).</li>
+          <li>Restores the checkout state from <code>sessionStorage</code>.</li>
+          <li>Reloads the iframe and sends an <code>INIT</code> message to it.</li>
+          <li>After a subsequent <code>READY</code> message returned from the iframe, sends a <code>RESUME_PAYMENT</code> message with the <code>clientSecret</code> and stored state.</li>
+        </ul>
+      </li>
+      <li>
+        The iframe responds to <code>RESUME_PAYMENT</code> by capturing/processing payment then:
+        <ul>
+          
+          <li>Sends <code>PAYMENT_AUTH_SUCCESS</code> / <code>PAYMENT_AUTH_ERROR</code> / <code>PAYMENT_SUCCESS</code> / <code>PAYMENT_ERROR</code> back to the parent via <code>postMessage</code>.</li>
+        </ul>
+      </li>
+      <li>Your parent updates its UI or redirects users to success/error pages based on these messages.</li>
+    </ol>
+
+    <div class="note">
+      <strong>Note:</strong> You do not need to replicate any React code; your integration only needs to send and receive
+      messages to/from the iframe as shown below.
+    </div>
+
+    <hr />
+
+    <h2>2. Sending <code>PROCESS_PAYMENT</code> with <code>returnUrl</code> and Saving State</h2>
+
+    <p>
+      Before sending the user to Affirm, build a <code>paymentRequest</code> as you currently do that includes a new property called 
+      <code>returnUrl</code> pointing
+      back to your current page (the page where the Headless client is embedded), and save all the data needed to resume later (I'm using sessionStorage but you can use what you'd like).
+    </p>
+    <p>
+        I've included a snippet below that stores this data using a <code>persistParentRedirectState</code> method that gets called
+        before the <code>PROCESS_PAYMENT</code> message is sent. You can persist state however you like, but it MUST be saved before
+        you send the <code>PROCESS_PAYMENT</code> message so that in case the user does use a payment method (like Affirm) that uses
+        redirects, they get redirected to the right location. 
+    </p>
+
+    <pre><code class="language-js">// A key used to store state between redirect out to Affirm and return back.
+const REDIRECT_STATE_KEY = 'headless_parent_redirect_state';
+
+// Save the state we need to resume later.
+function persistParentRedirectState(paymentRequest) {
+  try {
+    const state = {
+      cartId,        // your internal cart ID
+      cartToken,     // headless cart token / JWT
+      userGuid,      // your user identifier (optional)
+      paymentMethodId: parseInt(document.getElementById('paymentMethodId').value),
+      paymentRequest,
+    };
+    sessionStorage.setItem(REDIRECT_STATE_KEY, JSON.stringify(state));
+    log('Persisted parent redirect state to sessionStorage');
+  } catch (e) {
+    log('Failed to persist redirect state: ' + (e &amp;&amp; e.message ? e.message : e));
+  }
+}
+
+function sendProcessPaymentToIframe() {
+  if (!clientSecret) {
+    log('Cannot send PROCESS_PAYMENT: clientSecret not available');
+    return;
+  }
+
+  // Compute a base URL from the current page (you can use whatever valid URL you'd like, this was just my implementation).
+  const currentBaseUrl = (window.location.origin + window.location.pathname).split('?')[0];
+
+  const paymentRequest = {
+    PaymentMethodId: parseInt(document.getElementById('paymentMethodId').value),
+    CartId: cartId,
+    PaymentTotal: parseFloat(document.getElementById('paymentTotal').value),
+    RecaptchaToken: document.getElementById('recaptchaToken').value || null,
+
+    // Where Stripe/Affirm should redirect the top-level browser back to:
+    // parent page URL + #checkout-iframe (or any anchor you like if you'd like to use one. 
+    //I found it a good UX to redirect user back to the Stripe iFrame).
+    returnUrl: `${currentBaseUrl}#checkout-iframe`,
+
+    FirstName: document.getElementById('firstName').value,
+    LastName: document.getElementById('lastName').value,
+    Email: document.getElementById('email').value,
+    CompanyName: document.getElementById('companyName').value || null,
+    MobilePhoneNumber: document.getElementById('mobilePhoneNumber').value || null,
+    HomePhoneNumber: document.getElementById('homePhoneNumber').value || null,
+    EditCount: null,
+
+    BillingAddress: {
+      Address1: document.getElementById('address1').value,
+      Address2: document.getElementById('address2').value || null,
+      City: document.getElementById('city').value,
+      CountryShortName2: document.getElementById('countryShortName2').value,
+      ProvinceId: parseInt(document.getElementById('provinceId').value) || null,
+      PostalCode: document.getElementById('postalCode').value,
+    },
+
+    SecondaryPayments: [],
+
+    // (Optional) legacy duplicate address fields
+    Address1: document.getElementById('address1').value,
+    Address2: document.getElementById('address2').value || null,
+    City: document.getElementById('city').value,
+    CountryShortName2: document.getElementById('countryShortName2').value,
+    ProvinceId: parseInt(document.getElementById('provinceId').value) || null,
+    PostalCode: document.getElementById('postalCode').value,
+
+    SMSConsent: document.getElementById('smsConsent').checked,
+
+    CreditCard: {
+      Type: null,
+      Cvv: null,
+      Expiry: null,
+      Name: `${document.getElementById('firstName').value} ${document.getElementById('lastName').value}`,
+      Number: null,
+      Track1: null,
+      MagTekKSN: null,
+      DigitalWalletType: null,
+    },
+
+    allowSecondaryPayments: document.getElementById('allowSecondaryPayments').checked,
+  };
+
+  // Persist state before redirect.
+  persistParentRedirectState(paymentRequest);
+
+  const messageToIframe = {
+    type: 'PROCESS_PAYMENT',
+    clientSecret: clientSecret,
+    paymentRequest: paymentRequest,
+    cartToken: cartToken,
+    userGuid: userGuid,
+  };
+
+  const iframe = document.getElementById('checkout-iframe');
+  iframe.contentWindow.postMessage(messageToIframe, '*');
+
+  log('Sent PROCESS_PAYMENT message to iframe');
+}</code></pre>
+
+    <p>
+      If you don't provide a returnUrl, it will default to the URL of the Headless Checkout project
+      (https://secure.rocket-rez.com/rocketheadlessclient/ in production environment).
+    </p>
+
+
+    <hr />
+
+    <h2>3. Handling the Return from Affirm on the Parent Page</h2>
+
+    <p>
+      After Affirm redirects back to your <code>returnUrl</code>, Stripe adds query parameters such as:
+      <code>payment_intent</code>, <code>payment_intent_client_secret</code>, and <code>redirect_status</code>.
+      You should:
+    </p>
+
+    <ol>
+      <li>Read these parameters once.</li>
+      <li>Strip them from the URL using <code>history.replaceState</code> so they are not visible in the address bar or history. Not required but good practice.</li>
+      <li>Restore the saved checkout state from <code>sessionStorage</code> (or whatever you used to store the state in step 2).</li>
+      <li>Reload the iframe and send an <code>INIT</code> message so it can get ready.</li>
+    </ol>
+
+    <pre><code class="language-js">function getStripeRedirectParamsFromParentUrl() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const clientSecret = params.get('payment_intent_client_secret');
+    const redirectStatus = params.get('redirect_status');
+    if (!clientSecret) return null;
+    return { clientSecret, redirectStatus };
+  } catch {
+    return null;
+  }
+}
+
+function restoreParentStateAfterRedirect() {
+  const redirectParams = getStripeRedirectParamsFromParentUrl();
+  if (!redirectParams) return;
+
+  // Immediately clean up sensitive Stripe/Affirm query params from the URL.
+  try {
+    const cleanUrl = window.location.origin + window.location.pathname + window.location.hash;
+    window.history.replaceState({}, document.title, cleanUrl);
+    log('Cleaned redirect query parameters from URL after Affirm/Stripe return.');
+  } catch (e) {
+    log('Failed to clean redirect URL: ' + (e &amp;&amp; e.message ? e.message : e));
+  }
+
+  const rawState = sessionStorage.getItem(REDIRECT_STATE_KEY);
+  if (!rawState) {
+    log('No saved parent redirect state found, cannot resume payment.');
+    return;
+  }
+
+  let state;
+  try {
+    state = JSON.parse(rawState);
+  } catch (e) {
+    log('Failed to parse saved redirect state: ' + (e &amp;&amp; e.message ? e.message : e));
+    return;
+  }
+
+  cartId = state.cartId;
+  cartToken = state.cartToken;
+  userGuid = state.userGuid;
+
+  // Optional: repopulate visible form fields.
+  if (state.paymentRequest) {
+    document.getElementById('paymentTotal').value = state.paymentRequest.PaymentTotal ?? '';
+    document.getElementById('firstName').value = state.paymentRequest.FirstName ?? '';
+    document.getElementById('lastName').value = state.paymentRequest.LastName ?? '';
+    document.getElementById('email').value = state.paymentRequest.Email ?? '';
+  }
+
+  const iframeUrl = document.getElementById('iframeUrl').value;
+  const iframe = document.getElementById('checkout-iframe');
+  iframe.src = iframeUrl;
+
+  iframe.onload = function () {
+    log('Iframe loaded after redirect, sending INIT...');
+    const paymentMethodId = state.paymentMethodId;
+    iframe.contentWindow.postMessage(
+      {
+        type: 'INIT',
+        cartId: cartId,
+        paymentMethodId: paymentMethodId,
+        cartToken: cartToken,
+      },
+      '*',
+    );
+  };
+
+  // Make redirect params available for the READY handler.
+  window.__headlessRedirectClientSecret = redirectParams.clientSecret;
+  window.__headlessRedirectStatus = redirectParams.redirectStatus;
+
+  log('Restored parent state after redirect; waiting for iframe READY to resume payment.');
+}
+
+// Call on load because script is at the bottom of the page.
+// If the script is placed in the Head tag then use DOMContentLoaded or window.onload to delay initialization until the DOM exists.
+initializeUserGuid();
+restoreParentStateAfterRedirect();</code></pre>
+
+    <hr />
+
+    <h2>4. Handling <code>READY</code> and Sending <code>RESUME_PAYMENT</code></h2>
+
+    <p>
+      After the iframe React app finishes its own initialization, it sends <code>{ type: 'READY' }</code> to the parent.
+      The parent uses this signal to either:
+    </p>
+    <ul>
+      <li>Start a new payment (initial flow) with <code>PROCESS_PAYMENT</code>, or</li>
+      <li>Resume an in-flight Affirm payment (return-from-redirect flow) with <code>RESUME_PAYMENT</code>.</li>
+    </ul>
+
+    <pre><code class="language-js">window.addEventListener('message', function (event) {
+  // Skip Stripe internal messages and telemetry.
+  if (event.origin &amp;&amp; event.origin.includes('.stripe.com')) return;
+  if (containsStripeJsV3(event.data)) return;
+  if (event.data.originatingScript) return;
+
+  log(`Parent received message: ${JSON.stringify(event.data)}`);
+
+  if (event.data.type === 'READY') {
+    iframeReady = true;
+    log('Iframe is ready for communication');
+
+    if (window.__headlessRedirectClientSecret) {
+      const iframe = document.getElementById('checkout-iframe');
+      const stateRaw = sessionStorage.getItem(REDIRECT_STATE_KEY);
+      let state = null;
+      try {
+        state = stateRaw ? JSON.parse(stateRaw) : null;
+      } catch {}
+
+      const resumeMessage = {
+        type: 'RESUME_PAYMENT',
+        clientSecret: window.__headlessRedirectClientSecret,
+        redirectStatus: window.__headlessRedirectStatus || null,
+        cartId: cartId,
+        cartToken: cartToken,
+        userGuid: userGuid,
+        paymentMethodId:
+          state &amp;&amp; state.paymentMethodId
+            ? state.paymentMethodId
+            : parseInt(document.getElementById('paymentMethodId').value),
+        paymentRequest: state &amp;&amp; state.paymentRequest ? state.paymentRequest : null,
+      };
+
+      iframe.contentWindow.postMessage(resumeMessage, '*');
+      log('Sent RESUME_PAYMENT message to iframe after redirect');
+    } else if (clientSecret) {
+      // Normal initial flow (no redirect in play).
+      sendProcessPaymentToIframe();
+    }
+
+    tryEnablePayButton();
+  } else if (event.data.type === 'PAYMENT_AUTH_SUCCESS') {
+    const statusEl = document.getElementById('paymentStatus');
+    statusEl.innerHTML =
+      `✅ Payment Successful!&lt;br&gt;Payment Intent ID: ${event.data.paymentIntentId}&lt;br&gt;Status: ${event.data.status}`;
+    statusEl.className = 'payment-status success';
+    statusEl.classList.remove('hidden');
+    log(`Payment successful: ${event.data.paymentIntentId}`);
+
+    // Optional: redirect to your own success page here.
+  } else if (event.data.type === 'PAYMENT_AUTH_ERROR') {
+    const statusEl = document.getElementById('paymentStatus');
+    statusEl.innerHTML = `❌ Payment Failed&lt;br&gt;Error: ${event.data.error}`;
+    statusEl.className = 'payment-status error';
+    statusEl.classList.remove('hidden');
+    showError('paymentError', event.data.error);
+    log(`Payment failed: ${event.data.error}`);
+  }
+});</code></pre>
+
+    <hr />
+
+    <h2>5. Responsibilities for the Embedding Client</h2>
+
+    <p>To integrate this flow, your application should:</p>
+
+    <ol>
+      <li>
+        Render the Rocket Headless Checkout React app in an
+        iFrame on your checkout page.
+      </li>
+      <li>
+        When the user is ready to pay, the normal steps should be taken to build the <code>paymentRequest</code> object to send to the React Checkout app with the following additional steps for handling payments using redirects (e.g. Affirm):
+        <ul>
+          
+          <li>The <code>paymentRequest</code> object now contains a returnUrl property:
+            <ul>
+              <li> This should be set to the URL where the React Checkout project is embedded and any anchor tags for specific page locations</li>
+              <li>
+                Example:
+                <code>window.location.origin + window.location.pathname + '#checkout-iframe'</code>.
+              </li>
+              <li>
+                If no returnUrl property is provided, the default (for production) is https://secure.rocket-rez.com/rocketheadlessclient/
+              </li>
+            </ul>
+          </li>
+          <li>Store <code>{ cartId, cartToken, userGuid, paymentMethodId, paymentRequest }</code> in <code>sessionStorage</code> (or storage mechanism of your choosing)
+            <b>BEFORE</b> sending a <code>PROCESS_PAYMENT</code> postMessage to the iframe.
+            (I do this with the persistParentRedirectState function shown above.)
+          </li>
+          
+        </ul>
+      </li>
+      <li>
+        After redirect from Affirm:
+        <ul>
+          <li>1. Detect <code>payment_intent_client_secret</code> and <code>redirect_status</code> in the parent URL.
+            <ul>
+            <li>
+                I do this using the <code>getStripeRedirectParamsFromParentUrl</code> method shown above
+            </li>
+            </ul>
+        </li>
+          <li>2. Strip them from the URL with <code>history.replaceState</code>.</li>
+          <li>3. Restore your saved state from <code>sessionStorage</code>.</li>
+          <li>4. Reload the iframe and send <code>INIT</code> postMessage</li>
+          <li><b>NOTE</b>: For steps 2-4, I've included an implementation in Section 3's code snippet. Please note that
+        my implementation calls <code>initializeUserGuid</code> and <code>restoreParentStateAfterRedirect</code> (seen at the bottom of the code snippet) directly because
+    my script is at the bottom of the file. If you have your script running in the HEAD tag, you may need to use DOMContentLoaded 
+for the DOM to load before running javascript that may rely on it being fully loaded. </li>
+          <li>
+            5. After receiving <code>READY</code> message from React Checkout app, send <code>RESUME_PAYMENT</code> message.
+          </li>
+          <li>
+            6. In the eventListener, update the READY message to determine whether we send a RESUME_PAYMENT message or a PROCESS_PAYMENT message
+          </li>
+          <li>
+            <b>NOTE</b> For steps 5-6, I've included an implementation in Section 4's code snippet.
+          </li>  
+        </ul>
+      </li>
+      <li>
+        Listen for <code>PAYMENT_AUTH_SUCCESS</code>, <code>PAYMENT_AUTH_ERROR</code>, <code>PAYMENT_ERROR</code>, and <code>PAYMENT_SUCCESS</code> from the iframe to:
+        <ul>
+          <li>Show confirmation or error messages.</li>
+          <li>Optionally redirect the user to your own success/error pages.</li>
+        </ul>
+      </li>
+    </ol>
+
+    <p>
+      With these steps in place, Affirm can safely redirect back to your site, the embedded Rocket headless checkout
+      will automatically resume and complete the payment, and sensitive Stripe details will not remain in the URL.
+    </p>
+  </main>
+</body>
+</html>

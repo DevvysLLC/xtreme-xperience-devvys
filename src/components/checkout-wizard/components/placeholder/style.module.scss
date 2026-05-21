@@ -1,0 +1,6 @@
+@use '../../../../styles/styleguide' as sg;
+
+.placeholder {
+  background-color: sg.color(black-10);
+  aspect-ratio: 16 / 9;
+}

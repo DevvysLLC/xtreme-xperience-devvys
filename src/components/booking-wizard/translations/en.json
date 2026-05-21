@@ -1,0 +1,432 @@
+{
+  "booking_wizard": {
+    "booking_announcement": {
+      "button": {
+        "close": "Close announcement"
+      }
+    },
+    "booking_initializer": {
+      "error_initializing": "Something went wrong. Please try again or choose a different location."
+    },
+    "notifications": {
+      "added_to_cart": "Item added to cart",
+      "removed_from_cart": "Item removed from cart",
+      "error_adding_to_cart": "Someone else has your spot in their cart, please try another time.",
+      "error_removing_from_cart": "Error removing item from cart"
+    },
+    "guard": {
+      "loading": "Loading..."
+    },
+    "cart": {
+      "title": "In Your Cart ({count})",
+      "continue": "Continue with Booking"
+    },
+    "progress_bar": {
+      "aria_label": "Booking progress"
+    },
+    "dialog_cannot_add_car_for_different_date": {
+      "title": "Changing Date?",
+      "description": "Changing date will clear your current cart. Are you sure you want to continue?",
+      "confirm": "Continue",
+      "cancel": "Cancel"
+    },
+    "pages": {
+      "experience": {
+        "progress_bar": {
+          "title": "Choose Xperience"
+        },
+        "title": "Choose Your xperience",
+        "description": "August 2025 Utah Motorsports Campus",
+        "legend": {
+          "experience": "Select an experience"
+        },
+        "footer": {
+          "title": "Drive Your Dream Supercar"
+        },
+        "button": {
+          "back": "Back",
+          "saving": "Saving...",
+          "continue": "Continue",
+          "choose_experience": "Choose Experience"
+        },
+        "status": {
+          "loading": "Loading experience..."
+        },
+        "validation": {
+          "required": "Please select an experience"
+        }
+      },
+      "confirmation": {
+        "progress_bar": {
+          "title": "Confirmation"
+        },
+        "title": "Thank You for Your Order",
+        "description": "Order Number: #{orderNumber}",
+        "heading": "Booking Confirmed",
+        "label": {
+          "confirmation_note": "Confirmation Note"
+        },
+        "placeholder": {
+          "confirmation_note": "Enter confirmation note"
+        },
+        "button": {
+          "submit": "Submit"
+        },
+        "section": {
+          "location": "Location",
+          "experience": "Experience",
+          "date_and_car": "Date and Car",
+          "coverage_options": "Coverage Options",
+          "ride_along": "Ride Along",
+          "media_packages": "Media Packages",
+          "review": "Review"
+        },
+        "field": {
+          "date": "Date",
+          "car": "Car",
+          "experience": "Experience",
+          "selected": "Selected",
+          "enabled": "Enabled",
+          "passengers": "Passengers",
+          "yes": "Yes",
+          "no": "No",
+          "laps_at_time": "{laps} laps at {time}",
+          "car_laps_at_time": "{carName}: {laps} laps at {time}",
+          "car_sessions_at_time": "{carName}: {sessions, plural, one {# session} other {# sessions}} at {time}"
+        }
+      },
+      "coverage_options": {
+        "progress_bar": {
+          "title": "Coverage Options"
+        },
+        "title": "Choose Insurance",
+        "description": "Track Insurance is required for all Driving Participants. It is not required for Ride-Along participants. Note, your personal auto insurance does not cover our cars or driving experiences like this. Please choose the option that's best for you.",
+        "footer": {
+          "title": "Drive Your Dream Supercar",
+          "subtitle": {
+            "select_car": "Select a car",
+            "cars_added": "{count, plural, one {# Car added} other {# Cars added}}"
+          }
+        },
+        "button": {
+          "back": "Back",
+          "saving": "Saving...",
+          "continue": "Continue"
+        },
+        "validation": {
+          "required": "Coverage options is required"
+        },
+        "notifications": {
+          "error_saving": "Something went wrong while saving. Please try again."
+        },
+        "legend": {
+          "insurance": "Insurance",
+          "coverage": "Coverage",
+          "cost_per_car": "Cost Per Car",
+          "total": "Total"
+        },
+        "card": {
+          "price_badge": "x {quantity} Sessions",
+          "total": "Total Cost",
+          "cost_per_car": "Cost Per Car",
+          "learn_more": "Learn More"
+        }
+      },
+      "date_and_car": {
+        "progress_bar": {
+          "title": "Choose Date & Car"
+        },
+        "title": "Select Car, Date, & Time",
+        "description_dynamic": "<link>{location}</link> • {date}",
+        "footer": {
+          "title": "Drive Your Dream Supercar",
+          "subtitle": {
+            "select_car": "Select a car",
+            "cars_added": "{count, plural, one {# Car added} other {# Cars added}}"
+          }
+        },
+        "cart_subtitle": {
+          "single": "Track Xperience",
+          "multi": "Multi-Car Xperience",
+          "ride": "Ride Along Xperience"
+        },
+        "label": {
+          "date_select": "Choose a Date"
+        },
+        "placeholder": {
+          "car_name": "Enter car name"
+        },
+        "button": {
+          "back": "Back",
+          "saving": "Saving...",
+          "continue": "Continue",
+          "select_a_drive": "Select a Drive",
+          "book_sessions": "Book {count, plural, one {# Session} other {# Sessions}}"
+        },
+        "validation": {
+          "required": "Date and car is required"
+        },
+        "supercar_options": {
+          "info": "Choose all sessions before continuing booking.",
+          "tabs": {
+            "single": "Single Cars",
+            "multi": "Multi-Car Packages",
+            "ride": "Ride-Along"
+          }
+        },
+        "supercar_options_card": {
+          "label": {
+            "quantity": "Choose Laps",
+            "schedules": "Choose Time"
+          },
+          "description": {
+            "selected_laps": "{laps} laps = {sessions} session(s)"
+          },
+          "button": {
+            "select": "View Availability",
+            "remove": "Close Selection",
+            "add_to_cart": "Add to Cart"
+          },
+          "badge": {
+            "sold_out": "Sold Out",
+            "spots_left": "{count, plural, one {# Spot left} other {# Spots left}}"
+          },
+          "sessions": {
+            "available": "{count, plural, one {# session available} other {# sessions available}}"
+          },
+          "could_not_load_schedules_error": "Could not load schedules"
+        },
+        "supercar_options_lap": {
+          "legend": "Choose Laps",
+          "laps": "{count} Laps",
+          "most_popular": "Most Popular"
+        },
+        "supercar_options_time": {
+          "legend": "Choose Time",
+          "sold_out": "Sold Out"
+        },
+        "date_tab": {
+          "sold_out": "Sold Out"
+        },
+        "change_dialog": {
+          "title": "Changing date?",
+          "description": "Changing date will clear your current cart. Are you sure you want to continue?",
+          "button": {
+            "confirm": "Confirm",
+            "cancel": "Cancel"
+          }
+        },
+        "add_another_car_dialog": {
+          "title": "Add Another Car",
+          "description": "Drive and compare multiple cars in a single Day and save!",
+          "button": {
+            "confirm": "Book Another Car",
+            "cancel": "No thanks, Continue with my booking"
+          }
+        },
+        "notifications": {
+          "error_saving": "Something went wrong while saving. Please try again."
+        }
+      },
+      "location": {
+        "progress_bar": {
+          "title": "Choose Location"
+        },
+        "title": "Choose Location",
+        "description": "Select the location where you'd like to book your experience",
+        "loading": "Loading events...",
+        "no_events": "No events found for the selected criteria.",
+        "legend": {
+          "events": "Select an event"
+        },
+        "event": {
+          "date_label": "Event Date:",
+          "select": "Choose Event",
+          "sold_out": "Sold Out"
+        },
+        "footer": {
+          "title": "Drive Your Dream Supercar"
+        },
+        "button": {
+          "back": "Back",
+          "saving": "Saving...",
+          "continue": "Continue",
+          "select_event": "Select Event",
+          "select": "Select"
+        },
+        "validation": {
+          "required": "Please select an event location"
+        },
+        "change_dialog": {
+          "title": "Changing Track?",
+          "description": "Changing your track will clear your current cart. Are you sure you want to continue?",
+          "button": {
+            "confirm": "Continue",
+            "cancel": "Cancel"
+          }
+        }
+      },
+      "media_packages": {
+        "progress_bar": {
+          "title": "Media Packages"
+        },
+        "title": "Make your experience memorable",
+        "description": "",
+        "footer": {
+          "title": "Drive Your Dream Supercar",
+          "subtitle": {
+            "select_car": "Select a car",
+            "cars_added": "{count, plural, one {# Car added} other {# Cars added}}"
+          }
+        },
+        "label": {
+          "package_ids": "Media Package IDs (comma-separated)",
+          "media_packages": "Media Packages"
+        },
+        "placeholder": {
+          "package_ids": "1, 2, 3"
+        },
+        "button": {
+          "back": "Back",
+          "saving": "Saving...",
+          "continue": "Continue"
+        },
+        "validation": {
+          "required": "Media packages is required"
+        },
+        "notifications": {
+          "error_saving": "Something went wrong while saving. Please try again."
+        }
+      },
+      "review": {
+        "progress_bar": {
+          "title": "Review"
+        },
+        "title": "My Cart",
+        "description": "",
+        "footer": {
+          "title": "Drive Your Dream Supercar"
+        },
+        "heading": "Review Your Booking",
+        "label": {
+          "review_note": "Review Note",
+          "review": "Review"
+        },
+        "placeholder": {
+          "review_note": "Enter review note"
+        },
+        "button": {
+          "back": "Back",
+          "continue": "Continue",
+          "saving": "Saving...",
+          "processing": "Processing...",
+          "confirm_booking": "Confirm Booking"
+        },
+        "validation": {
+          "required": "Review is required"
+        },
+        "notifications": {
+          "error_saving": "Something went wrong while saving. Please try again."
+        },
+        "section": {
+          "location": "Location",
+          "experience": "Experience",
+          "date_and_car": "Date and Car",
+          "coverage_options": "Coverage Options",
+          "ride_along": "Ride Along",
+          "media_packages": "Media Packages"
+        },
+        "field": {
+          "date": "Date",
+          "car": "Car",
+          "experience": "Experience",
+          "selected": "Selected",
+          "enabled": "Enabled",
+          "passengers": "Passengers",
+          "yes": "Yes",
+          "no": "No"
+        }
+      },
+      "ride_along": {
+        "progress_bar": {
+          "title": "Ride Along"
+        },
+        "title": "Hellcat Ride-Along",
+        "description": "Get a feel for the track and ride along with 2 others friends or family members. Experience a breathtaking, high-speed journey as one of our elite professional drivers takes you on a pulse-pounding and educational ride around the racetrack",
+        "footer": {
+          "title": "Drive Your Dream Supercar",
+          "subtitle": {
+            "select_car": "Select a car",
+            "cars_added": "{count, plural, one {# Car added} other {# Cars added}}"
+          }
+        },
+        "label": {
+          "ride_along": "Ride Along"
+        },
+        "placeholder": {
+          "ride_along": "0"
+        },
+        "card": {
+          "add": "Add Xperience"
+        },
+        "button": {
+          "back": "Back",
+          "continue": "Continue",
+          "saving": "Saving..."
+        },
+        "validation": {
+          "required": "Ride along is required"
+        },
+        "notifications": {
+          "added_to_cart": "Ride-along added to cart",
+          "error_adding_to_cart": "Error adding ride-along to cart",
+          "error_saving": "Something went wrong while saving. Please try again.",
+          "not_available": "This ride-along is not available for the selected date",
+          "unable_to_add": "Unable to add ride-along. Please try again."
+        }
+      },
+      "save_progress": {
+        "progress_bar": {
+          "title": "Save Progress"
+        },
+        "title": "Your Information",
+        "description": "Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum.",
+        "footer": {
+          "title": "Save your progress to continue later",
+          "subtitle": {
+            "select_car": "Select a car",
+            "cars_added": "{count, plural, one {# Car added} other {# Cars added}}"
+          }
+        },
+        "label": {
+          "first_name": "First Name",
+          "last_name": "Last Name",
+          "email": "Email",
+          "phone": "Phone Number"
+        },
+        "placeholder": {
+          "first_name": "First Name",
+          "last_name": "Last Name",
+          "email": "Email Address",
+          "phone": "Phone Number"
+        },
+        "button": {
+          "back": "Back",
+          "saving": "Saving...",
+          "continue": "Continue"
+        },
+        "validation": {
+          "required": "This field is required",
+          "invalid_email": "Please enter a valid email address"
+        }
+      }
+    },
+    "quantity": {
+      "decrease": "Decrease quantity",
+      "increase": "Increase quantity"
+    },
+    "pit_pass": {
+      "add_to_cart": "Add to Cart"
+    }
+  }
+}

@@ -1,0 +1,46 @@
+fragment CoreStructuredText on PostModelModelBodyField {
+  value
+  blocks {
+    __typename
+    ... on CoreImageRecord {
+      ...CoreImage
+    }
+    ... on CoreVideoRecord {
+      ...CoreVideo
+    }
+    ... on CoreCtaRecord {
+      ...CoreCta
+    }
+  }
+  links {
+    __typename
+    ... on RecordInterface {
+      id
+    }
+    ... on PageRecord {
+      entry: config {
+        handle
+      }
+    }
+    ... on LandingPageRecord {
+      entry: config {
+        handle
+      }
+    }
+    ... on PostRecord {
+      entry: config {
+        handle
+      }
+    }
+    ... on SupercarRecord {
+      entry: config {
+        handle
+      }
+    }
+    ... on TrackRecord {
+      entry: config {
+        handle
+      }
+    }
+  }
+}

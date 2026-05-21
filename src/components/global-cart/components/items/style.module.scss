@@ -1,0 +1,11 @@
+@use '../../../../styles/styleguide' as sg;
+
+.CartLineItems {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+
+  &--compact {
+    gap: sg.spacing(xsmall);
+  }
+}

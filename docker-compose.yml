@@ -1,0 +1,85 @@
+services:
+  db:
+    build:
+      context: './db'
+    environment:
+      POSTGRES_PASSWORD: 'postgres'
+    ports:
+      - '5432:5432'
+    volumes:
+      - 'pgdata:/mnt/pgdata'
+
+  typesense:
+    build:
+      context: './typesense'
+    restart: on-failure
+    environment:
+      - TYPESENSE_API_KEY
+    ports:
+      - '8108:8108'
+    volumes:
+      - 'typesense_data:/data'
+    command: '--data-dir /data --api-key=$TYPESENSE_API_KEY --enable-cors'
+
+  main:
+    build:
+      context: './'
+      target: 'development'
+    depends_on:
+      - 'db'
+      - 'typesense'
+    volumes:
+      - './:/app:delegated'
+      - 'tmp:/mnt/tmp'
+      - 'ruby_bundle:/usr/local/bundle'
+      - 'xdg_cache:/home/node/.cache'
+      - 'xdg_config:/home/node/.config'
+    ports:
+      - '3000:3000'
+    env_file: './.env'
+    environment:
+      - 'DATABASE_URL=postgres://postgres:postgres@db:5432/postgres'
+      - 'DATABASE_URL_NON_POOLING=postgres://postgres:postgres@db:5432/postgres'
+      - 'PORT=3000'
+    command: ['/bin/bash']
+    stdin_open: true
+    tty: true
+
+  main_ci:
+    build:
+      context: './'
+      target: 'ci'
+    environment:
+      - CI=1
+      # Compose forwards only the variables from this list
+      - DATABASE_URL
+      - DATABASE_URL_NON_POOLING
+      - EVENT_CACHE_TTL_MINUTES
+      - PRODUCT_CACHE_TTL_MINUTES
+      - LOOKBACK_IN_MINUTES
+      - NEXT_PUBLIC_DATOCMS_READONLY_TOKEN
+      - NEXT_PUBLIC_DATOCMS_ENVIRONMENT
+      - ROCKET_REZ_API_BASE_URL
+      - ROCKET_REZ_CLIENT_ID
+      - ROCKET_REZ_CLIENT_SECRET
+      - SHOPIFY_ADMIN_API_TOKEN
+      - SHOPIFY_SHOP
+      - TYPESENSE_BASE_URL
+      - TYPESENSE_API_KEY
+    networks:
+      - 'ci'
+    volumes:
+      - './:/app:delegated'
+      - '/mnt/tmp:/mnt/tmp:delegated'
+    command: ['/bin/bash', '-c', 'while true ; do wait ; done']
+
+networks:
+  ci:
+
+volumes:
+  tmp:
+  ruby_bundle:
+  xdg_cache:
+  xdg_config:
+  pgdata:
+  typesense_data:

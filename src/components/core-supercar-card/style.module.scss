@@ -1,0 +1,312 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ===================================================== */
+/* Card Simple */
+/* ===================================================== */
+
+.cardSimple {
+  $card: &;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding-block: 0 sg.spacing(regular);
+  padding-inline: sg.spacing(xsmall);
+  background-color: sg.color(white);
+  text-align: center;
+
+  &--bg-white-50 {
+    background-color: sg.color(white-50);
+  }
+
+  &--bg-gray-50 {
+    background-color: sg.color(gray-50);
+  }
+
+  &__fullLink {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  &__media {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    aspect-ratio: 328 / 188;
+
+    @include sg.hover {
+      #{$card}:hover & {
+        animation: pulse 0.3s forwards;
+      }
+    }
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__title {
+    font-family: sg.font-family('barlow');
+    font-size: sg.font-size(regular);
+    font-weight: sg.font-weight(400);
+    line-height: sg.line-height('140%');
+
+    strong {
+      margin-left: sg.spacing(xxsmall);
+      font-weight: sg.font-weight(700);
+    }
+  }
+
+  &__price {
+    font-family: sg.font-family('barlow');
+    font-size: sg.font-size(regular);
+    line-height: sg.line-height('140%');
+  }
+}
+
+/* ===================================================== */
+/* Card Stats */
+/* ===================================================== */
+
+.cardStats {
+  $card: &;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding-block: sg.spacing(medium) sg.spacing(regular);
+  padding-inline: sg.spacing(medium);
+  background-color: sg.color(white);
+
+  &--bg-white-50 {
+    background-color: sg.color(white-50);
+  }
+
+  &--bg-gray-50 {
+    background-color: sg.color(gray-50);
+  }
+
+  &__badges {
+    position: absolute;
+    top: calc(sg.spacing(xsmall) * -1);
+    left: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: sg.spacing(xxsmall);
+  }
+
+  &__media {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    aspect-ratio: 328 / 188;
+    margin-bottom: sg.spacing(small);
+  }
+
+  &__image {
+    @include sg.hover {
+      #{$card}:hover & {
+        animation: pulse 0.3s forwards;
+      }
+    }
+  }
+
+  &__fullLink {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  &__header {
+    margin-bottom: sg.spacing(regular);
+  }
+
+  &__title {
+    font-family: sg.font-family('barlow');
+    font-size: sg.font-size(regular);
+    font-weight: sg.font-weight(400);
+    line-height: sg.line-height('140%');
+
+    strong {
+      margin-left: sg.spacing(xxsmall);
+      font-weight: sg.font-weight(700);
+    }
+  }
+
+  &__price {
+    font-size: sg.font-size(regular);
+    line-height: sg.line-height('140%');
+  }
+
+  &__details {
+    list-style-type: none;
+    padding: 0;
+    margin-bottom: sg.spacing(medium);
+
+    li {
+      display: flex;
+      justify-content: space-between;
+      padding-block: sg.spacing(xxsmall);
+      border-bottom: u.rem-calc(1) dashed sg.color(border-dark);
+      font-family: sg.font-family(barlow);
+      font-size: sg.font-size(small);
+      font-weight: sg.font-weight(400);
+      line-height: sg.line-height('120%');
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+
+    strong {
+      font-weight: sg.font-weight(600);
+    }
+  }
+
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    gap: sg.spacing(regular);
+    align-items: center;
+    margin-top: auto;
+  }
+
+  &__button {
+    width: 100%;
+  }
+}
+
+/* ===================================================== */
+/* Card Package */
+/* ===================================================== */
+
+.cardPackage {
+  $card: &;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding-block: 0 sg.spacing(medium);
+  padding-inline: sg.spacing(medium);
+  background-color: sg.color(white);
+
+  @include sg.min(tabletLandscape) {
+    padding-block: sg.spacing(medium);
+  }
+
+  &--bg-white-50 {
+    background-color: sg.color(white-50);
+  }
+
+  &--bg-gray-50 {
+    background-color: sg.color(gray-50);
+  }
+
+  &__media {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    aspect-ratio: 328 / 188;
+    margin-bottom: sg.spacing(small);
+  }
+
+  &__image {
+    @include sg.hover {
+      #{$card}:hover & {
+        animation: pulse 0.3s forwards;
+      }
+    }
+  }
+
+  &__fullLink {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  &__badges {
+    position: absolute;
+    top: sg.spacing(medium);
+    left: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: sg.spacing(xxsmall);
+
+    @include sg.min(tabletLandscape) {
+      top: 0;
+    }
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: sg.spacing(xsmall);
+    padding-bottom: sg.spacing(regular);
+    border-bottom: u.rem-calc(1) dashed sg.color(border-dark);
+
+    @include sg.min(tabletLandscape) {
+      padding-top: sg.spacing(small);
+    }
+  }
+
+  &__title {
+    font-family: sg.font-family('barlow');
+    font-size: sg.font-size(regular);
+    font-weight: sg.font-weight(400);
+    line-height: sg.line-height('140%');
+
+    strong {
+      margin-left: sg.spacing(xxsmall);
+      font-weight: sg.font-weight(700);
+    }
+  }
+
+  &__excerpt {
+    padding-block: sg.spacing(regular);
+  }
+
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    gap: sg.spacing(regular);
+    align-items: center;
+    padding-top: sg.spacing(xsmall);
+    margin-top: auto;
+
+    @include sg.min(desktop) {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      gap: sg.spacing(xlarge);
+      padding-right: sg.spacing(medium);
+    }
+  }
+
+  &__button {
+    width: 100%;
+  }
+
+  &__link {
+    flex-shrink: 0;
+  }
+}

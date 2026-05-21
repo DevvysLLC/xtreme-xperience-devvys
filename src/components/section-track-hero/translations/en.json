@@ -1,0 +1,11 @@
+{
+  "section_track_hero": {
+    "ride_along_prefix": "Ride-Alongs Starting at",
+    "ride_along_suffix": "",
+    "supercar_xperiences_prefix": "Supercar Xperiences Starting at",
+    "supercar_xperiences_suffix": "",
+    "events_more": "{count} More Dates",
+    "book_now": "Book Now",
+    "buy_gift_card": "Buy a Gift Card"
+  }
+}

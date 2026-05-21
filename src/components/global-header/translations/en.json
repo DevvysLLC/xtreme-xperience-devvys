@@ -1,0 +1,18 @@
+{
+  "global_header": {
+    "call_us": "Call us",
+    "copyright": "Copyright © {year}",
+    "brand_name": "Xtreme Xperience",
+    "follow_us": "Follow Us",
+    "track_finder": "Track Finder",
+    "find_my_location": "Find My Location",
+    "menu": "Menu",
+    "back": "Back",
+    "location": "Location",
+    "cart": "Cart",
+    "search": "Search",
+    "supercars": {
+      "view_all": "Explore All Cars"
+    }
+  }
+}

@@ -1,0 +1,91 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: sg.spacing(xxsmall);
+  border: none;
+  padding: 0;
+  margin: 0;
+
+  &[data-width='100%'] {
+    grid-column: 1 / -1;
+  }
+
+  &__legend {
+    @include sg.visually-hidden;
+  }
+
+  &__label {
+    padding: 0;
+    font-family: sg.font-family(barlow-semi-condensed);
+    font-size: sg.font-size(regular);
+    font-weight: sg.font-weight(600);
+    line-height: sg.line-height('120%');
+    text-transform: uppercase;
+  }
+
+  &__input {
+    width: 100%;
+    height: u.rem-calc(40);
+    padding-inline: sg.spacing(small);
+    border: 1px solid sg.color(border-dark);
+    background-color: sg.color(white);
+    font-family: sg.font-family(barlow);
+    font-size: sg.font-size(small);
+    line-height: sg.line-height('120%');
+    cursor: pointer;
+    appearance: none;
+    @include sg.transition(border-color, 200);
+
+    &::placeholder {
+      color: sg.color(dove);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: sg.color(black);
+    }
+
+    &:invalid:not(:placeholder-shown):not(select) {
+      border-color: sg.color(red);
+    }
+
+    &--error {
+      border-color: sg.color(red);
+    }
+  }
+
+  &__error {
+    font-size: sg.font-size(xsmall);
+    color: sg.color(red);
+  }
+
+  &__options {
+    display: flex;
+    flex-direction: column;
+    gap: sg.spacing(small);
+  }
+}
+
+textarea.field__input {
+  min-height: u.rem-calc(120);
+  padding-block: sg.spacing(regular);
+  resize: none;
+}
+
+select.field__input {
+  padding-right: sg.spacing(xlarge);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='6' viewBox='0 0 9 6' fill='none'%3E%3Cpath d='M8.47412 0.356232L4.41258 4.35623L0.351043 0.356231' stroke='%23111111'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right sg.spacing(regular) center;
+
+  &:invalid {
+    color: sg.color(dove);
+  }
+
+  option[disabled] {
+    color: sg.color(dove);
+  }
+}

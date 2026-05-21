@@ -1,0 +1,88 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+/* ===================================================== */
+/* Booking Event Card */
+/* ===================================================== */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: sg.spacing(regular);
+  padding-block: sg.spacing(medium);
+  border-top: u.rem-calc(1) dashed sg.color(border-dark);
+
+  @include sg.min(tabletLandscape) {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+
+  &--disabled {
+    opacity: 0.6;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: sg.spacing(xsmall);
+  }
+
+  &__title {
+    font-family: sg.font-family(anton);
+    font-size: sg.font-size(medium);
+    font-weight: sg.font-weight(700);
+    line-height: sg.line-height('110%');
+    text-transform: uppercase;
+  }
+
+  &__nickname {
+    font-family: sg.font-family(barlow-semi-condensed);
+    font-size: sg.font-size(small);
+    font-weight: sg.font-weight(500);
+    line-height: sg.line-height('120%');
+    letter-spacing: sg.letter-spacing('5%');
+    text-transform: uppercase;
+  }
+
+  &__date {
+    font-family: sg.font-family(barlow-semi-condensed);
+    font-size: sg.font-size(regular);
+    font-weight: sg.font-weight(700);
+    line-height: sg.line-height('140%');
+    color: sg.color(orange);
+  }
+
+  &__dateLabel {
+    margin-right: sg.spacing(xxsmall);
+    color: sg.color(black);
+    font-weight: sg.font-weight(500);
+  }
+
+  &__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: sg.spacing(xxsmall);
+    margin-top: sg.spacing(xxsmall);
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: sg.spacing(regular);
+    flex-shrink: 0;
+
+    @include sg.min(tabletLandscape) {
+      flex-direction: row-reverse;
+      gap: sg.spacing(medium);
+    }
+  }
+
+  &__button {
+    min-width: u.rem-calc(180);
+  }
+
+  &__link {
+    word-wrap: nowrap;
+  }
+}

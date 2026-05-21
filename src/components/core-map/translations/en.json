@@ -1,0 +1,9 @@
+{
+  "core_map": {
+    "loading": "Loading map...",
+    "error": {
+      "failed": "Failed to load map",
+      "api_key_missing": "Mapbox API key is not configured"
+    }
+  }
+}

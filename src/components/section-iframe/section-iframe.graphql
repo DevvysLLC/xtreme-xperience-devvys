@@ -1,0 +1,15 @@
+fragment SectionIframe on SectionIframeRecord {
+  id
+  config {
+    ...SectionConfig
+  }
+  layout
+  fullscreenAspectRatio
+  title
+  subtitle
+  description
+  ctas {
+    ...CoreCta
+  }
+  embedCode
+}

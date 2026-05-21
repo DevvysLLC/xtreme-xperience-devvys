@@ -1,0 +1,9 @@
+fragment SectionTrackSpec on SectionTrackSpecRecord {
+  id
+  config {
+    ...SectionConfig
+  }
+  ctas {
+    ...CoreCta
+  }
+}

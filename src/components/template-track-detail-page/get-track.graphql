@@ -1,0 +1,7 @@
+query getTrack($handle: String) {
+  track(
+    filter: { config: { any: { trackConfig: { handle: { eq: $handle } } } } }
+  ) {
+    ...Track
+  }
+}

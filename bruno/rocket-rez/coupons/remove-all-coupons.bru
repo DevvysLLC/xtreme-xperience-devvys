@@ -1,0 +1,25 @@
+meta {
+  name: Remove All Coupons
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{ROCKET_REZ_API_BASE_URL}}/v1/headless/cart/coupons
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{cartToken}}
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Response has cart data", function() {
+    expect(res.getBody()).to.have.property('data');
+  });
+}

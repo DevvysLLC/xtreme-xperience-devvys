@@ -1,0 +1,134 @@
+@use './typography' as t;
+@use './spacing' as s;
+@use './color' as c;
+@use './transitions' as tr;
+@use './mixins' as mx;
+
+@mixin richtext($size: default) {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin-top: s.spacing(medium);
+    font-family: t.font-family(anton);
+    font-size: t.font-size(medium);
+    letter-spacing: t.letter-spacing('2%');
+    text-transform: uppercase;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  h5 {
+    font-size: t.font-size(regular);
+    text-transform: none;
+  }
+
+  p,
+  ul,
+  ol {
+    margin-top: s.spacing(regular);
+    font-size: t.font-size(regular);
+
+    &:first-child {
+      margin-top: 0;
+    }
+
+    b,
+    strong {
+      font-weight: 700;
+    }
+  }
+
+  p,
+  ul,
+  ol {
+    a {
+      color: currentColor;
+      text-decoration: underline;
+      text-underline-offset: s.spacing(xxsmall);
+      @include tr.transition(opacity, 250);
+      @include mx.hover-state {
+        opacity: 0.5;
+      }
+    }
+  }
+
+  ul,
+  ol {
+    padding-left: s.spacing(medium);
+    text-align: left;
+  }
+
+  ul {
+    list-style-type: disc;
+
+    ul {
+      list-style-type: square;
+
+      ul {
+        list-style-type: circle;
+      }
+    }
+  }
+
+  ol {
+    list-style-type: decimal;
+
+    ol {
+      list-style-type: lower-alpha;
+
+      ol {
+        list-style-type: lower-roman;
+      }
+    }
+  }
+
+  hr {
+    display: block;
+    width: 100%;
+    border: 1px solid c.color(border-dark);
+    margin-block: s.spacing(regular);
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-top: s.spacing(medium);
+
+    img:first-child {
+      margin-top: 0;
+    }
+  }
+
+  table {
+    table-layout: fixed;
+    width: 100%;
+    border-collapse: collapse;
+    margin: s.spacing(regular) 0;
+    text-align: left;
+
+    td {
+      border-bottom: 1px solid currentColor;
+      padding: s.spacing(regular);
+    }
+  }
+
+  blockquote {
+    padding: s.spacing(small);
+    margin: 0;
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      padding-bottom: 0;
+    }
+  }
+}

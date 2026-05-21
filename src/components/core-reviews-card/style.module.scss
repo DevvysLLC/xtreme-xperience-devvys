@@ -1,0 +1,63 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: sg.spacing(regular);
+  min-width: u.rem-calc(314);
+  width: 100%;
+
+  &--black {
+    background-color: sg.color(black);
+    color: sg.color(white);
+  }
+
+  &--white {
+    background-color: sg.color(white);
+    color: sg.color(black);
+  }
+
+  &--carrara {
+    background-color: sg.color(carrara);
+    color: sg.color(black);
+  }
+
+  &--orange {
+    background-color: sg.color(orange);
+    color: sg.color(white);
+  }
+
+  &__media {
+    position: relative;
+    aspect-ratio: 314 / 533;
+  }
+
+  &__title {
+    font-family: sg.font-family(barlow-semi-condensed);
+    font-size: sg.font-size('18px');
+    font-weight: sg.font-weight(600);
+    line-height: sg.line-height('120%');
+    letter-spacing: sg.letter-spacing('1%');
+  }
+
+  &__quote {
+    font-size: sg.font-size(regular);
+    line-height: sg.line-height('120%');
+    letter-spacing: sg.letter-spacing('1%');
+  }
+
+  &__author {
+    position: relative;
+    font-size: sg.font-size(regular);
+    font-weight: sg.font-weight(400);
+    letter-spacing: sg.letter-spacing('1%');
+
+    &::before {
+      content: '—';
+      display: inline-block;
+      margin-right: sg.spacing(xxxsmall);
+    }
+  }
+}

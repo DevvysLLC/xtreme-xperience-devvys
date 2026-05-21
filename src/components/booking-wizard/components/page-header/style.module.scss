@@ -1,0 +1,42 @@
+@use '../../../../styles/styleguide' as sg;
+@use '../../../../styles/core/unit' as u;
+
+/* ===================================================== */
+/* Page Header */
+/* ===================================================== */
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: sg.spacing(regular);
+  max-width: u.rem-calc(640);
+  margin-bottom: sg.spacing(xlarge);
+  text-align: center;
+
+  @include sg.min(tabletLandscape) {
+    text-align: left;
+  }
+
+  &--centered-desktop {
+    text-align: center;
+    margin-inline: auto;
+  }
+}
+
+.title {
+  font-family: sg.font-family(anton);
+  font-size: sg.font-size(large);
+  font-weight: sg.font-weight(400);
+  line-height: sg.line-height('100%');
+  text-transform: uppercase;
+
+  @include sg.min(tabletLandscape) {
+    font-size: sg.font-size(xlarge);
+  }
+}
+
+.description {
+  font-size: sg.font-size(regular);
+  font-weight: sg.font-weight(400);
+  line-height: sg.line-height('140%');
+}

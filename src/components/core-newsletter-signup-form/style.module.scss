@@ -1,0 +1,106 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+.newsletterSignupForm {
+  display: flex;
+  flex-direction: column;
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: sg.spacing(small);
+  }
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: sg.spacing(small);
+  }
+
+  &__label {
+    display: flex;
+    flex-direction: column;
+    gap: sg.spacing(small);
+  }
+
+  &__input {
+    width: 100%;
+  }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: sg.spacing(regular);
+  margin-bottom: sg.spacing(medium);
+
+  &__title {
+    font-family: sg.font-family(anton);
+    font-size: sg.font-size(medium);
+    font-weight: sg.font-weight(medium);
+    text-transform: uppercase;
+    line-height: sg.line-height('100%');
+  }
+
+  &__description {
+    font-size: sg.font-size(regular);
+    font-weight: sg.font-weight(regular);
+    line-height: sg.line-height('140%');
+  }
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: sg.spacing(regular);
+  max-width: u.rem-calc(470);
+  margin-bottom: sg.spacing(regular);
+
+  &__label {
+    display: flex;
+    width: 100%;
+
+    span {
+      @include sg.visually-hidden;
+    }
+  }
+
+  &__input {
+    width: 100%;
+    padding: sg.spacing(small);
+    color: sg.color(black);
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  &__group {
+    display: flex;
+    background-color: sg.color(white);
+    height: u.rem-calc(56);
+    padding: sg.spacing(xsmall);
+    border-bottom-right-radius: u.rem-calc(30);
+  }
+
+  &__button {
+    @include sg.button();
+    @include sg.button-size(small);
+    border-bottom-right-radius: u.rem-calc(25);
+  }
+
+  &__error {
+    color: sg.color(error);
+    font-size: sg.font-size(regular);
+    font-weight: sg.font-weight(regular);
+    line-height: sg.line-height('100%');
+  }
+
+  &__success {
+    color: sg.color(success);
+  }
+}
+
+.info {
+  font-size: sg.font-size(xxsmall);
+}

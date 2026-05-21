@@ -1,0 +1,12 @@
+@use '../../../../styles/styleguide' as sg;
+
+.location {
+  font-family: sg.font-family(barlow);
+  font-size: sg.font-size(regular);
+  line-height: sg.line-height('120%');
+
+  &__title {
+    margin-bottom: sg.spacing(xsmall);
+    font-weight: sg.font-weight(700);
+  }
+}

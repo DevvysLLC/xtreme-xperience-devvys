@@ -1,0 +1,13 @@
+fragment Record on RecordInterface {
+  _createdAt
+  _editingUrl
+  _firstPublishedAt
+  _isValid
+  _modelApiKey
+  _publicationScheduledAt
+  _publishedAt
+  _status
+  _unpublishingScheduledAt
+  _updatedAt
+  id
+}

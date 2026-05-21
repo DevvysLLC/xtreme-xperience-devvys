@@ -1,0 +1,17 @@
+fragment InsuranceModel on InsuranceModelRecord {
+  id
+  title
+  rocketRezId
+  rocketRezType
+  description
+  coverage
+  price {
+    ...CorePrice
+  }
+  badge {
+    ...CoreBadge
+  }
+  thumbnail {
+    ...CoreImage
+  }
+}

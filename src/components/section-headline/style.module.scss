@@ -1,0 +1,35 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+.section {
+  @include sg.section-padding;
+  @include sg.section-config;
+
+  & {
+    position: relative;
+  }
+}
+
+.content {
+  max-width: u.rem-calc(880);
+  margin-inline: auto;
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  font-family: sg.font-family(barlow-semi-condensed);
+  font-size: sg.font-size(medium);
+  font-weight: sg.font-weight(500);
+  line-height: sg.line-height('120%');
+  letter-spacing: sg.letter-spacing('2%');
+  text-transform: uppercase;
+
+  @include sg.min(laptopSmall) {
+    font-size: sg.font-size(xlarge);
+  }
+
+  strong {
+    font-weight: sg.font-weight(700);
+  }
+}

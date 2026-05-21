@@ -1,0 +1,141 @@
+@use 'sass:math';
+@use 'sass:color';
+@use 'sass:list';
+@use './media' as m;
+@use '../core/unit' as u;
+@use '../core/stdlib/map' as map;
+@use '../core/vw-calc-v3' as vw;
+
+$_base: 16 !default;
+// Font configuration using CSS variables from next/font (src/fonts/index.ts)
+// The CSS variables provide optimal LCP through automatic preloading.
+$_config: (
+  font: (
+    anton: (
+      var(--font-anton),
+      sans-serif
+    ),
+    barlow: (
+      var(--font-barlow),
+      sans-serif
+    ),
+    'barlow-semi-condensed': (
+      var(--font-barlow-semi-condensed),
+      sans-serif
+    )
+  ),
+  type: (
+    xxxxlarge: 7.5,
+    // 120px
+    xxxlarge: 5,
+    // 80px
+    xxlarge: 4,
+    // 64px
+    xlarge: 2.5,
+    // 40px
+    large: 2,
+    // 32px
+    '28px': 1.75,
+    // 28px
+    medium: 1.5,
+    // 24px
+    mediuml: 1.25,
+    // 20px
+    '18px': 1.125,
+    regular: 1,
+    // 16px
+    small: 0.875,
+    // 14px
+    xsmall: 0.75,
+    // 12px
+    xxsmall: 0.625 // 10px
+  ),
+  style: (
+    normal: normal,
+    italic: italic,
+    regular: normal
+  ),
+  weight: (
+    200: 200,
+    300: 300,
+    400: 400,
+    500: 500,
+    600: 600,
+    700: 700,
+    800: 800,
+    light: 200,
+    regular: 400,
+    medium: 500,
+    semibold: 600,
+    bold: 700,
+    extrabold: 800
+  ),
+  leading: (
+    '100%': 1,
+    '110%': 1.1,
+    '120%': 1.2,
+    '130%': 1.3,
+    '140%': 1.4
+  ),
+  // keys should be % percentage values from figma typography list settings
+  // convert this to em value eg 5% = 0.05, 10% = 0.10 etc
+  tracking: (
+      '-2%': -0.02,
+      '1%': 0.01,
+      '2%': 0.02,
+      '5%': 0.05
+    )
+);
+
+@function em-value($value) {
+  @return $value * 1em;
+}
+
+@function typography($category, $keys...) {
+  $map: map.get-strict($_config, $category);
+  @if $map != null {
+    $result: $map;
+
+    @each $key in $keys {
+      $result: map.get-strict($result, $key);
+      @if $result == null {
+        @error "Key '#{$key}' not found in category '#{$category}'.";
+      }
+    }
+    @if $category == 'type' {
+      $pixel-value: $result * $_base;
+      $rem-value: u.rem-calc($pixel-value);
+      @return $rem-value;
+    }
+    @if $category == 'tracking' {
+      @return em-value($result);
+    }
+    @return $result;
+  } @else {
+    @error "Category '#{$category}' not found.";
+  }
+}
+
+@function font-family($name) {
+  @return typography(font, $name);
+}
+
+@function font-size($size) {
+  @return typography(type, $size);
+}
+
+@function font-style($style) {
+  @return typography(style, $style);
+}
+
+@function font-weight($weight) {
+  @return typography(weight, $weight);
+}
+
+@function line-height($height) {
+  @return typography(leading, $height);
+}
+
+@function letter-spacing($spacing) {
+  @return typography(tracking, $spacing);
+}

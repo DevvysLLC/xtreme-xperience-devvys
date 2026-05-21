@@ -1,0 +1,11 @@
+fragment SectionPolicy on SectionPolicyRecord {
+  id
+  title
+  subtitle
+  config {
+    ...SectionConfig
+  }
+  policies {
+    ...Policy
+  }
+}

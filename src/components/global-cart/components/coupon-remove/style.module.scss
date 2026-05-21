@@ -1,0 +1,41 @@
+@use '../../../../styles/styleguide' as sg;
+
+.form {
+  &__content {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: sg.spacing(xsmall);
+    background-color: sg.color(black-10);
+    padding: sg.spacing(xxsmall) sg.spacing(small);
+    border-radius: 99999px;
+  }
+
+  &__label {
+    font-family: sg.font-family(barlow);
+    font-size: sg.font-size(small);
+    flex: 1;
+  }
+
+  &__button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: sg.color(black);
+    transition: opacity 0.2s;
+    width: sg.spacing(regular);
+    height: sg.spacing(regular);
+
+    &:hover:not(:disabled) {
+      opacity: 0.7;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}

@@ -1,0 +1,181 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+@include sg.layer(base) {
+  .coreCta {
+    &--transparent {
+      @include sg.button-transparent();
+    }
+
+    &--button {
+      @include sg.button();
+
+      &[data-style='black'] {
+        @include sg.button-color(black);
+      }
+
+      &[data-style='black-transparent'] {
+        @include sg.button-color(black-transparent);
+      }
+
+      &[data-style='white'] {
+        @include sg.button-color(white);
+      }
+
+      &[data-style='white-transparent'] {
+        @include sg.button-color(white-transparent);
+      }
+
+      &[data-style='orange'] {
+        @include sg.button-color(orange);
+        @include sg.button-animation-color(black);
+      }
+
+      &[data-style='highlight'] {
+        --core-cta-highlight-color: var(
+          --section-highlight-color,
+          #{sg.color(orange)}
+        );
+        --core-cta-highlight-contrast: var(
+          --section-contrast-color,
+          #{sg.color(white)}
+        );
+
+        background-color: var(--core-cta-highlight-color);
+        border-color: var(--core-cta-highlight-color);
+        color: var(--core-cta-highlight-contrast);
+
+        @include sg.hover-state {
+          background-color: var(--core-cta-highlight-color);
+          border-color: var(--core-cta-highlight-color);
+          color: var(--core-cta-highlight-contrast);
+        }
+
+        &::after {
+          background-color: var(--core-cta-highlight-color);
+        }
+      }
+
+      &[data-size='small'] {
+        @include sg.button-size(small);
+      }
+
+      &[data-size='medium'] {
+        @include sg.button-size(medium);
+      }
+
+      &[data-size='large'] {
+        @include sg.button-size(large);
+      }
+
+      &[disabled] {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+
+    &--underline {
+      @include sg.underline();
+
+      &[data-style='current'] {
+        @include sg.underline-color(current);
+      }
+
+      &[data-style='black'] {
+        @include sg.underline-color(black);
+      }
+
+      &[data-style='white'] {
+        @include sg.underline-color(white);
+      }
+
+      &[data-style='white-transparent'] {
+        @include sg.underline-color(white-transparent);
+      }
+
+      &[data-style='orange'] {
+        @include sg.underline-color(orange);
+      }
+
+      &[data-style='highlight'] {
+        @include sg.underline-color(current);
+
+        --core-cta-highlight-color: var(
+          --section-highlight-color,
+          #{sg.color(orange)}
+        );
+
+        color: var(--core-cta-highlight-color);
+
+        @include sg.hover-state {
+          color: var(--core-cta-highlight-color);
+        }
+      }
+    }
+
+    &--pill {
+      @include sg.pill();
+
+      &[data-style='black'] {
+        @include sg.pill-color(black);
+      }
+
+      &[data-style='black-transparent'] {
+        @include sg.pill-color(black-transparent);
+      }
+
+      &[data-style='white'] {
+        @include sg.pill-color(white);
+      }
+
+      &[data-style='white-transparent'] {
+        @include sg.pill-color(white-transparent);
+      }
+
+      &[data-style='border-white'] {
+        @include sg.pill-color(border-white);
+      }
+
+      &[data-style='orange'] {
+        @include sg.pill-color(orange);
+      }
+
+      &[data-style='highlight'] {
+        --core-cta-highlight-color: var(
+          --section-highlight-color,
+          #{sg.color(orange)}
+        );
+        --core-cta-highlight-contrast: var(
+          --section-contrast-color,
+          #{sg.color(white)}
+        );
+
+        border-color: var(--core-cta-highlight-color);
+        background-color: var(--core-cta-highlight-color);
+        color: var(--core-cta-highlight-contrast);
+
+        @include sg.hover-state {
+          background-color: var(--core-cta-highlight-color);
+          border-color: var(--core-cta-highlight-color);
+          color: var(--core-cta-highlight-contrast);
+        }
+      }
+
+      &[data-size='small'] {
+        @include sg.pill-size(small);
+      }
+
+      &[data-size='medium'] {
+        @include sg.pill-size(medium);
+      }
+
+      &[data-size='large'] {
+        @include sg.pill-size(large);
+      }
+    }
+
+    &--text {
+      @include sg.reset-button();
+    }
+  }
+}

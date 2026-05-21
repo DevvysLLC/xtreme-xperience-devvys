@@ -1,0 +1,78 @@
+@use 'sass:list';
+@use 'sass:math';
+@use 'unit' as u;
+
+/// vw-calc
+///
+/// @param {List} $values - List of 3 unitless values: min-value, target-value, max-value.
+///
+/// @param {Number} $min-screen-width - Minimum screen width. The computed value is always equal to `min-value` at this screen width.
+///
+/// @param {Number} $target-screen-width - Target screen width. The computed value is always equal to `target-value` at this screen width.
+///
+/// @param {Number} $root-rem-size - Expected root element font size. Defaults to 16px.
+///
+/// @return {expression} - dynamic value based on a combination of rem and vw units.
+
+@function vw-calc(
+  $values,
+  $min-screen-width,
+  $target-screen-width,
+  $root-rem-size: 16
+) {
+  $count: list.length($values);
+
+  @if $count < 3 {
+    @error "Minimum two (3) values required. e.g.: vw-calc(16 32 48)";
+  }
+
+  @if $count > 3 {
+    @error "(#{$values}) - More than 3 (three) values is not allowed.";
+  }
+
+  @if list.nth($values, 1) > list.nth($values, 2) {
+    @error "(#{list.nth($values, 1)} < #{list.nth($values, 2)} = false) - {{max-value}} can't be lower than {{min-value}}.";
+  }
+
+  @if list.nth($values, 2) > list.nth($values, 3) {
+    @error "(#{nth($values, 2)} < #{nth($values, 3)} = false) - {{limit-value}} can't be lower than {{max-value}}.";
+  }
+
+  @if list.nth($values, 1) == list.nth($values, 2) {
+    @error "#{list.nth($values, 1)} === #{list.nth($values, 2)} - {{min-value}} cannot be the same than {{max-value}}";
+  }
+
+  @if $min-screen-width >= $target-screen-width {
+    @error "Minimum screen width ({$min-screen-width}px) must be lower than target screen width ({$target-screen-width}px).";
+  }
+
+  $base-width: u.strip-unit($target-screen-width);
+  $min-value: 0;
+  $max-value: 0;
+  $limit-value-size: 0;
+
+  $min-width-px: u.strip-unit($min-screen-width);
+  $max-width-px: u.strip-unit($target-screen-width);
+  $min-value-size: u.strip-unit(u.rem-calc(list.nth($values, 1)));
+  $max-value-size: u.strip-unit(u.rem-calc(list.nth($values, 1)));
+  $limit-value-size: u.strip-unit(u.rem-calc(list.nth($values, 1)));
+
+  $min-value-size: u.strip-unit(u.rem-calc(list.nth($values, 1)));
+  $max-value-size: u.strip-unit(u.rem-calc(list.nth($values, 2)));
+  $limit-value-size: u.strip-unit(u.rem-calc(list.nth($values, 3)));
+
+  $min-width: math.div($min-width-px, $root-rem-size);
+  $max-width: math.div($max-width-px, $root-rem-size);
+
+  $slope: math.div(
+    ($max-value-size - $min-value-size),
+    ($max-width - $min-width)
+  );
+  $y-axis-intersection: -$min-width * $slope + $min-value-size;
+
+  @return clamp(
+    #{$min-value-size}rem,
+    #{$y-axis-intersection}rem + #{$slope * 100}vw,
+    #{$limit-value-size}rem
+  );
+}

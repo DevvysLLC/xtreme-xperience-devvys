@@ -1,0 +1,16 @@
+fragment SectionMediaCardGrid on SectionMediaCardGridRecord {
+  id
+  config {
+    ...SectionConfig
+  }
+  layout
+  title
+  subtitle
+  description
+  cards {
+    ...CoreMediaCard
+  }
+  ctas {
+    ...CoreCta
+  }
+}

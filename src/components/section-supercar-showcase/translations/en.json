@@ -1,0 +1,18 @@
+{
+  "section_supercar_showcase": {
+    "carousel": {
+      "explore_car": "Explore Car",
+      "view_all_cars": "View All Cars",
+      "top_speed": "Top Speed",
+      "horsepower": "Horsepower",
+      "zero_to_sixty": "0-60 mph",
+      "starting_at": "Starting at",
+      "previous": "Previous slide",
+      "next": "Next slide",
+      "package_type": {
+        "single": "Single Cars",
+        "multi": "Multi-car Packages"
+      }
+    }
+  }
+}

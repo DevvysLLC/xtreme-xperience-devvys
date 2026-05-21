@@ -1,0 +1,61 @@
+@use '../../../../styles/styleguide' as sg;
+@use '../../../../styles/core/unit' as u;
+
+/* ===================================================== */
+/* Quantity Selector */
+/* ===================================================== */
+
+.quantity {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: sg.spacing(regular);
+  background-color: sg.color(black);
+  color: sg.color(white);
+
+  @include sg.min(tabletLandscape) {
+    justify-content: center;
+  }
+
+  &__button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: u.rem-calc(40);
+    height: u.rem-calc(40);
+    background-color: sg.color(black);
+    font-size: sg.font-size(large);
+    font-weight: sg.font-weight(600);
+    color: sg.color(white);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &__input {
+    width: u.rem-calc(48);
+    height: u.rem-calc(40);
+    padding: 0;
+    border: none;
+    background-color: sg.color(black);
+    font-size: sg.font-size(regular);
+    font-weight: sg.font-weight(600);
+    text-align: center;
+    color: sg.color(white);
+    appearance: textfield;
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      margin: 0;
+      appearance: none;
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+}

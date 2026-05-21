@@ -1,0 +1,28 @@
+# Add "open:form" action to CoreCta
+- review src/components/core-cta
+- when action === open:form
+  - load the form record dynamically
+  - add new api endpoint
+    - src/app/api/v1/frontend/form/[handle]
+    - actionDetail will represent the handle
+      - match existing patterns in src/app/api/v1/frontend routes
+      - cache the api route
+  - using the handle
+    - query the form model in dato
+  - add a use-form hook in src/hooks/use-form
+  - use tanstack query for data fetching
+    - using the handle
+    - query the form model in dato
+  - create a new global-form-dialog
+    - reference: src/components/global-dialog
+  - scaffold a dialog
+    - show the dialog when the coreCta is clicked
+    - using the new use-form hook
+    - fetch the form using the handle
+    - log the response
+    - show core-loading-spinner while fetching data
+    - once loaded render the form
+      - note when the hubspot_embed field has value
+        - render CoreHubspotForm
+        - else
+        - render CoreForm

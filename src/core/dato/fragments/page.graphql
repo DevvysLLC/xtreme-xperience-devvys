@@ -1,0 +1,11 @@
+fragment Page on PageRecord {
+  id
+  _createdAt
+  _updatedAt
+  config {
+    ...PageConfig
+  }
+  content {
+    ...PageSections
+  }
+}

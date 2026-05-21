@@ -1,0 +1,5 @@
+query getFormByHandle($handle: String!) {
+  form(filter: { handle: { eq: $handle } }) {
+    ...Form
+  }
+}

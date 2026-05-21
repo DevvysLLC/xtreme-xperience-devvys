@@ -1,0 +1,11 @@
+fragment CoreUsp on CoreUspRecord {
+  id
+  icon {
+    id
+    icon
+  }
+  horizontalAlignment
+  title
+  subtitle
+  description
+}

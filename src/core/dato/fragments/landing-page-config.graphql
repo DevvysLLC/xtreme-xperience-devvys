@@ -1,0 +1,13 @@
+fragment LandingPageConfig on LandingPageConfigRecord {
+  id
+  handle
+  seo {
+    title
+    description
+    image {
+      ...Image
+    }
+    noIndex
+    twitterCard
+  }
+}

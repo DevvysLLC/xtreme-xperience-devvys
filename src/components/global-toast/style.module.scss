@@ -1,0 +1,76 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+.toast {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: sg.zindex(foreground);
+  width: 100%;
+  animation: slideIn 0.3s ease-out;
+  background-color: sg.color(white);
+  box-shadow: u.rem-calc(4) sg.color(black-10);
+
+  &--success {
+    .content {
+      border: 1px solid sg.color(success);
+      background-color: sg.color(success-20);
+    }
+  }
+
+  &--error {
+    .content {
+      border: 1px solid sg.color(error);
+      background-color: sg.color(error-20);
+    }
+  }
+
+  &--info {
+    .content {
+      border: 1px solid sg.color(info);
+      background-color: sg.color(info-20);
+    }
+  }
+
+  &__container {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.content {
+  background-color: sg.color(white);
+  border: 1px solid sg.color(black-20);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: sg.spacing(small);
+  position: relative;
+}
+
+.message {
+  font-size: sg.font-size(regular);
+}
+
+.closeButton {
+  @include sg.reset-button();
+  display: flex;
+  position: absolute;
+  right: sg.spacing(small);
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0%);
+    opacity: 1;
+  }
+}

@@ -1,0 +1,20 @@
+@use '../../styles/styleguide' as sg;
+
+/* ===================================================== */
+/* Core Add to Cart */
+/* ===================================================== */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: sg.spacing(small);
+
+  &__button {
+    width: 100%;
+  }
+
+  &__error {
+    font-size: sg.font-size(small);
+    color: sg.color(error);
+  }
+}

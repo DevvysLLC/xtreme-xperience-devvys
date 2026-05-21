@@ -1,0 +1,9 @@
+fragment SectionUsp on SectionUspRecord {
+  id
+  config {
+    ...SectionConfig
+  }
+  cards {
+    ...CoreUsp
+  }
+}

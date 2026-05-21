@@ -1,0 +1,7 @@
+fragment SectionHeadline on SectionHeadlineRecord {
+  id
+  title
+  config {
+    ...SectionConfig
+  }
+}

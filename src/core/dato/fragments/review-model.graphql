@@ -1,0 +1,15 @@
+fragment ReviewModel on ReviewModelRecord {
+  id
+  title
+  attribution
+  quote
+  rating
+  media {
+    ... on CoreImageRecord {
+      ...CoreImage
+    }
+    ... on CoreVideoRecord {
+      ...CoreVideo
+    }
+  }
+}

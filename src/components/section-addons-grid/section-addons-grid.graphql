@@ -1,0 +1,14 @@
+fragment SectionAddonsGrid on SectionAddonsGridRecord {
+  id
+  config {
+    ...SectionConfig
+  }
+  title
+  description
+  addons {
+    ...Addon
+  }
+  ctas {
+    ...CoreCta
+  }
+}

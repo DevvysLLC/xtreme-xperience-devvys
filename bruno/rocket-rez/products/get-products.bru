@@ -1,0 +1,36 @@
+meta {
+  name: Get Products
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{ROCKET_REZ_API_BASE_URL}}/v1/headless/products?type=Retail,Giftcard
+  body: none
+  auth: bearer
+}
+
+query {
+  type: Retail,Giftcard
+}
+
+auth:bearer {
+  token: {{jwt}}
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Response has products array", function() {
+    expect(res.getBody()).to.have.property('products');
+    expect(res.getBody().products).to.be.an('array');
+  });
+  
+  test("Response has pagination info", function() {
+    expect(res.getBody()).to.have.property('pageSize');
+    expect(res.getBody()).to.have.property('pageIndex');
+    expect(res.getBody()).to.have.property('totalCount');
+  });
+}

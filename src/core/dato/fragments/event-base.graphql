@@ -1,0 +1,9 @@
+fragment EventBase on EventRecord {
+  id
+  titleInternal
+  _createdAt
+  _updatedAt
+  model {
+    ...EventModelData
+  }
+}

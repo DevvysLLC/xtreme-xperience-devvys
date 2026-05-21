@@ -1,0 +1,33 @@
+fragment PageSections on PageContentRecord {
+  sections {
+    ...SectionAccordion
+    ...SectionAddonsGrid
+    ...SectionContact
+    ...SectionEventsFeature
+    ...SectionFaq
+    ...SectionHeadline
+    ...SectionHero
+    ...SectionHighlight
+    ...SectionIframe
+    ...SectionMediaCardGrid
+    ...SectionMediaGallery
+    ...SectionMediaHero
+    ...SectionPolicy
+    ...SectionPressBrandGrid
+    ...SectionReview
+    ...SectionSocialGrid
+    ...SectionSplitCalloutCollage
+    ...SectionSplitCallout
+    ...SectionSupercarBrandGrid
+    ...SectionSupercarBrandHero
+    ...SectionSupercarFleetGrid
+    ...SectionSupercarHero
+    ...SectionSupercarShowcase
+    ...SectionSupercarSpec
+    ...SectionTrackHero
+    ...SectionTrackMapCallout
+    ...SectionTrackSpec
+    ...SectionUsp
+    ...SectionEventFinder
+  }
+}

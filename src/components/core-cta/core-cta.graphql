@@ -1,0 +1,36 @@
+fragment CoreCta on CoreCtaRecord {
+  id
+  title
+  seoTitle
+  path
+  link {
+    __typename
+    ... on PageRecord {
+      entry: config {
+        handle
+      }
+    }
+    ... on PostRecord {
+      entry: config {
+        handle
+      }
+    }
+    ... on SupercarRecord {
+      entry: config {
+        handle
+      }
+    }
+    ... on TrackRecord {
+      entry: config {
+        handle
+      }
+    }
+  }
+  style
+  colorType
+  size
+  target
+  action
+  actionDetail
+  icon
+}

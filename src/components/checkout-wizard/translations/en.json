@@ -1,0 +1,113 @@
+{
+  "contacts_page": {
+    "title": "Contact Information",
+    "button": {
+      "back": "Back"
+    }
+  },
+  "contacts_form": {
+    "cart_actions": {
+      "checkout_text": "Continue to Payment"
+    },
+    "fields": {
+      "title": "Contact Details",
+      "first_name": "First Name",
+      "first_name_placeholder": "Enter your first name",
+      "first_name_error": "Please enter a valid first name",
+      "first_name_error_required": "First name is required",
+      "last_name": "Last Name",
+      "last_name_placeholder": "Enter your last name",
+      "last_name_error": "Please enter a valid last name",
+      "last_name_error_required": "Last name is required",
+      "email": "Email",
+      "email_placeholder": "Enter your email address",
+      "email_error": "Please enter a valid email address",
+      "email_error_required": "Email is required",
+      "phone": "Phone",
+      "phone_placeholder": "Enter your phone number",
+      "phone_required": "Phone is required",
+      "phone_error": "Please enter a valid phone number",
+      "phone_error_required": "Phone is required",
+      "address_line_1": "Address Line 1",
+      "address_line_1_placeholder": "Street address",
+      "address_line_1_error": "Please enter a valid address",
+      "address_line_1_error_required": "Address is required",
+      "address_line_2": "Address Line 2",
+      "address_line_2_placeholder": "Apartment, suite, etc. (optional)",
+      "address_line_2_error": "Please enter a valid address",
+      "address_line_2_error_required": "Address line 2 is required",
+      "city": "City",
+      "city_placeholder": "Enter your city",
+      "city_error": "Please enter a valid city",
+      "city_error_required": "City is required",
+      "province": "State / Province",
+      "province_placeholder": "Enter your state or province",
+      "province_required": "State / Province is required",
+      "province_select_placeholder": "Select state",
+      "province_error": "Please enter a valid state or province",
+      "province_error_required": "State / Province is required",
+      "postal_code": "Postal Code",
+      "postal_code_placeholder": "Enter your postal code",
+      "postal_code_error": "Please enter a valid postal code",
+      "postal_code_error_required": "Postal code is required",
+      "country": "Country",
+      "country_placeholder": "Enter your country",
+      "country_error": "Please enter a valid country",
+      "country_error_required": "Country is required"
+    },
+    "terms": {
+      "title": "Terms and Conditions",
+      "required": "I agree to the terms and conditions"
+    },
+    "button": {
+      "submit": "Continue",
+      "update": "Continue",
+      "submitting": "Saving..."
+    }
+  },
+  "complete_page": {
+    "title": "Thank You for Your Order",
+    "description": "Order Number: #{orderNumber}",
+    "button": {
+      "home": "Home",
+      "view_order": "View Order Details"
+    },
+    "status": {
+      "loading": "Loading your order..."
+    },
+    "error": {
+      "missing_order_id": "Could not find your order. Please check your order ID and try again."
+    }
+  },
+  "payment_page": {
+    "title": "Payment",
+    "description": "Complete your booking with a secure payment form.",
+    "iframe": {
+      "title": "Secure payment"
+    },
+    "status": {
+      "idle": "Payment is ready to start.",
+      "loading": "Loading payment information…",
+      "loading_cart": "Loading cart information…",
+      "loading_iframe": "Loading secure payment form…",
+      "ready": "Secure payment form is ready.",
+      "processing_payment": "Processing payment…",
+      "authorizing": "Authorizing payment…",
+      "success": "Payment complete. Order ID: {orderId}",
+      "error": "We couldn't process your payment. Please try again."
+    },
+    "button": {
+      "back": "Back",
+      "pay_now": "Pay now",
+      "retry": "Retry",
+      "checkout": "Checkout"
+    },
+    "toast": {
+      "success": "Payment complete.",
+      "error": "We couldn't process your payment. Please try again."
+    },
+    "error": {
+      "complete_failed": "Failed to complete your order. Please try again."
+    }
+  }
+}

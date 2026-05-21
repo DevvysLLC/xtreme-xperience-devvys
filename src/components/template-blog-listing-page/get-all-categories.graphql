@@ -1,0 +1,9 @@
+query getAllCategories {
+  allCategories(first: 100) {
+    id
+    model {
+      handle
+      title
+    }
+  }
+}

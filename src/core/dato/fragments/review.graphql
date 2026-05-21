@@ -1,0 +1,6 @@
+fragment Review on ReviewRecord {
+  id
+  model {
+    ...ReviewModel
+  }
+}

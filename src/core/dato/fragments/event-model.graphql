@@ -1,0 +1,14 @@
+fragment EventModel on EventModelRecord {
+  ...EventModelData
+  media {
+    ... on CoreImageRecord {
+      ...CoreImage
+    }
+    ... on CoreVideoRecord {
+      ...CoreVideo
+    }
+  }
+  gradient {
+    ...CoreGradient
+  }
+}

@@ -1,0 +1,128 @@
+@use '../core/stdlib/map' as custom_map;
+@use 'sass:list';
+@use 'sass:string';
+@use 'sass:map';
+@use 'sass:meta';
+
+$_config: (
+  duration: (
+    0: 0ms,
+    150: 150ms,
+    200: 200ms,
+    250: 250ms,
+    300: 300ms,
+    400: 400ms,
+    500: 500ms,
+    600: 600ms,
+    800: 800ms,
+    1000: 1000ms,
+    1200: 1200ms
+  ),
+  easing: (
+    linear: linear,
+    easeOutQuint: cubic-bezier(0.22, 1, 0.36, 1),
+    easeOutCirc: cubic-bezier(0, 0.55, 0.45, 1),
+    easeOutExpo: cubic-bezier(0.16, 1, 0.3, 1),
+    easeInOutExpo: cubic-bezier(1, 0, 0, 1),
+    easeInOutCirc: cubic-bezier(0.85, 0, 0.15, 1),
+    easeInOutQuart: cubic-bezier(0.77, 0, 0.175, 1),
+    easeInQuart: cubic-bezier(0.895, 0.03, 0.685, 0.22),
+    easeOutQuart: cubic-bezier(0.165, 0.84, 0.44, 1)
+  ),
+  allowedProperties: (
+    'color',
+    'background-color',
+    'border-color',
+    'opacity',
+    'transform',
+    'grid-template-rows',
+    'visibility'
+  ),
+  default: (
+    duration: 250,
+    easing: 'easeOutExpo',
+    discrete: false,
+    delay: 0
+  )
+);
+
+@function easing($key) {
+  @return custom_map.get-strict(
+    custom_map.get-strict($_config, 'easing'),
+    $key
+  );
+}
+
+@function duration($duration) {
+  @return custom_map.get-strict(
+    custom_map.get-strict($_config, 'duration'),
+    $duration
+  );
+}
+
+@mixin transition(
+  $property,
+  $duration: 400,
+  $timing: 'easeOutQuart',
+  $delay: 0
+) {
+  $allowedProperties: custom_map.get-strict($_config, 'allowedProperties');
+
+  @if not list.index($allowedProperties, $property) {
+    @error "'#{$property}' is not an allowed property for transition.";
+  }
+
+  @include should-animate {
+    will-change: $property;
+    transition: $property duration($duration) easing($timing) duration($delay);
+  }
+}
+
+@mixin transitions($transitions...) {
+  $will-change-properties: ();
+  $transition-values: ();
+  $default: custom_map.get-strict($_config, default);
+
+  @each $transition in $transitions {
+    @if meta.type-of($transition) == 'list' and list.length($transition) == 2 {
+      $transition: (
+        property: list.nth($transition, 1),
+        duration: list.nth($transition, 2)
+      );
+    }
+    $merged: map.merge($default, $transition);
+    $property: custom_map.get-strict($merged, property);
+    $duration: custom_map.get-strict($merged, duration);
+    $timing: custom_map.get-strict($merged, easing);
+    $discrete: custom_map.get-strict($merged, discrete);
+    $delay: custom_map.get-strict($merged, delay);
+    $allowedProperties: custom_map.get-strict($_config, 'allowedProperties');
+
+    @if not list.index($allowedProperties, $property) {
+      @error "'#{$property}' is not an allowed property for transition.";
+    }
+
+    $will-change-properties: list.append(
+      $will-change-properties,
+      $property,
+      comma
+    );
+
+    $transition-values: list.append(
+      $transition-values,
+      #{$property duration($duration) easing($timing) duration($delay)},
+      comma
+    );
+  }
+
+  @include should-animate {
+    will-change: $will-change-properties;
+    transition: $transition-values;
+  }
+}
+
+@mixin should-animate {
+  @media (prefers-reduced-motion: no-preference) {
+    @content;
+  }
+}

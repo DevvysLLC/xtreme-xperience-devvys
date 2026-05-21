@@ -1,0 +1,15 @@
+fragment SectionMediaGallery on SectionMediaGalleryRecord {
+  id
+  title
+  config {
+    ...SectionConfig
+  }
+  gallery {
+    ... on CoreImageRecord {
+      ...CoreImage
+    }
+    ... on CoreVideoRecord {
+      ...CoreVideo
+    }
+  }
+}

@@ -1,0 +1,26 @@
+fragment GlobalConfig on GlobalConfigRecord {
+  id
+  seoSiteName
+  seoSiteDescription
+  contactPhoneNumber
+  workingHours
+  stickyTrackFinderHeading
+  stickyTrackFinderLinks {
+    ...NavigationItem
+  }
+  sendlaneNewsletterListId
+  googleEnableGtm
+  googleGtmId
+  googleEnableEventTracking
+  googleEnableAnalytics
+  enableFacebookPixel
+  bookingEnableLegacyBooking
+  enableBookingBar
+  hideBookingBarOnPaths
+  title404
+  subtitle404
+  description404
+  ctas404 {
+    ...CoreCta
+  }
+}

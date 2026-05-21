@@ -1,0 +1,34 @@
+flowchart TD
+    Start([User Action]) --> AddItem{Add Item Type}
+
+    AddItem -->|Car/Event| AddEvent[useCartAddEvent]
+    AddItem -->|Insurance| AddInsurance[useCartAddInsurance]
+    AddItem -->|Addon| AddAddon[useCartAddAddon]
+    AddItem -->|Generic| AddGeneric[useCartAdd]
+
+    AddEvent --> RocketRezAPI["RocketRez API<br/>POST /cart/add"]
+    AddInsurance --> RocketRezAPI
+    AddAddon --> RocketRezAPI
+    AddGeneric --> RocketRezAPI
+
+    RocketRezAPI --> UpdateStore[Update Cart Store]
+    UpdateStore --> AddMetadata[Add Line Item Metadata]
+    AddMetadata --> CartStore[("Cart Store<br/>localStorage")]
+
+    CartStore --> ValidateInsurance{"Insurance<br/>Validation"}
+
+    ValidateInsurance -->|No Cars| RemoveInsurance1[Remove Insurance]
+    ValidateInsurance -->|Qty Mismatch| RemoveInsurance2["Remove Insurance<br/>&amp; Redirect"]
+    ValidateInsurance -->|Valid| KeepInsurance[Keep Insurance]
+
+    RemoveInsurance1 --> CartStore
+    RemoveInsurance2 --> Redirect["Redirect to<br/>Coverage Options"]
+    KeepInsurance --> CartStore
+
+    CartStore --> ReactQuery["React Query<br/>Invalidates"]
+    ReactQuery --> Components[Components Update]
+
+    style CartStore fill:#d0d0d0,color:#000
+    style RocketRezAPI fill:#b0b0b0,color:#000
+    style ValidateInsurance fill:#a0a0a0,color:#000
+    style ReactQuery fill:#b0b0b0,color:#000

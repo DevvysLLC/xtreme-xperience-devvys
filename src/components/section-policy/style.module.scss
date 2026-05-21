@@ -1,0 +1,93 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+.section {
+  position: relative;
+  padding-block: sg.spacing(xlarge);
+  padding-inline: sg.spacing(regular);
+
+  @include sg.min(laptopSmall) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding-block: sg.spacing(xxxxlarge);
+    padding-inline: sg.spacing(xlarge);
+  }
+}
+
+.content {
+  @include sg.min(laptopSmall) {
+    padding-right: sg.spacing(xlarge);
+  }
+}
+
+.title {
+  max-width: u.rem-calc(350);
+  font-family: sg.font-family(anton);
+  font-size: sg.font-size(xlarge);
+  font-weight: sg.font-weight(400);
+  line-height: sg.line-height('110%');
+  text-transform: uppercase;
+
+  @include sg.min(laptopSmall) {
+    font-size: sg.font-size(xxxlarge);
+    line-height: sg.line-height('100%');
+  }
+}
+
+.subtitle {
+  margin-top: sg.spacing(small);
+  font-family: sg.font-family(barlow-semi-condensed);
+  font-size: sg.font-size(medium);
+  font-weight: sg.font-weight(400);
+  line-height: sg.line-height('140%');
+}
+
+.tabs {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  display: flex;
+  gap: sg.spacing(xsmall);
+  padding-inline: sg.spacing(regular);
+  margin-top: sg.spacing(large);
+  margin-inline: calc(sg.spacing(regular) * -1);
+  white-space: nowrap;
+
+  @include sg.min(laptopSmall) {
+    flex-direction: column;
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  li {
+    scroll-snap-align: center;
+  }
+}
+
+.policies {
+  margin-top: sg.spacing(large);
+
+  @include sg.min(laptopSmall) {
+    margin-top: 0;
+  }
+}
+
+// Policy content visibility - server renders all content for SEO
+// CSS controls visibility for instant switching without RSC refetch
+.policyContent {
+  display: none;
+
+  // Show active tab after JS hydration (data-active attribute set by client)
+  &[data-active='true'] {
+    display: block;
+  }
+}
+
+// Show default tab ONLY when no JS has run yet (no sibling has data-active)
+// Uses :has() to check if any sibling is active - if so, ignore data-default
+.policies:not(:has([data-active='true'])) .policyContent[data-default='true'] {
+  display: block;
+}

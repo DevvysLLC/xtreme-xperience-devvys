@@ -1,0 +1,114 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+/* ===================================================== */
+/* Card */
+/* ===================================================== */
+
+.card {
+  $card: &;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: sg.spacing(regular);
+  width: 100%;
+  padding: sg.spacing(medium);
+  background-color: sg.color(gray-50);
+
+  &--featured {
+    @include sg.min(laptopSmall) {
+      flex-direction: row;
+      align-items: center;
+      gap: sg.spacing(medium);
+    }
+  }
+
+  &--upsell {
+    @include sg.min(laptopSmall) {
+      flex-direction: row;
+      align-items: center;
+      gap: sg.spacing(medium);
+      padding: sg.spacing(regular);
+    }
+  }
+
+  &__badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  &__media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 420 / 240;
+
+    #{$card}--upsell & {
+      @include sg.min(laptopSmall) {
+        width: u.rem-calc(260);
+      }
+    }
+  }
+
+  &__inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: sg.spacing(regular);
+    height: 100%;
+    width: 100%;
+
+    #{$card}--featured & {
+      @include sg.min(laptopSmall) {
+        max-width: calc(u.rem-calc(320) + (sg.spacing(xlarge) * 2));
+        padding-inline: sg.spacing(xlarge);
+      }
+    }
+
+    #{$card}--upsell & {
+      @include sg.min(laptopSmall) {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: sg.spacing(medium);
+      }
+    }
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: sg.spacing(regular);
+    max-width: u.rem-calc(500);
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    padding: sg.spacing(xsmall) 0 sg.spacing(regular);
+    border-bottom: u.rem-calc(1) dashed sg.color(border-dark);
+  }
+
+  &__title {
+    font-size: sg.font-size(regular);
+    font-weight: sg.font-weight(700);
+    line-height: sg.line-height('140%');
+  }
+
+  &__description {
+    font-size: sg.font-size(regular);
+    font-weight: sg.font-weight(400);
+    line-height: sg.line-height('140%');
+  }
+
+  &__actions {
+    flex-shrink: 0;
+    margin-top: auto;
+  }
+
+  &__cta {
+    width: 100%;
+  }
+}

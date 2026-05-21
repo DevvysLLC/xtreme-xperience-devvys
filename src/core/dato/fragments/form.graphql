@@ -1,0 +1,10 @@
+fragment Form on FormRecord {
+  id
+  iframeEmbed
+  hubspotEmbed
+  hubspotVersion
+  sendlaneEmbed
+  model {
+    ...FormModel
+  }
+}

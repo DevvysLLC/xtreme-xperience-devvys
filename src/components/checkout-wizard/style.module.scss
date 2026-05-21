@@ -1,0 +1,16 @@
+@use '../../styles/styleguide' as sg;
+
+.wizard {
+  width: 100%;
+  min-height: 100%;
+}
+
+.wizard__container {
+  width: 100%;
+  max-width: 100%;
+}
+
+.wizard__content {
+  width: 100%;
+  padding-bottom: sg.spacing(xxlarge);
+}

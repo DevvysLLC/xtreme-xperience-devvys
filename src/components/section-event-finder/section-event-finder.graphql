@@ -1,0 +1,7 @@
+fragment SectionEventFinder on SectionEventFinderRecord {
+  id
+  title
+  config {
+    ...SectionConfig
+  }
+}

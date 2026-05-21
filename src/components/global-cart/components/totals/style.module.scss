@@ -1,0 +1,39 @@
+@use '../../../../styles/styleguide' as sg;
+@use '../../../../styles/core/unit' as u;
+
+.cartTotals {
+  display: flex;
+  flex-direction: column;
+  gap: sg.spacing(xxsmall);
+  padding-block: sg.spacing(small);
+  border-top: u.rem-calc(1) dashed sg.color(border-dark);
+  line-height: sg.line-height('100%');
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__label {
+    font-family: sg.font-family(barlow);
+    font-size: sg.font-size(regular);
+  }
+
+  &__value {
+    font-family: sg.font-family(barlow-semi-condensed);
+    font-size: sg.font-size(regular);
+
+    [data-price] {
+      font-weight: sg.font-weight(400);
+    }
+  }
+
+  &__total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: sg.font-size(mediuml);
+    font-weight: sg.font-weight(700);
+  }
+}

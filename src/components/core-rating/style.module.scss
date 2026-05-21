@@ -1,0 +1,24 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+.rating {
+  $rating: &;
+  display: inline-flex;
+  align-items: center;
+  gap: sg.spacing(xxxsmall);
+
+  svg {
+    width: u.rem-calc(20);
+    height: u.rem-calc(20);
+
+    @include sg.min(laptopSmall) {
+      width: u.rem-calc(27);
+      height: u.rem-calc(27);
+    }
+
+    #{$rating}--small & {
+      width: u.rem-calc(20);
+      height: u.rem-calc(20);
+    }
+  }
+}

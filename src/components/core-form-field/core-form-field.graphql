@@ -1,0 +1,13 @@
+fragment CoreFormField on CoreFormFieldRecord {
+  id
+  fieldType
+  fieldName
+  fieldRequired
+  fieldLabel
+  fieldPlaceholder
+  fieldSize
+  fieldError
+  fieldOptions {
+    ...CoreFormFieldOption
+  }
+}

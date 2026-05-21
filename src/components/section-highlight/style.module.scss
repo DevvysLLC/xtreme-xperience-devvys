@@ -1,0 +1,59 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+.section {
+  padding-inline: sg.spacing(regular);
+  padding-block: sg.spacing(xxlarge);
+  display: flex;
+  gap: sg.spacing(large);
+  border-top: 1px dashed sg.color(black-20);
+  flex-wrap: wrap;
+
+  @include sg.min(tabletPortrait) {
+    padding-inline: sg.spacing(xlarge);
+    padding-block: sg.spacing(xxxxlarge);
+    gap: sg.spacing(xxlarge);
+    flex-wrap: nowrap;
+  }
+}
+
+.title {
+  font-family: sg.font-family(anton);
+  font-size: sg.font-size(large);
+  line-height: sg.line-height('100%');
+  color: sg.color(black);
+  text-transform: uppercase;
+  margin-bottom: sg.font-size(large);
+
+  @include sg.min(tabletPortrait) {
+    font-size: sg.font-size(xxxlarge);
+    margin-bottom: sg.font-size(medium);
+  }
+}
+
+.main {
+  width: 100%;
+
+  @include sg.min(tabletPortrait) {
+    width: 50%;
+  }
+}
+
+.details {
+  width: 100%;
+
+  @include sg.min(tabletPortrait) {
+    width: 50%;
+  }
+}
+
+.media {
+  width: 100%;
+  aspect-ratio: 1.6 / 1;
+  position: relative;
+  background-color: sg.color(black-20);
+}
+
+.map {
+  @include sg.fill-parent();
+}

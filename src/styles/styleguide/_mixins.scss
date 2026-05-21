@@ -1,0 +1,291 @@
+@use 'sass:map';
+@use '../core/unit' as u;
+@use './spacing' as s;
+@use './media' as m;
+@use './units' as un;
+@use './color' as c;
+@use './typography' as t;
+@use './zindex' as z;
+
+$_radius: 8;
+$_container: 1512;
+
+/// Centers an element with a maximum width.
+/// @param {Number} [$max_width] - The maximum width of the container in pixels.
+/// @content Optional content to be injected within the mixin.
+@mixin container($max_width: $_container) {
+  width: 100%;
+  margin: 0 auto;
+  max-width: u.rem-calc($max_width);
+}
+
+/// Applies consistent padding spacing around a section.
+/// @content Optional content to be injected within the mixin.
+@mixin section-padding {
+  padding-block: s.spacing('large');
+  padding-inline: s.spacing('regular');
+
+  @include m.min(laptopSmall) {
+    padding-block: s.spacing('xlarge');
+    padding-inline: s.spacing('xlarge');
+  }
+}
+
+/// Calculates the aspect ratio of an element.
+/// @param {Number} $width - The width of the element.
+/// @param {Number} $height - The height of the element.
+/// @return {Number} The aspect ratio of the element.
+@function aspect-ratio($width, $height) {
+  @return calc($height / $width) * 100%;
+}
+
+/// Applies styles on hover (always enabled), and optionally on focus and focus-within.
+/// Hover styles are wrapped in a media query, while focus and focus-within are always applied.
+/// @param {Boolean} [$focus] - Enable focus styles.
+/// @param {Boolean} [$focus-within] - Enable focus-within styles.
+/// @content The CSS rules to apply within the state styles.
+@mixin hover-state($focus: false, $focus-within: false) {
+  // Hover styles (only when the device supports hover and has a fine pointer)
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      @content;
+    }
+  }
+
+  // Focus styles
+  @if $focus {
+    &:focus {
+      @content;
+    }
+  }
+
+  // Focus-within styles
+  @if $focus-within {
+    &:focus-within {
+      @content;
+    }
+  }
+}
+
+/// Applies styles for a disabled state.
+@mixin disabled-state() {
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+/// Applies a border-radius to an element.
+/// @param {Number} [$radius] - The radius value in pixels.
+@mixin border-radius($radius: $_radius) {
+  border-radius: u.rem-calc($radius);
+}
+
+/// Fills the parent container completely.
+/// @content Optional content to be injected within the mixin.
+@mixin fill-parent() {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/// Fills the parent container completely.
+/// @content Optional content to be injected within the mixin.
+@mixin image-fill-parent($object-fit: cover) {
+  object-fit: $object-fit;
+  box-sizing: border-box;
+  border: none;
+  width: 0;
+  min-width: 100%;
+  max-width: 100%;
+  height: 0;
+  min-height: 100%;
+  max-height: 100%;
+  margin: auto;
+  padding: 0;
+  display: block;
+  position: absolute;
+  inset: 0;
+}
+
+/// Hides native scrollbars from the element.
+/// @content Optional content to be injected within the mixin.
+@mixin hide-native-scrollbar() {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/// Resets the default styles of an unordered list.
+@mixin reset-ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/// Resets the default styles of a button.
+@mixin reset-button {
+  padding: 0;
+  margin: 0;
+  border: none;
+  appearance: none;
+  background: none;
+}
+
+/// Applies experimental content-visibility properties.
+/// Reference: [Content Visibility](https://web.dev/articles/content-visibility)
+@mixin content-visibility() {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 100%;
+  contain: layout style paint;
+}
+
+/// Adjusts the padding and margin within a parent to create a full-width scrollable container.
+/// @param {String} [$spacing] - The spacing size to use.
+/// @content Optional content to be injected within the mixin.
+@mixin edge-to-edge-scroll($spacing: s.spacing(regular)) {
+  margin-left: -#{calc($spacing)};
+  margin-right: -#{calc($spacing)};
+  padding-left: calc($spacing);
+  padding-right: calc($spacing);
+}
+
+/// Resets the padding and margin adjustments made by `edge-to-edge-scroll` mixin.
+/// @param {String} [$spacing] - The spacing size to use.
+/// @content Optional content to be injected within the mixin.
+@mixin reset-edge-to-edge-scroll($spacing: s.spacing(regular)) {
+  margin-left: initial;
+  margin-right: initial;
+  padding-left: initial;
+  padding-right: initial;
+}
+
+/// Applies borders to specified sides of an element.
+/// @param {(top | right | bottom | left)} [$sides=(top, right, bottom, left)] - The sides where borders should be applied.
+/// @param {border} [$color] - The color key representing the border color.
+/// @content Optional content to be injected within the mixin.
+@mixin border(
+  $sides: (
+    top,
+    right,
+    bottom,
+    left
+  ),
+  $color: black
+) {
+  $borders: (
+    top: border-top,
+    right: border-right,
+    bottom: border-bottom,
+    left: border-left
+  );
+
+  @each $side in $sides {
+    $prop: map.get($borders, $side);
+    #{$prop}: 1px solid c.color($color);
+  }
+}
+
+/// Styles the del element to represent a price change.
+/// can be used with the `product-price-html` snippet.
+@mixin product-price-html-styles() {
+  s {
+    position: relative;
+    text-decoration: none;
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 100%;
+      height: 1px;
+      background-color: currentColor;
+      transform: translateY(-50%);
+    }
+  }
+}
+
+/// removes the focus outline from an element.
+@mixin remove-default-focus-outline() {
+  &:active,
+  &:focus {
+    outline: none;
+  }
+}
+
+/// Removes the default styles of a select element.
+@mixin remove-default-select-styles() {
+  border: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: none;
+}
+
+/// Visibly hides an element from the screen, but keeps it accessible to screen readers.
+@mixin visually-hidden() {
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+}
+
+// Drop shadow mixin
+@mixin drop-shadow() {
+  box-shadow: 0 0 1rem rgba(0, 0, 0, 0.15);
+}
+
+/// Applies styles for different section colors from Section Config.
+@mixin section-config() {
+  &--black {
+    --background-color: #{c.color(black)};
+    --color: #{c.color(white)};
+    background-color: c.color(black);
+    color: c.color(white);
+  }
+
+  &--white {
+    --background-color: #{c.color(white)};
+    --color: #{c.color(black)};
+    background-color: c.color(white);
+    color: c.color(black);
+  }
+
+  &--carrara {
+    --background-color: #{c.color(carrara)};
+    --color: #{c.color(black)};
+    background-color: c.color(carrara);
+    color: c.color(black);
+  }
+
+  &--orange {
+    --background-color: #{c.color(orange)};
+    --color: #{c.color(white)};
+    background-color: c.color(orange);
+    color: c.color(white);
+  }
+
+  &--gray {
+    --background-color: #{c.color(gray)};
+    --color: #{c.color(white)};
+    background-color: c.color(gray);
+    color: c.color(white);
+  }
+
+  &--bottom-border {
+    border-bottom: 1px dashed c.color(border-dark);
+  }
+
+  &--flag-pattern {
+    background-image: url('/images/flag-background.png');
+    background-size: u.rem-calc(1512) u.rem-calc(781);
+    background-position: center;
+    background-repeat: repeat;
+  }
+}

@@ -1,0 +1,13 @@
+fragment PostConfig on PostConfigRecord {
+  id
+  handle
+  seo {
+    title
+    description
+    image {
+      ...Image
+    }
+    noIndex
+    twitterCard
+  }
+}

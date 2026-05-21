@@ -1,0 +1,18 @@
+@use '../../styles/styleguide' as sg;
+
+.price {
+  display: inline-flex;
+  align-items: center;
+  gap: sg.spacing(xxsmall);
+  font-family: sg.font-family('barlow-semi-condensed');
+  line-height: sg.line-height('140%');
+
+  &__compare {
+    font-weight: sg.font-weight(500);
+    opacity: 0.5;
+  }
+
+  &__regular {
+    font-weight: sg.font-weight(700);
+  }
+}

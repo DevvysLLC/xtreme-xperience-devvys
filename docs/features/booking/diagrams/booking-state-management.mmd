@@ -1,0 +1,15 @@
+sequenceDiagram
+    participant User
+    participant Component
+    participant Hook
+    participant Store
+    participant ReactQuery
+    participant localStorage
+
+    User->>Component: Interacts with wizard
+    Component->>Hook: Calls mutation hook
+    Hook->>Store: Updates Zustand store
+    Store->>localStorage: Persists state
+    Store->>ReactQuery: Triggers invalidation
+    ReactQuery->>Component: Refetches data
+    Component->>User: UI updates

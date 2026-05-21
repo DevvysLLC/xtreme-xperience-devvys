@@ -1,0 +1,33 @@
+fragment PostModelBase on PostModelRecord {
+  id
+  title
+  featured
+  categories {
+    model {
+      title
+      handle
+    }
+  }
+  featuredMedia {
+    __typename
+    ... on CoreImageRecord {
+      ...CoreImage
+    }
+    ... on CoreVideoRecord {
+      ...CoreVideo
+    }
+  }
+  body {
+    ...CoreStructuredText
+  }
+  link {
+    ...CoreCta
+  }
+}
+
+fragment PostModel on PostModelRecord {
+  ...PostModelBase
+  relatedPosts {
+    ...Post
+  }
+}

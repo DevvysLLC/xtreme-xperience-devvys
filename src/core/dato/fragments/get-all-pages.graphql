@@ -1,0 +1,5 @@
+query getAllPages {
+  allPages(first: 100) {
+    ...Page
+  }
+}

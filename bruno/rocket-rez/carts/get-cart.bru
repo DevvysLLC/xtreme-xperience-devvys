@@ -1,0 +1,29 @@
+meta {
+  name: Get Cart
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{ROCKET_REZ_API_BASE_URL}}/v1/headless/cart
+  body: none
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{cartToken}}
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Response has cart data", function() {
+    expect(res.getBody()).to.have.property('data');
+  });
+}

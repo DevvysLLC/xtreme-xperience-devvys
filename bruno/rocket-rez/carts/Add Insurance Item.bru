@@ -1,0 +1,44 @@
+meta {
+  name: Add Insurance Item
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{ROCKET_REZ_API_BASE_URL}}/v1/headless/cart/lineitems
+  body: json
+  auth: bearer
+}
+
+headers {
+  jwt: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJIZWFkbGVzc0NhcnRJZCI6IjZiMGNhYTljLTE5ZmQtNGMwNC1iZWU0LTdkNjZlYjdiZDhiOSIsIkNvbXBhbnlJZCI6Ijg2IiwiQ2xpZW50SWQiOiIwMmZjNjBlZS0xMzliLTQ1N2ItOTY0Yy1lNmY1YjE3NzA3MzQiLCJTY29wZSI6WyJyZWFkX29yZGVycyIsInJlYWRfcHJvZHVjdHMiLCJyZWFkX2NhcnRzIiwid3JpdGVfY2FydHMiXSwiQ2xpZW50UmF0ZUxpbWl0IjoiNjAiLCJuYmYiOjE3NjkxNzQ0NDMsImV4cCI6MTc2OTE3ODA0MywiaWF0IjoxNzY5MTc0NDQzLCJpc3MiOiJodHRwczovL3NlY3VyZS5yb2NrZXQtcmV6LmNvbS9BdXRoLyIsImF1ZCI6Imh0dHBzOi8vc2VjdXJlLnJvY2tldC1yZXouY29tL0FwaS8ifQ.1LDGvHn5jUIghXomsyfJGlzNLba2rAJVq2W1BOPj56o
+}
+
+auth:bearer {
+  token: {{cartToken}}
+}
+
+body:json {
+  {
+    "lineItems": [
+      {
+        "id": 522,
+        "type": "event",
+        "quantity": 1,
+        "scheduleId": 267834,
+        "rateId": 277,
+        "rateType": "Participant"
+      }
+    ]
+  }
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Response has cart data", function() {
+    expect(res.getBody()).to.have.property('data');
+  });
+}

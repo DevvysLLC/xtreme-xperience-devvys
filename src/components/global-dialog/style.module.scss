@@ -1,0 +1,34 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+.dialog {
+  text-align: center;
+
+  &__title {
+    margin-bottom: sg.spacing(regular);
+    font-family: sg.font-family(anton);
+    font-size: sg.font-size(medium);
+    line-height: sg.line-height('100%');
+    font-weight: sg.font-weight(400);
+    color: sg.color(orange);
+    text-transform: uppercase;
+  }
+
+  &__description {
+    font-size: sg.font-size(regular);
+  }
+
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: sg.spacing(medium);
+    margin-top: sg.spacing(medium);
+  }
+
+  &__submit {
+    width: 100%;
+    max-width: u.rem-calc(200);
+  }
+}

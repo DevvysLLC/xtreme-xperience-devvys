@@ -1,0 +1,10 @@
+// Fonts are loaded via next/font in src/fonts/index.ts
+// This provides automatic preloading and optimal LCP performance.
+//
+// CSS Variables available (set on <html> element):
+// - var(--font-anton)
+// - var(--font-barlow)
+// - var(--font-barlow-semi-condensed)
+//
+// The font-family() function in _typography.scss uses these CSS variables.
+// No @font-face declarations needed here - next/font handles everything.

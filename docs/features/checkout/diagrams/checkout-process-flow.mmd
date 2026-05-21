@@ -1,0 +1,37 @@
+flowchart TD
+    Start([Cart Ready]) --> Guard[CheckoutWizardGuard]
+    Guard -->|"cart.totalItems > 0 && checkout.details == null"| ContactsPage["/checkout/contacts"]
+    Guard -->|"cart.totalItems > 0 && checkout.details != null"| PaymentPage["/checkout/payment"]
+    Guard -->|"pathname starts with /checkout/complete"| CompletePage["/checkout/complete/[id]"]
+    Guard -->|"cart.totalItems == 0 && not complete page"| Home([Redirect to Home])
+
+    ContactsPage --> SaveDetails["useCheckoutPageDetails.set()"]
+    SaveDetails --> PaymentPage
+
+    PaymentPage --> GetSecret["useCheckoutGatewayClientSecret"]
+    GetSecret --> PaymentIframe["PaymentV2 + useRocketRezPayment"]
+    PaymentIframe --> Init["Parent -> iframe: INIT"]
+    Init --> Ready["iframe -> parent: READY"]
+    Ready --> ResumeBranch{"resumePayment exists?"}
+    ResumeBranch -->|"No"| PersistState["Persist sessionStorage state before PROCESS_PAYMENT"]
+    PersistState --> ProcessPayment["Parent -> iframe: PROCESS_PAYMENT"]
+    ResumeBranch -->|"Yes"| ResumePayment["Parent -> iframe: RESUME_PAYMENT"]
+
+    ProcessPayment --> RedirectBranch{"Redirect-based method?"}
+    RedirectBranch -->|"No"| AuthSuccess["iframe -> parent: PAYMENT_AUTH_SUCCESS"]
+    RedirectBranch -->|"Yes"| RedirectOut["Top-level redirect to returnUrl"]
+    RedirectOut --> ReturnToPage["Parent URL has payment_intent_client_secret"]
+    ReturnToPage --> RestoreState["Restore state + strip redirect params"]
+    RestoreState --> ReInit["Reload iframe -> INIT -> READY"]
+    ReInit --> ResumePayment
+
+    ResumePayment --> AuthSuccess
+    AuthSuccess --> FinalResult{"Terminal event"}
+    FinalResult -->|"PAYMENT_SUCCESS"| CompleteCart["useCartComplete"]
+    FinalResult -->|"PAYMENT_ERROR or PAYMENT_AUTH_ERROR"| PaymentError[Show payment error]
+    PaymentError --> PaymentPage
+
+    CompleteCart --> SavePayment["useCheckoutPagePayment.save(orderId)"]
+    SavePayment --> CompletePage
+    CompletePage --> ClearStores["useCartClearAfterComplete + mark viewed"]
+    ClearStores --> OrderPage(["Redirect to Order Page"])

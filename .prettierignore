@@ -1,0 +1,7 @@
+*.spec-snapshot.css
+/_libs
+/assets
+src/graphql/shopify-admin-api/base-types.ts
+src/graphql/shopify-admin-api/blueprint.ts
+datocms/lib/migrations/**/*
+webpack_records.json

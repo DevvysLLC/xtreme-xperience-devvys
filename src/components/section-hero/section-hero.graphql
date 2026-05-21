@@ -1,0 +1,28 @@
+fragment SectionHero on SectionHeroRecord {
+  id
+  maxHeight
+  title
+  subtitle
+  largeText
+  description
+  marquee
+  gradient {
+    ...CoreGradient
+  }
+  ctas {
+    ...CoreCta
+  }
+  config {
+    ...SectionConfig
+  }
+  media {
+    ... on CoreImageRecord {
+      ...CoreImage
+    }
+    ... on CoreVideoRecord {
+      ...CoreVideo
+    }
+  }
+  mediaFullHeight
+  showTrackFinder
+}

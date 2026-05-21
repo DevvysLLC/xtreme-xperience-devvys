@@ -1,0 +1,9 @@
+fragment Footer on FooterRecord {
+  id
+  config {
+    ...FooterConfig
+  }
+  content {
+    ...FooterSections
+  }
+}

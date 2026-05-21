@@ -1,0 +1,32 @@
+sequenceDiagram
+    participant User
+    participant Component
+    participant useLocation
+    participant LocationStore
+    participant BrowserAPI
+    participant localStorage
+
+    User->>Component: Requests location
+    Component->>useLocation: Get location
+    useLocation->>LocationStore: Read state
+    LocationStore->>localStorage: Load persisted
+    LocationStore-->>useLocation: Location data
+    useLocation-->>Component: Return location
+
+    alt Browser Location
+        Component->>BrowserAPI: useLocationBrowser
+        BrowserAPI-->>Component: Coordinates
+        Component->>LocationStore: Update location
+    else Select Track
+        Component->>LocationStore: useLocationSetTrack
+        Note over LocationStore: Sets track + label
+    else Clear Location
+        Component->>LocationStore: useLocationClear
+        Note over LocationStore: Clears all location data
+    end
+
+    Note over Component: Manual search geocodes for<br/>filtering/sorting only and does<br/>not update Location Store
+
+    LocationStore->>localStorage: Persist
+    LocationStore->>useLocation: State change
+    useLocation->>Component: Invalidate query

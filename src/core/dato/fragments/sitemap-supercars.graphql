@@ -1,0 +1,11 @@
+query sitemapSupercars($first: IntType!, $skip: IntType!) {
+  allSupercars(first: $first, skip: $skip, orderBy: _updatedAt_DESC) {
+    _updatedAt
+    config {
+      handle
+      seo {
+        noIndex
+      }
+    }
+  }
+}

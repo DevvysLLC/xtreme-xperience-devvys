@@ -1,0 +1,2 @@
+export const MAX_NEAREST_TRACKS_COUNT = 5
+export const MAX_CAROUSEL_EVENTS_COUNT = 8

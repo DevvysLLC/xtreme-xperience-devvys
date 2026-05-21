@@ -1,0 +1,8 @@
+@use '../../../../styles/styleguide' as sg;
+@use '../../../../styles/core/unit' as u;
+
+.section {
+  position: relative;
+  padding-block: sg.spacing(xlarge);
+  padding-inline: sg.spacing(regular);
+}

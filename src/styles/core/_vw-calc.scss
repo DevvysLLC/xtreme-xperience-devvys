@@ -1,0 +1,13 @@
+@use './vw-calc-v3' as vw;
+
+@warn "Use vw-calc-v3 module directly";
+
+/// @deprecated — use vw-calc-v3 module directly
+@function vw-calc($values, $min-screen-width: 375, $target-screen-width: 1512) {
+  @return vw.vw-calc(
+    $values: $values,
+    $min-screen-width: $min-screen-width,
+    $target-screen-width: $target-screen-width,
+    $root-rem-size: 16
+  );
+}

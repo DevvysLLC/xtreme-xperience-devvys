@@ -1,0 +1,27 @@
+{
+  "tools_search": {
+    "title": "Search Tools",
+    "label": {
+      "type": "Search Type",
+      "search": "Search Term"
+    },
+    "option": {
+      "events": "Events",
+      "retail": "Retail",
+      "giftcard": "Giftcard"
+    },
+    "placeholder": {
+      "search": "Enter name to search"
+    },
+    "button": {
+      "search": "Search",
+      "loading": "Searching..."
+    },
+    "error": {
+      "generic": "An error occurred. Please try again."
+    },
+    "results": {
+      "title": "Results"
+    }
+  }
+}

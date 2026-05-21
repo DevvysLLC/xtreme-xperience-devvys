@@ -1,0 +1,24 @@
+@use 'sass:list';
+
+// Layer order: first = lowest priority, last = highest priority
+$_config: (reset, base, special);
+
+@function exists($name) {
+  @return list.index($_config, $name) != null;
+}
+
+@mixin declare {
+  @layer #{$_config};
+}
+
+@mixin layer($name) {
+  @if not exists($name) {
+    @error "Layer '#{$name}' does not exist. Available layers: #{$_config}";
+  }
+
+  @include declare;
+
+  @layer #{$name} {
+    @content;
+  }
+}

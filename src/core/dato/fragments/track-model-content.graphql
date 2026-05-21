@@ -1,0 +1,59 @@
+fragment TrackModelContent on TrackModelRecord {
+  rideAlongPrice {
+    ...CorePrice
+  }
+  drivingPrice {
+    ...CorePrice
+  }
+  badges {
+    ...CoreBadge
+  }
+  thumbnail {
+    ...CoreImage
+  }
+  events {
+    ...EventBase
+  }
+  notifyMeCta {
+    ...CoreCta
+  }
+  featuredMedia {
+    ... on CoreImageRecord {
+      ...CoreImage
+    }
+    ... on CoreVideoRecord {
+      ...CoreVideo
+    }
+  }
+  specMedia {
+    ... on CoreImageRecord {
+      ...CoreImage
+    }
+    ... on CoreVideoRecord {
+      ...CoreVideo
+    }
+  }
+  gallery {
+    ... on CoreImageRecord {
+      ...CoreImage
+    }
+    ... on CoreVideoRecord {
+      ...CoreVideo
+    }
+  }
+  trackSvg {
+    ...Image
+  }
+  trackSvgDark {
+    ...Image
+  }
+  featuredEvent {
+    ...EventBase
+  }
+  events {
+    ...EventBase
+  }
+  supercars {
+    ...SupercarBase
+  }
+}

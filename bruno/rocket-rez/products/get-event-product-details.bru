@@ -1,0 +1,28 @@
+meta {
+  name: Get Event Product Details
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{ROCKET_REZ_API_BASE_URL}}/v1/headless/products/event/513
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{jwt}}
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Response has product details", function() {
+    expect(res.getBody()).to.have.property('id');
+    expect(res.getBody()).to.have.property('name');
+    expect(res.getBody()).to.have.property('type');
+    expect(res.getBody().type).to.equal('event');
+  });
+}

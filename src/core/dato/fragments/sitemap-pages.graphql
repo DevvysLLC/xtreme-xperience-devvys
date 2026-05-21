@@ -1,0 +1,11 @@
+query sitemapPages($first: IntType!, $skip: IntType!) {
+  allPages(first: $first, skip: $skip, orderBy: _updatedAt_DESC) {
+    _updatedAt
+    config {
+      handle
+      seo {
+        noIndex
+      }
+    }
+  }
+}

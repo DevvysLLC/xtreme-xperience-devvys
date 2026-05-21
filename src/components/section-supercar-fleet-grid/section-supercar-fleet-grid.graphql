@@ -1,0 +1,17 @@
+fragment SectionSupercarFleetGrid on SectionSupercarFleetGridRecord {
+  id
+  title
+  description
+  config {
+    ...SectionConfig
+  }
+  supercarGridConfig {
+    ...SectionSupercarGridConfig
+  }
+  supercars {
+    ...SupercarBase
+  }
+  ctas {
+    ...CoreCta
+  }
+}

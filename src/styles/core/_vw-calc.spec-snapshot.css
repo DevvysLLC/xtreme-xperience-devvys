@@ -1,0 +1,4 @@
+/* prettier-ignore */
+.element {
+  width: clamp(1rem, 0.6701846966rem + 1.4072119613vw, 3rem);
+}

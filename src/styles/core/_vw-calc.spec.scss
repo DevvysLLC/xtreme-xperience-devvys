@@ -1,0 +1,7 @@
+/* prettier-ignore */
+
+@use './vw-calc' as vw;
+
+.element {
+  width: vw.vw-calc(16 32 48);
+}

@@ -1,0 +1,241 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+$border-radius-mobile: u.rem-calc(64);
+$border-radius-tablet: u.rem-calc(120);
+$border-radius-laptop: u.rem-calc(220);
+
+.section {
+  @include sg.section-config;
+
+  & {
+    position: relative;
+    overflow: hidden;
+    color: sg.color(white);
+  }
+
+  &__inner {
+    position: relative;
+    overflow: hidden;
+    border-bottom-right-radius: $border-radius-mobile;
+
+    @include sg.min(tabletLandscape) {
+      border-bottom-right-radius: $border-radius-tablet;
+    }
+
+    @include sg.min(laptop) {
+      border-bottom-right-radius: $border-radius-laptop;
+    }
+  }
+}
+
+.container {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  width: 100%;
+  max-height: 100dvh;
+  background-color: sg.color(black);
+
+  @include sg.min(tabletLandscape) {
+    aspect-ratio: 1512 / 800;
+  }
+}
+
+.media {
+  position: relative;
+
+  @include sg.max(tabletLandscape) {
+    aspect-ratio: 1 / 1;
+  }
+
+  @include sg.min(tabletLandscape) {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    // Fixing bug when video controls are visible, the border radius is not applied
+    border-bottom-right-radius: $border-radius-tablet;
+  }
+
+  @include sg.min(laptop) {
+    border-bottom-right-radius: $border-radius-laptop;
+  }
+
+  &__imageMobile {
+    position: absolute;
+    inset: 0;
+
+    @include sg.min(tabletLandscape) {
+      display: none;
+    }
+  }
+
+  &__imageDesktop {
+    position: absolute;
+    inset: 0;
+    display: none;
+
+    @include sg.min(tabletLandscape) {
+      display: block;
+    }
+  }
+
+  &__gradient {
+    @include sg.max(tabletLandscape) {
+      background:
+        linear-gradient(180deg, rgba(0, 0, 0, 0) 73%, rgba(0, 0, 0, 0.9) 100%),
+        linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 50%) !important;
+    }
+  }
+
+  .media__controls {
+    top: u.rem-calc(135);
+    z-index: 2;
+
+    @include sg.min(tabletLandscape) {
+      top: u.rem-calc(118);
+    }
+  }
+
+  // Fixing bug when video controls are visible, the border radius is not applied
+  video {
+    @include sg.min(tabletLandscape) {
+      border-bottom-right-radius: $border-radius-tablet;
+    }
+
+    @include sg.min(laptop) {
+      border-bottom-right-radius: $border-radius-laptop;
+    }
+  }
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  padding: sg.spacing(regular);
+  text-align: center;
+
+  @include sg.min(tabletLandscape) {
+    padding: sg.spacing(large);
+    background-color: transparent;
+    text-align: left;
+  }
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: sg.spacing(small);
+  margin-bottom: sg.spacing(small);
+
+  @include sg.min(tabletLandscape) {
+    justify-content: flex-start;
+    margin-bottom: sg.spacing(regular);
+  }
+}
+
+.subtitle {
+  margin-bottom: sg.spacing(small);
+  font-family: sg.font-family(barlow-semi-condensed);
+  font-size: sg.font-size('18px');
+  font-weight: sg.font-weight(500);
+  line-height: sg.line-height('120%');
+  letter-spacing: sg.letter-spacing('5%');
+  text-transform: uppercase;
+
+  @include sg.min(tabletLandscape) {
+    margin-bottom: sg.spacing(regular);
+  }
+}
+
+.title {
+  font-family: sg.font-family(anton);
+  font-size: sg.font-size(xlarge);
+  font-weight: sg.font-weight(400);
+  line-height: sg.line-height('110%');
+  text-transform: uppercase;
+
+  @include sg.min(tabletLandscape) {
+    font-size: sg.font-size(xxxlarge);
+    letter-spacing: sg.letter-spacing('2%');
+  }
+}
+
+.largeText {
+  margin-top: sg.spacing(small);
+  font-family: sg.font-family(anton);
+  font-size: sg.font-size(medium);
+  font-weight: sg.font-weight(400);
+  line-height: sg.line-height('110%');
+  text-transform: uppercase;
+
+  [data-compare-at-price] {
+    font-family: inherit;
+    font-size: inherit;
+  }
+
+  [data-price] {
+    font-family: inherit;
+    font-size: inherit;
+  }
+}
+
+.description {
+  margin-top: sg.spacing(small);
+  font-size: sg.font-size(mediuml);
+  line-height: sg.line-height('140%');
+
+  @include sg.min(tabletLandscape) {
+    margin-top: sg.spacing(regular);
+  }
+}
+
+.marquee {
+  $gap: sg.spacing(xlarge);
+
+  z-index: 1;
+  padding-top: sg.spacing(small);
+  padding-bottom: sg.spacing(small);
+  background-color: sg.color(orange);
+  font-family: sg.font-family(barlow);
+  font-size: sg.font-size(regular);
+  font-weight: sg.font-weight(500);
+  line-height: sg.line-height('100%');
+  letter-spacing: sg.letter-spacing('1%');
+  color: sg.color(white);
+  text-transform: uppercase;
+
+  &__inner {
+    gap: $gap;
+    padding-left: $gap;
+  }
+}
+
+.ctas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: sg.spacing(regular);
+  align-items: center;
+
+  @include sg.min(tabletLandscape) {
+    justify-content: flex-start;
+  }
+}
+
+.trackFinder {
+  position: relative;
+  z-index: 1;
+  padding: sg.spacing(small) sg.spacing(small) sg.spacing(regular);
+
+  @include sg.min(tabletLandscape) {
+    padding: sg.spacing(small) sg.spacing(xxxxlarge) sg.spacing(small)
+      sg.spacing(large);
+  }
+}

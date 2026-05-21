@@ -1,0 +1,78 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+/* ===================================================== */
+/* Container */
+/* ===================================================== */
+
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: sg.spacing(regular);
+
+  @include sg.min(tabletLandscape) {
+    justify-content: flex-start;
+    gap: 0;
+  }
+
+  &--reverse {
+    @include sg.min(tabletLandscape) {
+      justify-content: flex-end;
+    }
+  }
+}
+
+/* ===================================================== */
+/* Navigation */
+/* ===================================================== */
+
+.prev,
+.next {
+  @include sg.reset-button();
+
+  & {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: u.rem-calc(40);
+    height: u.rem-calc(40);
+    padding: sg.spacing(xxsmall);
+  }
+}
+
+.prev {
+  order: 1;
+}
+
+.next {
+  order: 3;
+
+  @include sg.min(tabletLandscape) {
+    order: 2;
+  }
+}
+
+/* ===================================================== */
+/* Pagination */
+/* ===================================================== */
+
+.pagination {
+  order: 2;
+  font-size: sg.font-size(regular);
+  font-weight: sg.font-weight(600);
+  text-transform: uppercase;
+
+  @include sg.min(tabletLandscape) {
+    order: 3;
+    padding-left: sg.spacing(regular);
+  }
+
+  .container--reverse & {
+    @include sg.min(tabletLandscape) {
+      order: 0;
+      padding-left: 0;
+      padding-right: sg.spacing(regular);
+    }
+  }
+}

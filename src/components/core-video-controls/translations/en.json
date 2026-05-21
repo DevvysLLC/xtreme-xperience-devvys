@@ -1,0 +1,10 @@
+{
+  "core_video_controls": {
+    "aria": {
+      "play": "Play video",
+      "pause": "Pause video",
+      "sound_off": "Sound off",
+      "sound_on": "Sound on"
+    }
+  }
+}

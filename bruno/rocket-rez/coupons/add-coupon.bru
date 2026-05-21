@@ -1,0 +1,31 @@
+meta {
+  name: Add Coupon
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{ROCKET_REZ_API_BASE_URL}}/v1/headless/cart/coupons
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{cartToken}}
+}
+
+body:json {
+  {
+    "code": "xxinternalzero"
+  }
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Response has cart data", function() {
+    expect(res.getBody()).to.have.property('data');
+  });
+}

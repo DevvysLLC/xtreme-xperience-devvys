@@ -1,0 +1,102 @@
+@use '../../../styles/styleguide' as sg;
+@use '../../../styles/core/unit' as u;
+
+.cart {
+  display: grid;
+  grid-template-columns: 1fr;
+  row-gap: sg.spacing(xlarge);
+  padding-block: sg.spacing(xlarge);
+  padding-inline: sg.spacing(regular);
+
+  @include sg.min(tabletLandscape) {
+    min-height: calc(100dvh - u.rem-calc(65) - u.rem-calc(69));
+  }
+
+  @include sg.min(laptopSmall) {
+    grid-template-columns: 1fr u.rem-calc(392);
+    grid-template-rows: auto 1fr;
+    padding: 0;
+  }
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: sg.spacing(regular);
+
+    @include sg.min(laptopSmall) {
+      padding-top: sg.spacing(xxlarge);
+      padding-inline: sg.spacing(xlarge);
+    }
+  }
+
+  &__title {
+    font-family: sg.font-family(anton);
+    font-size: sg.font-size(large);
+    font-weight: sg.font-weight(400);
+    line-height: sg.line-height('100%');
+    text-transform: uppercase;
+
+    @include sg.min(tabletLandscape) {
+      font-size: sg.font-size(xlarge);
+    }
+  }
+
+  &__description {
+    text-transform: uppercase;
+  }
+
+  &__summary {
+    display: flex;
+    flex-direction: column;
+    gap: sg.spacing(medium);
+
+    @include sg.min(laptopSmall) {
+      grid-row: span 2;
+      padding-block: sg.spacing(xlarge) sg.spacing(medium);
+      padding-inline: sg.spacing(medium);
+      border-left: u.rem-calc(1) solid sg.color(border-light);
+    }
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: sg.spacing(xlarge);
+
+    &.is-loading,
+    &.is-refreshing {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    @include sg.min(laptopSmall) {
+      padding-bottom: sg.spacing(xxlarge);
+      padding-inline: sg.spacing(xlarge);
+    }
+  }
+}
+
+/* ===================================================== */
+/* Upsells */
+/* ===================================================== */
+
+.upsells {
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: sg.spacing(regular);
+    margin-bottom: sg.spacing(medium);
+  }
+
+  &__title {
+    font-family: sg.font-family(anton);
+    font-size: sg.font-size(medium);
+    font-weight: sg.font-weight(400);
+    line-height: sg.line-height('100%');
+    text-transform: uppercase;
+
+    @include sg.min(tabletLandscape) {
+      font-size: sg.font-size('28px');
+    }
+  }
+}

@@ -1,0 +1,15 @@
+fragment SectionReview on SectionReviewRecord {
+  id
+  title
+  subtitle
+  rating
+  config {
+    ...SectionConfig
+  }
+  reviews {
+    ...Review
+  }
+  ctas {
+    ...CoreCta
+  }
+}

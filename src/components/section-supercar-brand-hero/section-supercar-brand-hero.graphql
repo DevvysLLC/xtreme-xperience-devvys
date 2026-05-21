@@ -1,0 +1,21 @@
+fragment SectionSupercarBrandHero on SectionSupercarBrandHeroRecord {
+  id
+  maxHeight
+  config {
+    ...SectionConfig
+  }
+  logo {
+    ...Image
+  }
+  gradient {
+    ...CoreGradient
+  }
+  media {
+    ... on CoreImageRecord {
+      ...CoreImage
+    }
+    ... on CoreVideoRecord {
+      ...CoreVideo
+    }
+  }
+}

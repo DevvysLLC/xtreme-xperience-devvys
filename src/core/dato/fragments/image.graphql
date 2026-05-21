@@ -1,0 +1,26 @@
+fragment Image on FileField {
+  id
+  format
+  url
+  width
+  height
+  alt
+  title
+  focalPoint {
+    x
+    y
+  }
+  responsiveImage(imgixParams: { auto: [compress, format] }) {
+    src
+    srcSet
+    sizes
+    height
+    aspectRatio
+    width
+    height
+    alt
+    title
+    base64
+    bgColor
+  }
+}

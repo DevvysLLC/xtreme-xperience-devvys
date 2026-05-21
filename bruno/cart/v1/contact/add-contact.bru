@@ -1,0 +1,47 @@
+meta {
+  name: Add Contact
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{API_BASE_URL}}/api/v1/booking/cart/contact/add
+  body: json
+  auth: none
+}
+
+headers {
+  X-Middleware-Auth-Token: {{MIDDLEWARE_AUTH_TOKEN}}
+}
+
+body:json {
+  {
+    "contacts": [
+      {
+        "id": null,
+        "isPrimary": true,
+        "firstName": "John",
+        "lastName": "Doe",
+        "email": "john.doe@example.com",
+        "phone": "+1234567890",
+        "billingAddress": null
+      }
+    ]
+  }
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Response has success status", function() {
+    expect(res.getBody()).to.have.property('status');
+    expect(res.getBody().status).to.equal('success');
+  });
+
+  test("Response has data with contacts", function() {
+    expect(res.getBody()).to.have.property('data');
+    expect(res.getBody().data).to.have.property('contacts');
+  });
+}

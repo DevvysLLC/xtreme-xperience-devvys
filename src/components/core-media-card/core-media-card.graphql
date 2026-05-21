@@ -1,0 +1,20 @@
+fragment CoreMediaCard on CoreMediaCardRecord {
+  id
+  title
+  subtitle
+  highlight
+  media {
+    ... on CoreImageRecord {
+      ...CoreImage
+    }
+    ... on CoreVideoRecord {
+      ...CoreVideo
+    }
+  }
+  gradient {
+    ...CoreGradient
+  }
+  cta {
+    ...CoreCta
+  }
+}

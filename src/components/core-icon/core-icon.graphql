@@ -1,0 +1,4 @@
+fragment CoreIcon on CoreIconRecord {
+  id
+  icon
+}

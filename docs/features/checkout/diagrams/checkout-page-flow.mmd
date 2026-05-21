@@ -1,0 +1,38 @@
+stateDiagram-v2
+    [*] --> Contacts: cart.totalItems > 0
+    Contacts --> Payment: Details Saved to Store
+    Payment --> Redirected: Redirect-based payment leaves checkout page
+    Redirected --> PaymentResumed: Return to /checkout/payment with redirect params
+    Payment --> PaymentResumed: Non-redirect payment continues in iframe
+    PaymentResumed --> Complete: Cart Completed (Order Created)
+    Complete --> OrderPage: Stores Cleared + Order Marked Viewed
+    OrderPage --> [*]
+
+    Contacts: /checkout/contacts
+    Contacts: Enter name, email, phone, address
+    Contacts: Guard requires: cart not empty
+
+    Payment: /checkout/payment
+    Payment: INIT -> READY -> PROCESS_PAYMENT
+    Payment: Guard requires: checkout.details != null
+
+    Redirected: External provider page (e.g. Affirm)
+    Redirected: Uses paymentRequest.returnUrl
+
+    PaymentResumed: /checkout/payment#checkout-iframe
+    PaymentResumed: INIT -> READY -> RESUME_PAYMENT
+    PaymentResumed: URL params stripped after restore
+
+    Complete: /checkout/complete/[id]
+    Complete: Track purchase analytics
+    Complete: Wait 5s → clear stores → redirect
+    Complete: Guard bypassed (isCompletePage)
+
+    OrderPage: /order/[id]
+    OrderPage: Final destination
+
+    note right of Payment
+        Stores NOT cleared on payment success.
+        useCartClearAfterComplete runs on
+        Complete page to avoid guard race condition.
+    end note

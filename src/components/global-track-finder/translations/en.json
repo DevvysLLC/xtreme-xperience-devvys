@@ -1,0 +1,64 @@
+{
+  "track_finder": {
+    "widget": {
+      "fallback": "Find a Track",
+      "book_now": "Book Now",
+      "view_track": "View Track",
+      "remaining_count": "+{count} more",
+      "aria": {
+        "widget_label": "Track finder widget",
+        "open_track_finder": "Open track finder. Current selection: {track}",
+        "book_now": "Book now for selected track",
+        "view_track": "View track details for {track}"
+      }
+    },
+    "drawer": {
+      "title": "Find an event",
+      "loading": "Loading location...",
+      "error": "Error",
+      "current_location": "Current Location",
+      "accuracy": "Accuracy",
+      "updated": "Updated",
+      "no_location": "No location set",
+      "find_my_location": "Find My Location",
+      "update_my_location": "Update My Location",
+      "clear_location": "Clear Location",
+      "view_map": "View Map",
+      "search_placeholder": "Search Zip Code, City, or Date",
+      "search_label": "Search for tracks",
+      "clear_search": "Clear"
+    },
+    "label": {
+      "fallback": "Find My Location",
+      "change_location": "Change Location",
+      "aria": {
+        "open_track_finder": "Open track finder. Current selection: {track}"
+      }
+    },
+    "tracks_list": {
+      "title": "Tracks",
+      "loading": "Loading tracks...",
+      "error": "Error loading tracks",
+      "no_tracks": "No tracks available",
+      "unknown_error": "Unknown error"
+    },
+    "track_card": {
+      "untitled_track": "Untitled Track",
+      "location_not_available": "Location not available",
+      "set_as_home_track": "Set as my home track",
+      "home_track_set": "Home track set successfully",
+      "home_track": "Home Track",
+      "view_track": "View Track",
+      "next_event": "Next event: ",
+      "remaining_count": "+{count} more",
+      "book_now": "Book Now",
+      "nearest": "Nearest",
+      "label": {
+        "location": "Location",
+        "coordinates": "Coordinates",
+        "address": "Address",
+        "region": "Region"
+      }
+    }
+  }
+}

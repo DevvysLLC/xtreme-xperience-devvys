@@ -1,0 +1,37 @@
+meta {
+  name: Add Product Item
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{ROCKET_REZ_API_BASE_URL}}/v1/headless/cart/lineitems
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{cartToken}}
+}
+
+body:json {
+  {
+    "lineItems": [
+      {
+        "id": 1,
+        "type": "membership",
+        "quantity": 1
+      }
+    ]
+  }
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Response has cart data", function() {
+    expect(res.getBody()).to.have.property('data');
+  });
+}

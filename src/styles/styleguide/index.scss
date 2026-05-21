@@ -1,0 +1,12 @@
+@forward '_fonts' hide $_config;
+@forward '_layers' hide $_config;
+@forward '_buttons' hide $_config, apply-size, apply-color;
+@forward '_color' hide $_config;
+@forward '_media' hide $_config;
+@forward '_mixins' hide $_config, $_radius, $_container;
+@forward '_richtext' hide $_config, clearfix, title, body;
+@forward '_spacing' hide $_config, $_base;
+@forward '_transitions' hide $_config;
+@forward '_typography' hide $_config, $_base;
+@forward '_units' hide $_config;
+@forward '_zindex' hide $_config;

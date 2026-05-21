@@ -1,0 +1,68 @@
+name: 'Sync RocketRez Event Schedules (Production)'
+
+on:
+  schedule:
+    # Run every 15 minutes
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+jobs:
+  sync-rocket-rez-schedules-prod:
+    runs-on: 'ubuntu-latest'
+    environment:
+      name: production
+    concurrency:
+      group: 'sync-rocket-rez-schedules-prod'
+      cancel-in-progress: true
+    env:
+      COMPOSE_BAKE: 1
+      COMPOSE_DOCKER_CLI_BUILD: 1
+      COMPOSE_PROJECT_NAME: 'sync-rocket-rez-schedules-prod'
+      DOCKER_BUILDKIT: 1
+      ROCKET_REZ_CLIENT_ID: ${{ secrets.ROCKET_REZ_CLIENT_ID }}
+      ROCKET_REZ_CLIENT_SECRET: ${{ secrets.ROCKET_REZ_CLIENT_SECRET }}
+      ROCKET_REZ_API_BASE_URL: ${{ vars.ROCKET_REZ_API_BASE_URL }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DATABASE_URL_NON_POOLING: ${{ secrets.DATABASE_URL_NON_POOLING }}
+    steps:
+      - name: 'Checkout everything'
+        uses: 'actions/checkout@v4'
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CHECKOUT_ACTION_PAT }}
+
+      - name: 'Init git config'
+        run: |
+          git config --global user.name 'Autobot'
+          git config --global user.email 'engineering@vaangroup.com'
+        # Workaround for No TTY issue
+        shell: 'script -qec "bash {0}"'
+
+      - name: 'Bootstrap TMP_DIR'
+        run: |
+          ./devops/github/bootstrap-tmp-dir.sh
+        shell: 'script -qec "bash {0}"'
+
+      - name: 'Build and start `main_ci` container'
+        run: |
+          touch .env
+          docker compose build \
+              --build-arg GROUP_ID=$(id -g) --build-arg USER_ID=$(id -u) \
+              --progress=plain main_ci \
+            && docker compose up -d main_ci
+        shell: 'script -qec "bash {0}"'
+
+      - name: 'Install npm packages'
+        run: |
+          docker compose exec main_ci ./docker-entrypoint.sh
+        shell: 'script -qec "bash {0}"'
+
+      - name: 'Sync RocketRez Event Schedules'
+        run: |
+          docker compose exec main_ci /bin/bash -c "pnpm run sync-rocket-rez:schedules"
+        shell: 'script -qec "bash {0}"'
+
+      - name: 'Shutdown containers'
+        run: |
+          ./devops/ci/shutdown-ci-container.sh
+        shell: 'script -qec "bash {0}"'

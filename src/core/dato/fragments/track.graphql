@@ -1,0 +1,15 @@
+fragment Track on TrackRecord {
+  id
+  titleInternal
+  _createdAt
+  _updatedAt
+  config {
+    ...TrackConfig
+  }
+  model {
+    ...TrackModel
+  }
+  content {
+    ...PageSections
+  }
+}

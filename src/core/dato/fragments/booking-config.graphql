@@ -1,0 +1,100 @@
+fragment BookingPage on BookingPageRecord {
+  id
+  key
+  title
+  description
+}
+
+fragment BookingSupercar on BookingSupercarRecord {
+  rocketRezSeatTypeId
+  rocketRezSeatTypeIdOverrides {
+    event {
+      model {
+        rocketRezId
+      }
+    }
+    rocketRezSeatTypeId
+  }
+  titleOverride
+  cartLineItemLabel
+  isMulticar
+  isRideAlong
+  multicarCount
+  thumbnailOverride {
+    ...CoreImage
+  }
+  badgeOverride {
+    ...CoreBadge
+  }
+  priceOverride {
+    ...CorePrice
+  }
+  supercar {
+    ...SupercarBase
+  }
+}
+
+fragment BookingSupercarGroup on BookingSupercarGroupRecord {
+  title
+  supercars {
+    ...BookingSupercar
+  }
+}
+
+fragment EventOverride on BookingEventOverrideRecord {
+  event {
+    id
+  }
+  lapsPerSession
+  quantityTitleThreeLaps
+  quantityLabelThreeLaps
+  quantityTitleSixLaps
+  quantityLabelSixLaps
+  quantityTitleNineLaps
+  quantityLabelNineLaps
+}
+
+fragment BookingConfig on BookingConfigRecord {
+  id
+  showBackLink
+  selectCarButtonLabel
+  removeCarButtonLabel
+  addToCartErrorMessage
+  addToCartSuccessMessage
+  quantityLabelThreeLaps
+  quantityLabelSixLaps
+  quantityLabelNineLaps
+  backLink {
+    ...CoreCta
+  }
+  pages {
+    ...BookingPage
+  }
+  supercars {
+    ...BookingSupercarGroup
+  }
+  insurance {
+    ...Insurance
+  }
+  rideAlong {
+    ...Addon
+  }
+  addons {
+    ...Addon
+  }
+  upsellsTitle
+  upsellsDescription
+  upsell {
+    ...Addon
+  }
+  reservedCart
+  bookingAnnouncement {
+    ...SectionAnnouncementBar
+  }
+  cancellationPolicy
+  legalNotice
+  orderCompleteNotice
+  eventOverrides {
+    ...EventOverride
+  }
+}

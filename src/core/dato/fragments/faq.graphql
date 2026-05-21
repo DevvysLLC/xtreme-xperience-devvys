@@ -1,0 +1,9 @@
+fragment Faq on FaqRecord {
+  id
+  config {
+    ...FaqConfig
+  }
+  model {
+    ...FaqModel
+  }
+}

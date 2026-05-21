@@ -1,0 +1,5 @@
+fragment CoreFormFieldOption on CoreFormFieldOptionRecord {
+  id
+  optionLabel
+  optionValue
+}

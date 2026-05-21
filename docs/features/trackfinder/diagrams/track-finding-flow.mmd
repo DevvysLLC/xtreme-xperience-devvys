@@ -1,0 +1,43 @@
+flowchart TD
+    Start([User Searches]) --> SearchMethod{Search Method}
+
+    SearchMethod -->|Browser Location| BrowserLoc[useLocationBrowser]
+    SearchMethod -->|Manual Search| ManualSearch[Enter Address/Place]
+    SearchMethod -->|Select Track| SelectTrack[Select from List]
+
+    BrowserLoc --> BrowserAPI[Browser Geolocation API]
+    BrowserAPI --> LocationStore[("Location Store<br/>localStorage")]
+
+    SelectTrack --> SetTrack[useLocationSetTrack]
+    SetTrack --> LocationStore
+
+    ManualSearch --> Debounce[Debounce 500ms]
+    Debounce --> MapboxGeocode[useMapboxGeocode]
+    MapboxGeocode --> MapboxAPI[Mapbox Geocoding API]
+    MapboxAPI --> FilterTracks["useTracksFiltered<br/>Name + Proximity Filter"]
+    FilterTracks --> FilteredResults[Filtered Tracks + Events]
+
+    LocationStore --> FetchTracks["useTracks<br/>Fetch All Tracks"]
+    FetchTracks --> TracksAPI[Tracks API]
+    TracksAPI --> TracksData[Tracks Data]
+
+    TracksData --> SortTracks[useTracksSortedByDistance]
+    LocationStore -->|Stored Coords| SortTracks
+    MapboxAPI -->|Geocoded Coords| SortTracks
+
+    SortTracks --> CalculateDistance["Calculate Distance<br/>Turf.js"]
+    CalculateDistance --> SortByDistance[Sort by Distance]
+    SortByDistance --> MarkNearest[Mark Nearest Track]
+    MarkNearest --> PrependHome["Prepend Home Track<br/>if exists"]
+    PrependHome --> SortedTracks[Sorted Tracks List]
+
+    FilteredResults --> DisplayTracks[Display Tracks]
+    SortedTracks --> DisplayTracks
+
+    LocationStore --> ReactQuery["React Query<br/>Invalidates"]
+    ReactQuery --> Components[Components Update]
+
+    style LocationStore fill:#d0d0d0,color:#000
+    style MapboxAPI fill:#b0b0b0,color:#000
+    style TracksAPI fill:#b0b0b0,color:#000
+    style ReactQuery fill:#b0b0b0,color:#000

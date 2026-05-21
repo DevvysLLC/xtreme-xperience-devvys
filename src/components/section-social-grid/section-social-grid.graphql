@@ -1,0 +1,15 @@
+fragment SectionSocialGrid on SectionSocialGridRecord {
+  id
+  config {
+    ...SectionConfig
+  }
+  title
+  subtitle
+  titleCta {
+    ...CoreCta
+  }
+  description
+  cards {
+    ...CoreSocialCard
+  }
+}

@@ -1,0 +1,25 @@
+fragment SectionHighlight on SectionHighlightRecord {
+  id
+  title
+  subtitle
+  layout
+  showMap
+  config {
+    ...SectionConfig
+  }
+  highlight {
+    ...CoreHighlight
+  }
+  ctas {
+    ...CoreCta
+  }
+  media {
+    __typename
+    ... on CoreImageRecord {
+      ...CoreImage
+    }
+    ... on CoreVideoRecord {
+      ...CoreVideo
+    }
+  }
+}

@@ -1,0 +1,82 @@
+graph TD
+    subgraph Client ["Client (Browser)"]
+        A[useCartAdd]
+        B[useCartRemoveLineItem]
+        C[useCartUpdateLineItem]
+        D[useCartAddCoupon]
+        E[useCartRemoveCoupon]
+        F[useCartContactAdd]
+        G[useCartRefresh]
+
+        Mutation["useCartMutation<br/>fetch()"]
+
+        A --> Mutation
+        B --> Mutation
+        C --> Mutation
+        D --> Mutation
+        E --> Mutation
+        F --> Mutation
+        G --> Mutation
+    end
+
+    subgraph NextServer ["Next.js Server"]
+        AddRoute["/api/v1/cart/add<br/>POST"]
+        RemoveRoute["/api/v1/cart/remove<br/>DELETE"]
+        UpdateRoute["/api/v1/cart/update<br/>PATCH"]
+        ClearRoute["/api/v1/cart/clear<br/>DELETE"]
+        CompleteRoute["/api/v1/cart/complete<br/>POST"]
+        PaymentRoute["/api/v1/cart/payment<br/>POST"]
+
+        MWClient["MiddlewareClient"]
+        MWCartService["CartService<br/>Token refresh &amp; cart context"]
+        RRClient["RocketRezClient<br/>OAuth2 authentication"]
+
+        AddRoute --> MWClient
+        RemoveRoute --> MWClient
+        UpdateRoute --> MWClient
+        ClearRoute --> MWClient
+        CompleteRoute --> MWClient
+        PaymentRoute --> MWClient
+
+        MWClient --> MWCartService
+        MWCartService --> RRClient
+    end
+
+    subgraph MiddlewareService ["Middleware Service (ROCKET_REZ_API_BASE_URL)"]
+        MWAPI["Middleware API<br/>/v1/headless/cart/*"]
+    end
+
+    subgraph External ["External"]
+        RocketRezAPI["RocketRez API"]
+    end
+
+    subgraph ClientState ["Client State"]
+        CartStore[("Cart Store<br/>Zustand + localStorage")]
+        ReactQuery["React Query<br/>Cache invalidation"]
+        Components[Components]
+    end
+
+    Mutation -->|"x-cart-key, x-user-guid"| AddRoute
+    Mutation -->|"x-cart-key, x-user-guid"| RemoveRoute
+    Mutation -->|"x-cart-key, x-user-guid"| UpdateRoute
+    Mutation -->|"x-cart-key, x-user-guid"| ClearRoute
+    Mutation -->|"x-cart-key, x-user-guid"| CompleteRoute
+    Mutation -->|"x-cart-key, x-user-guid"| PaymentRoute
+
+    RRClient -->|"HTTP requests"| MWAPI
+    MWAPI --> RocketRezAPI
+
+    RocketRezAPI -->|"Cart response"| MWAPI
+    MWAPI -->|"Response"| Mutation
+
+    Mutation -->|"onSuccess: setCartData"| CartStore
+    CartStore --> ReactQuery
+    ReactQuery --> Components
+
+    style CartStore fill:#d0d0d0,color:#000
+    style RocketRezAPI fill:#a0a0a0,color:#000
+    style MWCartService fill:#c0c0c0,color:#000
+    style MWClient fill:#c0c0c0,color:#000
+    style RRClient fill:#c0c0c0,color:#000
+    style MWAPI fill:#b0b0b0,color:#000
+    style Mutation fill:#e0e0e0,color:#000

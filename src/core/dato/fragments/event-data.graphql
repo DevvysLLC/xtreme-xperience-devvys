@@ -1,0 +1,6 @@
+fragment EventData on EventRecord {
+  id
+  model {
+    ...EventModelData
+  }
+}

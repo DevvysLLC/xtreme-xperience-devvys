@@ -1,0 +1,15 @@
+fragment FormModel on FormModelRecord {
+  id
+  formProvider
+  formSubmitButton
+  successTitle
+  successDescription
+  successButton {
+    ...CoreCta
+  }
+  errorTitle
+  errorDescription
+  formFields {
+    ...CoreFormField
+  }
+}

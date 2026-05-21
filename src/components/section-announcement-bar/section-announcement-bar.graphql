@@ -1,0 +1,9 @@
+fragment SectionAnnouncementBar on SectionAnnouncementBarRecord {
+  id
+  config {
+    ...SectionConfig
+  }
+  cards {
+    ...CoreAnnouncement
+  }
+}

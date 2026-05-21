@@ -1,0 +1,91 @@
+#!/bin/bash
+
+set -Eeuo pipefail
+
+workdir='/app'
+
+IFS=$'\n' read -r -d '' -a docker_containers < <((docker ps --format='{{ .Names }}' | sort -V) && printf '\0') || true
+
+if [ ${#docker_containers[@]} -eq 0 ]; then
+  echo 'No running containers found'
+  exit 1
+fi
+
+executable_exists() {
+  which "$1" >/dev/null 2>&1
+}
+
+echo 'Starting IDE in remote editing mode'
+
+if executable_exists "code" && executable_exists "cursor"; then
+  editors=("cursor" "code")
+  PS3='Please select an IDE to launch: '
+  select selected_editor in "${editors[@]}"; do
+    # Validate numeric input
+    [[ $REPLY =~ ^[0-9]+$ ]] || {
+      echo "Invalid selection. Enter a number."
+      continue
+    }
+
+    if [[ -n "$selected_editor" ]]; then
+      break
+    else
+      echo "Invalid selection."
+    fi
+  done
+
+  # Guard against EOF/no selection
+  if [[ -z "${selected_editor:-}" ]]; then
+    echo "No editor selected."
+    exit 1
+  fi
+elif executable_exists "code"; then
+  selected_editor="code"
+elif executable_exists "cursor"; then
+  selected_editor="cursor"
+else
+  echo "Warning: Neither 'code' nor 'cursor' executable found."
+  exit 1
+fi
+
+echo "Selected editor: '$selected_editor'"
+
+PS3='Please select a container: '
+echo "Running containers:"
+select container_name in "${docker_containers[@]}"; do
+  # Validate numeric input
+  [[ $REPLY =~ ^[0-9]+$ ]] || {
+    echo "Invalid selection. Enter a number."
+    continue
+  }
+
+  if [[ -n "$container_name" ]]; then
+    break
+  else
+    echo "Invalid selection."
+  fi
+done
+
+# Guard against EOF/no selection
+if [[ -z "${container_name:-}" ]]; then
+  echo "No container selected."
+  exit 1
+fi
+
+code_text=$(printf '{ "containerName": "/%s", "settings": { "context": "%s" } }' "${container_name}" "$(docker context show)")
+cursor_text=$(printf '{ "settingType":"container", "containerId":"%s", "settings": { "context": "%s" } }' "${container_name}" "$(docker context show)")
+
+code_directive='attached-container'
+cursor_directive='dev-container'
+
+# Use the appropriate configuration and directive based on selected editor
+if [ "$selected_editor" = "code" ]; then
+  hex_container_name=$(printf "$code_text" | od -A n -t x1 | tr -d '[\n\t]' | tr -d '[:space:]' | tr -d ' ')
+  directive="$code_directive"
+else
+  hex_container_name=$(printf "$cursor_text" | od -A n -t x1 | tr -d '[\n\t]' | tr -d '[:space:]' | tr -d ' ')
+  directive="$cursor_directive"
+fi
+
+echo 'Starting the editor'
+$selected_editor --folder-uri="vscode-remote://${directive}+${hex_container_name}${workdir}"

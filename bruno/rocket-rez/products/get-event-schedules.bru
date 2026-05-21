@@ -1,0 +1,37 @@
+meta {
+  name: Get Event Schedules
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{ROCKET_REZ_API_BASE_URL}}/v1/headless/products/event/500/schedules?startDate=2026-06-12&endDate=2026-06-14
+  body: none
+  auth: bearer
+}
+
+query {
+  startDate: 2026-06-12
+  endDate: 2026-06-14
+}
+
+auth:bearer {
+  token: {{jwt}}
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Response has schedules array", function() {
+    expect(res.getBody()).to.have.property('schedules');
+    expect(res.getBody().schedules).to.be.an('array');
+  });
+  
+  test("Response has pagination info", function() {
+    expect(res.getBody()).to.have.property('pageSize');
+    expect(res.getBody()).to.have.property('pageIndex');
+    expect(res.getBody()).to.have.property('totalCount');
+  });
+}

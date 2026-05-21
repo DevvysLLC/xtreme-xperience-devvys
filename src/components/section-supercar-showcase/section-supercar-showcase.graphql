@@ -1,0 +1,82 @@
+# Keep this fragment intentionally shallow to avoid bloating initial HTML/Flight payload.
+fragment SectionSupercarShowcaseImage on CoreImageRecord {
+  __typename
+  id
+  image {
+    url
+    width
+    height
+    alt
+    title
+    format
+    focalPoint {
+      x
+      y
+    }
+    responsiveImage {
+      src
+      base64
+      bgColor
+    }
+  }
+  desktopImage {
+    url
+    width
+    height
+    alt
+    title
+    format
+    focalPoint {
+      x
+      y
+    }
+    responsiveImage {
+      src
+      base64
+      bgColor
+    }
+  }
+}
+
+fragment SectionSupercarShowcaseSupercar on SupercarRecord {
+  id
+  config {
+    handle
+  }
+  model {
+    packageType
+    title
+    make
+    model
+    topSpeed
+    horsepower
+    zeroToSixty
+    displayPrice {
+      ...CorePrice
+    }
+    thumbnail {
+      ...SectionSupercarShowcaseImage
+    }
+    showcaseThumbnail {
+      ...SectionSupercarShowcaseImage
+    }
+    logoMaker {
+      ...SectionSupercarShowcaseImage
+    }
+  }
+}
+
+fragment SectionSupercarShowcase on SectionSupercarShowcaseRecord {
+  id
+  title
+  titleColor {
+    hex
+  }
+  config {
+    ...SectionConfig
+  }
+  allowSlideLinkDesktop
+  supercars {
+    ...SectionSupercarShowcaseSupercar
+  }
+}

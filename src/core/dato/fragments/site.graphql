@@ -1,0 +1,22 @@
+fragment Site on Site {
+  faviconMetaTags {
+    tag
+    attributes
+    content
+  }
+  globalSeo {
+    siteName
+    titleSuffix
+    twitterAccount
+    facebookPageUrl
+    fallbackSeo {
+      title
+      description
+      image {
+        ...Image
+      }
+      noIndex
+      twitterCard
+    }
+  }
+}

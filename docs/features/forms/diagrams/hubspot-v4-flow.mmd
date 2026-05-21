@@ -1,0 +1,23 @@
+flowchart TD
+    Start([HubspotFormV4 Mount]) --> Parse["Parse embed HTML<br/>Extract scriptSrc, region,<br/>formId, portalId"]
+
+    Parse --> HasRequired{"scriptSrc +<br/>formId +<br/>portalId?"}
+    HasRequired -->|No| RenderNothing[Render Nothing]
+    HasRequired -->|Yes| CheckLoaded{"Script already<br/>loaded?"}
+
+    CheckLoaded -->|Yes| SkipLoad[Skip script load]
+    CheckLoaded -->|No| LoadScript["Append script to body<br/>e.g. /embed/developer/43829367.js"]
+
+    LoadScript --> RenderDiv
+    SkipLoad --> RenderDiv
+
+    RenderDiv["Render div<br/>class=hs-form-html<br/>data-region, data-form-id,<br/>data-portal-id"]
+
+    RenderDiv --> HubSpotSDK["HubSpot SDK detects div<br/>and renders form"]
+
+    HubSpotSDK --> FormRendered["Form visible<br/>(hsfc-* CSS classes)"]
+
+    style Parse fill:#d0d0d0,color:#000
+    style LoadScript fill:#b0b0b0,color:#000
+    style HubSpotSDK fill:#b0b0b0,color:#000
+    style FormRendered fill:#a0a0a0,color:#000

@@ -1,0 +1,9 @@
+{
+  "booking_legacy": {
+    "error": {
+      "load_failed": "Unable to load booking widget. Please try again later.",
+      "missing_params": "Missing required booking parameters."
+    },
+    "loading": "Loading booking widget..."
+  }
+}

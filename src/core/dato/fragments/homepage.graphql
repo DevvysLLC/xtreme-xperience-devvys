@@ -1,0 +1,11 @@
+fragment Homepage on HomepageRecord {
+  id
+  _createdAt
+  _updatedAt
+  config {
+    ...PageConfig
+  }
+  content {
+    ...PageSections
+  }
+}

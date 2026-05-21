@@ -1,0 +1,36 @@
+sequenceDiagram
+    participant User
+    participant CoreCta
+    participant FormDialogContext
+    participant GlobalFormDialog
+    participant useForm
+    participant API as /api/v1/frontend/form/:handle
+    participant DatoCMS
+    participant Drawer
+
+    User->>CoreCta: Click CTA (action: open:form)
+    CoreCta->>FormDialogContext: openFormDialog(handle)
+    FormDialogContext->>GlobalFormDialog: isOpen: true, handle
+
+    GlobalFormDialog->>Drawer: Send open message via bus
+    Drawer-->>User: Drawer opens (loading spinner)
+
+    GlobalFormDialog->>useForm: Fetch form by handle
+    useForm->>API: GET /api/v1/frontend/form/:handle
+    API->>DatoCMS: GraphQL getFormByHandle
+    DatoCMS-->>API: FormRecord
+    API-->>useForm: JSON response
+    useForm-->>GlobalFormDialog: Form data
+
+    alt iframeEmbed present
+        GlobalFormDialog->>GlobalFormDialog: validateHtmlForEmbed()
+        GlobalFormDialog-->>User: Render iframe
+    else hubspotEmbed present
+        alt hubspotVersion = v2
+            GlobalFormDialog-->>User: Render HubspotFormV2
+        else hubspotVersion = v4 or empty
+            GlobalFormDialog-->>User: Render HubspotFormV4
+        end
+    else native form model
+        GlobalFormDialog-->>User: Render CoreForm
+    end

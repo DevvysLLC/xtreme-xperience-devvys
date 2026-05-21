@@ -1,0 +1,6 @@
+{
+  "error_message": {
+    "general": "An error occurred while loading this page. Please try again later.",
+    "category_not_found": "Category with handle \"{handle}\" not found"
+  }
+}

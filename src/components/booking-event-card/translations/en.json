@@ -1,0 +1,12 @@
+{
+  "booking_event_card": {
+    "date_label": "Event Date:",
+    "select": "Select",
+    "book_now": "Book Now",
+    "view_track": "View Track",
+    "badge": {
+      "sold_out": "Sold Out",
+      "popular": "Popular"
+    }
+  }
+}

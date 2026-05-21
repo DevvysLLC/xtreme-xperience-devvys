@@ -1,0 +1,223 @@
+@use '../../../../styles/styleguide' as sg;
+@use '../../../../styles/core/unit' as u;
+
+.desktop {
+  display: none;
+  @include sg.min(tabletPortrait) {
+    display: block;
+  }
+}
+
+.mobile {
+  display: block;
+  @include sg.min(tabletPortrait) {
+    display: none;
+  }
+}
+
+/* ===================================================== */
+/* Cart Item */
+/* ===================================================== */
+
+.CartLineItem {
+  $item: &;
+  display: grid;
+  grid-template-columns: u.rem-calc(90) 1fr;
+  gap: sg.spacing(xsmall) sg.spacing(small);
+  padding-block: sg.spacing(regular);
+  border-bottom: u.rem-calc(1) solid sg.color(border-dark);
+
+  @include sg.container-min(tabletPortrait) {
+    grid-template-columns: u.rem-calc(100) 0.5fr 1fr;
+  }
+
+  &:first-child {
+    border-top: u.rem-calc(1) dashed sg.color(border-dark);
+  }
+
+  &:last-child {
+    border-bottom-style: dashed;
+  }
+
+  &__title {
+    align-self: center;
+    font-size: sg.font-size('18px');
+    line-height: sg.line-height('140%');
+
+    @include sg.container-min(tabletPortrait) {
+      font-size: sg.font-size(mediuml);
+    }
+  }
+
+  &__subtitle {
+    font-size: sg.font-size(small);
+
+    @include sg.container-min(tabletPortrait) {
+      font-size: sg.font-size(regular);
+    }
+  }
+
+  &__content {
+    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    gap: sg.spacing(xsmall);
+    line-height: sg.line-height('100%');
+
+    @include sg.container-min(tabletPortrait) {
+      grid-column: 3;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+
+  &__date {
+    min-width: u.rem-calc(140);
+  }
+
+  &__time {
+    display: flex;
+    align-items: center;
+    gap: sg.spacing(xsmall);
+  }
+
+  &__laps {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: sg.spacing(xsmall);
+
+    &--mobile {
+      display: flex;
+
+      @include sg.container-min(tabletPortrait) {
+        display: none;
+      }
+    }
+
+    &--desktop {
+      display: none;
+
+      @include sg.container-min(tabletPortrait) {
+        display: flex;
+      }
+    }
+
+    [data-price] {
+      font-weight: sg.font-weight(400);
+    }
+
+    [data-compare-at-price] {
+      font-weight: sg.font-weight(400);
+    }
+  }
+
+  &__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: sg.spacing(medium);
+    margin-top: sg.spacing(small);
+
+    @include sg.container-min(tabletPortrait) {
+      flex-direction: row-reverse;
+      align-items: center;
+      gap: sg.spacing(xsmall);
+    }
+  }
+
+  &__remove {
+    font-weight: sg.font-weight(600);
+    color: sg.color(black-50);
+    text-transform: uppercase;
+  }
+
+  &__price {
+    min-width: u.rem-calc(110);
+    font-size: sg.font-size(mediuml);
+    line-height: sg.line-height('100%');
+
+    @include sg.container-min(tabletPortrait) {
+      justify-content: flex-end;
+      text-align: right;
+    }
+  }
+}
+
+/* ===================================================== */
+/* Cart Item Compact */
+/* ===================================================== */
+
+.CartLineItemCompact {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: sg.spacing(xxsmall);
+  padding: sg.spacing(small);
+  border: u.rem-calc(1) solid sg.color(border-dark);
+  font-family: sg.font-family(barlow);
+  font-size: sg.font-size(regular);
+  line-height: sg.line-height('120%');
+
+  @include sg.min(tabletLandscape) {
+    padding: sg.spacing(regular);
+  }
+
+  &__media {
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+    width: u.rem-calc(80);
+    aspect-ratio: 100 / 64;
+
+    @include sg.min(tabletLandscape) {
+      width: u.rem-calc(100);
+    }
+  }
+
+  &__content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: sg.spacing(regular);
+  }
+
+  &__title {
+    padding-right: sg.spacing(regular);
+  }
+
+  &__remove {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: sg.spacing(xsmall);
+    border: none;
+    background: transparent;
+    cursor: pointer;
+
+    svg {
+      width: u.rem-calc(12);
+      height: u.rem-calc(12);
+    }
+  }
+
+  &__divider {
+    margin: 0;
+    border: none;
+    border-top: u.rem-calc(1) solid sg.color(border-light);
+  }
+
+  &__date {
+    line-height: 1;
+  }
+
+  &__price {
+    &[data-core-price] {
+      line-height: 1;
+    }
+  }
+}

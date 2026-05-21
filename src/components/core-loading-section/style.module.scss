@@ -1,0 +1,12 @@
+@use '../../styles/styleguide' as sg;
+
+.section {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 16 / 9;
+  background-color: sg.color(carrara);
+  contain: layout paint;
+  transform: translateZ(0);
+}

@@ -1,0 +1,6 @@
+fragment Policy on PolicyRecord {
+  id
+  model {
+    ...PolicyModel
+  }
+}

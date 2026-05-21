@@ -1,0 +1,135 @@
+---
+description: Build validation workflow and CI requirements
+globs:
+alwaysApply: true
+---
+# Build Validation with `./run-task ci-ai`
+
+## Critical Rule
+**ALWAYS run `./run-task ci-ai` after making code changes**
+
+## When to Run `./run-task ci-ai`
+- Editing TypeScript/JavaScript files in `_js/` directory
+- Modifying build configuration or DevOps scripts
+- Converting code patterns (like Result types to custom errors)
+- Adding new dependencies or changing imports
+- Updating tests or test configurations
+- Before committing any changes
+
+## What `./run-task ci-ai` Does
+CI pipeline validation (without circular dependency detection) with automatic container detection:
+1. **Lint FS** - Validates filesystem conventions
+2. **Organize Imports** - Sorts imports in changed TS/JS files
+3. **Prettify** - Formats files with Prettier
+4. **Type Check** - Validates TypeScript types
+5. **Test** - Runs the test suite for changed files
+6. **Lint** - Checks code style and catches potential issues
+
+> **Note:** `ci-ai` is a faster variant of `ci` that skips circular dependency detection.
+> Use `./run-task ci` for the full CI pipeline including circular dependency checks when needed.
+
+## Command Completion Requirements
+**CRITICAL: Always wait for the command to complete before proceeding**
+
+### Minimum Wait Time
+**ALWAYS wait at least 3 seconds after running `./run-task ci-ai` before considering it incomplete**
+- Docker initialization takes time
+- Build pipeline startup requires patience
+- Never re-run immediately after seeing minimal output like `[Docker] >`
+
+### Success Indicators
+The command has completed successfully when you see:
+```
+[BB] Task finished: ci-ai
+```
+
+### Failure Indicators
+The command has failed when you see:
+```
+Error while executing task: <ACTUAL_TASK_NAME>
+```
+
+**Note:** `<ACTUAL_TASK_NAME>` is a placeholder - actual failures will show the specific task that failed:
+- `Error while executing task: lint`
+- `Error while executing task: test`
+- `Error while executing task: typecheck`
+
+### Waiting Rules
+1. **NEVER proceed to next steps until you see one of the completion indicators above**
+2. **ALWAYS wait for the full command output before continuing**
+3. **Wait at least 3 seconds minimum before considering a command incomplete**
+4. **If the command fails, address the errors before proceeding**
+5. **If the command succeeds, confirm success before moving on**
+
+## Workflow Pattern
+```bash
+# After making code changes:
+./run-task ci-ai
+
+# Wait MINIMUM 3 seconds for completion - look for:
+# SUCCESS: "[BB] Task finished: ci-ai"
+# FAILURE: "Error while executing task: lint" (or test, typecheck, etc.)
+
+# If there are issues, fix them before continuing
+# Re-run until clean:
+./run-task ci-ai
+```
+
+## Alternative Commands
+If `./run-task ci-ai` is not available, use:
+```bash
+# Direct command (if inside container)
+bb ci-ai
+
+# Full CI including circular dependency detection
+./run-task ci
+
+# List available tasks
+./run-task | grep ci
+```
+
+## Examples
+
+**✅ Good - Proper waiting:**
+```typescript
+// Made changes to cart operations
+// Run: ./run-task ci-ai
+// Wait at least 3 seconds for Docker/build initialization
+// Wait for "[BB] Task finished: ci-ai" output
+// Fix any issues found
+// Continue with next task
+```
+
+**❌ Bad - Too hasty:**
+```typescript
+// Made changes
+// Run ./run-task ci-ai
+// See "[Docker] >" output
+// Immediately re-run without waiting 3 seconds
+// Miss the actual command execution
+```
+
+**❌ Bad - Not waiting for completion:**
+```typescript
+// Made changes
+// Run ./run-task ci-ai
+// Proceed immediately without waiting for completion
+// Miss potential failures or incomplete validation
+```
+
+**❌ Bad - Forgetting validation:**
+```typescript
+// Made changes
+// Continued without running ./run-task ci-ai
+// CI fails later with preventable issues
+```
+
+## Integration Notes
+- Use `./run-task ci-ai` instead of individual `npm run` commands
+- Use `./run-task ci` for the full pipeline when circular dependency checks are needed
+- Automatically detects if running inside or outside Docker container
+- This ensures consistency with the project's CI pipeline
+- Catches issues early before they reach remote CI
+- Part of the build system defined in [devops/](mdc:devops) scripts
+- See [typescript.mdc](mdc:.cursor/rules/typescript.mdc) for TypeScript-specific patterns
+- See [styleguide-css.mdc](mdc:.cursor/rules/styleguide-css.mdc) for SCSS validation patterns

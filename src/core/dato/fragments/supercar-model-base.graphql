@@ -1,0 +1,69 @@
+fragment SupercarModelBase on SupercarModelRecord {
+  id
+  title
+  rocketRezId
+  packageType
+  tagline
+  make
+  model
+  engine
+  topSpeed
+  horsepower
+  torque
+  zeroToSixty
+  bookingTotalCars
+  weight
+  value
+  vehicleLayout
+  transmission
+  origin
+  maxParticipantHeight
+  description
+  excerpt
+  specModalDescription
+  displayPrice {
+    ...CorePrice
+  }
+  rideAlongPrice {
+    ...CorePrice
+  }
+  badges {
+    ...CoreBadge
+  }
+  specBadges {
+    ...CoreBadge
+  }
+  thumbnail {
+    ...CoreImage
+  }
+  showcaseThumbnail {
+    ...CoreImage
+  }
+  featuredMedia {
+    ... on CoreImageRecord {
+      ...CoreImage
+    }
+    ... on CoreVideoRecord {
+      ...CoreVideo
+    }
+  }
+  specModalImage {
+    ...CoreImage
+  }
+  gallery {
+    ... on CoreImageRecord {
+      ...CoreImage
+    }
+    ... on CoreVideoRecord {
+      ...CoreVideo
+    }
+  }
+  modelViewer3d {
+    url
+    alt
+    format
+  }
+  logoMaker {
+    ...CoreImage
+  }
+}

@@ -1,0 +1,14 @@
+fragment SupercarConfig on SupercarConfigRecord {
+  id
+  title
+  handle
+  seo {
+    title
+    description
+    image {
+      ...Image
+    }
+    noIndex
+    twitterCard
+  }
+}

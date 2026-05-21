@@ -1,0 +1,117 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+.map {
+  position: relative;
+  width: 100%;
+  height: 100%;
+
+  :global(.mapboxgl-ctrl-logo) {
+    display: none;
+  }
+
+  :global(.mapboxgl-ctrl-bottom-right) {
+    display: none;
+  }
+}
+
+.container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: sg.font-family(barlow-semi-condensed);
+  font-size: sg.font-size(regular);
+  color: sg.color(white);
+  background-color: sg.color(black-80);
+}
+
+.error {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: sg.font-family(barlow-semi-condensed);
+  font-size: sg.font-size(regular);
+  color: sg.color(error);
+  background-color: sg.color(black-80);
+}
+
+/* ===================================================== */
+/* Lazy Map Wrapper */
+/* ===================================================== */
+
+.lazyWrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* ===================================================== */
+/* Map Placeholder */
+/* ===================================================== */
+
+.placeholder {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  background-color: sg.color(black-80);
+
+  &__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: sg.spacing(small);
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  &__text {
+    font-family: sg.font-family(barlow-semi-condensed);
+    font-size: sg.font-size(regular);
+    color: sg.color(white);
+  }
+
+  &__spinner {
+    width: u.rem-calc(32);
+    height: u.rem-calc(32);
+    border: u.rem-calc(3) solid rgba(255, 255, 255, 0.3);
+    border-top-color: sg.color(orange);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  &__pin {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -100%);
+    z-index: 1;
+    pointer-events: none;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

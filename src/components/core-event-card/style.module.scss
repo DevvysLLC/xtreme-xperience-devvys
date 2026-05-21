@@ -1,0 +1,69 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: sg.spacing(xsmall);
+  min-width: u.rem-calc(324);
+  width: 100%;
+
+  &__media {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 1 / 1;
+
+    @include sg.min(tabletLandscape) {
+      aspect-ratio: 676 / 428;
+      margin-bottom: sg.spacing(xsmall);
+    }
+  }
+
+  &__media__controls {
+    z-index: 2;
+  }
+
+  &__badge {
+    position: absolute;
+    top: sg.spacing(xsmall);
+    left: sg.spacing(xsmall);
+    z-index: 2;
+  }
+
+  &__track {
+    display: none;
+
+    @include sg.min(tabletLandscape) {
+      position: absolute;
+      bottom: sg.spacing(regular);
+      right: sg.spacing(regular);
+      max-width: u.rem-calc(160);
+      width: 25%;
+      display: block;
+    }
+  }
+
+  &__subtitle {
+    font-size: sg.font-size(regular);
+  }
+
+  &__title {
+    font-family: sg.font-family(anton);
+    font-size: sg.font-size(large);
+    font-weight: sg.font-weight(400);
+    line-height: sg.line-height('110%');
+    text-transform: uppercase;
+
+    @include sg.min(tabletLandscape) {
+      font-size: sg.font-size(large);
+    }
+  }
+
+  &__date {
+    font-family: sg.font-family(barlow-semi-condensed);
+    font-size: sg.font-size(regular);
+    font-weight: sg.font-weight(700);
+    line-height: sg.line-height('140%');
+  }
+}

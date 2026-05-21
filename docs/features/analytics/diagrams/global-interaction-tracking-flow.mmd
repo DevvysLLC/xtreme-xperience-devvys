@@ -1,0 +1,14 @@
+sequenceDiagram
+    participant User
+    participant DOM
+    participant ScriptsGoogleAnalytics
+    participant dataLayer as window.dataLayer
+    participant GTM
+
+    User->>DOM: click / submit
+    DOM->>ScriptsGoogleAnalytics: document listener (capture)
+    ScriptsGoogleAnalytics->>ScriptsGoogleAnalytics: find target + extract data-ga-* metadata
+    ScriptsGoogleAnalytics->>ScriptsGoogleAnalytics: apply section context + rate limit
+    ScriptsGoogleAnalytics->>dataLayer: push { event: xx_frontend_*, ...payload }
+    dataLayer->>GTM: GTM reads event
+    GTM-->>User: downstream tags fire (GA4, etc.)

@@ -1,0 +1,10 @@
+{
+  "core_form": {
+    "validation": {
+      "required": "This field is required"
+    },
+    "error": {
+      "submission_failed": "Form submission failed. Please try again."
+    }
+  }
+}

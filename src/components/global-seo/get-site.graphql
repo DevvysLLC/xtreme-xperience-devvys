@@ -1,0 +1,5 @@
+query getSite {
+  _site {
+    ...Site
+  }
+}

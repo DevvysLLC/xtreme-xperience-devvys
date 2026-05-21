@@ -1,0 +1,9 @@
+fragment Insurance on InsuranceRecord {
+  id
+  titleInternal
+  _createdAt
+  _updatedAt
+  model {
+    ...InsuranceModel
+  }
+}

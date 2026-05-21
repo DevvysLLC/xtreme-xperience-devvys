@@ -1,0 +1,20 @@
+@use 'styleguide' as sg;
+@use 'sass:map';
+
+$_color_config: (
+  keys: (
+    orange
+  ),
+  properties: (
+    color,
+    'background-color'
+  )
+);
+
+@each $color-key in map.get($_color_config, keys) {
+  @each $property in map.get($_color_config, properties) {
+    .u-#{$property}-#{'' + $color-key} {
+      #{$property}: sg.color($color-key);
+    }
+  }
+}

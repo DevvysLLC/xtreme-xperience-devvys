@@ -1,0 +1,31 @@
+{
+  "section_supercar_spec": {
+    "ride_along_prefix": "Ride-Alongs Starting at",
+    "ride_along_suffix": "",
+    "supercar_xperiences_prefix": "Supercar Xperiences Starting at",
+    "supercar_xperiences_suffix": "",
+    "view_specs": "View Full Specs",
+    "top_speed": "Top Speed",
+    "horsepower": "Horsepower",
+    "max_participant_height": "Max Participant Height",
+    "zero_to_sixty": "0-60 mph",
+    "value": "Value",
+    "drawer": {
+      "title": "Full Specs",
+      "engine": "Engine",
+      "top_speed": "Top Speed",
+      "horsepower": "Horsepower",
+      "max_participant_height": "Max Participant Height",
+      "torque": "Torque",
+      "zero_to_sixty": "0-60 mph",
+      "weight": "Weight",
+      "origin": "Origin",
+      "transmission": "Transmission",
+      "vehicle_layout": "Vehicle Layout",
+      "value": "Value",
+      "starting_price": "Starting Tour Price",
+      "book_now": "Book Now",
+      "give_as_gift": "Give as a Gift"
+    }
+  }
+}

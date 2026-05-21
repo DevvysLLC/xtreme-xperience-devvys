@@ -1,0 +1,23 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+.controls {
+  display: inline-flex;
+  gap: sg.spacing(xxsmall);
+  width: fit-content;
+  padding: sg.spacing(xxsmall);
+  background: sg.color(black-20);
+  backdrop-filter: blur(u.rem-calc(2));
+}
+
+.control {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: u.rem-calc(24);
+  height: u.rem-calc(24);
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: sg.color(white);
+}

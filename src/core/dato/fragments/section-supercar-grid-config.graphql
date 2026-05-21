@@ -1,0 +1,10 @@
+fragment SectionSupercarGridConfig on SectionSupercarGridConfigRecord {
+  id
+  layout
+  showFilters
+  addCardLinks
+  cardType
+  cardBackgroundColor
+  headerBorder
+  headerHorizontalAlignment
+}

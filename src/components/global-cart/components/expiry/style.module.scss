@@ -1,0 +1,12 @@
+@use '../../../../styles/styleguide' as sg;
+
+.expiry {
+  display: flex;
+  gap: sg.spacing(xxsmall);
+
+  &__timer {
+    color: sg.color(orange);
+    font-family: sg.font-family(barlow-semi-condensed);
+    font-weight: sg.font-weight(700);
+  }
+}

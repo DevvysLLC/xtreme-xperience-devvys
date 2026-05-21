@@ -1,0 +1,17 @@
+sequenceDiagram
+    participant User
+    participant Component
+    participant useCart
+    participant CartStore
+    participant RocketRezAPI
+    participant localStorage
+
+    User->>Component: Adds item to cart
+    Component->>useCart: Calls mutation hook
+    useCart->>RocketRezAPI: POST request
+    RocketRezAPI-->>useCart: Cart response
+    useCart->>CartStore: Update state
+    CartStore->>localStorage: Persist
+    CartStore->>useCart: State change
+    useCart->>Component: Auto-remove insurance if needed
+    Component->>User: UI updates

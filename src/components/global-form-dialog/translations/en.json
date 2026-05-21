@@ -1,0 +1,7 @@
+{
+  "global_form_dialog": {
+    "loading": "Loading form...",
+    "error_invalid_embed": "Invalid or unsafe form embed. Please check the form configuration.",
+    "error_load_failed": "Unable to load the form. Please try again later."
+  }
+}

@@ -1,0 +1,23 @@
+fragment SectionMediaHero on SectionMediaHeroRecord {
+  id
+  title
+  subtitle
+  description
+  gradient {
+    ...CoreGradient
+  }
+  ctas {
+    ...CoreCta
+  }
+  config {
+    ...SectionConfig
+  }
+  media {
+    ... on CoreImageRecord {
+      ...CoreImage
+    }
+    ... on CoreVideoRecord {
+      ...CoreVideo
+    }
+  }
+}

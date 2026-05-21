@@ -1,0 +1,7 @@
+query getSupercar($handle: String) {
+  supercar(
+    filter: { config: { any: { supercarConfig: { handle: { eq: $handle } } } } }
+  ) {
+    ...Supercar
+  }
+}

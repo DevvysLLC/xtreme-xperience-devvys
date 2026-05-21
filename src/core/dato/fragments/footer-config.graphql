@@ -1,0 +1,17 @@
+fragment FooterConfig on FooterConfigRecord {
+  id
+  navigation {
+    ...NavigationItem
+  }
+  showNewsletterSignupForm
+  newsletterTitle
+  newsletterDescription
+  newsletterFieldPlaceholder
+  newsletterSubmitButton
+  newsletterNote
+  newsletterSuccessMessage
+  showSocial
+  social {
+    ...NavigationItem
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "core_add_to_cart_form": {
+    "button": {
+      "add": "Add to Cart",
+      "adding": "Adding..."
+    },
+    "notifications": {
+      "added_to_cart": "Item added to cart",
+      "error_adding_to_cart": "Could not add to cart, try again later"
+    },
+    "error": {
+      "generic": "Failed to add item to cart",
+      "missing_required": "Missing required product information",
+      "missing_event_fields": "Missing required event details"
+    },
+    "aria": {
+      "form_label": "Add to cart form"
+    }
+  }
+}

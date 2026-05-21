@@ -1,0 +1,21 @@
+fragment SectionTrackMapCallout on SectionTrackMapCalloutRecord {
+  id
+  config {
+    ...SectionConfig
+  }
+  layout
+  title
+  subtitle
+  description
+  media {
+    ... on CoreImageRecord {
+      ...CoreImage
+    }
+    ... on CoreVideoRecord {
+      ...CoreVideo
+    }
+  }
+  ctas {
+    ...CoreCta
+  }
+}

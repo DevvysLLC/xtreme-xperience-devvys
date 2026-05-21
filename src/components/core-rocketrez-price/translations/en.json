@@ -1,0 +1,7 @@
+{
+  "core_rocketrez_price": {
+    "prefix": "From",
+    "price_format": "${price}",
+    "suffix": "*"
+  }
+}

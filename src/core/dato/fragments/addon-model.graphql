@@ -1,0 +1,4 @@
+fragment AddonModel on AddonModelRecord {
+  ...AddonModelData
+  ...AddonModelContent
+}

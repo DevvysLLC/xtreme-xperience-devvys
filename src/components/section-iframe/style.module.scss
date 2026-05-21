@@ -1,0 +1,104 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+.section {
+  @include sg.section-config;
+
+  & {
+    position: relative;
+    padding-block: sg.spacing(xxlarge);
+    padding-inline: sg.spacing(regular);
+
+    @include sg.min(laptopSmall) {
+      padding-block: sg.spacing(xxxlarge);
+      padding-inline: sg.spacing(xlarge);
+    }
+  }
+
+  &--fullscreen {
+    padding-block: 0;
+    padding-inline: 0;
+  }
+
+  @include sg.min(laptopSmall) {
+    &--fullscreen {
+      padding-block: 0;
+      padding-inline: 0;
+    }
+  }
+}
+
+.container {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: sg.spacing(large);
+  max-width: u.rem-calc(710);
+  margin-inline: auto;
+
+  &--2-column {
+    max-width: 100%;
+
+    @include sg.min(laptopSmall) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: sg.spacing(xlarge);
+    }
+  }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: sg.spacing(small);
+
+  @include sg.min(laptopSmall) {
+    gap: sg.spacing(regular);
+  }
+}
+
+.title {
+  font-family: sg.font-family(anton);
+  font-size: sg.font-size(xlarge);
+  font-weight: sg.font-weight(400);
+  line-height: sg.line-height('110%');
+  text-transform: uppercase;
+
+  @include sg.min(laptopSmall) {
+    font-size: sg.font-size(xxxlarge);
+    line-height: sg.line-height('100%');
+  }
+
+  .container--2-column & {
+    @include sg.min(laptopSmall) {
+      max-width: u.rem-calc(350);
+    }
+  }
+}
+
+.subtitle {
+  font-family: sg.font-family(barlow-semi-condensed);
+  font-size: sg.font-size(medium);
+  line-height: sg.line-height('140%');
+}
+
+.description {
+  font-size: sg.font-size(regular);
+  line-height: sg.line-height('140%');
+}
+
+.ctas {
+  display: flex;
+  flex-direction: column;
+  gap: sg.spacing(small);
+  margin-top: sg.spacing(regular);
+
+  @include sg.min(laptopSmall) {
+    flex-flow: row wrap;
+    gap: sg.spacing(regular);
+  }
+}
+
+.iframe {
+  overflow: hidden;
+  width: 100%;
+  border: 0;
+}

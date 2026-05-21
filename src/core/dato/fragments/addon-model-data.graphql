@@ -1,0 +1,7 @@
+fragment AddonModelData on AddonModelRecord {
+  id
+  title
+  description
+  rocketRezId
+  rocketRezType
+}

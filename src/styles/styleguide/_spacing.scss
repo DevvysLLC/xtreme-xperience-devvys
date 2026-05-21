@@ -1,0 +1,29 @@
+@use 'sass:meta';
+@use 'sass:string';
+@use '../core/stdlib/map' as map;
+@use '../core/unit' as u;
+
+$_base: 16 !default;
+$_config: (
+  xxxxlarge: 120px,
+  xxxlarge: 80px,
+  xxlarge: 64px,
+  xlarge: 40px,
+  large: 32px,
+  medium: 24px,
+  mediuml: 20px,
+  regular: 16px,
+  small: 12px,
+  xsmall: 8px,
+  xxsmall: 4px,
+  xxxsmall: 2px
+);
+
+@function spacing($key) {
+  $value: map.get-strict($_config, $key);
+  @return u.rem-calc($value);
+}
+
+@function gap($key: 'xsmall') {
+  @return spacing($key);
+}

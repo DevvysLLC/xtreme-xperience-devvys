@@ -1,0 +1,7 @@
+.gradient {
+  position: absolute;
+  inset: 0;
+  // Fix bug of displays with high pixel density
+  width: 101%;
+  height: 101%;
+}

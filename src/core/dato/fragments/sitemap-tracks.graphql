@@ -1,0 +1,11 @@
+query sitemapTracks($first: IntType!, $skip: IntType!) {
+  allTracks(first: $first, skip: $skip, orderBy: _updatedAt_DESC) {
+    _updatedAt
+    config {
+      handle
+      seo {
+        noIndex
+      }
+    }
+  }
+}

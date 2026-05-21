@@ -1,0 +1,11 @@
+fragment CoreGradient on CoreGradientRecord {
+  enabled
+  direction
+  startColor {
+    cssRgb
+  }
+  endColor {
+    cssRgb
+  }
+  customCssGradient
+}

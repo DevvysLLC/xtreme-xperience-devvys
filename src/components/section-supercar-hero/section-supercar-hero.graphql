@@ -1,0 +1,27 @@
+fragment SectionSupercarHero on SectionSupercarHeroRecord {
+  id
+  maxHeight
+  title
+  subtitle
+  description
+  largeText
+  marquee
+  gradient {
+    ...CoreGradient
+  }
+  ctas {
+    ...CoreCta
+  }
+  config {
+    ...SectionConfig
+  }
+  media {
+    ... on CoreImageRecord {
+      ...CoreImage
+    }
+    ... on CoreVideoRecord {
+      ...CoreVideo
+    }
+  }
+  showTrackFinder
+}

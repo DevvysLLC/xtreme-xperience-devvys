@@ -1,0 +1,15 @@
+fragment CoreSocialCard on CoreSocialCardRecord {
+  id
+  title
+  cta {
+    ...CoreCta
+  }
+  media {
+    ... on CoreImageRecord {
+      ...CoreImage
+    }
+    ... on CoreVideoRecord {
+      ...CoreVideo
+    }
+  }
+}

@@ -1,0 +1,7 @@
+query getPage($handle: String) {
+  allPages(
+    filter: { config: { any: { pageConfig: { handle: { eq: $handle } } } } }
+  ) {
+    ...Page
+  }
+}

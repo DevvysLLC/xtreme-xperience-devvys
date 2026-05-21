@@ -1,0 +1,46 @@
+@use 'sass:math';
+@use '../core/stdlib/map' as map;
+@use '../core/unit' as u;
+
+$_config: (
+  mobile: u.rem-calc(375),
+  mobileLarge: u.rem-calc(680),
+  tabletPortrait: u.rem-calc(768),
+  tabletLandscape: u.rem-calc(1024),
+  tabletLarge: u.rem-calc(1152),
+  laptopSmall: u.rem-calc(1280),
+  laptop: u.rem-calc(1512),
+  desktop: u.rem-calc(2048),
+  maxWidthFromDesignTeam: u.rem-calc(1920)
+);
+
+@function media($key) {
+  @return map.get-strict($_config, $key);
+}
+
+@mixin min($key) {
+  $width: map.get-strict($_config, $key);
+  @media print, screen and (width >= #{$width}) {
+    @content;
+  }
+}
+
+@mixin max($key) {
+  $width: map.get-strict($_config, $key);
+  @media print, screen and (width < #{$width}) {
+    @content;
+  }
+}
+
+@mixin hover {
+  @media (hover: hover) and (pointer: fine) {
+    @content;
+  }
+}
+
+@mixin container-min($key) {
+  $width: map.get-strict($_config, $key);
+  @container (width >= #{$width}) {
+    @content;
+  }
+}

@@ -1,0 +1,12 @@
+fragment Video on VideoFileField {
+  id
+  video {
+    width
+    height
+    streamingUrl
+    mp4Low: mp4Url(res: low)
+    mp4Medium: mp4Url(res: medium)
+    mp4High: mp4Url(res: high)
+    thumbnailUrl
+  }
+}

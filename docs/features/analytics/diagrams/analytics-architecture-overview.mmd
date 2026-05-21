@@ -1,0 +1,25 @@
+flowchart TD
+    UserAction[User Interaction] --> Entry{Tracking Entry Point}
+
+    Entry -->|click/submit| ScriptsGA[ScriptsGoogleAnalytics]
+    Entry -->|cart/checkout hooks| EcommerceHook[useAnalyticsEcommerceEvent]
+    Entry -->|book/view hooks| GA4Custom[useAnalyticsGA4Event custom events]
+
+    ScriptsGA --> DataLayer[(window.dataLayer)]
+    GA4Custom --> DataLayer
+
+    EcommerceHook --> GA4Hook[useAnalyticsGA4Event]
+    EcommerceHook --> FBHook[useAnalyticsFacebookPixelEvent]
+
+    GA4Hook --> DataLayer
+    FBHook --> FBQ[(window.fbq)]
+
+    DataLayer --> GTM[Google Tag Manager]
+    GTM --> GA4[GA4 Property]
+    FBQ --> FacebookPixel[Facebook Pixel]
+
+    style DataLayer fill:#d0d0d0,color:#000
+    style FBQ fill:#d0d0d0,color:#000
+    style GTM fill:#b0b0b0,color:#000
+    style GA4 fill:#a0a0a0,color:#000
+    style FacebookPixel fill:#a0a0a0,color:#000

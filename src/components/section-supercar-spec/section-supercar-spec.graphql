@@ -1,0 +1,6 @@
+fragment SectionSupercarSpec on SectionSupercarSpecRecord {
+  id
+  config {
+    ...SectionConfig
+  }
+}

@@ -1,0 +1,15 @@
+fragment Supercar on SupercarRecord {
+  id
+  titleInternal
+  _createdAt
+  _updatedAt
+  config {
+    ...SupercarConfig
+  }
+  model {
+    ...SupercarModel
+  }
+  content {
+    ...PageSections
+  }
+}

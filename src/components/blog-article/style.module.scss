@@ -1,0 +1,12 @@
+@use '../../styles/styleguide/richtext' as richtext;
+@use '../../styles/core/unit' as u;
+@use '../../styles/styleguide' as sg;
+
+.BlogArticle {
+  @include richtext.richtext();
+  width: 100%;
+  max-width: u.rem-calc(780);
+  margin: 0 auto;
+  padding-inline: sg.spacing(medium);
+  padding-block: sg.spacing(xlarge);
+}

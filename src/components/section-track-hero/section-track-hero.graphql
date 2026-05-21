@@ -1,0 +1,24 @@
+fragment SectionTrackHero on SectionTrackHeroRecord {
+  id
+  maxHeight
+  title
+  subtitle
+  description
+  marquee
+  gradient {
+    ...CoreGradient
+  }
+  config {
+    ...SectionConfig
+  }
+  media {
+    ... on CoreImageRecord {
+      ...CoreImage
+    }
+    ... on CoreVideoRecord {
+      ...CoreVideo
+    }
+  }
+  showEvents
+  showPrices
+}

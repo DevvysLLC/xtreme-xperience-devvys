@@ -1,0 +1,9 @@
+fragment Header on HeaderRecord {
+  id
+  config {
+    ...HeaderConfig
+  }
+  content {
+    ...HeaderSections
+  }
+}

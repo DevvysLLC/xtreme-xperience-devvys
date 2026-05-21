@@ -1,0 +1,10 @@
+fragment CoreBadge on CoreBadgeRecord {
+  id
+  backgroundColor {
+    hex
+  }
+  color {
+    hex
+  }
+  label
+}

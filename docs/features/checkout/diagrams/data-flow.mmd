@@ -1,0 +1,34 @@
+flowchart LR
+    CartStore[(Cart Store<br/>Zustand)] -->|"cart data"| useCheckoutWithCart
+    CheckoutStore[(Checkout Store<br/>Zustand)] -->|"checkout state"| useCheckoutWithCart[useCheckoutWithCart]
+    SessionStorage[(sessionStorage)]
+    BrowserURL[(Browser URL)]
+
+    useCheckoutWithCart --> Guard[CheckoutWizardGuard]
+    Guard -->|"controls access"| ContactsPage[Contacts Page]
+    Guard -->|"controls access"| PaymentPage[Payment Page]
+    Guard -->|"bypasses checks"| CompletePage[Complete Page]
+
+    ContactsPage --> useCheckoutPageDetails[useCheckoutPageDetails]
+    useCheckoutPageDetails -->|"set details"| CheckoutStore
+
+    PaymentPage --> useRocketRezPayment[useRocketRezPayment]
+    useRocketRezPayment -->|"INIT, PROCESS_PAYMENT, RESUME_PAYMENT"| PaymentIframe[PaymentV2 Iframe]
+    PaymentIframe -->|"READY, PAYMENT_AUTH_*, PAYMENT_*"| useRocketRezPayment
+    PaymentPage -->|"persist redirect state before PROCESS_PAYMENT"| SessionStorage
+    BrowserURL -->|"payment_intent_client_secret, redirect_status"| PaymentPage
+    PaymentPage -->|"strip payment params via history.replaceState"| BrowserURL
+    SessionStorage -->|"restore redirect state"| PaymentPage
+    PaymentPage --> useCartComplete[useCartComplete]
+    useCartComplete -->|"POST complete"| CartAPI[(/api/v1/cart/complete)]
+    CartAPI -->|"creates order"| OrderDB[(Orders DB)]
+
+    CompletePage --> useOrder[useOrder]
+    useOrder -->|"GET order"| OrderAPI[(/api/v1/booking/order)]
+
+    CompletePage --> useCartClearAfterComplete[useCartClearAfterComplete]
+    useCartClearAfterComplete -->|"clearCart"| CartStore
+    useCartClearAfterComplete -->|"clearBooking"| BookingStore[(Booking Store<br/>Zustand)]
+    useCartClearAfterComplete -->|"clearCheckout"| CheckoutStore
+    useCartClearAfterComplete -->|"invalidate"| ReactQuery[React Query Cache]
+

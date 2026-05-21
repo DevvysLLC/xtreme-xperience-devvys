@@ -1,0 +1,76 @@
+@use '../../../../styles/styleguide' as sg;
+@use '../../../../styles/core/unit' as u;
+
+/* ===================================================== */
+/* Card */
+/* ===================================================== */
+
+.card {
+  $card: &;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: sg.spacing(small);
+  width: 100%;
+  padding: sg.spacing(medium);
+  background-color: sg.color(gray-50);
+
+  &--featured {
+    @include sg.min(laptopSmall) {
+      grid-column: span 2;
+      flex-direction: row;
+      align-items: center;
+      gap: sg.spacing(medium);
+    }
+  }
+
+  &__media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 569 / 327;
+  }
+
+  &__content {
+    position: relative;
+    width: 100%;
+
+    #{$card}--featured & {
+      @include sg.min(laptopSmall) {
+        max-width: calc(u.rem-calc(320) + (sg.spacing(xlarge) * 2));
+        padding-inline: sg.spacing(xlarge);
+      }
+    }
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    gap: sg.spacing(regular);
+    padding-bottom: sg.spacing(regular);
+    border-bottom: u.rem-calc(1) dashed sg.color(border-dark);
+  }
+
+  &__title {
+    font-size: sg.font-size(regular);
+    line-height: sg.line-height('140%');
+  }
+
+  &__description {
+    margin-top: sg.spacing(regular);
+    font-size: sg.font-size(regular);
+    font-weight: sg.font-weight(400);
+    line-height: sg.line-height('140%');
+  }
+
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    gap: sg.spacing(xxsmall);
+    margin-top: sg.spacing(medium);
+  }
+
+  &__cta {
+    width: 100%;
+  }
+}

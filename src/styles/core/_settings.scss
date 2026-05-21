@@ -1,0 +1,22 @@
+@use './unit' as u;
+@use './vw-calc-v3' as vw;
+@use './style-guide/spacing' as spacing;
+
+$border-radius: u.rem-calc(4);
+$column-gutter: u.rem-calc(40);
+$page-width: u.rem-calc(1512);
+
+$mobile-width: 375;
+$desktop-width: 1512;
+
+$side-paddings: vw.vw-calc(
+  spacing.$regular spacing.$large spacing.$large,
+  $mobile-width,
+  $desktop-width
+);
+
+$between-section: vw.vw-calc(
+  spacing.$medium spacing.$xlarge spacing.$xlarge,
+  $mobile-width,
+  $desktop-width
+);

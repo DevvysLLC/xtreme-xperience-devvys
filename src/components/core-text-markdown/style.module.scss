@@ -1,0 +1,5 @@
+@use '../../styles/styleguide/richtext' as richtext;
+
+.rte {
+  @include richtext.richtext();
+}

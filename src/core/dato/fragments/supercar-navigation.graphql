@@ -1,0 +1,20 @@
+fragment SupercarNavigationModel on SupercarModelRecord {
+  title
+  tagline
+  displayPrice {
+    ...CorePrice
+  }
+  thumbnail {
+    ...CoreImage
+  }
+}
+
+fragment SupercarNavigation on SupercarRecord {
+  id
+  config {
+    handle
+  }
+  model {
+    ...SupercarNavigationModel
+  }
+}

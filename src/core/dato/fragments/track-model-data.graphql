@@ -1,0 +1,31 @@
+fragment TrackModelData on TrackModelRecord {
+  id
+  title
+  nickname
+  location {
+    latitude
+    longitude
+  }
+  address
+  city
+  state
+  region
+  highlights
+  lapLength
+  numberOfLaps
+  elevationChange
+  longestStraight
+  numberOfTurns
+  travelTimes
+  specTitle
+  description
+  events {
+    ...EventData
+  }
+  badges {
+    ...CoreBadge
+  }
+  bookingAnnouncement {
+    ...SectionAnnouncementBar
+  }
+}

@@ -1,0 +1,64 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+.section {
+  @include sg.section-config;
+
+  display: grid;
+  grid-template-columns: u.rem-calc(20) 1fr;
+  gap: u.rem-calc(10);
+  padding-block: sg.spacing(xlarge);
+  border-bottom: 1px dashed sg.color(black-20);
+
+  &:first-child {
+    padding-top: 0;
+  }
+
+  &:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+}
+
+.title {
+  margin-bottom: sg.spacing(medium);
+  font-family: sg.font-family(barlow-semi-condensed);
+  font-size: sg.font-size(medium);
+  font-weight: sg.font-weight(bold);
+  line-height: sg.line-height('100%');
+  text-transform: uppercase;
+}
+
+.paragraph {
+  font-family: sg.font-family(barlow);
+  font-size: sg.font-size(regular);
+  line-height: sg.line-height('120%');
+
+  &--uppercase {
+    text-transform: uppercase;
+  }
+}
+
+.ctas {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: sg.spacing(small);
+  margin-top: sg.spacing(medium);
+}
+
+.icon {
+  color: var(--section-highlight-color, #{sg.color(orange)});
+
+  .section--orange & {
+    color: sg.color(black);
+  }
+}
+
+.text {
+  grid-column: 2;
+}
+
+.text--full {
+  grid-column: 1 / -1;
+}

@@ -1,0 +1,32 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+.container {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: sg.spacing(xsmall);
+  padding-top: sg.spacing(medium);
+  border-top: 1px dashed sg.color(border-dark);
+
+  @include sg.min(tabletPortrait) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include sg.min(laptopSmall) {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  & > * {
+    @include sg.min(laptopSmall) {
+      grid-column: span 2;
+    }
+  }
+
+  &--featured {
+    & > *:nth-child(-n + 4) {
+      @include sg.min(laptopSmall) {
+        grid-column: span 3;
+      }
+    }
+  }
+}

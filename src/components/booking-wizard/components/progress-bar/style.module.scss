@@ -1,0 +1,107 @@
+@use '../../../../styles/styleguide' as sg;
+@use '../../../../styles/core/unit' as u;
+
+/* ===================================================== */
+/* Progress Bar */
+/* ===================================================== */
+
+.progressBar {
+  position: relative;
+  padding: sg.spacing(small) sg.spacing(xxsmall);
+  border-bottom: u.rem-calc(1) solid sg.color(border-dark);
+
+  @include sg.min(laptopSmall) {
+    padding-inline: sg.spacing(xlarge);
+  }
+
+  &__bar {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: sg.spacing(xsmall);
+    border-radius: u.rem-calc(100);
+    background-color: sg.color(carrara);
+  }
+
+  &__bar__fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    transform: translateX(-100%);
+    transform-origin: left;
+    width: 100%;
+    height: sg.spacing(xsmall);
+    border-radius: u.rem-calc(100);
+    background-color: sg.color(orange);
+    @include sg.transitions((transform, 300));
+  }
+
+  &__list {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__list__item {
+    flex: 1;
+    position: relative;
+    padding-top: sg.spacing(small);
+    text-align: center;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: calc(sg.spacing(small) * -1);
+      left: 50%;
+      transform: translateX(-50%);
+      width: sg.spacing(regular);
+      height: sg.spacing(regular);
+      border-radius: 50%;
+      background-color: sg.color(carrara);
+      @include sg.transition(background-color, 300, 'easeOutExpo');
+    }
+
+    &--completed:has(~ &--active),
+    &--active {
+      &::before {
+        background-color: sg.color(orange);
+      }
+    }
+  }
+
+  &__item {
+    position: relative;
+    z-index: 2;
+    display: block;
+    max-width: u.rem-calc(70);
+    height: 100%;
+    margin: auto;
+    font-family: sg.font-family(barlow);
+    font-size: sg.font-size(xxsmall);
+    font-weight: sg.font-weight(400);
+    line-height: sg.line-height('100%');
+    color: sg.color(black-50);
+
+    @include sg.min(laptopSmall) {
+      font-size: sg.font-size(xsmall);
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: u.rem-calc(-30);
+      left: 0;
+      width: 100%;
+      height: calc(100% + u.rem-calc(30));
+    }
+
+    &--link {
+      padding: 0;
+      border: 0;
+      background: none;
+      cursor: pointer;
+      text-align: inherit;
+      color: sg.color(black);
+    }
+  }
+}

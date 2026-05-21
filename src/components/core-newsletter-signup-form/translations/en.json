@@ -1,0 +1,24 @@
+{
+  "core_newsletter_signup_form": {
+    "title": "Subscribe to our newsletter",
+    "description": "Receive updates on new arrivals, special offers and other discounts.",
+    "info": "By subscribing, you agree to receive emails from us. Unsubscribe anytime.",
+    "label": {
+      "email": "Email Address"
+    },
+    "placeholder": {
+      "email": "Enter your email"
+    },
+    "validation": {
+      "required": "Email is required",
+      "invalid": "Please enter a valid email address"
+    },
+    "button": {
+      "submit": "Submit",
+      "submitting": "Submitting..."
+    },
+    "message": {
+      "success": "Successfully subscribed to newsletter"
+    }
+  }
+}

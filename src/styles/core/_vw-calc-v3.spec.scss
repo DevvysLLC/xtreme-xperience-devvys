@@ -1,0 +1,24 @@
+/* prettier-ignore */
+
+@use './vw-calc-v3' as u;
+
+.element {
+  width: u.vw-calc(
+    150 200 200,
+    $min-screen-width: 375,
+    $target-screen-width: 1512
+  );
+  height: u.vw-calc(
+    40 48 52,
+    $min-screen-width: 375,
+    $target-screen-width: 1512
+  );
+
+  @media screen and (min-width: 90em) {
+    width: u.vw-calc(
+      180 220 275,
+      $min-screen-width: 375,
+      $target-screen-width: 1800
+    );
+  }
+}

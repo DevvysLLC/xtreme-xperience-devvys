@@ -1,0 +1,38 @@
+@use '../../../styles/styleguide' as sg;
+
+.cartDrawer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  &__content {
+    flex: 1;
+    overflow-y: auto;
+    padding-inline: sg.spacing(regular);
+
+    &.is-loading,
+    &.is-refreshing {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    @include sg.min(tabletLandscape) {
+      padding-inline: sg.spacing(medium);
+    }
+  }
+
+  &__location {
+    padding: sg.spacing(regular) 0;
+  }
+
+  &__footer {
+    flex-shrink: 0;
+    padding-block: sg.spacing(regular);
+    padding-inline: sg.spacing(regular);
+    border-top: 1px solid sg.color(border-dark);
+
+    @include sg.min(tabletLandscape) {
+      padding-inline: sg.spacing(medium);
+    }
+  }
+}

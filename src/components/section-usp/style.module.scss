@@ -1,0 +1,28 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+.section {
+  @include sg.section-config;
+
+  & {
+    padding: sg.spacing(medium);
+
+    @include sg.min(tabletPortrait) {
+      padding: sg.spacing(xlarge);
+    }
+  }
+
+  &__title {
+    @include sg.visually-hidden;
+  }
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: sg.spacing(regular);
+
+  @include sg.min(tabletPortrait) {
+    flex-direction: row;
+  }
+}

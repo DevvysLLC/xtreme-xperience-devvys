@@ -1,0 +1,23 @@
+{
+  "core_event_card": {
+    "view_track": "View Track",
+    "badge": {
+      "sold_out": "Sold Out",
+      "nearest": "Nearest"
+    },
+    "months": {
+      "jan": "Jan.",
+      "feb": "Feb.",
+      "mar": "Mar.",
+      "apr": "Apr.",
+      "may": "May",
+      "jun": "Jun.",
+      "jul": "Jul.",
+      "aug": "Aug.",
+      "sep": "Sept.",
+      "oct": "Oct.",
+      "nov": "Nov.",
+      "dec": "Dec."
+    }
+  }
+}

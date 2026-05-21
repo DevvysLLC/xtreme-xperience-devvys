@@ -1,0 +1,93 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+.section {
+  @include sg.section-config;
+
+  & {
+    position: relative;
+    overflow: hidden;
+    padding-block: sg.spacing(xxlarge);
+    padding-inline: sg.spacing(regular);
+
+    @include sg.min(laptopSmall) {
+      display: flex;
+      justify-content: space-between;
+      padding-block: sg.spacing(xxxxlarge);
+      padding-inline: sg.spacing(xlarge);
+    }
+  }
+
+  &--reverse {
+    @include sg.min(laptopSmall) {
+      flex-direction: row-reverse;
+    }
+  }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: sg.spacing(large);
+
+  @include sg.min(laptopSmall) {
+    gap: sg.spacing(large);
+    width: 51.68%;
+  }
+}
+
+.title {
+  font-family: sg.font-family(anton);
+  font-size: sg.font-size(large);
+  font-weight: sg.font-weight(400);
+  line-height: sg.line-height('100%');
+  text-transform: uppercase;
+
+  @include sg.min(laptopSmall) {
+    font-size: sg.font-size(xxlarge);
+    letter-spacing: sg.letter-spacing('2%');
+  }
+}
+
+.subtitle {
+  font-family: sg.font-family(barlow);
+  font-size: sg.font-size(regular);
+  line-height: sg.line-height('140%');
+  font-weight: sg.font-weight(400);
+  color: sg.color(black);
+}
+
+.ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: sg.spacing(regular);
+  margin-top: auto;
+}
+
+.media {
+  // Only mounted on desktop via JS conditional rendering in AccordionInteractive
+  // to prevent duplicate media loading on mobile (where inline media is shown instead).
+  // CSS display: none kept as fallback for SSR hydration.
+  display: none;
+
+  @include sg.min(laptopSmall) {
+    display: block;
+    align-self: flex-start;
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 1 / 1;
+    width: 40.5%;
+  }
+
+  &__controls {
+    position: absolute;
+    top: sg.spacing(regular);
+    right: sg.spacing(regular);
+  }
+}
+
+.accordion {
+  display: flex;
+  flex-direction: column;
+  gap: sg.spacing(xsmall);
+}

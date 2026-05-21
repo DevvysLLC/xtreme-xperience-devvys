@@ -1,0 +1,40 @@
+meta {
+  name: Add Event Item
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{ROCKET_REZ_API_BASE_URL}}/v1/headless/cart/lineitems
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{cartToken}}
+}
+
+body:json {
+  {
+      "lineItems": [
+          {
+              "id": 489,
+              "type": "Event",
+              "quantity": 1,
+              "scheduleId": 260871,
+              "rateId": 1,
+              "rateType": "Participant"
+          }
+      ]
+  }
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Response has cart data", function() {
+    expect(res.getBody()).to.have.property('data');
+  });
+}

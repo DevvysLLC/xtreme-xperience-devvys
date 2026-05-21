@@ -1,0 +1,17 @@
+@use './modular-scale' as ms;
+
+.element {
+  width: ms.modular-scale(-3);
+  width: ms.modular-scale(-2);
+  width: ms.modular-scale(-1);
+  width: ms.modular-scale(1);
+  width: ms.modular-scale(2);
+  width: ms.modular-scale(3);
+  width: ms.modular-scale(4);
+  width: ms.modular-scale(5);
+  width: ms.modular-scale(6);
+  height: ms.modular-scale(-2, 1em);
+  height: ms.modular-scale(-1, 1em);
+  height: ms.modular-scale(1, 10px);
+  height: ms.modular-scale(2, 10px);
+}

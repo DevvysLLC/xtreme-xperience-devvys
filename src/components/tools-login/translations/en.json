@@ -1,0 +1,16 @@
+{
+  "tools_login": {
+    "title": "Tools Login",
+    "label": {
+      "password": "Password"
+    },
+    "button": {
+      "submit": "Login",
+      "loading": "Logging in..."
+    },
+    "error": {
+      "invalid_password": "Invalid password",
+      "generic": "An error occurred. Please try again."
+    }
+  }
+}

@@ -1,0 +1,11 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+.announcement {
+  font-size: sg.font-size(xsmall);
+  text-align: center;
+
+  @include sg.min(tabletLandscape) {
+    font-size: sg.font-size(small);
+  }
+}

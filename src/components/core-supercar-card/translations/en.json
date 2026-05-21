@@ -1,0 +1,21 @@
+{
+  "core_supercar_card": {
+    "card_simple": {
+      "view_details_seo": "View Details for {title}"
+    },
+    "card_stats": {
+      "book_now": "Book Now",
+      "view_details": "View Car",
+      "view_details_seo": "View Details for {title}",
+      "value": "Value:",
+      "horsepower": "Horsepower:",
+      "zero_to_sixty": "0-60:",
+      "top_speed": "Top speed:"
+    },
+    "card_package": {
+      "book_now": "Book Now",
+      "view_details": "View Package",
+      "view_details_seo": "View Details for {title}"
+    }
+  }
+}

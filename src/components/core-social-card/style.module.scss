@@ -1,0 +1,22 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+.card {
+  position: relative;
+
+  &__media {
+    position: relative;
+    aspect-ratio: 1 / 1;
+  }
+
+  &__media__controls {
+    z-index: 1;
+  }
+
+  &__cta {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+}

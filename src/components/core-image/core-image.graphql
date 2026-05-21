@@ -1,0 +1,9 @@
+fragment CoreImage on CoreImageRecord {
+  id
+  image {
+    ...Image
+  }
+  desktopImage {
+    ...Image
+  }
+}

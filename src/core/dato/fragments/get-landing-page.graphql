@@ -1,0 +1,9 @@
+query getLandingPage($handle: String) {
+  allLandingPages(
+    filter: {
+      config: { any: { landingPageConfig: { handle: { eq: $handle } } } }
+    }
+  ) {
+    ...LandingPage
+  }
+}

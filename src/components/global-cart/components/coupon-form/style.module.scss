@@ -1,0 +1,67 @@
+@use '../../../../styles/styleguide' as sg;
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: sg.spacing(xsmall);
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: sg.spacing(xxsmall);
+  }
+
+  &__row {
+    display: flex;
+    gap: sg.spacing(xsmall);
+    align-items: flex-start;
+  }
+
+  &__input {
+    padding: sg.spacing(xsmall) sg.spacing(small);
+    border: 1px solid sg.color(border-dark);
+    border-radius: 0;
+    font-family: sg.font-family(barlow);
+    font-size: sg.font-size(regular);
+    flex: 1;
+
+    &:focus {
+      outline: 2px solid sg.color(black);
+      outline-offset: 2px;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &__button {
+    padding: sg.spacing(xsmall) sg.spacing(regular);
+    background-color: sg.color(black);
+    color: sg.color(white);
+    border: none;
+    font-family: sg.font-family(barlow);
+    font-size: sg.font-size(regular);
+    font-weight: sg.font-weight(600);
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background-color 0.2s;
+    white-space: nowrap;
+
+    &:hover:not(:disabled) {
+      background-color: sg.color(black-80);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &__error {
+    color: sg.color(error);
+    font-family: sg.font-family(barlow);
+    font-size: sg.font-size(small);
+  }
+}
