@@ -10,6 +10,32 @@ const logger = initLogger().child({ name: 'cart-get-api' })
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
+const shouldRecoverWithNewCart = (error: unknown): boolean => {
+  if (!(error instanceof AppError)) {
+    return false
+  }
+
+  if (
+    error.details?.traceTag === 'auth-service.refreshCartToken' &&
+    (error.details?.status === 400 ||
+      error.details?.status === 401 ||
+      error.details?.status === 403)
+  ) {
+    return true
+  }
+
+  if (
+    error.details?.traceTag === 'rocket-rez.cart-service.getCart' &&
+    (error.details?.status === 401 ||
+      error.details?.status === 403 ||
+      error.details?.status === 404)
+  ) {
+    return true
+  }
+
+  return false
+}
+
 const handleCartGetError = (error: unknown): NextResponse => {
   if (error instanceof AppError && error.message === 'Invalid cart key format') {
     return NextResponse.json(
@@ -87,7 +113,21 @@ export const GET = async (request: Request): Promise<NextResponse> => {
 
     const client = await getMiddlewareClient()
     const cartService = await client.getCartService()
-    const result = await cartService.getCart(cartKey, userGuid)
+    let result
+
+    try {
+      result = await cartService.getCart(cartKey, userGuid)
+    } catch (error) {
+      if (!shouldRecoverWithNewCart(error)) {
+        throw error
+      }
+
+      logger.info(
+        { cartKeyLength: cartKey.length },
+        'Recovering stale cart by creating a new cart context'
+      )
+      result = await cartService.addToCart({ lineItems: [] }, null, userGuid)
+    }
 
     return NextResponse.json(
       {
