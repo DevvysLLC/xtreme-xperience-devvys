@@ -30,6 +30,17 @@ const normalizeScope = (
   return trimmed
 }
 
+const normalizeCartScope = (scope: string | null | undefined): string => {
+  const normalized = normalizeScope(scope, DEFAULT_CART_SCOPE)
+  const parts = new Set(normalized.split(/\s+/).filter(Boolean))
+
+  if (!parts.has('read_carts') || !parts.has('write_carts')) {
+    return DEFAULT_CART_SCOPE
+  }
+
+  return normalized
+}
+
 export class RocketRezClient {
   private authService: AuthService
   private accessToken: string | null = null
@@ -97,7 +108,7 @@ export class RocketRezClient {
     const request: RefreshCartTokenRequest = {
       client_id: this.config.clientId,
       client_secret: this.config.clientSecret,
-      scope: normalizeScope(this.config.scope, DEFAULT_CART_SCOPE),
+      scope: normalizeCartScope(this.config.scope),
       grant_type: 'client_credentials',
       cart_id: cartId
     }
