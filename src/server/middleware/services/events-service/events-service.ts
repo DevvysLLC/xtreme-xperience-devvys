@@ -8,12 +8,94 @@ import type {
 import { RocketRezEventDataSchema } from '../../../../io/schemas'
 import { getUtcTodayString } from '../../../../utils/date-time'
 import { getDb } from '../../../db/get-db'
+import { RocketRezClient } from '../../../rocket-rez/client/index'
 import {
   getCachedRocketRezEvent,
   listCachedRocketRezEvents
 } from '../../../rocket-rez/services/events-cache/events-cache'
 
 export class EventsService {
+  private getRocketRezEnv(): {
+    clientId: string | null
+    clientSecret: string | null
+    baseUrl: string
+    scope: string
+  } {
+    const clientId =
+      process.env.ROCKET_REZ_CLIENT_ID ||
+      process.env.ROCKETREZ_HEADLESS_CLIENT_ID ||
+      null
+    const clientSecret =
+      process.env.ROCKET_REZ_CLIENT_SECRET ||
+      process.env.ROCKETREZ_HEADLESS_CLIENT_SECRET ||
+      null
+    const baseUrl =
+      process.env.ROCKET_REZ_API_BASE_URL ||
+      process.env.ROCKETREZ_HEADLESS_API_URL ||
+      'https://secure.rocket-rez.com/api'
+    const configuredScope = process.env.ROCKET_REZ_API_SCOPES?.trim()
+    const scope =
+      configuredScope && configuredScope.toLowerCase() !== 'xxx'
+        ? configuredScope
+        : 'read_products'
+
+    return { clientId, clientSecret, baseUrl, scope }
+  }
+
+  private async getLiveEventWithSchedules(
+    eventId: number
+  ): Promise<MiddlewareEventsGetEventResponse['event'] | null> {
+    const env = this.getRocketRezEnv()
+
+    if (!env.clientId || !env.clientSecret) {
+      logger.warn(
+        { eventId },
+        'events-service.getLiveEventWithSchedules: missing RocketRez credentials, skipping live fallback'
+      )
+      return null
+    }
+
+    try {
+      const client = new RocketRezClient({
+        baseUrl: env.baseUrl,
+        clientId: env.clientId,
+        clientSecret: env.clientSecret,
+        scope: env.scope
+      })
+
+      const productsService = await client.getProductsService()
+      const [eventResponse, schedulesResponse] = await Promise.all([
+        productsService.getEvent(eventId),
+        productsService.getEventSchedules(eventId)
+      ])
+
+      const parsedEvent = RocketRezEventDataSchema.safeParse(eventResponse.data)
+      if (!parsedEvent.success) {
+        logger.warn(
+          { eventId, validationError: parsedEvent.error },
+          'events-service.getLiveEventWithSchedules: invalid live event payload'
+        )
+        return null
+      }
+
+      const today = getUtcTodayString()
+      const futureSchedules = (schedulesResponse.data ?? []).filter(
+        (s) => s.date >= today
+      )
+
+      return {
+        ...parsedEvent.data,
+        schedules: futureSchedules
+      }
+    } catch (error) {
+      logger.warn(
+        { eventId, error },
+        'events-service.getLiveEventWithSchedules: live fallback failed'
+      )
+      return null
+    }
+  }
+
   async getEvents(): Promise<MiddlewareEventsListEventsResponse> {
     logger.info('events-service.getEvents')
 
@@ -53,6 +135,20 @@ export class EventsService {
     const cached = await getCachedRocketRezEvent(db, idAsInteger)
 
     if (!cached?.event) {
+      const liveEvent = await this.getLiveEventWithSchedules(idAsInteger)
+      if (liveEvent) {
+        const data = {
+          event: liveEvent
+        }
+
+        logger.info(
+          { eventId: idAsInteger },
+          'events-service.getEvent: served event from live fallback'
+        )
+
+        return data
+      }
+
       throw new AppError('Event not found', {
         traceTag: 'events-service.getEvent',
         eventId: id
