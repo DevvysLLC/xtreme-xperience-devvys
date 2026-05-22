@@ -83,26 +83,26 @@ export const ROUTES = {
   },
   ROCKET_REZ: {
     AUTH: {
-      TOKEN: '/v1/oauth2/token',
-      REFRESH_CART_TOKEN: '/v1/oauth2/token/headless/cart/refresh'
+      TOKEN: '/api/v1/oauth2/token',
+      REFRESH_CART_TOKEN: '/api/v1/oauth2/token/headless/cart/refresh'
     },
     CART: {
-      BASE: '/v1/headless/cart',
-      LINE_ITEMS: '/v1/headless/cart/lineitems',
-      LINE_ITEM_BY_ID: (id: number) => `/v1/headless/cart/lineitems/${id}`,
-      CONTACT: '/v1/headless/cart/contact',
-      CONTACT_BY_ID: (id: number) => `/v1/headless/cart/contact/${id}`,
-      COUPONS: '/v1/headless/cart/coupons',
-      COUPON_BY_ID: (id: number) => `/v1/headless/cart/coupons/${id}`,
+      BASE: '/api/v1/headless/cart',
+      LINE_ITEMS: '/api/v1/headless/cart/lineitems',
+      LINE_ITEM_BY_ID: (id: number) => `/api/v1/headless/cart/lineitems/${id}`,
+      CONTACT: '/api/v1/headless/cart/contact',
+      CONTACT_BY_ID: (id: number) => `/api/v1/headless/cart/contact/${id}`,
+      COUPONS: '/api/v1/headless/cart/coupons',
+      COUPON_BY_ID: (id: number) => `/api/v1/headless/cart/coupons/${id}`,
       PAYMENT_GATEWAY_CLIENT_SECRET:
-        '/v1/headless/payment/gateway-client-secret'
+        '/api/v1/headless/payment/gateway-client-secret'
     },
     PRODUCTS: {
-      BASE: '/v1/headless/products',
+      BASE: '/api/v1/headless/products',
       BY_TYPE_AND_ID: (type: string, id: number) =>
-        `/v1/headless/products/${type.toLowerCase()}/${id}`,
+        `/api/v1/headless/products/${type.toLowerCase()}/${id}`,
       EVENT_SCHEDULES: (eventId: number) =>
-        `/v1/headless/products/event/${eventId}/schedules`
+        `/api/v1/headless/products/event/${eventId}/schedules`
     }
   }
 } as const
