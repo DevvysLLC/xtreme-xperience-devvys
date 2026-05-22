@@ -30,6 +30,36 @@ const handleCartAddError = (error: unknown): NextResponse => {
     )
   }
 
+  if (
+    error instanceof AppError &&
+    (error.details?.traceTag === 'rocket-rez.cart-service.addLineItems' ||
+      error.details?.traceTag === 'rocket-rez.cart-service.createCart') &&
+    typeof error.details?.status === 'number' &&
+    error.details.status >= 400 &&
+    error.details.status < 500
+  ) {
+    const status = error.details.status
+
+    if (status === 404) {
+      return NextResponse.json(
+        { status: 'error', message: 'Cart not found or expired' },
+        { status, headers: NO_CACHE_HEADERS }
+      )
+    }
+
+    if (status === 401 || status === 403) {
+      return NextResponse.json(
+        { status: 'error', message: 'Cart session is invalid or expired' },
+        { status: 401, headers: NO_CACHE_HEADERS }
+      )
+    }
+
+    return NextResponse.json(
+      { status: 'error', message: 'Invalid cart add request' },
+      { status: 400, headers: NO_CACHE_HEADERS }
+    )
+  }
+
   logger.error(error, 'Internal error processing cart add request')
   return NextResponse.json(
     {

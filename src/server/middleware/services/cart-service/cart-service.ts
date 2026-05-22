@@ -21,6 +21,32 @@ type RefreshedCartContext = {
   tokenExpiry: string | null
 }
 
+const isRecoverableCartContextError = (error: unknown): boolean => {
+  if (!(error instanceof AppError)) {
+    return false
+  }
+
+  if (
+    error.details?.traceTag === 'auth-service.refreshCartToken' &&
+    (error.details?.status === 400 ||
+      error.details?.status === 401 ||
+      error.details?.status === 403)
+  ) {
+    return true
+  }
+
+  if (
+    error.details?.traceTag === 'rocket-rez.cart-service.getCart' &&
+    (error.details?.status === 401 ||
+      error.details?.status === 403 ||
+      error.details?.status === 404)
+  ) {
+    return true
+  }
+
+  return false
+}
+
 export class CartService {
   constructor(
     private readonly rocketRezClient?: RocketRezClient,
@@ -255,9 +281,29 @@ export class CartService {
       'middleware.cart-service.addToCart.gettingContext'
     )
 
-    const context = validCartKey
-      ? await this.refreshAndGetCartService(validCartKey, 'addToCart', userGuid)
-      : await this.createNewCartContext(userGuid)
+    let context: RefreshedCartContext
+
+    if (validCartKey) {
+      try {
+        context = await this.refreshAndGetCartService(
+          validCartKey,
+          'addToCart',
+          userGuid
+        )
+      } catch (error) {
+        if (!isRecoverableCartContextError(error)) {
+          throw error
+        }
+
+        logger.info(
+          { hasCartKey: true },
+          'middleware.cart-service.addToCart.recoveringWithNewCart'
+        )
+        context = await this.createNewCartContext(userGuid)
+      }
+    } else {
+      context = await this.createNewCartContext(userGuid)
+    }
 
     logger.info(
       {
