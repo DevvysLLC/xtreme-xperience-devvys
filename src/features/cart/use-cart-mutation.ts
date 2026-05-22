@@ -89,9 +89,38 @@ export const useCartMutation = <TInput>(
         fetchOptions.body = JSON.stringify(body)
       }
 
+      const performRequest = async (cartKeyOverride: string | null) => {
+        const requestHeaders: HeadersInit = { ...headers }
+
+        if (cartKeyOverride) {
+          requestHeaders['x-cart-key'] = cartKeyOverride
+        } else {
+          delete requestHeaders['x-cart-key']
+        }
+
+        const requestOptions: RequestInit = {
+          ...fetchOptions,
+          headers: requestHeaders
+        }
+
+        return fetch(endpoint, requestOptions)
+      }
+
       let res: Response
       try {
-        res = await fetch(endpoint, fetchOptions)
+        res = await performRequest(existingCartKey)
+
+        if (
+          existingCartKey &&
+          !options.requireCartKey &&
+          (res.status === 401 || res.status === 404)
+        ) {
+          logger.info(
+            { status: res.status, endpoint },
+            `${LOG_NAMESPACE}: mutation.retry-without-cart-key`
+          )
+          res = await performRequest(null)
+        }
       } catch (fetchError) {
         const errorMessage =
           fetchError instanceof Error
