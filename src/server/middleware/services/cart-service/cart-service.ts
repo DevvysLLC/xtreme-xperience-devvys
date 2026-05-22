@@ -145,7 +145,7 @@ export class CartService {
     // Re-authenticate to ensure we have a fresh client credentials token
     // (not a cart token from a previous operation)
     logger.info({}, 'middleware.cart-service.createNewCart.reAuthenticating')
-    await client.authenticate()
+    await client.authenticate('read_carts write_carts')
     logger.info({}, 'middleware.cart-service.createNewCart.reAuthenticated')
 
     const cartService = await this.getRocketRezCartService(userGuid)

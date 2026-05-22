@@ -14,6 +14,22 @@ export type RocketRezClientConfig = {
   scope?: string
 }
 
+const DEFAULT_PRODUCT_SCOPE = 'read_products'
+const DEFAULT_CART_SCOPE = 'read_carts write_carts'
+
+const normalizeScope = (
+  scope: string | null | undefined,
+  fallback: string
+): string => {
+  const trimmed = scope?.trim()
+
+  if (!trimmed || trimmed.toLowerCase() === 'xxx') {
+    return fallback
+  }
+
+  return trimmed
+}
+
 export class RocketRezClient {
   private authService: AuthService
   private accessToken: string | null = null
@@ -33,11 +49,14 @@ export class RocketRezClient {
     this.authService = new AuthService(this.config.baseUrl)
   }
 
-  async authenticate(): Promise<void> {
+  async authenticate(scopeOverride?: string): Promise<void> {
     const request: AuthTokenRequest = {
       client_id: this.config.clientId,
       client_secret: this.config.clientSecret,
-      scope: this.config.scope ?? 'read_products',
+      scope: normalizeScope(
+        scopeOverride ?? this.config.scope,
+        DEFAULT_PRODUCT_SCOPE
+      ),
       grant_type: 'client_credentials'
     }
 
@@ -78,7 +97,7 @@ export class RocketRezClient {
     const request: RefreshCartTokenRequest = {
       client_id: this.config.clientId,
       client_secret: this.config.clientSecret,
-      scope: this.config.scope ?? 'read_carts write_carts',
+      scope: normalizeScope(this.config.scope, DEFAULT_CART_SCOPE),
       grant_type: 'client_credentials',
       cart_id: cartId
     }
