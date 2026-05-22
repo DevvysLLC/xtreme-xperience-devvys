@@ -63,7 +63,7 @@ export const useCartRefresh = () => {
   }, [cartKey])
 
   const query = useQuery({
-    queryKey: [...CART_REFRESH_QUERY_KEY, cartKey],
+    queryKey: CART_REFRESH_QUERY_KEY,
     enabled: !!cartKey,
     refetchOnMount: true,
     retry: false,
