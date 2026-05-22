@@ -20,18 +20,12 @@ export const _makeClient = ({
   const logger = parentLogger.child({ name: 'dato-api' })
 
   const isProduction = process.env.NEXT_PUBLIC_VERCEL_ENV === 'production'
-  const rawDatoToken = process.env.NEXT_PUBLIC_DATOCMS_READONLY_TOKEN || ''
+  const datoToken = process.env.NEXT_PUBLIC_DATOCMS_READONLY_TOKEN || ''
   const datoEnvironment = process.env.NEXT_PUBLIC_DATOCMS_ENVIRONMENT || ''
 
-  if (!rawDatoToken) {
+  if (!datoToken) {
     throw new Error('NEXT_PUBLIC_DATOCMS_READONLY_TOKEN value is missing')
   }
-
-  const trimmedToken = rawDatoToken.trim()
-  const datoToken =
-    trimmedToken.toLowerCase().startsWith('bearer ')
-      ? trimmedToken
-      : `Bearer ${trimmedToken}`
 
   const baseHeaders: Record<string, string> = {
     Authorization: datoToken,
