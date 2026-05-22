@@ -79,6 +79,14 @@ export const useCartRefresh = () => {
         signal
       })
 
+      if (res.status === 401 || res.status === 404) {
+        logger.info(
+          { status: res.status },
+          `${LOG_NAMESPACE}: refresh.expired-cart`
+        )
+        return null
+      }
+
       if (!res.ok) {
         throw new Error('Failed to refresh cart')
       }
