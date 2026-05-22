@@ -1,10 +1,48 @@
 import { NextResponse } from 'next/server'
+import { AppError } from '../../../../../../core/errors/app-error'
 import { initLogger } from '../../../../../../core/logger/index'
-import { getMiddlewareClient } from '../../../../../../server/middleware/index'
+import { EventsService } from '../../../../../../server/middleware/services/events-service/index'
 
 const logger = initLogger().child({ name: 'event-api' })
 
 export const runtime = 'nodejs'
+
+const handleEventError = (error: unknown): NextResponse => {
+  if (error instanceof AppError && error.message === 'Invalid event id') {
+    return NextResponse.json(
+      {
+        status: 'error',
+        message: 'Invalid event id'
+      },
+      {
+        status: 400
+      }
+    )
+  }
+
+  if (error instanceof AppError && error.message === 'Event not found') {
+    return NextResponse.json(
+      {
+        status: 'error',
+        message: 'Event not found'
+      },
+      {
+        status: 404
+      }
+    )
+  }
+
+  logger.error(error, 'Internal error processing event request')
+  return NextResponse.json(
+    {
+      status: 'error',
+      message: 'Internal server error'
+    },
+    {
+      status: 500
+    }
+  )
+}
 
 export const GET = async (
   _request: Request,
@@ -12,8 +50,7 @@ export const GET = async (
 ): Promise<NextResponse> => {
   try {
     const { id } = await context.params
-    const client = await getMiddlewareClient()
-    const eventsService = await client.getEventsService()
+    const eventsService = new EventsService()
 
     const response = await eventsService.getEvent({
       id
@@ -28,15 +65,6 @@ export const GET = async (
       data
     })
   } catch (error) {
-    logger.error(error, 'Internal error processing event request')
-    return NextResponse.json(
-      {
-        status: 'error',
-        message: 'Internal server error'
-      },
-      {
-        status: 500
-      }
-    )
+    return handleEventError(error)
   }
 }

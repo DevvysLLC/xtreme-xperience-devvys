@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { initLogger } from '../../../../../core/logger/index'
-import { getMiddlewareClient } from '../../../../../server/middleware/index'
+import { EventsService } from '../../../../../server/middleware/services/events-service/index'
 
 const logger = initLogger().child({ name: 'events-api' })
 
@@ -8,8 +8,7 @@ export const runtime = 'nodejs'
 
 export const GET = async (): Promise<NextResponse> => {
   try {
-    const client = await getMiddlewareClient()
-    const eventsService = await client.getEventsService()
+    const eventsService = new EventsService()
     const response = await eventsService.getEvents()
 
     const data = {
