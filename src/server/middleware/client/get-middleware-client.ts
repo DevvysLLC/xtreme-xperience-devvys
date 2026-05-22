@@ -19,12 +19,6 @@ export const getMiddlewareClient = async (): Promise<MiddlewareClient> => {
     })
   }
 
-  if (!baseUrl || !scopes) {
-    throw new AppError('RocketRez environment variables not provided', {
-      traceTag: 'get-middleware-client'
-    })
-  }
-
   middlewareClientInstance = new MiddlewareClient({
     baseUrl,
     clientId,
