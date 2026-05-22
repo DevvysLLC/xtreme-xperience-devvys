@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { initLogger } from '../../../../../core/logger/index'
-import { getMiddlewareClient } from '../../../../../server/middleware/index'
+import { BookingConfigService } from '../../../../../server/middleware/services/booking-config-service/index'
 
 const logger = initLogger().child({ name: 'booking-config-api' })
 
@@ -8,8 +8,7 @@ export const runtime = 'nodejs'
 
 export const GET = async (): Promise<NextResponse> => {
   try {
-    const client = await getMiddlewareClient()
-    const bookingConfigService = await client.getBookingConfigService()
+    const bookingConfigService = new BookingConfigService()
     const response = await bookingConfigService.getBookingConfig()
 
     return NextResponse.json(
