@@ -30,20 +30,7 @@ export class RocketRezClient {
       )
     }
 
-    this.config.baseUrl = RocketRezClient.normalizeBaseUrl(this.config.baseUrl)
-
     this.authService = new AuthService(this.config.baseUrl)
-  }
-
-  private static normalizeBaseUrl(baseUrl: string): string {
-    const trimmed = baseUrl.replace(/\/+$/, '')
-
-    // Keep a canonical host root URL and let route constants include /api/v1.
-    if (trimmed.endsWith('/api')) {
-      return trimmed.slice(0, -4)
-    }
-
-    return trimmed
   }
 
   async authenticate(): Promise<void> {
