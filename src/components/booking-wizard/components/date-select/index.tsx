@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { type FC, useEffect, useMemo, useRef } from 'react'
+import { type FC, useEffect, useRef } from 'react'
 import type { EventDataFragment } from '../../../../core/dato/fragments/event-data.typegen'
 import { logger } from '../../../../core/logger/logger'
 import {
@@ -35,20 +35,6 @@ export const DateSelect: FC<Props> = ({ label }) => {
   const selectedEventId = booking?.event?.model?.id ?? ''
   const currentEventStartDate = booking?.event?.model?.startDate
   const previousEventIdRef = useRef<string | undefined>(selectedEventId)
-  const selectedEventScheduleRange = useMemo(() => {
-    const schedules = state.eventData?.schedules ?? []
-    if (schedules.length === 0) {
-      return { startDate: null, endDate: null }
-    }
-
-    const firstDate = schedules[0]?.date ?? null
-    const lastDate = schedules[schedules.length - 1]?.date ?? null
-
-    return {
-      startDate: firstDate,
-      endDate: lastDate
-    }
-  }, [state.eventData?.schedules])
 
   // Initialize selectedDay when event changes or when eventData is first loaded
   // Reset to first available day when switching events, but don't override user selections within the same event
@@ -156,16 +142,10 @@ export const DateSelect: FC<Props> = ({ label }) => {
         >
           {events.map((event) => (
             <option key={event.model?.id} value={event.model?.id ?? ''}>
-              {event.model?.id === selectedEventId &&
-              selectedEventScheduleRange.startDate
-                ? formatEventDateRangeShort(
-                    selectedEventScheduleRange.startDate,
-                    selectedEventScheduleRange.endDate
-                  )
-                : formatEventDateRangeShort(
-                    event.model?.startDate,
-                    event.model?.endDate
-                  )}
+              {formatEventDateRangeShort(
+                event.model?.startDate,
+                event.model?.endDate
+              )}
             </option>
           ))}
         </select>

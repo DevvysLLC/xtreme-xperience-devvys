@@ -120,14 +120,9 @@ export const DateAndCarPage = () => {
 
   const locationTitle = state.selectedEvent?.model?.track?.model?.nickname ?? ''
   const locationHandle = state.selectedEvent?.model?.track?.config?.handle ?? ''
-  const scheduleStartDate = state.eventData?.schedules?.[0]?.date ?? null
-  const scheduleEndDate =
-    state.eventData?.schedules?.length && state.eventData.schedules.length > 0
-      ? state.eventData.schedules[state.eventData.schedules.length - 1]?.date
-      : null
   const eventDateRange = formatEventDateRangeLong(
-    scheduleStartDate ?? state.selectedEvent?.model?.startDate,
-    scheduleEndDate ?? state.selectedEvent?.model?.endDate
+    state.selectedEvent?.model?.startDate,
+    state.selectedEvent?.model?.endDate
   )
   const trackHref = locationHandle
     ? `${ROUTES.FRONTEND.TRACKS.LISTING}/${locationHandle}`
