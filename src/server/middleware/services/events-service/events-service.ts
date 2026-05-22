@@ -15,6 +15,15 @@ import {
 } from '../../../rocket-rez/services/events-cache/events-cache'
 
 export class EventsService {
+  private getUtcDatePlusDaysString(days: number): string {
+    const date = new Date()
+    date.setUTCDate(date.getUTCDate() + days)
+    const year = date.getUTCFullYear()
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0')
+    const day = String(date.getUTCDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+
   private normalizeRocketRezBaseUrl(baseUrl: string): string {
     const trimmed = baseUrl.replace(/\/+$/, '')
     return trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`
@@ -69,10 +78,7 @@ export class EventsService {
       })
 
       const productsService = await client.getProductsService()
-      const [eventResponse, schedulesResponse] = await Promise.all([
-        productsService.getEvent(eventId),
-        productsService.getEventSchedules(eventId)
-      ])
+      const eventResponse = await productsService.getEvent(eventId)
 
       const parsedEvent = RocketRezEventDataSchema.safeParse(eventResponse.data)
       if (!parsedEvent.success) {
@@ -84,9 +90,31 @@ export class EventsService {
       }
 
       const today = getUtcTodayString()
-      const futureSchedules = (schedulesResponse.data ?? []).filter(
-        (s) => s.date >= today
-      )
+      const oneYearFromToday = this.getUtcDatePlusDaysString(365)
+
+      let futureSchedules: MiddlewareEventsGetEventResponse['event']['schedules'] =
+        []
+
+      try {
+        const schedulesResponse = await productsService.getEventSchedules(eventId, {
+          startDate: today,
+          endDate: oneYearFromToday
+        })
+
+        futureSchedules = (schedulesResponse.data ?? []).filter(
+          (s) => s.date >= today
+        )
+      } catch (schedulesError) {
+        logger.warn(
+          {
+            eventId,
+            startDate: today,
+            endDate: oneYearFromToday,
+            error: schedulesError
+          },
+          'events-service.getLiveEventWithSchedules: schedules lookup failed, returning event with empty schedules'
+        )
+      }
 
       return {
         ...parsedEvent.data,
