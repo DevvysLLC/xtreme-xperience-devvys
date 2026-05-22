@@ -43,6 +43,9 @@ export const getAddToCartLineItemWriteMetadataKey = ({
   if ('rateType' in lineItem) {
     entries.push(['rateType', lineItem.rateType])
   }
+  if ('parentLineItemId' in lineItem) {
+    entries.push(['parentLineItemId', lineItem.parentLineItemId])
+  }
 
   // Sort and filter
   entries.sort(([a], [b]) => a.localeCompare(b))
@@ -79,6 +82,9 @@ export const getCartLineItemReadMetadataKey = ({
   }
   if (lineItem.rateType != null) {
     entries.push(['rateType', lineItem.rateType])
+  }
+  if (lineItem.parentLineItemId != null) {
+    entries.push(['parentLineItemId', lineItem.parentLineItemId])
   }
 
   entries.sort(([a], [b]) => a.localeCompare(b))

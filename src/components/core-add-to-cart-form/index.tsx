@@ -5,8 +5,9 @@ import clsx from 'clsx'
 import { useTranslations } from 'next-intl'
 import { type FC, useEffect } from 'react'
 import type { AddonFragment } from '../../core/dato/fragments/addon.typegen'
-import { useCartAddAddon } from '../../features/cart'
+import { useCart, useCartAddAddon } from '../../features/cart'
 import { useToast } from '../../features/toast'
+import { RocketRezProductType } from '../../io/schemas'
 import type { RocketRezProductTypeValue } from '../../io'
 import type { RocketRezAddLineItemAddon } from '../../io/types'
 import { CoreCta } from '../core-cta'
@@ -52,6 +53,7 @@ export const CoreAddToCartForm: FC<CoreAddToCartFormProps> = (props) => {
     onError
   } = props
   const { mutateAsync, isPending } = useCartAddAddon()
+  const { data: cart } = useCart()
   const defaultValues = {
     id,
     type,
@@ -72,10 +74,27 @@ export const CoreAddToCartForm: FC<CoreAddToCartFormProps> = (props) => {
         quantity: value.quantity
       }
 
+      const parentEventLineItem = (cart?.cartData?.lineItems ?? []).find(
+        (item) =>
+          item.type.toLowerCase() === RocketRezProductType.EVENT.toLowerCase()
+      )
+
+      if (parentEventLineItem) {
+        lineItem.parentLineItemId = parentEventLineItem.id
+        lineItem.scheduleId = parentEventLineItem.scheduleId ?? null
+        lineItem.rateId = parentEventLineItem.rateId ?? null
+        lineItem.rateType = parentEventLineItem.rateType ?? null
+      }
+
+      const selectedDateTime =
+        cart?.metadata.find((meta) => meta.type === 'car')?.properties?.date ??
+        null
+
       try {
         await mutateAsync({
           addon,
-          lineItem
+          lineItem,
+          date: selectedDateTime
         })
         showToast({
           message: t('notifications.added_to_cart'),

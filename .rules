@@ -40,7 +40,7 @@ find_config_files(path=".")
 find_documentation(path=".")
 
 # Find test files
-find_tests(path=".")
+find_tests(path=".") 
 ```
 
 #### 🧠 Deep Code Analysis
@@ -162,4 +162,4 @@ It's optimized for AI consumption and gives you the perfect overview to plan you
 
 *Happy exploring! Remember, Smart Tree is here to make directory analysis fast, efficient, and token-friendly! 🌳*
 
-*P.S. - Elvis says: "Start with quick_tree, baby!" 🎸* 
+*P.S. - Elvis says: "Start with quick_tree, baby!" 🎸*

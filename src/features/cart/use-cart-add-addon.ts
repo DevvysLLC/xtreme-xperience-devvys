@@ -20,6 +20,7 @@ import { useCartMutation } from './use-cart-mutation'
 export type UseCartAddAddonInput = {
   addon: AddonFragment
   lineItem: RocketRezAddLineItemAddon
+  date?: string | null
 }
 
 export const useCartAddAddon = (): UseMutationResult<
@@ -46,7 +47,8 @@ export const useCartAddAddon = (): UseMutationResult<
       }
       const metadata = getAddToCartLineItemAddonMetadata({
         addon: input.addon,
-        lineItem: input.lineItem
+        lineItem: input.lineItem,
+        date: input.date ?? null
       })
       const current =
         qc.getQueryData<CartState>(CART_QUERY_KEY) ?? initialCartState

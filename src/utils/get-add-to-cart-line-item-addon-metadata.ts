@@ -9,18 +9,23 @@ import { getAddToCartLineItemWriteMetadataKey } from './get-cart-line-item-metad
 type GetAddToCartAddonLineItemMetadataProps = {
   addon: AddonFragment
   lineItem: RocketRezAddLineItemAddon
+  date?: string | null
 }
 
 export const getAddToCartLineItemAddonMetadata = ({
   addon,
-  lineItem
+  lineItem,
+  date
 }: GetAddToCartAddonLineItemMetadataProps): CartLineItemMetadata => {
   const key = getAddToCartLineItemWriteMetadataKey({ lineItem })
   const metadata = {
     key,
     type: CartLineItemMetadataPropertiesTypeSchema.enum.addon,
     title: addon.model?.title ?? '',
-    image: addon.model?.thumbnail?.image?.url ?? ''
+    image: addon.model?.thumbnail?.image?.url ?? '',
+    properties: {
+      date: date ?? null
+    }
   }
   return metadata
 }

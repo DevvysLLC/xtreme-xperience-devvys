@@ -6,10 +6,32 @@ import { useCart } from '../../../../features/cart'
 import { CoreRocketRezPrice } from '../../../core-rocketrez-price'
 import styles from './style.module.scss'
 
+const getTaxAmount = (tax: unknown): number => {
+  if (!tax || typeof tax !== 'object' || !('amount' in tax)) {
+    return 0
+  }
+  const value = tax.amount
+  return typeof value === 'number' && Number.isFinite(value) ? value : 0
+}
+
 export const CartTotals: FC = () => {
   const t = useTranslations('global_cart')
   const { data: cart } = useCart()
-  const taxTotal = cart?.cartData?.taxTotal ?? 0
+  const cartTaxFromBreakdown = (cart?.cartData?.taxes ?? []).reduce(
+    (sum, tax) => sum + getTaxAmount(tax),
+    0
+  )
+  const lineItemsTaxFromBreakdown = (cart?.cartData?.lineItems ?? []).reduce(
+    (lineItemsSum, lineItem) =>
+      lineItemsSum +
+      (lineItem.taxes ?? []).reduce((taxesSum, tax) => taxesSum + getTaxAmount(tax), 0),
+    0
+  )
+  const apiTaxTotal = cart?.cartData?.taxTotal ?? 0
+  const taxTotal =
+    apiTaxTotal > 0
+      ? apiTaxTotal
+      : Math.max(cartTaxFromBreakdown, lineItemsTaxFromBreakdown)
   const discountTotal = cart?.cartData?.discountTotal ?? 0
   const variableFeeTotal = cart?.cartData?.variableFeeTotal ?? 0
   const total = cart?.cartData?.total ?? 0

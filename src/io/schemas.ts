@@ -510,7 +510,7 @@ export const RocketRezGetProductRequestSchema = z.object({
 export const RocketRezGetEventSchedulesRequestSchema = z.object({
   pageSize: z.number().optional(),
   pageIndex: z.number().optional(),
-  rateId: z.number().optional(),
+  rateId: z.union([z.number(), z.array(z.number())]).optional(),
   siteId: z.number().optional(),
   seatTypeId: z.number().optional(),
   type: z.array(z.string()).optional(),
@@ -610,10 +610,20 @@ export const RocketRezHouseServiceChargeSchema = z.object({
   sortOrder: z.number()
 })
 
+export const RocketRezTaxSchema = z
+  .object({
+    id: z.number().nullable().optional(),
+    name: z.string().nullable().optional(),
+    amount: z.number().nullable().optional(),
+    rate: z.number().nullable().optional()
+  })
+  .passthrough()
+
 export const RocketRezLineItemSchema = z.object({
   id: z.number(),
   productId: z.number(),
   type: z.string(),
+  parentLineItemId: z.number().nullable().optional(),
   scheduleId: z.number().nullable().optional(),
   rateId: z.number().nullable().optional(),
   rateType: z.string().nullable().optional(),
@@ -627,7 +637,7 @@ export const RocketRezLineItemSchema = z.object({
     .array(RocketRezHouseServiceChargeSchema)
     .nullable()
     .optional(),
-  taxes: z.array(z.unknown()).nullable().optional(),
+  taxes: z.array(RocketRezTaxSchema).nullable().optional(),
   discounts: z.array(z.unknown()).nullable().optional()
 })
 
@@ -660,7 +670,7 @@ export const RocketRezCartSchema = z.object({
     .array(RocketRezHouseServiceChargeSchema)
     .nullable()
     .optional(),
-  taxes: z.array(z.unknown()).nullable().optional(),
+  taxes: z.array(RocketRezTaxSchema).nullable().optional(),
   contacts: z.array(RocketRezCartContactSchema),
   metadata: z.unknown().nullable().optional(),
   formResponseIds: z.unknown().nullable().optional(),
@@ -691,19 +701,25 @@ export const RocketRezAddLineItemCarSchema = z.object({
   quantity: z.number().nullable().optional(),
   scheduleId: z.number().nullable().optional(),
   rateId: z.number().nullable().optional(),
-  rateType: z.string().nullable().optional()
+  rateType: z.string().nullable().optional(),
+  parentLineItemId: z.number().nullable().optional()
 })
 
 export const RocketRezAddLineItemAddonSchema = z.object({
   id: z.number(),
   type: z.string(),
-  quantity: z.number()
+  quantity: z.number(),
+  scheduleId: z.number().nullable().optional(),
+  rateId: z.number().nullable().optional(),
+  rateType: z.string().nullable().optional(),
+  parentLineItemId: z.number().nullable().optional()
 })
 
 export const RocketRezAddLineItemInsuranceSchema = z.object({
   id: z.number(),
   type: z.string(),
-  quantity: z.number()
+  quantity: z.number(),
+  parentLineItemId: z.number().nullable().optional()
 })
 
 export const RocketRezAddLineItemSchema = z.object({
@@ -713,7 +729,8 @@ export const RocketRezAddLineItemSchema = z.object({
   scheduleId: z.number().nullable().optional(),
   rateId: z.number().nullable().optional(),
   seatTypeId: z.number().nullable().optional(),
-  rateType: z.string().nullable().optional()
+  rateType: z.string().nullable().optional(),
+  parentLineItemId: z.number().nullable().optional()
 })
 
 export const RocketRezAddLineItemRequestSchema = z.object({

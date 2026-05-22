@@ -101,10 +101,19 @@ export type HouseServiceCharge = {
   sortOrder: number
 }
 
+export type Tax = {
+  id?: number | null
+  name?: string | null
+  amount?: number | null
+  rate?: number | null
+  [key: string]: unknown
+}
+
 export type LineItem = {
   id: number
   productId: number
   type: string
+  parentLineItemId?: number | null
   scheduleId?: number | null
   rateId?: number | null
   rateType?: string | null
@@ -115,7 +124,7 @@ export type LineItem = {
   taxTotal?: number
   houseServiceChargeTotal?: number
   houseServiceCharges?: HouseServiceCharge[] | null
-  taxes?: unknown[] | null
+  taxes?: Tax[] | null
   discounts?: unknown[] | null
 }
 
@@ -145,7 +154,7 @@ export type Cart = {
   houseServiceChargeTotal?: number
   total: number
   houseServiceCharges?: HouseServiceCharge[] | null
-  taxes?: unknown[] | null
+  taxes?: Tax[] | null
   contacts: CartContact[]
   metadata?: unknown | null
   formResponseIds?: unknown | null
@@ -169,6 +178,7 @@ export type AddLineItemRequest = {
     rateId?: number | null
     seatTypeId?: number | null
     rateType?: string | null
+    parentLineItemId?: number | null
   }[]
 }
 
