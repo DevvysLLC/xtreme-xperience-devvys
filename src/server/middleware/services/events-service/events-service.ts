@@ -15,6 +15,11 @@ import {
 } from '../../../rocket-rez/services/events-cache/events-cache'
 
 export class EventsService {
+  private normalizeRocketRezBaseUrl(baseUrl: string): string {
+    const trimmed = baseUrl.replace(/\/+$/, '')
+    return trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`
+  }
+
   private getRocketRezEnv(): {
     clientId: string | null
     clientSecret: string | null
@@ -29,10 +34,11 @@ export class EventsService {
       process.env.ROCKET_REZ_CLIENT_SECRET ||
       process.env.ROCKETREZ_HEADLESS_CLIENT_SECRET ||
       null
-    const baseUrl =
+    const configuredBaseUrl =
       process.env.ROCKET_REZ_API_BASE_URL ||
       process.env.ROCKETREZ_HEADLESS_API_URL ||
-      'https://secure.rocket-rez.com/api'
+      'https://secure.rocket-rez.com'
+    const baseUrl = this.normalizeRocketRezBaseUrl(configuredBaseUrl)
     const configuredScope = process.env.ROCKET_REZ_API_SCOPES?.trim()
     const scope =
       configuredScope && configuredScope.toLowerCase() !== 'xxx'
@@ -48,11 +54,10 @@ export class EventsService {
     const env = this.getRocketRezEnv()
 
     if (!env.clientId || !env.clientSecret) {
-      logger.warn(
-        { eventId },
-        'events-service.getLiveEventWithSchedules: missing RocketRez credentials, skipping live fallback'
-      )
-      return null
+      throw new AppError('RocketRez credentials not provided', {
+        traceTag: 'events-service.getLiveEventWithSchedules',
+        eventId
+      })
     }
 
     try {
@@ -88,11 +93,24 @@ export class EventsService {
         schedules: futureSchedules
       }
     } catch (error) {
+      if (error instanceof AppError && error.details?.status === 404) {
+        logger.info(
+          { eventId },
+          'events-service.getLiveEventWithSchedules: upstream event not found'
+        )
+        return null
+      }
+
       logger.warn(
         { eventId, error },
         'events-service.getLiveEventWithSchedules: live fallback failed'
       )
-      return null
+
+      throw new AppError('Live event lookup failed', {
+        traceTag: 'events-service.getLiveEventWithSchedules',
+        eventId,
+        originalError: error
+      })
     }
   }
 
