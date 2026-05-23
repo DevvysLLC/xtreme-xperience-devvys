@@ -338,22 +338,75 @@ export const useBookingSupercarSchedule = () => {
         return null
       }
 
-      const lowestByRate = rateIds
-        .map((rateId) => lowestAvailablePrice(schedules, rateId))
+      const packageSchedulePrices = schedules
+        .map((schedule) => {
+          if (schedule.scheduleStatus !== RocketRezScheduleStatus.AVAILABLE) {
+            return null
+          }
+
+          const pricesForAllRates = rateIds
+            .map((rateId) => {
+              const matchedSeatType = (schedule.seatTypes ?? []).find(
+                (seatType) =>
+                  seatType?.available != null &&
+                  seatType.available > 0 &&
+                  (seatType.rates ?? []).some((rate) => rate.id === rateId)
+              )
+
+              if (!matchedSeatType) {
+                return null
+              }
+
+              const matchedRate = (matchedSeatType.rates ?? []).find(
+                (rate) => rate.id === rateId
+              )
+              const rateTypePrice = getRateTypePrice(matchedRate?.rateTypes?.[0])
+
+              if (!rateTypePrice?.hasPrice) {
+                return null
+              }
+
+              return {
+                price: rateTypePrice.price,
+                compareAtPrice: rateTypePrice.compareAtPrice
+              }
+            })
+            .filter(
+              (
+                item
+              ): item is {
+                price: number
+                compareAtPrice: number | null
+              } => item !== null
+            )
+
+          // Package availability requires a schedule that can satisfy ALL required rates.
+          if (pricesForAllRates.length !== rateIds.length) {
+            return null
+          }
+
+          return pricesForAllRates.reduce((lowest, current) =>
+            current.price < lowest.price ? current : lowest
+          )
+        })
         .filter(
-          (price): price is { price: number; compareAtPrice: number | null } =>
-            price !== null
+          (
+            item
+          ): item is {
+            price: number
+            compareAtPrice: number | null
+          } => item !== null
         )
 
-      if (lowestByRate.length === 0) {
+      if (packageSchedulePrices.length === 0) {
         return null
       }
 
-      return lowestByRate.reduce((lowest, current) =>
+      return packageSchedulePrices.reduce((lowest, current) =>
         current.price < lowest.price ? current : lowest
       )
     },
-    [lowestAvailablePrice]
+    []
   )
 
   return {

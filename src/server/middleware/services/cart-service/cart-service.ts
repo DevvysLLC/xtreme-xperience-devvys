@@ -10,6 +10,7 @@ import type {
   RocketRezAddLineItemRequest,
   RocketRezUpdateLineItemRequest
 } from '../../../../io/types'
+import { RocketRezProductType } from '../../../../io/schemas'
 import { CartKeyHelpers } from '../../../../utils/cart-key'
 import type { RocketRezClient } from '../../../rocket-rez/index'
 import type { CartService as RocketRezCartService } from '../../../rocket-rez/services/cart/cart-service'
@@ -229,6 +230,117 @@ export class CartService {
     return CartKeyHelpers.create(cartId, cartToken)
   }
 
+  private normalizeLineItemId(id: unknown): number | null {
+    if (id == null) {
+      return null
+    }
+
+    const asNumber = Number(id)
+    return Number.isFinite(asNumber) ? asNumber : null
+  }
+
+  private getPrimaryEventLineItem(
+    lineItems: Array<{
+      id?: number | string | null
+      type?: string | null
+      scheduleId?: number | null
+      rateId?: number | null
+      rateType?: string | null
+    }>
+  ) {
+    const eventLineItem = [...lineItems]
+      .reverse()
+      .find((lineItem) => lineItem.type === RocketRezProductType.EVENT)
+
+    if (!eventLineItem) {
+      return null
+    }
+
+    const id = this.normalizeLineItemId(eventLineItem.id)
+
+    if (id == null) {
+      return null
+    }
+
+    return {
+      id,
+      scheduleId: eventLineItem.scheduleId ?? null,
+      rateId: eventLineItem.rateId ?? null,
+      rateType: eventLineItem.rateType ?? null
+    }
+  }
+
+  private enrichLinkedLineItems(
+    request: RocketRezAddLineItemRequest,
+    cartLineItems: Array<{
+      id?: number | string | null
+      type?: string | null
+      scheduleId?: number | null
+      rateId?: number | null
+      rateType?: string | null
+    }>
+  ): RocketRezAddLineItemRequest {
+    if (!request.lineItems || request.lineItems.length === 0) {
+      return request
+    }
+
+    const parentById = new Map<
+      number,
+      {
+        id: number
+        scheduleId: number | null
+        rateId: number | null
+        rateType: string | null
+      }
+    >()
+
+    for (const cartLineItem of cartLineItems) {
+      const normalizedId = this.normalizeLineItemId(cartLineItem.id)
+      if (normalizedId == null) {
+        continue
+      }
+
+      parentById.set(normalizedId, {
+        id: normalizedId,
+        scheduleId: cartLineItem.scheduleId ?? null,
+        rateId: cartLineItem.rateId ?? null,
+        rateType: cartLineItem.rateType ?? null
+      })
+    }
+
+    const fallbackParent = this.getPrimaryEventLineItem(cartLineItems)
+
+    const lineItems = request.lineItems.map((lineItem) => {
+      if (lineItem.type === RocketRezProductType.EVENT) {
+        return lineItem
+      }
+
+      const parentFromRequestId = this.normalizeLineItemId(
+        lineItem.parentLineItemId
+      )
+      const explicitParent =
+        parentFromRequestId != null ? parentById.get(parentFromRequestId) : null
+      const parent = explicitParent ?? fallbackParent
+
+      if (!parent) {
+        return lineItem
+      }
+
+      return {
+        ...lineItem,
+        parentLineItemId: lineItem.parentLineItemId ?? parent.id,
+        scheduleId: lineItem.scheduleId ?? parent.scheduleId,
+        rateId: lineItem.rateId ?? parent.rateId,
+        rateType: lineItem.rateType ?? parent.rateType
+      }
+    })
+
+    return {
+      ...request,
+      lineItems
+    }
+  }
+
   async addToCart(
     request: RocketRezAddLineItemRequest,
     cartKey: string | null,
@@ -246,15 +358,6 @@ export class CartService {
         cartKeyPreview: cartKey ? `${cartKey.slice(0, 20)}...` : 'NO_KEY'
       },
       'middleware.cart-service.addToCart.start'
-    )
-
-    const rocketRezRequest: RocketRezAddLineItemRequest = request
-    logger.info(
-      {
-        lineItemsCount: rocketRezRequest.lineItems?.length ?? 0,
-        lineItems: rocketRezRequest.lineItems
-      },
-      'middleware.cart-service.addToCart.request'
     )
 
     // Determine if we need a new cart
@@ -313,6 +416,31 @@ export class CartService {
         tokenExpiry: context.tokenExpiry
       },
       'middleware.cart-service.addToCart.contextReady'
+    )
+
+    let rocketRezRequest = request
+
+    if (rocketRezRequest.lineItems?.length) {
+      try {
+        const currentCartResponse = await context.cartService.getCart()
+        rocketRezRequest = this.enrichLinkedLineItems(
+          rocketRezRequest,
+          currentCartResponse.data.lineItems ?? []
+        )
+      } catch (error) {
+        logger.warn(
+          { error },
+          'middleware.cart-service.addToCart.enrichLinkedLineItems.failed'
+        )
+      }
+    }
+
+    logger.info(
+      {
+        lineItemsCount: rocketRezRequest.lineItems?.length ?? 0,
+        lineItems: rocketRezRequest.lineItems
+      },
+      'middleware.cart-service.addToCart.request'
     )
 
     // Add line items
