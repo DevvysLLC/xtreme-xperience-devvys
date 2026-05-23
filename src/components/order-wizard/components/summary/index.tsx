@@ -6,6 +6,15 @@ import type { RocketRezCart } from '../../../../io/types'
 import { CoreRocketRezPrice } from '../../../core-rocketrez-price'
 import styles from './style.module.scss'
 
+const getTaxAmount = (tax: unknown): number => {
+  if (!tax || typeof tax !== 'object' || !('amount' in tax)) {
+    return 0
+  }
+
+  const value = tax.amount
+  return typeof value === 'number' && Number.isFinite(value) ? value : 0
+}
+
 type Props = {
   order: RocketRezCart
 }
@@ -14,6 +23,24 @@ export const OrderSummary: FC<Props> = ({ order }) => {
   const t = useTranslations('order_wizard.order_summary')
   const subtotal = order.subTotal ?? 0
   const ticketingFee = order.variableFeeTotal ?? 0
+  const cartTaxFromBreakdown = (order.taxes ?? []).reduce(
+    (sum, tax) => sum + getTaxAmount(tax),
+    0
+  )
+  const lineItemsTaxFromBreakdown = (order.lineItems ?? []).reduce(
+    (lineItemsSum, lineItem) =>
+      lineItemsSum +
+      (lineItem.taxes ?? []).reduce(
+        (taxesSum, tax) => taxesSum + getTaxAmount(tax),
+        0
+      ),
+    0
+  )
+  const apiTaxTotal = order.taxTotal ?? 0
+  const taxTotal =
+    apiTaxTotal > 0
+      ? apiTaxTotal
+      : Math.max(cartTaxFromBreakdown, lineItemsTaxFromBreakdown)
   const total = order.total ?? 0
   const discountTotal = order.discountTotal ?? 0
   const coupons = order.coupons ?? []
@@ -78,6 +105,20 @@ export const OrderSummary: FC<Props> = ({ order }) => {
           }}
         />
       </div>
+
+      {taxTotal > 0 && (
+        <div className={styles.summary__data}>
+          <span className={styles.summary__label}>{t('tax')}</span>
+
+          <CoreRocketRezPrice
+            className={styles.summary__value}
+            data={{
+              id: 'summary-tax',
+              price: taxTotal
+            }}
+          />
+        </div>
+      )}
 
       <hr className={styles.summary__divider} />
 

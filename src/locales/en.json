@@ -1472,6 +1472,7 @@
       "title": "Order Summary",
       "subtotal": "Subtotal",
       "discount": "Discount",
+      "tax": "Tax",
       "ticketing_fee": "Ticketing Fee",
       "total": "Total"
     }
