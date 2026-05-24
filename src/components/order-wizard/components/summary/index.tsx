@@ -40,10 +40,14 @@ export const OrderSummary: FC<Props> = ({ order }) => {
     0
   )
   const apiTaxTotal = order.taxTotal ?? 0
+  const inferredTaxTotal = total - subtotal - ticketingFee + discountTotal
   const taxTotal =
     apiTaxTotal > 0
       ? apiTaxTotal
       : Math.max(
+          inferredTaxTotal > 0 && Number.isFinite(inferredTaxTotal)
+            ? inferredTaxTotal
+            : 0,
           cartTaxFromBreakdown,
           lineItemsTaxFromBreakdown,
           lineItemsTaxFromTotals
