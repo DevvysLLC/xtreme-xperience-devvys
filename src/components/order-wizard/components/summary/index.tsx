@@ -35,11 +35,19 @@ export const OrderSummary: FC<Props> = ({ order }) => {
       (lineItem.taxes ?? []).reduce((taxesSum, tax) => taxesSum + getTaxAmount(tax), 0),
     0
   )
+  const lineItemsTaxFromTotals = (order.lineItems ?? []).reduce(
+    (lineItemsSum, lineItem) => lineItemsSum + (lineItem.taxTotal ?? 0),
+    0
+  )
   const apiTaxTotal = order.taxTotal ?? 0
   const taxTotal =
     apiTaxTotal > 0
       ? apiTaxTotal
-      : Math.max(cartTaxFromBreakdown, lineItemsTaxFromBreakdown)
+      : Math.max(
+          cartTaxFromBreakdown,
+          lineItemsTaxFromBreakdown,
+          lineItemsTaxFromTotals
+        )
 
   return (
     <div className={styles.summary}>
