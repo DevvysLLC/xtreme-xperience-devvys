@@ -160,14 +160,7 @@ export const DateAndCarPage = () => {
         })
       ) ?? []
 
-    return Array.from(
-      new Set(
-        mappedRateIds.filter(
-          (rateId): rateId is number =>
-            Number.isFinite(rateId) && rateId > 0
-        )
-      )
-    )
+    return Array.from(new Set(mappedRateIds))
   }, [activeGroup?.supercars, selectedEventId])
 
   const handleBack = useCallback(() => {
