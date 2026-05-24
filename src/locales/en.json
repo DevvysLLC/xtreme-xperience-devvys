@@ -1473,6 +1473,7 @@
       "subtotal": "Subtotal",
       "discount": "Discount",
       "ticketing_fee": "Ticketing Fee",
+      "tax": "Tax",
       "total": "Total"
     }
   },
