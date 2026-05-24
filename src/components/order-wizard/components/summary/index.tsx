@@ -79,8 +79,6 @@ export const OrderSummary: FC<Props> = ({ order }) => {
         />
       </div>
 
-      <h1>TAX</h1>
-
       <hr className={styles.summary__divider} />
 
       <div className={styles.summary__total}>
