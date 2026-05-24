@@ -11,6 +11,14 @@ import { CartExpiry } from '../expiry'
 import { CartLocation } from '../location'
 import styles from './style.module.scss'
 
+const getTaxAmount = (tax: unknown): number => {
+  if (!tax || typeof tax !== 'object' || !('amount' in tax)) {
+    return 0
+  }
+  const value = tax.amount
+  return typeof value === 'number' && Number.isFinite(value) ? value : 0
+}
+
 export const CartSummary: FC = () => {
   const t = useTranslations('global_cart')
   const { data: booking } = useBooking()
@@ -20,6 +28,33 @@ export const CartSummary: FC = () => {
   const ticketingFee = cart?.cartData?.variableFeeTotal ?? 0
   const total = cart?.cartData?.total ?? 0
   const discountTotal = cart?.cartData?.discountTotal ?? 0
+  const cartTaxFromBreakdown = (cart?.cartData?.taxes ?? []).reduce(
+    (sum, tax) => sum + getTaxAmount(tax),
+    0
+  )
+  const lineItemsTaxFromBreakdown = (cart?.cartData?.lineItems ?? []).reduce(
+    (lineItemsSum, lineItem) =>
+      lineItemsSum +
+      (lineItem.taxes ?? []).reduce((taxesSum, tax) => taxesSum + getTaxAmount(tax), 0),
+    0
+  )
+  const lineItemsTaxFromTotals = (cart?.cartData?.lineItems ?? []).reduce(
+    (lineItemsSum, lineItem) => lineItemsSum + (lineItem.taxTotal ?? 0),
+    0
+  )
+  const apiTaxTotal = cart?.cartData?.taxTotal ?? 0
+  const inferredTaxTotal = total - subtotal - ticketingFee + discountTotal
+  const taxTotal =
+    apiTaxTotal > 0
+      ? apiTaxTotal
+      : Math.max(
+          inferredTaxTotal > 0 && Number.isFinite(inferredTaxTotal)
+            ? inferredTaxTotal
+            : 0,
+          cartTaxFromBreakdown,
+          lineItemsTaxFromBreakdown,
+          lineItemsTaxFromTotals
+        )
   const houseServiceChargeTotal = (cart?.cartData?.lineItems ?? []).reduce(
     (acc, lineItem) => acc + (lineItem.houseServiceChargeTotal ?? 0),
     0
@@ -107,6 +142,20 @@ export const CartSummary: FC = () => {
             data={{
               id: 'summary-discount',
               price: discountTotal
+            }}
+          />
+        </div>
+      )}
+
+      {taxTotal > 0 && (
+        <div className={styles.summary__data}>
+          <span className={styles.summary__label}>{t('summary.tax')}</span>
+
+          <CoreRocketRezPrice
+            className={styles.summary__value}
+            data={{
+              id: 'summary-tax',
+              price: taxTotal
             }}
           />
         </div>
