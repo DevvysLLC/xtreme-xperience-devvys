@@ -40,7 +40,16 @@ export const computeContents = (
   for (const lineItem of lineItems) {
     const key = getCartLineItemReadMetadataKey({ lineItem })
     const metadata = metadataList.find((m) => m.key === key)
-    const itemType = metadata?.type
+    const normalizedLineItemType = String(lineItem.type ?? '').toLowerCase()
+    const inferredType =
+      normalizedLineItemType === 'event'
+        ? 'car'
+        : normalizedLineItemType === 'insurance'
+          ? 'insurance'
+          : normalizedLineItemType === 'retail'
+            ? 'addon'
+            : null
+    const itemType = metadata?.type ?? inferredType
     if (itemType === 'insurance') {
       insuranceCount += 1
       insuranceQuantity += lineItem.quantity

@@ -18,6 +18,7 @@ export const getAddToCartLineItemInsuranceMetadata = ({
   totalSessions
 }: GetAddToCartInsuranceLineItemMetadataProps): CartLineItemMetadata => {
   const key = getAddToCartLineItemWriteMetadataKey({ lineItem })
+  const insuranceTitle = insurance.model?.title?.trim()
   const sessionsLabel = totalSessions ? `${totalSessions} sessions` : null
   const subtitle = [insurance.model?.coverage ?? null, sessionsLabel ?? null]
     .filter(Boolean)
@@ -25,7 +26,9 @@ export const getAddToCartLineItemInsuranceMetadata = ({
   const metadata = {
     key,
     type: CartLineItemMetadataPropertiesTypeSchema.enum.insurance,
-    title: `Coverage **${insurance.model?.title ?? ''}**`,
+    title: insuranceTitle
+      ? `Coverage **${insuranceTitle}**`
+      : 'Driver Insurance',
     subtitle: subtitle ?? '',
     image: insurance.model?.thumbnail?.image?.url ?? ''
   }

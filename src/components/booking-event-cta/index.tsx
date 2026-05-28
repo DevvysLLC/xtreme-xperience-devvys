@@ -168,7 +168,7 @@ export const BookingEventCta: FC<Props> = ({
     const newEventId = event.id
     const isNewEvent = currentEventId !== newEventId
 
-    if (data.contents.hasCars && (isNewTrack || isNewEvent)) {
+    if ((data.contents.totalItems > 0 || data.contents.hasCars) && (isNewTrack || isNewEvent)) {
       showDialog({
         translations: {
           title: t('title'),

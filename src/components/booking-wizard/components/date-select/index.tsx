@@ -28,7 +28,7 @@ export const DateSelect: FC<Props> = ({ label }) => {
   const resetAfter = useBookingResetAfter()
   const { data } = useCart()
   const { contents } = data ?? {}
-  const { hasCars } = contents
+  const hasCartItems = (contents?.totalItems ?? 0) > 0
   const { showDialog } = useDialog()
   const { state, setSelectedDayDate } = useBookingWizardState()
   const events = booking?.track?.model?.events ?? []
@@ -95,7 +95,7 @@ export const DateSelect: FC<Props> = ({ label }) => {
       booking.track.model
     )
 
-    if (hasCars && isNewEvent) {
+    if (hasCartItems && isNewEvent) {
       showDialog({
         translations: {
           title: t('title'),

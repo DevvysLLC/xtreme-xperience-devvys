@@ -49,6 +49,8 @@ export const CartLineItem: FC<Props> = ({
     discountAmount !== null &&
     discountAmount > 0
   const { title, image, subtitle, label, properties, type } = metadata ?? {}
+  const fallbackTitle = `${lineItem.type} #${lineItem.productId}`
+  const displayTitle = title?.trim() || fallbackTitle
   const { date, laps } = properties ?? {}
   const displaySubtitle = label ? sentenceCase(label) : subtitle
 
@@ -77,18 +79,16 @@ export const CartLineItem: FC<Props> = ({
         <div className={styles.CartLineItemCompact__media}>
           <img
             src={image || '/images/fallback.png'}
-            alt={title ?? 'No Title Available'}
+            alt={displayTitle}
             className={styles.CartLineItemCompact__image}
           />
         </div>
 
         <div className={styles.CartLineItemCompact__content}>
           <div className={styles.CartLineItemCompact__header}>
-            {title && (
               <h3 className={styles.CartLineItemCompact__title}>
-                <CoreTextMarkdown>{title}</CoreTextMarkdown>
+                <CoreTextMarkdown>{displayTitle}</CoreTextMarkdown>
               </h3>
-            )}
             {displaySubtitle && <p>{displaySubtitle}</p>}
           </div>
 
@@ -123,25 +123,23 @@ export const CartLineItem: FC<Props> = ({
           <div className={styles.CartLineItem__media}>
             <img
               src={image || '/images/fallback.png'}
-              alt={title ?? 'No Title Available'}
+              alt={displayTitle}
               className={styles.CartLineItem__image}
               loading="lazy"
             />
           </div>
 
-          {title && (
-            <div className={styles.CartLineItem__title}>
-              <h3>
-                <CoreTextMarkdown>{title}</CoreTextMarkdown>
-              </h3>
+          <div className={styles.CartLineItem__title}>
+            <h3>
+              <CoreTextMarkdown>{displayTitle}</CoreTextMarkdown>
+            </h3>
 
-              {displaySubtitle && (
-                <div className={styles.CartLineItem__subtitle}>
-                  <CoreTextMarkdown>{displaySubtitle}</CoreTextMarkdown>
-                </div>
-              )}
-            </div>
-          )}
+            {displaySubtitle && (
+              <div className={styles.CartLineItem__subtitle}>
+                <CoreTextMarkdown>{displaySubtitle}</CoreTextMarkdown>
+              </div>
+            )}
+          </div>
 
           <div className={styles.CartLineItem__content}>
             {date && (
