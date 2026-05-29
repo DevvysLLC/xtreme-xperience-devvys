@@ -70,6 +70,7 @@ export const useRocketRezPayment = (options: Options) => {
   const iframeRef = useRef<HTMLIFrameElement | null>(null)
   const hasAutoProcessedRef = useRef(false)
   const initRetryRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const resolvedTargetOriginRef = useRef(targetOrigin)
 
   const [status, setStatus] = useState<RocketRezPaymentStatus>('idle')
   const [orderId, setOrderId] = useState<string | number | null>(null)
@@ -96,8 +97,12 @@ export const useRocketRezPayment = (options: Options) => {
     return status === 'ready' && Boolean(clientSecret)
   }, [clientSecret, status])
 
+  useEffect(() => {
+    resolvedTargetOriginRef.current = targetOrigin
+  }, [targetOrigin])
+
   const postToIframe = useCallback(
-    (message: ParentToIframeMessage) => {
+    (message: ParentToIframeMessage, overrideTargetOrigin?: string) => {
       const iframeWindow = iframeRef.current?.contentWindow
       if (!iframeWindow) {
         logger.warn(
@@ -106,13 +111,15 @@ export const useRocketRezPayment = (options: Options) => {
         )
         return
       }
+      const effectiveTargetOrigin =
+        overrideTargetOrigin ?? resolvedTargetOriginRef.current
       logger.info(
-        { messageType: message.type, targetOrigin },
+        { messageType: message.type, targetOrigin: effectiveTargetOrigin },
         'Payment: Posting message to iframe'
       )
-      iframeWindow.postMessage(message, targetOrigin)
+      iframeWindow.postMessage(message, effectiveTargetOrigin)
     },
-    [targetOrigin]
+    []
   )
 
   const clearInitRetry = useCallback(() => {
@@ -123,16 +130,20 @@ export const useRocketRezPayment = (options: Options) => {
   }, [])
 
   const initIframe = useCallback(() => {
+    const initMessage: ParentToIframeMessage = {
+      type: 'INIT',
+      cartId,
+      ...(typeof paymentMethodId === 'number' ? { paymentMethodId } : {})
+    }
+
     logger.info(
       { cartId, paymentMethodId },
       'Payment: Iframe loaded, sending INIT'
     )
     setStatus('loading_iframe')
-    postToIframe({
-      type: 'INIT',
-      cartId,
-      ...(typeof paymentMethodId === 'number' ? { paymentMethodId } : {})
-    })
+    postToIframe(initMessage)
+    // Bootstrap handshake across redirect/proxy origins. INIT contains no secrets.
+    postToIframe(initMessage, '*')
 
     // The iframe's internal React app may not be ready when onLoad fires.
     // Retry INIT every 500ms until we receive READY (which clears the interval).
@@ -155,11 +166,8 @@ export const useRocketRezPayment = (options: Options) => {
         { cartId, attempt: attempts },
         'Payment: Retrying INIT — iframe not yet ready'
       )
-      postToIframe({
-        type: 'INIT',
-        cartId,
-        ...(typeof paymentMethodId === 'number' ? { paymentMethodId } : {})
-      })
+      postToIframe(initMessage)
+      postToIframe(initMessage, '*')
     }, 500)
   }, [
     cartId,
@@ -295,7 +303,19 @@ export const useRocketRezPayment = (options: Options) => {
         return
       }
 
-      if (allowedOrigin && event.origin !== allowedOrigin) {
+      const incomingType =
+        isRecord(event.data) && typeof event.data.type === 'string'
+          ? event.data.type
+          : undefined
+
+      const allowBootstrapReadyFromAnyOrigin =
+        incomingType === 'READY' && status === 'loading_iframe'
+
+      if (
+        allowedOrigin &&
+        event.origin !== allowedOrigin &&
+        !allowBootstrapReadyFromAnyOrigin
+      ) {
         // Only log when the message looks like a payment message (avoids noise from
         // our own origin or other scripts posting unrelated messages)
         const type = isRecord(event.data) ? event.data.type : undefined
@@ -354,6 +374,16 @@ export const useRocketRezPayment = (options: Options) => {
 
       switch (type) {
         case 'READY': {
+          if (resolvedTargetOriginRef.current !== event.origin) {
+            logger.info(
+              {
+                previousTargetOrigin: resolvedTargetOriginRef.current,
+                nextTargetOrigin: event.origin
+              },
+              'Payment: Updating target origin from READY event origin'
+            )
+            resolvedTargetOriginRef.current = event.origin
+          }
           clearInitRetry()
           logger.info(
             { cartId, hasClientSecret: !!clientSecret },
@@ -487,7 +517,8 @@ export const useRocketRezPayment = (options: Options) => {
     onReady,
     maybeAutoProcess,
     resumePayment,
-    resumePaymentFlow
+    resumePaymentFlow,
+    status
   ])
 
   useEffect(() => {

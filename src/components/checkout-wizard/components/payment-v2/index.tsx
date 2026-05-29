@@ -24,6 +24,9 @@ const IFRAME_URL_RAW =
 const IFRAME_ALLOWED_ORIGIN_RAW =
   process.env.NEXT_PUBLIC_ROCKET_REZ_PAYMENTS_API_ALLOWED_ORIGIN
 
+const IFRAME_TARGET_ORIGIN_RAW =
+  process.env.NEXT_PUBLIC_ROCKET_REZ_PAYMENTS_API_TARGET_ORIGIN
+
 const IFRAME_URL =
   IFRAME_URL_RAW?.startsWith('https://') === true ? IFRAME_URL_RAW : null
 
@@ -394,6 +397,14 @@ export const PaymentV2 = ({
         ? window.location.origin
         : 'http://localhost'
 
+    if (IFRAME_TARGET_ORIGIN_RAW?.startsWith('https://')) {
+      try {
+        return new URL(IFRAME_TARGET_ORIGIN_RAW).origin
+      } catch {
+        return fallbackOrigin
+      }
+    }
+
     if (!IFRAME_URL) {
       return fallbackOrigin
     }
@@ -410,11 +421,11 @@ export const PaymentV2 = ({
       try {
         return new URL(IFRAME_ALLOWED_ORIGIN_RAW).origin
       } catch {
-        return resolvedTargetOrigin
+        return undefined
       }
     }
-    return resolvedTargetOrigin
-  }, [resolvedTargetOrigin])
+    return undefined
+  }, [])
   const [iframeKey, setIframeKey] = useState(0)
 
   // Call hook unconditionally (React hooks rule)
