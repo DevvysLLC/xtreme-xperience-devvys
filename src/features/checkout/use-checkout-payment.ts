@@ -147,6 +147,8 @@ export const useRocketRezPayment = (options: Options) => {
           'Payment: INIT retry limit reached — iframe never became ready'
         )
         clearInitRetry()
+        setStatus('error')
+        onPaymentError?.()
         return
       }
       logger.info(
@@ -159,7 +161,13 @@ export const useRocketRezPayment = (options: Options) => {
         ...(typeof paymentMethodId === 'number' ? { paymentMethodId } : {})
       })
     }, 500)
-  }, [cartId, paymentMethodId, postToIframe, clearInitRetry])
+  }, [
+    cartId,
+    paymentMethodId,
+    postToIframe,
+    clearInitRetry,
+    onPaymentError
+  ])
 
   const processPayment = useCallback(() => {
     if (!clientSecret) {
@@ -315,10 +323,11 @@ export const useRocketRezPayment = (options: Options) => {
               sourceMatchesIframe: event.source === iframeWindow,
               dataType: type
             },
-            'Payment: Message rejected — source mismatch'
+            'Payment: Message source differs from iframe window; continuing because origin/type are valid'
           )
+        } else {
+          return
         }
-        return
       }
 
       if (!isRecord(event.data)) {

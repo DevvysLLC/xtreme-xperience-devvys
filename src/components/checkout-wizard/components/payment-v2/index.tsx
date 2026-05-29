@@ -21,6 +21,9 @@ import styles from './style.module.scss'
 const IFRAME_URL_RAW =
   process.env.NEXT_PUBLIC_ROCKET_REZ_PAYMENTS_API_IFRAME_URL
 
+const IFRAME_ALLOWED_ORIGIN_RAW =
+  process.env.NEXT_PUBLIC_ROCKET_REZ_PAYMENTS_API_ALLOWED_ORIGIN
+
 const IFRAME_URL =
   IFRAME_URL_RAW?.startsWith('https://') === true ? IFRAME_URL_RAW : null
 
@@ -403,6 +406,13 @@ export const PaymentV2 = ({
   }, [])
 
   const resolvedAllowedOrigin = useMemo(() => {
+    if (IFRAME_ALLOWED_ORIGIN_RAW?.startsWith('https://')) {
+      try {
+        return new URL(IFRAME_ALLOWED_ORIGIN_RAW).origin
+      } catch {
+        return resolvedTargetOrigin
+      }
+    }
     return resolvedTargetOrigin
   }, [resolvedTargetOrigin])
   const [iframeKey, setIframeKey] = useState(0)
