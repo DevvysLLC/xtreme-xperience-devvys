@@ -403,7 +403,7 @@ export const useBookingSupercarSchedule = () => {
             return null
           }
 
-          const pricesForAllRates = normalizedRateIds
+          const pricesForMatchedRates = normalizedRateIds
             .map((rateId) => {
               const matchedSeatType = (schedule.seatTypes ?? []).find(
                 (seatType) =>
@@ -439,12 +439,13 @@ export const useBookingSupercarSchedule = () => {
               } => item !== null
             )
 
-          // Package availability requires a schedule that can satisfy ALL required rates.
-            if (pricesForAllRates.length !== normalizedRateIds.length) {
+            // Day-tab pricing should show the first available matching rate,
+            // not require all rates to be available in the same schedule.
+            if (pricesForMatchedRates.length === 0) {
             return null
           }
 
-          return pricesForAllRates.reduce((lowest, current) =>
+            return pricesForMatchedRates.reduce((lowest, current) =>
             current.price < lowest.price ? current : lowest
           )
         })
