@@ -12,6 +12,75 @@ import { cartRepository, initialCartState } from './repository'
 import { useCartAddInsurance } from './use-cart-add-insurance'
 import { useCartRemoveLineItem } from './use-cart-remove-line-item'
 
+type DecodedMetadataKey = {
+  id?: string | number
+  type?: string
+  scheduleId?: string | number
+  rateId?: string | number
+}
+
+const decodeMetadataKey = (key: string): DecodedMetadataKey | null => {
+  try {
+    const decoded = atob(key)
+    const parsed = JSON.parse(decoded) as DecodedMetadataKey
+    return parsed && typeof parsed === 'object' ? parsed : null
+  } catch {
+    return null
+  }
+}
+
+const toComparable = (value: string | number | null | undefined): string => {
+  if (value == null) {
+    return ''
+  }
+
+  return String(value)
+}
+
+const getLineItemMetadata = (
+  lineItem: CartState['cartData']['lineItems'][number],
+  metadata: CartState['metadata']
+) => {
+  const exactKey = getCartLineItemReadMetadataKey({ lineItem })
+  const exact = metadata.find((m) => m.key === exactKey)
+
+  if (exact) {
+    return exact
+  }
+
+  return metadata.find((m) => {
+    const decoded = decodeMetadataKey(m.key)
+    if (!decoded) {
+      return false
+    }
+
+    const sameId = toComparable(decoded.id) === toComparable(lineItem.productId)
+    const sameType =
+      toComparable(decoded.type).toLowerCase() ===
+      toComparable(lineItem.type).toLowerCase()
+
+    if (!sameId || !sameType) {
+      return false
+    }
+
+    if (
+      decoded.scheduleId != null &&
+      toComparable(decoded.scheduleId) !== toComparable(lineItem.scheduleId)
+    ) {
+      return false
+    }
+
+    if (
+      decoded.rateId != null &&
+      toComparable(decoded.rateId) !== toComparable(lineItem.rateId)
+    ) {
+      return false
+    }
+
+    return true
+  })
+}
+
 export type UseCartReplaceInsuranceInput = {
   insurance: InsuranceFragment
   lineItem: RocketRezAddLineItemAddon
@@ -43,17 +112,15 @@ export const useCartReplaceInsurance = () => {
       const lineItems = cartData?.lineItems ?? []
       let insuranceCount = 0
       let insuranceSessions = 0
-      let existingInsuranceLineItem: (typeof lineItems)[0] | null = null
+      const existingInsuranceLineItems: (typeof lineItems)[0][] = []
 
       for (const lineItem of lineItems) {
-        const key = getCartLineItemReadMetadataKey({ lineItem })
-        const itemMetadata = metadata.find((m) => m.key === key)
+        const itemMetadata = getLineItemMetadata(lineItem, metadata)
         const itemType = itemMetadata?.type
+
         if (itemType === 'insurance') {
           insuranceCount += lineItem.quantity
-          if (!existingInsuranceLineItem) {
-            existingInsuranceLineItem = lineItem
-          }
+          existingInsuranceLineItems.push(lineItem)
         } else if (itemType === 'car') {
           const sessionsForItem =
             lineItem.quantity *
@@ -69,7 +136,7 @@ export const useCartReplaceInsurance = () => {
         insuranceCount === 0 || insuranceCount === insuranceSessions
       const totalInsurance = insuranceCount
       const existingInsuranceProductId =
-        existingInsuranceLineItem?.productId ?? null
+        existingInsuranceLineItems[0]?.productId ?? null
       const requestedInsuranceProductId = input.lineItem.id
       const insuranceProductMatches =
         existingInsuranceProductId === requestedInsuranceProductId
@@ -77,6 +144,7 @@ export const useCartReplaceInsurance = () => {
       logger.info(
         {
           hasInsurance,
+          existingInsuranceCount: existingInsuranceLineItems.length,
           insuranceQuantityMatchesTotalSessions,
           totalInsurance,
           insuranceSessions,
@@ -99,12 +167,12 @@ export const useCartReplaceInsurance = () => {
           `${LOG_NAMESPACE}: replaceInsurance — setting chooseOnDriveDay = true`
         )
 
-        if (hasInsurance && existingInsuranceLineItem) {
-          await removeLineItem({ lineItem: existingInsuranceLineItem })
+        for (const insuranceLineItem of existingInsuranceLineItems) {
+          await removeLineItem({ lineItem: insuranceLineItem })
           logger.info(
             {
-              lineItemId: existingInsuranceLineItem.id,
-              productId: existingInsuranceLineItem.productId
+              lineItemId: insuranceLineItem.id,
+              productId: insuranceLineItem.productId
             },
             `${LOG_NAMESPACE}: replaceInsurance — removed existing insurance before chooseOnDriveDay`
           )
@@ -143,32 +211,22 @@ export const useCartReplaceInsurance = () => {
         return { skipped: true, removed: false, added: false }
       }
 
-      if (
-        hasInsurance &&
-        (!insuranceQuantityMatchesTotalSessions || !insuranceProductMatches)
-      ) {
+      if (hasInsurance && !insuranceProductMatches) {
         logger.info(
           {
             hasInsurance,
             insuranceQuantityMatchesTotalSessions,
+            existingInsuranceCount: existingInsuranceLineItems.length,
             totalInsurance,
             insuranceSessions,
             existingInsuranceProductId,
             requestedInsuranceProductId,
             insuranceProductMatches
           },
-          `${LOG_NAMESPACE}: replaceInsurance — removing existing insurance (quantity/product mismatch)`
+          `${LOG_NAMESPACE}: replaceInsurance — removing existing insurance (product mismatch)`
         )
 
-        const insuranceItemToRemove =
-          existingInsuranceLineItem ??
-          lineItems.find((item) => {
-            const key = getCartLineItemReadMetadataKey({ lineItem: item })
-            const itemMetadata = metadata.find((m) => m.key === key)
-            return itemMetadata?.type === 'insurance'
-          })
-
-        if (insuranceItemToRemove) {
+        for (const insuranceItemToRemove of existingInsuranceLineItems) {
           await removeLineItem({ lineItem: insuranceItemToRemove })
           logger.info(
             {
@@ -192,8 +250,7 @@ export const useCartReplaceInsurance = () => {
       )
 
       const wasRemoved =
-        hasInsurance &&
-        (!insuranceQuantityMatchesTotalSessions || !insuranceProductMatches)
+        hasInsurance && !insuranceProductMatches
 
       return { skipped: false, removed: wasRemoved, added: true }
     },
