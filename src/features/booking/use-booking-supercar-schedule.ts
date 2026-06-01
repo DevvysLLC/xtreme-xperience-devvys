@@ -334,8 +334,67 @@ export const useBookingSupercarSchedule = () => {
       schedules: RocketRezEventScheduleItem[] | undefined,
       rateIds: number[]
     ) => {
-      if (!schedules || schedules.length === 0 || rateIds.length === 0) {
+      if (!schedules || schedules.length === 0) {
         return null
+      }
+
+      const normalizedRateIds = Array.from(
+        new Set(
+          rateIds.filter(
+            (rateId) =>
+              Number.isFinite(rateId) && !Number.isNaN(rateId) && rateId > 0
+          )
+        )
+      )
+
+      if (normalizedRateIds.length === 0) {
+        const fallbackSchedulePrices = schedules
+          .map((schedule) => {
+            if (schedule.scheduleStatus !== RocketRezScheduleStatus.AVAILABLE) {
+              return null
+            }
+
+            const fallbackPrices = (schedule.seatTypes ?? [])
+              .filter(
+                (seatType) =>
+                  seatType?.available != null && seatType.available > 0
+              )
+              .flatMap((seatType) =>
+                (seatType.rates ?? [])
+                  .map((rate) => getRateTypePrice(rate.rateTypes?.[0]))
+                  .filter((price): price is ReturnType<typeof getRateTypePrice> =>
+                    Boolean(price?.hasPrice)
+                  )
+                  .map((price) => ({
+                    price: price.price,
+                    compareAtPrice: price.compareAtPrice
+                  }))
+              )
+
+            if (fallbackPrices.length === 0) {
+              return null
+            }
+
+            return fallbackPrices.reduce((lowest, current) =>
+              current.price < lowest.price ? current : lowest
+            )
+          })
+          .filter(
+            (
+              item
+            ): item is {
+              price: number
+              compareAtPrice: number | null
+            } => item !== null
+          )
+
+        if (fallbackSchedulePrices.length === 0) {
+          return null
+        }
+
+        return fallbackSchedulePrices.reduce((lowest, current) =>
+          current.price < lowest.price ? current : lowest
+        )
       }
 
       const packageSchedulePrices = schedules
@@ -344,7 +403,7 @@ export const useBookingSupercarSchedule = () => {
             return null
           }
 
-          const pricesForAllRates = rateIds
+          const pricesForAllRates = normalizedRateIds
             .map((rateId) => {
               const matchedSeatType = (schedule.seatTypes ?? []).find(
                 (seatType) =>
@@ -381,7 +440,7 @@ export const useBookingSupercarSchedule = () => {
             )
 
           // Package availability requires a schedule that can satisfy ALL required rates.
-          if (pricesForAllRates.length !== rateIds.length) {
+            if (pricesForAllRates.length !== normalizedRateIds.length) {
             return null
           }
 
