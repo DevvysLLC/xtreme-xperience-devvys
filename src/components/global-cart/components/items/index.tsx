@@ -10,6 +10,31 @@ import { getCartLineItemReadMetadataKey } from '../../../../utils/get-cart-line-
 import { CartLineItem } from '../item'
 import styles from './style.module.scss'
 
+type DecodedMetadataKey = {
+  id?: string | number
+  type?: string
+  scheduleId?: string | number
+  rateId?: string | number
+}
+
+const decodeMetadataKey = (key: string): DecodedMetadataKey | null => {
+  try {
+    const decoded = atob(key)
+    const parsed = JSON.parse(decoded) as DecodedMetadataKey
+    return parsed && typeof parsed === 'object' ? parsed : null
+  } catch {
+    return null
+  }
+}
+
+const toComparable = (value: string | number | null | undefined): string => {
+  if (value == null) {
+    return ''
+  }
+
+  return String(value)
+}
+
 type Props = {
   lineItems: RocketRezLineItem[]
   compact?: boolean
@@ -31,8 +56,45 @@ export const CartLineItems: FC<Props> = ({
     if (metadata === undefined) {
       return undefined
     }
+
     const key = getCartLineItemReadMetadataKey({ lineItem })
-    return metadata.find((m) => m.key === key) ?? null
+
+    return (
+      metadata.find((m) => m.key === key) ??
+      metadata.find((m) => {
+        const decoded = decodeMetadataKey(m.key)
+        if (!decoded) {
+          return false
+        }
+
+        const sameId =
+          toComparable(decoded.id) === toComparable(lineItem.productId)
+        const sameType =
+          toComparable(decoded.type).toLowerCase() ===
+          toComparable(lineItem.type).toLowerCase()
+
+        if (!sameId || !sameType) {
+          return false
+        }
+
+        if (
+          decoded.scheduleId != null &&
+          toComparable(decoded.scheduleId) !== toComparable(lineItem.scheduleId)
+        ) {
+          return false
+        }
+
+        if (
+          decoded.rateId != null &&
+          toComparable(decoded.rateId) !== toComparable(lineItem.rateId)
+        ) {
+          return false
+        }
+
+        return true
+      }) ??
+      null
+    )
   }
 
   return (
