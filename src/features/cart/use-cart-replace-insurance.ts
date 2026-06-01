@@ -65,6 +65,7 @@ const getLineItemMetadata = (
 
     if (
       decoded.scheduleId != null &&
+      lineItem.scheduleId != null &&
       toComparable(decoded.scheduleId) !== toComparable(lineItem.scheduleId)
     ) {
       return false
@@ -72,6 +73,7 @@ const getLineItemMetadata = (
 
     if (
       decoded.rateId != null &&
+      lineItem.rateId != null &&
       toComparable(decoded.rateId) !== toComparable(lineItem.rateId)
     ) {
       return false

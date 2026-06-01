@@ -79,6 +79,7 @@ export const CartLineItems: FC<Props> = ({
 
         if (
           decoded.scheduleId != null &&
+          lineItem.scheduleId != null &&
           toComparable(decoded.scheduleId) !== toComparable(lineItem.scheduleId)
         ) {
           return false
@@ -86,6 +87,7 @@ export const CartLineItems: FC<Props> = ({
 
         if (
           decoded.rateId != null &&
+          lineItem.rateId != null &&
           toComparable(decoded.rateId) !== toComparable(lineItem.rateId)
         ) {
           return false
