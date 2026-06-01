@@ -270,6 +270,29 @@ export class CartService {
     }
   }
 
+  private getPrimaryEventRequestLinkContext(
+    lineItems: Array<{
+      type?: string | null
+      scheduleId?: number | null
+      rateId?: number | null
+      rateType?: string | null
+    }>
+  ) {
+    const eventLineItem = [...lineItems]
+      .reverse()
+      .find((lineItem) => lineItem.type === RocketRezProductType.EVENT)
+
+    if (!eventLineItem) {
+      return null
+    }
+
+    return {
+      scheduleId: eventLineItem.scheduleId ?? null,
+      rateId: eventLineItem.rateId ?? null,
+      rateType: eventLineItem.rateType ?? null
+    }
+  }
+
   private enrichLinkedLineItems(
     request: RocketRezAddLineItemRequest,
     cartLineItems: Array<{
@@ -309,6 +332,9 @@ export class CartService {
     }
 
     const fallbackParent = this.getPrimaryEventLineItem(cartLineItems)
+    const requestEventLinkContext = this.getPrimaryEventRequestLinkContext(
+      request.lineItems
+    )
 
     const lineItems = request.lineItems.map((lineItem) => {
       if (lineItem.type === RocketRezProductType.EVENT) {
@@ -322,16 +348,28 @@ export class CartService {
         parentFromRequestId != null ? parentById.get(parentFromRequestId) : null
       const parent = explicitParent ?? fallbackParent
 
-      if (!parent) {
+      const linkSource =
+        parent ??
+        (requestEventLinkContext
+          ? {
+              id: null,
+              scheduleId: requestEventLinkContext.scheduleId,
+              rateId: requestEventLinkContext.rateId,
+              rateType: requestEventLinkContext.rateType
+            }
+          : null)
+
+      if (!linkSource) {
         return lineItem
       }
 
       return {
         ...lineItem,
-        parentLineItemId: lineItem.parentLineItemId ?? parent.id,
-        scheduleId: lineItem.scheduleId ?? parent.scheduleId,
-        rateId: lineItem.rateId ?? parent.rateId,
-        rateType: lineItem.rateType ?? parent.rateType
+        parentLineItemId:
+          lineItem.parentLineItemId ?? (linkSource.id ?? undefined),
+        scheduleId: lineItem.scheduleId ?? linkSource.scheduleId,
+        rateId: lineItem.rateId ?? linkSource.rateId,
+        rateType: lineItem.rateType ?? linkSource.rateType
       }
     })
 
