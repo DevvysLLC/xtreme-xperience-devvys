@@ -24,7 +24,10 @@ export const CartTotals: FC = () => {
   const lineItemsTaxFromBreakdown = (cart?.cartData?.lineItems ?? []).reduce(
     (lineItemsSum, lineItem) =>
       lineItemsSum +
-      (lineItem.taxes ?? []).reduce((taxesSum, tax) => taxesSum + getTaxAmount(tax), 0),
+      (lineItem.taxes ?? []).reduce(
+        (taxesSum, tax) => taxesSum + getTaxAmount(tax),
+        0
+      ),
     0
   )
   const apiTaxTotal = cart?.cartData?.taxTotal ?? 0

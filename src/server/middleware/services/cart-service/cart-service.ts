@@ -1,5 +1,6 @@
 import { AppError } from '../../../../core/errors/app-error'
 import { logger } from '../../../../core/logger/logger'
+import { RocketRezProductType } from '../../../../io/schemas'
 import type {
   CartLineItemMetadata,
   MiddlewareCartResponse,
@@ -10,7 +11,6 @@ import type {
   RocketRezAddLineItemRequest,
   RocketRezUpdateLineItemRequest
 } from '../../../../io/types'
-import { RocketRezProductType } from '../../../../io/schemas'
 import { CartKeyHelpers } from '../../../../utils/cart-key'
 import type { RocketRezClient } from '../../../rocket-rez/index'
 import type { CartService as RocketRezCartService } from '../../../rocket-rez/services/cart/cart-service'
@@ -366,7 +366,7 @@ export class CartService {
       return {
         ...lineItem,
         parentLineItemId:
-          lineItem.parentLineItemId ?? (linkSource.id ?? undefined),
+          lineItem.parentLineItemId ?? linkSource.id ?? undefined,
         scheduleId: lineItem.scheduleId ?? linkSource.scheduleId,
         rateId: lineItem.rateId ?? linkSource.rateId,
         rateType: lineItem.rateType ?? linkSource.rateType

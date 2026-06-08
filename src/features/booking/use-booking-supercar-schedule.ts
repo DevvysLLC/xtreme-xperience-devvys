@@ -356,14 +356,20 @@ export const useBookingSupercarSchedule = () => {
 
             const fallbackPrices = (schedule.seatTypes ?? [])
               .filter(
-                (seatType) =>
-                  seatType?.available != null && seatType.available > 0
+                (seatType): seatType is NonNullable<typeof seatType> =>
+                  seatType != null &&
+                  seatType.available != null &&
+                  seatType.available > 0
               )
               .flatMap((seatType) =>
                 (seatType.rates ?? [])
                   .map((rate) => getRateTypePrice(rate.rateTypes?.[0]))
-                  .filter((price): price is ReturnType<typeof getRateTypePrice> =>
-                    Boolean(price?.hasPrice)
+                  .filter(
+                    (
+                      price
+                    ): price is NonNullable<
+                      ReturnType<typeof getRateTypePrice>
+                    > => Boolean(price?.hasPrice)
                   )
                   .map((price) => ({
                     price: price.price,
@@ -419,7 +425,9 @@ export const useBookingSupercarSchedule = () => {
               const matchedRate = (matchedSeatType.rates ?? []).find(
                 (rate) => rate.id === rateId
               )
-              const rateTypePrice = getRateTypePrice(matchedRate?.rateTypes?.[0])
+              const rateTypePrice = getRateTypePrice(
+                matchedRate?.rateTypes?.[0]
+              )
 
               if (!rateTypePrice?.hasPrice) {
                 return null
@@ -439,13 +447,13 @@ export const useBookingSupercarSchedule = () => {
               } => item !== null
             )
 
-            // Day-tab pricing should show the first available matching rate,
-            // not require all rates to be available in the same schedule.
-            if (pricesForMatchedRates.length === 0) {
+          // Day-tab pricing should show the first available matching rate,
+          // not require all rates to be available in the same schedule.
+          if (pricesForMatchedRates.length === 0) {
             return null
           }
 
-            return pricesForMatchedRates.reduce((lowest, current) =>
+          return pricesForMatchedRates.reduce((lowest, current) =>
             current.price < lowest.price ? current : lowest
           )
         })

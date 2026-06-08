@@ -169,13 +169,7 @@ export const useRocketRezPayment = (options: Options) => {
       postToIframe(initMessage)
       postToIframe(initMessage, '*')
     }, 500)
-  }, [
-    cartId,
-    paymentMethodId,
-    postToIframe,
-    clearInitRetry,
-    onPaymentError
-  ])
+  }, [cartId, paymentMethodId, postToIframe, clearInitRetry, onPaymentError])
 
   const processPayment = useCallback(() => {
     if (!clientSecret) {

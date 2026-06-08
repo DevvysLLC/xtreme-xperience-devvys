@@ -43,11 +43,7 @@ export const CartLineItem: FC<Props> = ({
   const isLoading =
     externalMetadata !== undefined ? false : cartMetadata.isLoading
 
-  const { id, subTotal, price, discountAmount } = lineItem
-  const hasDiscount =
-    discountAmount !== undefined &&
-    discountAmount !== null &&
-    discountAmount > 0
+  const { id, price } = lineItem
   const { title, image, subtitle, label, properties, type } = metadata ?? {}
   const fallbackTitle = `${lineItem.type} #${lineItem.productId}`
   const displayTitle = title?.trim() || fallbackTitle
@@ -86,9 +82,9 @@ export const CartLineItem: FC<Props> = ({
 
         <div className={styles.CartLineItemCompact__content}>
           <div className={styles.CartLineItemCompact__header}>
-              <h3 className={styles.CartLineItemCompact__title}>
-                <CoreTextMarkdown>{displayTitle}</CoreTextMarkdown>
-              </h3>
+            <h3 className={styles.CartLineItemCompact__title}>
+              <CoreTextMarkdown>{displayTitle}</CoreTextMarkdown>
+            </h3>
             {displaySubtitle && <p>{displaySubtitle}</p>}
           </div>
 

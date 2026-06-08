@@ -17,11 +17,45 @@ type DecodedMetadataKey = {
   rateId?: string | number
 }
 
-const decodeMetadataKey = (key: string): DecodedMetadataKey | null => {
+const isDecodedMetadataKey = (value: unknown): value is DecodedMetadataKey => {
+  if (value == null || typeof value !== 'object') {
+    return false
+  }
+
+  const id = Reflect.get(value, 'id')
+  if (id != null) {
+    return true
+  }
+
+  const type = Reflect.get(value, 'type')
+  if (typeof type === 'string') {
+    return true
+  }
+
+  const scheduleId = Reflect.get(value, 'scheduleId')
+  if (scheduleId != null) {
+    return true
+  }
+
+  const rateId = Reflect.get(value, 'rateId')
+  if (rateId != null) {
+    return true
+  }
+
+  return false
+}
+
+const decodeMetadataKey = (
+  key: string | undefined
+): DecodedMetadataKey | null => {
+  if (!key) {
+    return null
+  }
+
   try {
     const decoded = atob(key)
-    const parsed = JSON.parse(decoded) as DecodedMetadataKey
-    return parsed && typeof parsed === 'object' ? parsed : null
+    const parsed = JSON.parse(decoded)
+    return isDecodedMetadataKey(parsed) ? parsed : null
   } catch {
     return null
   }

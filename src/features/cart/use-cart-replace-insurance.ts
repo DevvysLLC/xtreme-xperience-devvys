@@ -4,7 +4,12 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { CHOOSE_ON_DRIVE_DAY_INPUT_VALUE } from '../../config/settings'
 import type { InsuranceFragment } from '../../core/dato/fragments/insurance.typegen'
 import { logger } from '../../core/logger/logger'
-import type { CartState, RocketRezAddLineItemAddon } from '../../io/types'
+import type {
+  CartLineItemMetadata,
+  CartState,
+  RocketRezAddLineItemAddon,
+  RocketRezLineItem
+} from '../../io/types'
 import { getCartLineItemReadMetadataKey } from '../../utils/get-cart-line-item-metadata-key'
 import { LOG_NAMESPACE } from './config'
 import { CART_QUERY_KEY } from './keys'
@@ -19,11 +24,45 @@ type DecodedMetadataKey = {
   rateId?: string | number
 }
 
-const decodeMetadataKey = (key: string): DecodedMetadataKey | null => {
+const isDecodedMetadataKey = (value: unknown): value is DecodedMetadataKey => {
+  if (value == null || typeof value !== 'object') {
+    return false
+  }
+
+  const id = Reflect.get(value, 'id')
+  if (id != null) {
+    return true
+  }
+
+  const type = Reflect.get(value, 'type')
+  if (typeof type === 'string') {
+    return true
+  }
+
+  const scheduleId = Reflect.get(value, 'scheduleId')
+  if (scheduleId != null) {
+    return true
+  }
+
+  const rateId = Reflect.get(value, 'rateId')
+  if (rateId != null) {
+    return true
+  }
+
+  return false
+}
+
+const decodeMetadataKey = (
+  key: string | undefined
+): DecodedMetadataKey | null => {
+  if (!key) {
+    return null
+  }
+
   try {
     const decoded = atob(key)
-    const parsed = JSON.parse(decoded) as DecodedMetadataKey
-    return parsed && typeof parsed === 'object' ? parsed : null
+    const parsed = JSON.parse(decoded)
+    return isDecodedMetadataKey(parsed) ? parsed : null
   } catch {
     return null
   }
@@ -38,8 +77,8 @@ const toComparable = (value: string | number | null | undefined): string => {
 }
 
 const getLineItemMetadata = (
-  lineItem: CartState['cartData']['lineItems'][number],
-  metadata: CartState['metadata']
+  lineItem: RocketRezLineItem,
+  metadata: CartLineItemMetadata[]
 ) => {
   const exactKey = getCartLineItemReadMetadataKey({ lineItem })
   const exact = metadata.find((m) => m.key === exactKey)
@@ -251,8 +290,7 @@ export const useCartReplaceInsurance = () => {
         `${LOG_NAMESPACE}: replaceInsurance — added new insurance`
       )
 
-      const wasRemoved =
-        hasInsurance && !insuranceProductMatches
+      const wasRemoved = hasInsurance && !insuranceProductMatches
 
       return { skipped: false, removed: wasRemoved, added: true }
     },

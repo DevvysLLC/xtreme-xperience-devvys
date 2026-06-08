@@ -1,5 +1,5 @@
-import { AppError } from '../../../../core/errors/app-error'
 import { initDatoSdk } from '../../../../core/dato/sdk'
+import { AppError } from '../../../../core/errors/app-error'
 import { logger } from '../../../../core/logger/logger'
 import type {
   MiddlewareEventsGetEventRequest,
@@ -7,8 +7,8 @@ import type {
   MiddlewareEventsListEventsResponse
 } from '../../../../io'
 import { RocketRezEventDataSchema } from '../../../../io/schemas'
-import { getDatoEventDates } from '../../../../utils/get-dato-event-dates'
 import { getUtcTodayString } from '../../../../utils/date-time'
+import { getDatoEventDates } from '../../../../utils/get-dato-event-dates'
 import { getDb } from '../../../db/get-db'
 import { RocketRezClient } from '../../../rocket-rez/client/index'
 import {
@@ -105,10 +105,13 @@ export class EventsService {
         []
 
       try {
-        const schedulesResponse = await productsService.getEventSchedules(eventId, {
-          startDate: scheduleStartDate,
-          endDate: scheduleEndDate
-        })
+        const schedulesResponse = await productsService.getEventSchedules(
+          eventId,
+          {
+            startDate: scheduleStartDate,
+            endDate: scheduleEndDate
+          }
+        )
 
         futureSchedules = (schedulesResponse.data ?? []).filter(
           (s: { date: string }) => s.date >= today
