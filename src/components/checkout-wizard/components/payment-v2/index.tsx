@@ -229,10 +229,57 @@ export const PaymentV2 = ({
       return null
     }
 
+    const couponDiscount = (cartData.coupons ?? []).reduce(
+      (acc, coupon) => acc + (coupon.total ?? 0),
+      0
+    )
+    const finalDiscount = Math.max(cartData.discountTotal ?? 0, couponDiscount)
+
+    const cartTaxFromBreakdown = (cartData.taxes ?? []).reduce(
+      (sum, tax) => sum + getTaxAmount(tax),
+      0
+    )
+    const lineItemsTaxFromBreakdown = (cartData.lineItems ?? []).reduce(
+      (lineItemsSum, lineItem) =>
+        lineItemsSum +
+        (lineItem.taxes ?? []).reduce(
+          (taxesSum, tax) => taxesSum + getTaxAmount(tax),
+          0
+        ),
+      0
+    )
+    const lineItemsTaxFromTotals = (cartData.lineItems ?? []).reduce(
+      (lineItemsSum, lineItem) => lineItemsSum + (lineItem.taxTotal ?? 0),
+      0
+    )
+    const apiTaxTotal = cartData.taxTotal ?? 0
+    const taxTotal =
+      apiTaxTotal > 0
+        ? apiTaxTotal
+        : Math.max(
+            cartTaxFromBreakdown,
+            lineItemsTaxFromBreakdown,
+            lineItemsTaxFromTotals
+          )
+
+    const houseServiceChargeTotal = (cartData.lineItems ?? []).reduce(
+      (acc, lineItem) => acc + (lineItem.houseServiceChargeTotal ?? 0),
+      0
+    )
+
+    const calculatedTotal =
+      (cartData.subTotal ?? 0) +
+      houseServiceChargeTotal +
+      (cartData.variableFeeTotal ?? 0) +
+      taxTotal -
+      finalDiscount
+
+    const paymentTotal = calculatedTotal > 0 ? calculatedTotal : cartData.total
+
     return {
       PaymentMethodId: paymentMethodId,
       CartId: cartId,
-      PaymentTotal: cartData.total,
+      PaymentTotal: paymentTotal,
       ...(returnUrl ? { returnUrl } : {}),
       RecaptchaToken: null,
       FirstName: contact.firstName ?? null,
