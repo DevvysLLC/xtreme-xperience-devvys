@@ -30,6 +30,14 @@ const IFRAME_TARGET_ORIGIN_RAW =
 const IFRAME_URL =
   IFRAME_URL_RAW?.startsWith('https://') === true ? IFRAME_URL_RAW : null
 
+const getTaxAmount = (tax: unknown): number => {
+  if (!tax || typeof tax !== 'object' || !('amount' in tax)) {
+    return 0
+  }
+  const value = tax.amount
+  return typeof value === 'number' && Number.isFinite(value) ? value : 0
+}
+
 const PARENT_REDIRECT_STATE_STORAGE_KEY =
   'checkout.payment.parent-redirect-state'
 
