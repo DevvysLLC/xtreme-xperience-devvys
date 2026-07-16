@@ -32,6 +32,18 @@ export const GET = async (request: Request): Promise<NextResponse> => {
     const cartService = await client.getCartService()
     const result = await cartService.getCart(cartKey, userGuid)
 
+    const isExpired =
+      result.cart.expiryDate &&
+      new Date(result.cart.expiryDate).getTime() < Date.now()
+
+    if (isExpired) {
+      logger.warn({ expiryDate: result.cart.expiryDate }, 'Cart has expired')
+      return NextResponse.json(
+        { status: 'error', message: 'Cart has expired' },
+        { status: 404, headers: NO_CACHE_HEADERS }
+      )
+    }
+
     return NextResponse.json(
       {
         status: 'success',

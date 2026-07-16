@@ -131,19 +131,6 @@ export const useCartRefresh = () => {
 
     const cartData = query.data.data
 
-    const isExpired =
-      cartData.cart.expiryDate &&
-      new Date(cartData.cart.expiryDate).getTime() < Date.now()
-
-    if (isExpired) {
-      logger.info(
-        { expiryDate: cartData.cart.expiryDate },
-        `${LOG_NAMESPACE}: refresh.expired — clearing all stores`
-      )
-      clearAllStores(qc)
-      return
-    }
-
     if (cartData.cart.status !== CartStatus.ACTIVE) {
       logger.info(
         { status: cartData.cart.status },
