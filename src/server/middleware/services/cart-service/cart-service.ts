@@ -868,10 +868,11 @@ export class CartService {
     const { cart } = cartResponse
 
     if (!cart.orderId) {
-      logger.warn({ cartId: cart.id }, 'Cart does not have an orderId yet')
+      logger.warn({ cartId: cart.id, cart }, 'Cart does not have an orderId yet')
       throw new AppError('Cart order has not been completed yet', {
         traceTag: 'cart-service.completeCart',
-        cartId: cart.id
+        cartId: cart.id,
+        cart
       })
     }
 
