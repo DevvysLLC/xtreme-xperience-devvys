@@ -864,11 +864,24 @@ export class CartService {
   ): Promise<{ order: OrderResponse; cart: MiddlewareCartResponse }> {
     logger.info({ hasCartKey: true, userGuid }, 'cart-service.completeCart')
 
-    const cartResponse = await this.getCart(cartKey, userGuid)
-    const { cart } = cartResponse
+    let cartResponse = await this.getCart(cartKey, userGuid)
+    let { cart } = cartResponse
+
+    let attempts = 0
+    const maxAttempts = 6 // Poll for up to 6 seconds
+    while (!cart.orderId && attempts < maxAttempts) {
+      attempts++
+      logger.info(
+        { cartId: cart.id, attempt: attempts },
+        'cart-service.completeCart: orderId is null, polling in 1s...'
+      )
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+      cartResponse = await this.getCart(cartKey, userGuid)
+      cart = cartResponse.cart
+    }
 
     if (!cart.orderId) {
-      logger.warn({ cartId: cart.id, cart }, 'Cart does not have an orderId yet')
+      logger.warn({ cartId: cart.id, cart }, 'Cart does not have an orderId yet after polling')
       throw new AppError('Cart order has not been completed yet', {
         traceTag: 'cart-service.completeCart',
         cartId: cart.id,
