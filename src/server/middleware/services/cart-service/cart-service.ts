@@ -366,10 +366,7 @@ export class CartService {
       return {
         ...lineItem,
         parentLineItemId:
-          lineItem.parentLineItemId ?? linkSource.id ?? undefined,
-        scheduleId: lineItem.scheduleId ?? linkSource.scheduleId,
-        rateId: lineItem.rateId ?? linkSource.rateId,
-        rateType: lineItem.rateType ?? linkSource.rateType
+          lineItem.parentLineItemId ?? linkSource.id ?? undefined
       }
     })
 
