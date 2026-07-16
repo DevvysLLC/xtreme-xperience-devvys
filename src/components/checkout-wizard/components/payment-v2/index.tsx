@@ -261,7 +261,7 @@ export const PaymentV2 = ({
         Name: null,
         Number: null
       },
-      allowSecondaryPayments: false,
+      allowSecondaryPayments: true,
       SecondaryPayments: []
     }
   }, [cartData, cartId, paymentMethodId, returnUrl])
