@@ -21,12 +21,6 @@ import styles from './style.module.scss'
 const IFRAME_URL_RAW =
   process.env.NEXT_PUBLIC_ROCKET_REZ_PAYMENTS_API_IFRAME_URL
 
-const IFRAME_ALLOWED_ORIGIN_RAW =
-  process.env.NEXT_PUBLIC_ROCKET_REZ_PAYMENTS_API_ALLOWED_ORIGIN
-
-const IFRAME_TARGET_ORIGIN_RAW =
-  process.env.NEXT_PUBLIC_ROCKET_REZ_PAYMENTS_API_TARGET_ORIGIN
-
 const IFRAME_URL =
   IFRAME_URL_RAW?.startsWith('https://') === true ? IFRAME_URL_RAW : null
 
@@ -229,12 +223,10 @@ export const PaymentV2 = ({
       return null
     }
 
-    const paymentTotal = cartData.total
-
     return {
       PaymentMethodId: paymentMethodId,
       CartId: cartId,
-      PaymentTotal: paymentTotal,
+      PaymentTotal: cartData.total,
       ...(returnUrl ? { returnUrl } : {}),
       RecaptchaToken: null,
       FirstName: contact.firstName ?? null,
@@ -399,14 +391,6 @@ export const PaymentV2 = ({
         ? window.location.origin
         : 'http://localhost'
 
-    if (IFRAME_TARGET_ORIGIN_RAW?.startsWith('https://')) {
-      try {
-        return new URL(IFRAME_TARGET_ORIGIN_RAW).origin
-      } catch {
-        return fallbackOrigin
-      }
-    }
-
     if (!IFRAME_URL) {
       return fallbackOrigin
     }
@@ -419,15 +403,8 @@ export const PaymentV2 = ({
   }, [])
 
   const resolvedAllowedOrigin = useMemo(() => {
-    if (IFRAME_ALLOWED_ORIGIN_RAW?.startsWith('https://')) {
-      try {
-        return new URL(IFRAME_ALLOWED_ORIGIN_RAW).origin
-      } catch {
-        return undefined
-      }
-    }
-    return undefined
-  }, [])
+    return resolvedTargetOrigin
+  }, [resolvedTargetOrigin])
   const [iframeKey, setIframeKey] = useState(0)
 
   // Call hook unconditionally (React hooks rule)

@@ -78,8 +78,7 @@ export const POST = async (request: Request): Promise<NextResponse> => {
       return NextResponse.json(
         {
           status: 'error',
-          message: error.message,
-          details: error.details
+          message: error.message
         },
         {
           status: 400,

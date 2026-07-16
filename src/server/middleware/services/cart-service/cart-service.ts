@@ -861,55 +861,14 @@ export class CartService {
   ): Promise<{ order: OrderResponse; cart: MiddlewareCartResponse }> {
     logger.info({ hasCartKey: true, userGuid }, 'cart-service.completeCart')
 
-    const context = await this.refreshAndGetCartService(
-      cartKey,
-      'completeCart',
-      userGuid
-    )
-
-    let cartResponse = await this.getCart(cartKey, userGuid)
-    let { cart } = cartResponse
+    const cartResponse = await this.getCart(cartKey, userGuid)
+    const { cart } = cartResponse
 
     if (!cart.orderId) {
-      try {
-        logger.info(
-          { cartId: cart.id },
-          'cart-service.completeCart: orderId is null, triggering processCart in RocketRez...'
-        )
-        await context.cartService.processCart(context.cartToken, userGuid)
-        logger.info(
-          { cartId: cart.id },
-          'cart-service.completeCart: processCart triggered successfully'
-        )
-        cartResponse = await this.getCart(cartKey, userGuid)
-        cart = cartResponse.cart
-      } catch (processError) {
-        logger.warn(
-          { cartId: cart.id, processError },
-          'cart-service.completeCart: failed to trigger processCart'
-        )
-      }
-    }
-
-    let attempts = 0
-    const maxAttempts = 6 // Poll for up to 6 seconds
-    while (!cart.orderId && attempts < maxAttempts) {
-      attempts++
-      logger.info(
-        { cartId: cart.id, attempt: attempts },
-        'cart-service.completeCart: orderId is still null, polling in 1s...'
-      )
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-      cartResponse = await this.getCart(cartKey, userGuid)
-      cart = cartResponse.cart
-    }
-
-    if (!cart.orderId) {
-      logger.warn({ cartId: cart.id, cart }, 'Cart does not have an orderId yet after polling')
+      logger.warn({ cartId: cart.id }, 'Cart does not have an orderId yet')
       throw new AppError('Cart order has not been completed yet', {
         traceTag: 'cart-service.completeCart',
-        cartId: cart.id,
-        cart
+        cartId: cart.id
       })
     }
 

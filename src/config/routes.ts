@@ -95,8 +95,7 @@ export const ROUTES = {
       COUPONS: '/v1/headless/cart/coupons',
       COUPON_BY_ID: (id: number) => `/v1/headless/cart/coupons/${id}`,
       PAYMENT_GATEWAY_CLIENT_SECRET:
-        '/v1/headless/payment/gateway-client-secret',
-      PROCESS: '/v1/headless/cart/process'
+        '/v1/headless/payment/gateway-client-secret'
     },
     PRODUCTS: {
       BASE: '/v1/headless/products',

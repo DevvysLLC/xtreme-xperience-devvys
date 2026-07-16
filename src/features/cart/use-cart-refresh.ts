@@ -63,7 +63,7 @@ export const useCartRefresh = () => {
   }, [cartKey])
 
   const query = useQuery({
-    queryKey: CART_REFRESH_QUERY_KEY,
+    queryKey: [...CART_REFRESH_QUERY_KEY, cartKey],
     enabled: !!cartKey,
     refetchOnMount: true,
     retry: false,
@@ -78,14 +78,6 @@ export const useCartRefresh = () => {
         headers: { 'x-cart-key': cartKey },
         signal
       })
-
-      if (res.status === 401 || res.status === 404) {
-        logger.info(
-          { status: res.status },
-          `${LOG_NAMESPACE}: refresh.expired-cart`
-        )
-        return null
-      }
 
       if (!res.ok) {
         throw new Error('Failed to refresh cart')
