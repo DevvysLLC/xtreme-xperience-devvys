@@ -81,9 +81,6 @@ export const CoreAddToCartForm: FC<CoreAddToCartFormProps> = (props) => {
 
       if (parentEventLineItem) {
         lineItem.parentLineItemId = parentEventLineItem.id
-        lineItem.scheduleId = parentEventLineItem.scheduleId ?? null
-        lineItem.rateId = parentEventLineItem.rateId ?? null
-        lineItem.rateType = parentEventLineItem.rateType ?? null
       }
 
       const selectedDateTime =

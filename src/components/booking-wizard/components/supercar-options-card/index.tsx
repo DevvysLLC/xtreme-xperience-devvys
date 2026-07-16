@@ -8,10 +8,11 @@ import { BOOKING_LAP_QUANTITY_OPTIONS } from '../../../../config/settings'
 import type { BookingSupercarFragment } from '../../../../core/dato/fragments/booking-config.typegen'
 import { logger } from '../../../../core/logger/logger'
 import { useBookingSupercarSchedule } from '../../../../features/booking'
+import { getRequiredRateIdsForSupercar } from '../../../../features/booking/use-booking-supercar-schedule'
 import { useCart, useCartAdd, useCartClear } from '../../../../features/cart'
 import { useDialog } from '../../../../features/dialog'
 import { useToast } from '../../../../features/toast'
-import { RocketRezProductType } from '../../../../io/schemas'
+import { RocketRezProductType, RocketRezScheduleStatus } from '../../../../io/schemas'
 import type { RocketRezAddLineItemCar } from '../../../../io/types'
 import { getAddToCartLineItemCarMetadata } from '../../../../utils/get-add-to-cart-line-item-car-metadata'
 import { getBookingLapsPerSession } from '../../../../utils/get-booking-laps-per-session'
@@ -86,13 +87,29 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
       : null
   const id = state.selectedEvent?.model?.rocketRezId ?? null
   const badge = bookingSupercar.badgeOverride ?? null
+  const isMulticar = bookingSupercar.isMulticar
+
   const lowestPrice = useMemo(
-    () => lowestAvailablePrice(schedules, rocketRezSeatTypeId),
-    [schedules, rocketRezSeatTypeId, lowestAvailablePrice]
+    () => lowestAvailablePrice(schedules, rocketRezSeatTypeId, isMulticar),
+    [schedules, rocketRezSeatTypeId, lowestAvailablePrice, isMulticar]
   )
 
+  // For packages (isMulticar), resolve all required rate IDs from the first available schedule
+  // to determine sold-out status accurately
+  const packageRateIds = useMemo(() => {
+    if (!isMulticar) return undefined
+    const firstAvailableSchedule = schedules.find(
+      (s) => s.scheduleStatus === RocketRezScheduleStatus.AVAILABLE
+    )
+    if (!firstAvailableSchedule) return undefined
+    return getRequiredRateIdsForSupercar(firstAvailableSchedule, rocketRezSeatTypeId, true)
+  }, [isMulticar, schedules, rocketRezSeatTypeId])
+
   // Check if sold out: no schedules, all unavailable, all prices are 0, or all have 0 availability
-  const soldOut = isScheduleSoldOut(schedules, rocketRezSeatTypeId)
+  const soldOut = isScheduleSoldOut(
+    schedules,
+    isMulticar && packageRateIds ? packageRateIds : rocketRezSeatTypeId
+  )
 
   // Check if cart has cars with a different date than the selected date
   const getExistingCartDate = (): string | null => {
@@ -143,9 +160,32 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
       lapsPerSession
     })
 
+    // For packages, build one line item per rate in the package category,
+    // all sharing the same scheduleId — required by RocketRez API
+    let lineItems: ValidatedLineItem[] = [lineItem]
+
+    if (isMulticar && lineItem.scheduleId) {
+      const selectedSchedule = schedules.find(
+        (s) => s.id === lineItem.scheduleId
+      )
+      if (selectedSchedule) {
+        const allRateIds = getRequiredRateIdsForSupercar(
+          selectedSchedule,
+          rocketRezSeatTypeId,
+          true
+        )
+        // Build one line item per rate (each rate = one car in the package)
+        lineItems = allRateIds.map((rateId) => ({
+          ...lineItem,
+          rateId,
+          rateType: 'Participant'
+        }))
+      }
+    }
+
     try {
       await mutateAsync({
-        request: { lineItems: [lineItem] },
+        request: { lineItems },
         metadata
       })
 
@@ -368,6 +408,8 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
                       <SupercarOptionsCardTimes
                         supercarId={supercarId}
                         rocketRezSeatTypeId={rocketRezSeatTypeId}
+                        packageRateIds={packageRateIds}
+                        isMulticar={isMulticar}
                         schedules={schedules}
                         field={field}
                         form={form}

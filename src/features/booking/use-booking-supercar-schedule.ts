@@ -5,8 +5,52 @@ import type { BookingConfigFragment } from '../../core/dato/fragments/booking-co
 import { RocketRezScheduleStatus } from '../../io/schemas'
 import type { RocketRezEventScheduleItem } from '../../io/types'
 import { getRateTypePrice } from '../../utils/get-rate-type-price'
+import { isScheduleSoldOut } from '../../utils/is-schedule-sold-out'
 
 type SupercarGroup = BookingConfigFragment['supercars'][number]['supercars']
+
+/**
+ * Resolves all rate IDs for a supercar, dynamically detecting packages by category.
+ */
+export const getRequiredRateIdsForSupercar = (
+  schedule: RocketRezEventScheduleItem,
+  rocketRezSeatTypeId: number,
+  isMulticar: boolean
+): number[] => {
+  if (!isMulticar) {
+    return [rocketRezSeatTypeId]
+  }
+
+  let categoryName: string | null = null
+  for (const seatType of schedule.seatTypes ?? []) {
+    if (!seatType) continue
+    for (const rate of seatType.rates ?? []) {
+      if (rate.id === rocketRezSeatTypeId) {
+        categoryName = rate.category ?? null
+        break
+      }
+    }
+    if (categoryName) break
+  }
+
+  if (!categoryName) {
+    return [rocketRezSeatTypeId]
+  }
+
+  const rateIds: number[] = []
+  const cleanedCategory = categoryName.trim().toLowerCase()
+
+  for (const seatType of schedule.seatTypes ?? []) {
+    if (!seatType) continue
+    for (const rate of seatType.rates ?? []) {
+      if (rate.category?.trim().toLowerCase() === cleanedCategory) {
+        rateIds.push(rate.id)
+      }
+    }
+  }
+
+  return rateIds.length > 0 ? Array.from(new Set(rateIds)) : [rocketRezSeatTypeId]
+}
 
 /**
  * Supercar schedule utilities
@@ -14,6 +58,7 @@ type SupercarGroup = BookingConfigFragment['supercars'][number]['supercars']
  * - Calculate effective prices from schedules
  * - Check if schedule is sold out
  * - Get available status from RocketRez data
+ * - Handle multi-rate packages
  */
 export const useBookingSupercarSchedule = () => {
   const getEffectivePrice = useCallback(
@@ -61,27 +106,24 @@ export const useBookingSupercarSchedule = () => {
       }
 
       const rate = seatType.rates[0]
-      if (!rate?.rateTypes) {
+      if (!rate) {
         return 0
       }
 
-      const rateType = rate.rateTypes.find(
+      const participantRateType = rate.rateTypes.find(
         (rt) =>
-          rt.overridePrice != null ||
-          rt.dynamicPrice != null ||
-          rt.defaultPrice != null ||
-          rt.price != null
+          rt.type === 'Participant' &&
+          (rt.overridePrice != null ||
+            rt.dynamicPrice != null ||
+            rt.defaultPrice != null ||
+            rt.price != null)
       )
 
-      if (!rateType) {
-        return 0
-      }
-
       return (
-        rateType.overridePrice ??
-        rateType.dynamicPrice ??
-        rateType.defaultPrice ??
-        rateType.price ??
+        participantRateType?.overridePrice ??
+        participantRateType?.dynamicPrice ??
+        participantRateType?.defaultPrice ??
+        participantRateType?.price ??
         0
       )
     },
@@ -115,9 +157,7 @@ export const useBookingSupercarSchedule = () => {
           )
 
           if (participantRateType) {
-            return participantRateType.overridePrice
-              ? (participantRateType.price ?? null)
-              : null
+            return participantRateType.compareAtPrice ?? null
           }
         }
         return null
@@ -129,36 +169,39 @@ export const useBookingSupercarSchedule = () => {
       }
 
       const rate = seatType.rates[0]
-      if (!rate?.rateTypes) {
+      if (!rate) {
         return null
       }
 
-      const rateType = rate.rateTypes.find(
+      const participantRateType = rate.rateTypes.find(
         (rt) =>
-          rt.overridePrice != null ||
-          rt.dynamicPrice != null ||
-          rt.defaultPrice != null ||
-          rt.price != null
+          rt.type === 'Participant' &&
+          (rt.overridePrice != null ||
+            rt.dynamicPrice != null ||
+            rt.defaultPrice != null ||
+            rt.price != null)
       )
 
-      if (!rateType) {
-        return null
-      }
-
-      return rateType.overridePrice ? (rateType.price ?? null) : null
+      return participantRateType?.compareAtPrice ?? null
     },
     []
   )
 
   const isSoldOut = useCallback(
-    (schedule: RocketRezEventScheduleItem, rateId?: number) => {
+    (schedule: RocketRezEventScheduleItem, rateId?: number, isMulticar = false) => {
       const { scheduleStatus } = schedule
       const effectivePrice = getEffectivePrice(schedule, rateId)
 
-      return Boolean(
-        scheduleStatus !== RocketRezScheduleStatus.AVAILABLE ||
-          effectivePrice <= 0
-      )
+      if (scheduleStatus !== RocketRezScheduleStatus.AVAILABLE || effectivePrice <= 0) {
+        return true
+      }
+
+      if (rateId && isMulticar) {
+        const requiredRateIds = getRequiredRateIdsForSupercar(schedule, rateId, true)
+        return isScheduleSoldOut(schedule, requiredRateIds)
+      }
+
+      return false
     },
     [getEffectivePrice]
   )
@@ -266,7 +309,11 @@ export const useBookingSupercarSchedule = () => {
   )
 
   const lowestAvailablePrice = useCallback(
-    (schedules: RocketRezEventScheduleItem[] | undefined, rateId: number) => {
+    (
+      schedules: RocketRezEventScheduleItem[] | undefined,
+      rateId: number,
+      isMulticar = false
+    ) => {
       if (!schedules || schedules.length === 0) {
         return null
       }
@@ -275,6 +322,13 @@ export const useBookingSupercarSchedule = () => {
         .map((schedule) => {
           if (schedule.scheduleStatus !== RocketRezScheduleStatus.AVAILABLE) {
             return null
+          }
+
+          if (isMulticar) {
+            const requiredRateIds = getRequiredRateIdsForSupercar(schedule, rateId, true)
+            if (isScheduleSoldOut(schedule, requiredRateIds)) {
+              return null
+            }
           }
 
           const matchedSeatType = (schedule.seatTypes ?? []).find(
@@ -332,7 +386,8 @@ export const useBookingSupercarSchedule = () => {
   const lowestAvailablePriceFromRates = useCallback(
     (
       schedules: RocketRezEventScheduleItem[] | undefined,
-      rateIds: number[]
+      rateIds: number[],
+      isMulticar = false
     ) => {
       if (!schedules || schedules.length === 0) {
         return null
@@ -411,6 +466,13 @@ export const useBookingSupercarSchedule = () => {
 
           const pricesForMatchedRates = normalizedRateIds
             .map((rateId) => {
+              if (isMulticar) {
+                const requiredRateIds = getRequiredRateIdsForSupercar(schedule, rateId, true)
+                if (isScheduleSoldOut(schedule, requiredRateIds)) {
+                  return null
+                }
+              }
+
               const matchedSeatType = (schedule.seatTypes ?? []).find(
                 (seatType) =>
                   seatType?.available != null &&

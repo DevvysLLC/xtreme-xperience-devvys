@@ -18,6 +18,8 @@ import styles from './style.module.scss'
 type Props = {
   supercarId: number | string
   rocketRezSeatTypeId: number
+  packageRateIds?: number[]
+  isMulticar?: boolean
   schedules: RocketRezEventScheduleItem[]
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   field: any
@@ -30,6 +32,8 @@ const SHOW_AVAILABLE_THRESHOLD = 9
 export const SupercarOptionsCardTimes: React.FC<Props> = ({
   supercarId,
   rocketRezSeatTypeId,
+  packageRateIds,
+  isMulticar,
   schedules,
   field,
   form
@@ -92,7 +96,10 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
           const rateTypePrice = getRateTypePrice(rateType)
           const price = rateTypePrice?.price ?? null
           const hasPrice = rateTypePrice?.hasPrice ?? false
-          const isSoldOut = isScheduleSoldOut(schedule, rocketRezSeatTypeId)
+          const isSoldOut = isScheduleSoldOut(
+            schedule,
+            isMulticar && packageRateIds ? packageRateIds : rocketRezSeatTypeId
+          )
           const displayStartTime = formatStartTimeForUsLocale(
             schedule.startTime
           )
