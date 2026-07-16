@@ -314,7 +314,7 @@ export const PaymentV2 = ({
         Name: null,
         Number: null
       },
-      allowSecondaryPayments: true,
+      allowSecondaryPayments: false,
       SecondaryPayments: []
     }
   }, [cartData, cartId, paymentMethodId, returnUrl])
