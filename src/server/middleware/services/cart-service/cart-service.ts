@@ -861,8 +861,24 @@ export class CartService {
   ): Promise<{ order: OrderResponse; cart: MiddlewareCartResponse }> {
     logger.info({ hasCartKey: true, userGuid }, 'cart-service.completeCart')
 
-    const cartResponse = await this.getCart(cartKey, userGuid)
-    const { cart } = cartResponse
+    // Poll for orderId — RocketRez sets it asynchronously after payment.
+    // The payment iframe fires PAYMENT_SUCCESS before the cart API reflects
+    // the new orderId, so we need to retry for a short window.
+    const POLL_INTERVAL_MS = 1500
+    const MAX_ATTEMPTS = 7 // ~10.5 seconds total
+
+    let cartResponse = await this.getCart(cartKey, userGuid)
+    let cart = cartResponse.cart
+
+    for (let attempt = 1; attempt < MAX_ATTEMPTS && !cart.orderId; attempt++) {
+      logger.info(
+        { cartId: cart.id, attempt, maxAttempts: MAX_ATTEMPTS },
+        'cart-service.completeCart.polling — orderId not yet set, waiting...'
+      )
+      await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS))
+      cartResponse = await this.getCart(cartKey, userGuid)
+      cart = cartResponse.cart
+    }
 
     if (!cart.orderId) {
       logger.warn({ cartId: cart.id, cart }, 'Cart does not have an orderId yet')
