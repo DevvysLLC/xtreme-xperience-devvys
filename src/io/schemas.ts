@@ -1197,14 +1197,17 @@ export const CartLineItemMetadataKeySchema = z
 export const CartLineItemMetadataPropertiesTypeSchema = z.enum([
   'car',
   'addon',
-  'insurance'
+  'insurance',
+  'gift_card'
 ])
 
 export const CartLineItemMetadataPropertiesSchema = z
   .object({
     date: z.string().nullable().optional(),
     laps: z.number().nullable().optional(),
-    lapsPerSession: z.number().nullable().optional()
+    lapsPerSession: z.number().nullable().optional(),
+    recipientEmail: z.string().nullable().optional(),
+    recipientName: z.string().nullable().optional()
   })
   .passthrough()
 
@@ -1218,6 +1221,8 @@ export const CartLineItemMetadataSchema = z.object({
   isMulticar: z.boolean().nullable().optional(),
   isRideAlong: z.boolean().nullable().optional(),
   multicarCount: z.number().nullable().optional(),
+  recipientEmail: z.string().nullable().optional(),
+  recipientName: z.string().nullable().optional(),
   properties: CartLineItemMetadataPropertiesSchema.nullable().optional()
 })
 
