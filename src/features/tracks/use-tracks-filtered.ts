@@ -89,7 +89,8 @@ const getMarkersFromTracks = (
       longitude: location.longitude,
       label: track.model?.nickname ?? track.config?.title ?? undefined,
       city: track.model?.city ?? undefined,
-      state: track.model?.state ?? undefined
+      state: track.model?.state ?? undefined,
+      trackHandle: track.config?.handle ?? undefined
     })
   }
 

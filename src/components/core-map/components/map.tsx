@@ -21,6 +21,7 @@ export type MapMarker = {
   latitude: number
   longitude: number
   label?: string
+  trackHandle?: string
 }
 
 export type Props = {

@@ -1533,7 +1533,8 @@ export const MapboxMapMarkerSchema = z.object({
   longitude: z.number(),
   label: z.string().optional(),
   city: z.string().optional(),
-  state: z.string().optional()
+  state: z.string().optional(),
+  trackHandle: z.string().optional()
 })
 
 // =============================================================================

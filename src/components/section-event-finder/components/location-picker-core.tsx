@@ -1,6 +1,7 @@
 'use client'
 
 import clsx from 'clsx'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import {
   type ReactNode,
@@ -11,6 +12,7 @@ import {
   useRef,
   useState
 } from 'react'
+import { ROUTES } from '../../../config/routes'
 import type { EventDataFragment } from '../../../core/dato/fragments/event-data.typegen'
 import type { TrackDataFragment } from '../../../core/dato/fragments/track-data.typegen'
 import { initMainBus } from '../../../core/messaging/main'
@@ -181,6 +183,7 @@ export const LocationPickerCore = ({
   className
 }: LocationPickerCoreProps) => {
   const t = useTranslations('section_event_finder')
+  const router = useRouter()
   const { data: location } = useLocation()
   const sectionContentId = `event-finder-content-${useId()}`
 
@@ -189,9 +192,7 @@ export const LocationPickerCore = ({
   const effectiveInitialValue = initialSearchValue ?? homeTrackNickname ?? ''
 
   const [searchQuery, setSearchQuery] = useState(effectiveInitialValue)
-  const [filterSortBy, setFilterSortBy] = useState<string>(
-    effectiveInitialValue.trim() ? 'distance-asc' : 'date-asc'
-  )
+  const [filterSortBy, setFilterSortBy] = useState('date-asc')
   const [filterStartDate, setFilterStartDate] = useState<Date | null>(
     getTomorrow
   )
@@ -329,6 +330,9 @@ export const LocationPickerCore = ({
 
   const tracksDistanceMap = useMemo(() => {
     const map = new Map<string, number>()
+    if (!tracksSortedByDistance) {
+      return map
+    }
     for (const item of tracksSortedByDistance) {
       const key = item.track.config?.handle ?? item.track.model?.nickname ?? ''
       if (key) {
@@ -351,23 +355,42 @@ export const LocationPickerCore = ({
 
   const handleMarkerClick = useCallback(
     (marker: MapMarker) => {
-      // Use clicked marker coordinates as distance source of truth.
+      // 1. Direct track handle on marker
+      if (marker.trackHandle) {
+        router.push(`${ROUTES.FRONTEND.TRACKS.LISTING}/${marker.trackHandle}`)
+        return
+      }
+
+      // 2. Lookup handle from tracks by nickname or title
+      const matchedTrack = tracks.find((track) => {
+        const nickname = track.model?.nickname?.trim().toLowerCase()
+        const title = track.config?.title?.trim().toLowerCase()
+        const markerLabel = marker.label?.trim().toLowerCase()
+        return (
+          (nickname && nickname === markerLabel) ||
+          (title && title === markerLabel)
+        )
+      })
+
+      const trackHandle = matchedTrack?.config?.handle
+      if (trackHandle) {
+        router.push(`${ROUTES.FRONTEND.TRACKS.LISTING}/${trackHandle}`)
+        return
+      }
+
+      // 3. Secondary fallback: filtering and scroll
       setSearchSource('marker')
       setSelectedMarkerCoordinates({
         latitude: marker.latitude,
         longitude: marker.longitude
       })
 
-      // Keep query in sync for list filtering + map centering behavior.
       if (marker.label) {
         setSearchQuery(marker.label)
         setFilterSortBy('distance-asc')
         onSearchChange?.(marker.label)
       }
 
-      // Bring the section content (search + filters + events list) into view
-      // after the click. Defer to the next frame so the re-sorted list is
-      // committed before we measure its position.
       requestAnimationFrame(() => {
         initMainBus().send({
           name: SCROLL_TO_SECTION_MESSAGE_NAME,
@@ -375,7 +398,7 @@ export const LocationPickerCore = ({
         })
       })
     },
-    [onSearchChange, sectionContentId]
+    [router, tracks, onSearchChange, sectionContentId]
   )
 
   const handleDateRangeChange = useCallback(
@@ -435,7 +458,8 @@ export const LocationPickerCore = ({
         id: marker.id,
         latitude: marker.latitude,
         longitude: marker.longitude,
-        label: marker.label
+        label: marker.label,
+        trackHandle: marker.trackHandle
       }))
   }, [markers, filteredTrackNicknames])
 
