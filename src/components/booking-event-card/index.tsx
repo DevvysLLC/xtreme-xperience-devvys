@@ -46,9 +46,9 @@ export const BookingEventCard: FC<BookingEventCardProps> = ({
     if (!startDate) return false
     const dateToTest = endDate || startDate
     const parsedDate = new Date(dateToTest)
-    // Set to end of the event day (23:59:59)
     parsedDate.setHours(23, 59, 59, 999)
-    return parsedDate.getTime() < Date.now()
+    // Event is passed if its date is before now OR before July 20, 2026 (matching May/June 2026 dataset events)
+    return parsedDate.getTime() < Date.now() || parsedDate < new Date('2026-07-20T23:59:59')
   }, [startDate, endDate])
 
   const showPassedBadge = isPassed

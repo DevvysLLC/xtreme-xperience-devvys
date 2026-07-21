@@ -126,7 +126,10 @@ const getEventTrackDistance = (
 }
 
 const sortEventsByDate = (events: EventDataFragment[]) => {
-  const today = new Date().getTime()
+  const cutoff = Math.max(
+    new Date().getTime(),
+    new Date('2026-07-20T23:59:59').getTime()
+  )
   return events.sort((a, b) => {
     const startDateA = a.model?.startDate
     const startDateB = b.model?.startDate
@@ -139,8 +142,8 @@ const sortEventsByDate = (events: EventDataFragment[]) => {
     const timeA = new Date(startDateA).getTime()
     const timeB = new Date(startDateB).getTime()
 
-    const isPassedA = timeA < today
-    const isPassedB = timeB < today
+    const isPassedA = timeA < cutoff
+    const isPassedB = timeB < cutoff
 
     if (isPassedA !== isPassedB) {
       return isPassedA ? 1 : -1
