@@ -37,6 +37,27 @@ const getLowestSchedulePriceForRateId = (
 }
 
 /**
+ * Filters out supercars that have 0 availability for the specified event schedules,
+ * ensuring event-specific fleet filtering so unavailable cars are hidden when available options exist.
+ */
+export const filterSupercarsByAvailability = (
+  supercars: BookingSupercarFragment[],
+  schedules: RocketRezEventScheduleItem[],
+  getSeatTypeId: (supercar: BookingSupercarFragment) => number = (supercar) =>
+    Number(supercar.rocketRezSeatTypeId)
+): BookingSupercarFragment[] => {
+  if (!schedules || schedules.length === 0) {
+    return supercars
+  }
+
+  const availableSupercars = supercars.filter(
+    (supercar) => !isScheduleSoldOut(schedules, getSeatTypeId(supercar))
+  )
+
+  return availableSupercars.length > 0 ? availableSupercars : supercars
+}
+
+/**
  * Sorts supercars so that available ones appear first and sold-out ones appear last.
  * Maintains the original order within each group (available vs sold-out).
  */

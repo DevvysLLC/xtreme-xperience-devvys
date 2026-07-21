@@ -5,7 +5,10 @@ import { useTranslations } from 'next-intl'
 import { useEffect, useMemo } from 'react'
 import type { BookingSupercarGroupFragment } from '../../../../core/dato/fragments/booking-config.typegen'
 import { getSeatTypeIdWithOverride } from '../../../../utils/get-seat-type-id-with-override'
-import { sortSupercarsByAvailability } from '../../../../utils/sort-supercars-by-availability'
+import {
+  filterSupercarsByAvailability,
+  sortSupercarsByAvailability
+} from '../../../../utils/sort-supercars-by-availability'
 import { CoreIcon } from '../../../core-icon'
 import { useBookingWizardState } from '../../context'
 import { SupercarOptionsCard } from '../supercar-options-card'
@@ -41,14 +44,25 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
     () => selectedDaySchedules?.schedules ?? [],
     [selectedDaySchedules?.schedules]
   )
-  // Sort supercars: available first, sold out last
+  // Filter & sort supercars: filter 0-availability cars for event, available first, sold out last
   const sortedSupercars = useMemo(() => {
     if (!activeGroup?.supercars) {
       return []
     }
 
-    return sortSupercarsByAvailability(
+    const filtered = filterSupercarsByAvailability(
       activeGroup.supercars,
+      schedules,
+      (supercar) =>
+        getSeatTypeIdWithOverride({
+          defaultSeatTypeId: supercar.rocketRezSeatTypeId,
+          overrides: supercar.rocketRezSeatTypeIdOverrides,
+          selectedEventId
+        })
+    )
+
+    return sortSupercarsByAvailability(
+      filtered,
       schedules,
       (supercar) =>
         getSeatTypeIdWithOverride({
