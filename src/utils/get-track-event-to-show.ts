@@ -11,57 +11,85 @@ type Result = {
 }
 
 // Selects the single event to surface in track UI:
-// - the featured event when it is enabled and has a start date
-// - otherwise the next upcoming (soonest) enabled event with a start date
+// - Prefers available (non-sold-out) enabled events with a start date.
+// - If featured event is enabled and NOT sold out, uses featured event.
+// - Otherwise picks the soonest upcoming non-sold-out enabled event.
+// - Fallback: if all events are sold out, uses the featured event or soonest upcoming event.
 export const getTrackEventToShow = (
   featuredEvent: TrackModelFragment['featuredEvent'] | null | undefined,
   events: TrackModelFragment['events'] | null | undefined
 ): Result => {
-  const enabledEvents = (events ?? []).filter((event) => event.model?.enabled)
-
-  const eventsWithDates = enabledEvents.filter(
-    (event) => event.model?.startDate != null
+  const enabledEvents = (events ?? []).filter(
+    (event) => event.model?.enabled && event.model?.startDate != null
   )
 
-  const soonestEvent =
-    eventsWithDates.length > 0
-      ? eventsWithDates.reduce((soonest, current) => {
-          const soonestDate = soonest.model?.startDate
-          const currentDate = current.model?.startDate
+  const availableEvents = enabledEvents.filter(
+    (event) => !event.model?.soldOut
+  )
 
-          if (!soonestDate) {
-            return current
-          }
-          if (!currentDate) {
-            return soonest
-          }
+  const getSoonestEvent = (list: typeof enabledEvents) => {
+    if (list.length === 0) return null
+    return list.reduce((soonest, current) => {
+      const soonestDate = soonest.model?.startDate
+      const currentDate = current.model?.startDate
 
-          return new Date(currentDate) < new Date(soonestDate)
-            ? current
-            : soonest
-        })
-      : null
+      if (!soonestDate) return current
+      if (!currentDate) return soonest
 
+      return new Date(currentDate) < new Date(soonestDate) ? current : soonest
+    })
+  }
+
+  // If there are available (non-sold-out) events, select from available pool
+  if (availableEvents.length > 0) {
+    const isFeaturedAvailable =
+      featuredEvent?.model?.enabled &&
+      featuredEvent.model?.startDate != null &&
+      !featuredEvent.model?.soldOut
+
+    if (isFeaturedAvailable && featuredEvent) {
+      const isFeaturedInEvents = availableEvents.some(
+        (event) => event.id === featuredEvent.id
+      )
+      return {
+        eventToShow: featuredEvent,
+        remainingCount: isFeaturedInEvents
+          ? availableEvents.length - 1
+          : availableEvents.length
+      }
+    }
+
+    const soonestAvailable = getSoonestEvent(availableEvents)
+    if (soonestAvailable) {
+      return {
+        eventToShow: soonestAvailable,
+        remainingCount: availableEvents.length - 1
+      }
+    }
+  }
+
+  // Fallback: All events are sold out, surface featured/soonest event as fallback
   const hasValidFeaturedEvent =
     featuredEvent?.model?.enabled && featuredEvent.model?.startDate != null
 
-  if (hasValidFeaturedEvent) {
-    const isFeaturedEventInEvents = eventsWithDates.some(
+  if (hasValidFeaturedEvent && featuredEvent) {
+    const isFeaturedEventInEvents = enabledEvents.some(
       (event) => event.id === featuredEvent.id
     )
 
     return {
       eventToShow: featuredEvent,
       remainingCount: isFeaturedEventInEvents
-        ? eventsWithDates.length - 1
-        : eventsWithDates.length
+        ? enabledEvents.length - 1
+        : enabledEvents.length
     }
   }
 
+  const soonestEvent = getSoonestEvent(enabledEvents)
   if (soonestEvent) {
     return {
       eventToShow: soonestEvent,
-      remainingCount: eventsWithDates.length - 1
+      remainingCount: enabledEvents.length - 1
     }
   }
 
