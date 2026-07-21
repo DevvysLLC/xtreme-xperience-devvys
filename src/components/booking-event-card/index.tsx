@@ -3,6 +3,7 @@
 import clsx from 'clsx'
 import { useTranslations } from 'next-intl'
 import type { FC, ReactNode } from 'react'
+import { useCallback, useMemo } from 'react'
 import type { EventDataFragment } from '../../core/dato/fragments/event-data.typegen'
 import type { TrackFragment } from '../../core/dato/fragments/track.typegen'
 import type { TrackDataFragment } from '../../core/dato/fragments/track-data.typegen'
@@ -11,6 +12,7 @@ import { BookingEventCta } from '../booking-event-cta'
 import { CoreBadge } from '../core-badge'
 import { CoreCta } from '../core-cta'
 import { CoreDate } from '../core-date'
+import { useDialog } from '../global-dialog'
 import styles from './style.module.scss'
 
 export type BookingEventCardProps = {
@@ -35,25 +37,62 @@ export const BookingEventCard: FC<BookingEventCardProps> = ({
   renderTrackLink = false
 }) => {
   const t = useTranslations('booking_event_card')
+  const { showDialog } = useDialog()
   const { startDate, endDate, soldOut, popular } = event?.model ?? {}
   const { state, city, nickname } = track?.model ?? {}
   const title = [state, city].filter(Boolean).join('  •  ')
-  const showSoldOutBadge = soldOut
-  const showPopularBadge = !soldOut && popular
-  const hasBadge = showSoldOutBadge || showPopularBadge
+
+  const isPassed = useMemo(() => {
+    if (!startDate) return false
+    const dateToTest = endDate || startDate
+    const parsedDate = new Date(dateToTest)
+    // Set to end of the event day (23:59:59)
+    parsedDate.setHours(23, 59, 59, 999)
+    return parsedDate.getTime() < Date.now()
+  }, [startDate, endDate])
+
+  const showPassedBadge = isPassed
+  const showSoldOutBadge = !isPassed && soldOut
+  const showPopularBadge = !isPassed && !soldOut && popular
+  const hasBadge = showPassedBadge || showSoldOutBadge || showPopularBadge
   const trackHandle = track?.config?.handle
+
+  const handleNotifyMe = useCallback(() => {
+    const trackName = nickname ?? title ?? 'this track'
+    showDialog({
+      translations: {
+        title: `Notify Me - ${trackName}`,
+        description: `This event has passed. Sign up to get notified via email as soon as new driving dates are scheduled for ${trackName}!`,
+        confirmButton: 'Got It',
+        cancelButton: 'Close'
+      },
+      onConfirm: () => {}
+    })
+  }, [nickname, title, showDialog])
+
   const actions = isSelectable ? (
     <>
-      <BookingEventCta
-        event={event}
-        track={track}
-        onReadyNavigate={onReadyNavigate}
-        layoutType="button"
-        styleType="black"
-        sizeType="large"
-        text={buttonText ?? t('select')}
-        className={styles.card__button}
-      />
+      {isPassed ? (
+        <CoreCta
+          onClick={handleNotifyMe}
+          layoutType="button"
+          styleType="black"
+          sizeType="large"
+          text="Notify Me"
+          className={styles.card__button}
+        />
+      ) : (
+        <BookingEventCta
+          event={event}
+          track={track}
+          onReadyNavigate={onReadyNavigate}
+          layoutType="button"
+          styleType="black"
+          sizeType="large"
+          text={buttonText ?? t('select')}
+          className={styles.card__button}
+        />
+      )}
       {renderTrackLink && trackHandle && (
         <CoreCta
           href={getRecordLink({ handle: trackHandle }, 'track')}
@@ -73,7 +112,7 @@ export const BookingEventCard: FC<BookingEventCardProps> = ({
     <div
       className={clsx(
         styles.card,
-        soldOut && styles['card--disabled'],
+        (soldOut || isPassed) && styles['card--disabled'],
         className
       )}
     >
@@ -95,6 +134,13 @@ export const BookingEventCard: FC<BookingEventCardProps> = ({
 
         {hasBadge && (
           <div className={styles.card__badges}>
+            {showPassedBadge && (
+              <CoreBadge
+                label="Event Passed"
+                backgroundColor="#555555"
+                color="#ffffff"
+              />
+            )}
             {showSoldOutBadge && (
               <CoreBadge
                 label={t('badge.sold_out')}

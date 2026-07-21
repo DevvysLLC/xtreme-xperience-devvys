@@ -69,13 +69,13 @@ const filterEventsByDateRange = (
   filterStart: Date | null,
   filterEnd: Date | null
 ): EventDataFragment[] => {
-  const today = normalizeToStartOfDay(new Date())
   const normalizedFilterStart = filterStart
     ? normalizeToStartOfDay(filterStart)
-    : today
+    : null
   const normalizedFilterEndExclusive = filterEnd
     ? addDays(normalizeToStartOfDay(filterEnd), 1)
     : null
+  const today = normalizeToStartOfDay(new Date())
 
   return events.filter((event) => {
     if (!event.model?.startDate) {
@@ -87,19 +87,25 @@ const filterEventsByDateRange = (
       ? addDays(normalizeToStartOfDay(new Date(event.model.endDate)), 1)
       : addDays(eventStart, 1)
 
-    // Always drop events that have already ended before rendering.
-    if (eventEndExclusive <= today) {
-      return false
+    const isPassed = eventEndExclusive <= today
+
+    // Past events are always retained so users can view track pages & click Notify Me
+    if (isPassed) {
+      return true
     }
 
-    if (!normalizedFilterEndExclusive) {
+    if (normalizedFilterStart && normalizedFilterEndExclusive) {
+      return (
+        eventStart < normalizedFilterEndExclusive &&
+        eventEndExclusive > normalizedFilterStart
+      )
+    }
+
+    if (normalizedFilterStart) {
       return eventEndExclusive > normalizedFilterStart
     }
 
-    return (
-      eventStart < normalizedFilterEndExclusive &&
-      eventEndExclusive > normalizedFilterStart
-    )
+    return true
   })
 }
 
@@ -120,6 +126,7 @@ const getEventTrackDistance = (
 }
 
 const sortEventsByDate = (events: EventDataFragment[]) => {
+  const today = new Date().getTime()
   return events.sort((a, b) => {
     const startDateA = a.model?.startDate
     const startDateB = b.model?.startDate
@@ -129,10 +136,17 @@ const sortEventsByDate = (events: EventDataFragment[]) => {
     if (!startDateB) {
       return -1
     }
-    const dateA = new Date(startDateA)
-    const dateB = new Date(startDateB)
+    const timeA = new Date(startDateA).getTime()
+    const timeB = new Date(startDateB).getTime()
 
-    return dateA.getTime() - dateB.getTime()
+    const isPassedA = timeA < today
+    const isPassedB = timeB < today
+
+    if (isPassedA !== isPassedB) {
+      return isPassedA ? 1 : -1
+    }
+
+    return timeA - timeB
   })
 }
 
@@ -193,9 +207,7 @@ export const LocationPickerCore = ({
 
   const [searchQuery, setSearchQuery] = useState(effectiveInitialValue)
   const [filterSortBy, setFilterSortBy] = useState('date-asc')
-  const [filterStartDate, setFilterStartDate] = useState<Date | null>(
-    getTomorrow
-  )
+  const [filterStartDate, setFilterStartDate] = useState<Date | null>(null)
   const [filterEndDate, setFilterEndDate] = useState<Date | null>(null)
   const [selectedMarkerCoordinates, setSelectedMarkerCoordinates] = useState<{
     latitude: number
