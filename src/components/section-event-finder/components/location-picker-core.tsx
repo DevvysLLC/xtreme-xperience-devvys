@@ -458,43 +458,47 @@ export const LocationPickerCore = ({
 
   return (
     <div className={clsx(styles.section__body, className)}>
-      <div id={sectionContentId} className={styles.section__content}>
-        {title}
+      <div className={styles.section__left}>
+        <div className={styles.section__controls}>
+          {title}
 
-        <div className={styles.search}>
-          <SearchBar
-            onSearch={handleSearchChange}
-            initialValue={effectiveInitialValue}
-            value={searchQuery}
-          />
+          <div className={styles.search}>
+            <SearchBar
+              onSearch={handleSearchChange}
+              initialValue={effectiveInitialValue}
+              value={searchQuery}
+            />
+          </div>
+
+          <div className={styles.filters}>
+            <DateRangePicker onDateRangeChange={handleDateRangeChange} />
+            <SortSelect
+              value={filterSortBy}
+              onSortChange={handleSortChange}
+              label={t('sort.label')}
+            />
+          </div>
         </div>
 
-        <div className={styles.filters}>
-          <DateRangePicker onDateRangeChange={handleDateRangeChange} />
-          <SortSelect
-            value={filterSortBy}
-            onSortChange={handleSortChange}
-            label={t('sort.label')}
-          />
-        </div>
+        <div id={sectionContentId} className={styles.section__content}>
+          <div className={styles.locationCta}>
+            <BookingLocationCta />
+          </div>
 
-        <div className={styles.locationCta}>
-          <BookingLocationCta />
-        </div>
-
-        <div className={styles.events}>
-          <div className={styles.events__inner}>
-            {isLoading || isGeocoding ? (
-              <div className={styles.events__loading}>
-                {displayLoadingMessage}
-              </div>
-            ) : sortedEvents.length === 0 ? (
-              <div className={styles.events__empty}>{displayEmptyMessage}</div>
-            ) : (
-              sortedEvents.map((event, index) =>
-                renderEvent(event, tracks, index)
-              )
-            )}
+          <div className={styles.events}>
+            <div className={styles.events__inner}>
+              {isLoading || isGeocoding ? (
+                <div className={styles.events__loading}>
+                  {displayLoadingMessage}
+                </div>
+              ) : sortedEvents.length === 0 ? (
+                <div className={styles.events__empty}>{displayEmptyMessage}</div>
+              ) : (
+                sortedEvents.map((event, index) =>
+                  renderEvent(event, tracks, index)
+                )
+              )}
+            </div>
           </div>
         </div>
       </div>

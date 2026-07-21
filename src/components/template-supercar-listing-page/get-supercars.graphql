@@ -1,5 +1,5 @@
 query getSupercars {
-  allSupercars {
+  allSupercars(first: 100) {
     ...Supercar
   }
 }

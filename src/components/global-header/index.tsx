@@ -13,9 +13,12 @@ type Props = {
 
 export const GlobalHeader = async ({ isTransparent }: Props = {}) => {
   const sdk = initDatoSdk()
-  const { globalConfig } = await sdk.getGlobalConfig()
+  const [{ globalConfig }, { header }, { allSupercars }] = await Promise.all([
+    sdk.getGlobalConfig(),
+    sdk.getHeader(),
+    sdk.getSupercars()
+  ])
   const { contactPhoneNumber, workingHours } = globalConfig ?? {}
-  const { header } = await sdk.getHeader()
   const { config, content } = header ?? {}
   const { sections } = content ?? { sections: [] }
 
@@ -29,6 +32,43 @@ export const GlobalHeader = async ({ isTransparent }: Props = {}) => {
     featuredMobileNavigation
   } = config ?? {}
 
+  // Automatically enrich supercars dropdown menu with all supercars from DatoCMS
+  // so no cars are omitted if only 8 were manually linked in DatoCMS navigation settings.
+  const enrichedNavigation = navigation?.map((navItem) => {
+    const hasSupercarChildren = navItem.children?.some(
+      (child) => child.link?.__typename === 'SupercarRecord'
+    )
+    if (!hasSupercarChildren) {
+      return navItem
+    }
+
+    const existingSupercarIds = new Set(
+      navItem.children
+        ?.filter((child) => child.link?.__typename === 'SupercarRecord')
+        .map((child) => (child.link as { id?: string })?.id)
+        .filter(Boolean)
+    )
+
+    const additionalSupercars = (allSupercars ?? []).filter(
+      (sc) => !existingSupercarIds.has(sc.id)
+    )
+
+    const additionalChildren = additionalSupercars.map((sc) => ({
+      id: sc.id,
+      label: sc.model?.title ?? null,
+      path: sc.config?.handle ? `/supercars/${sc.config.handle}` : null,
+      target: null,
+      link: sc,
+      media: null,
+      children: []
+    }))
+
+    return {
+      ...navItem,
+      children: [...(navItem.children ?? []), ...additionalChildren]
+    }
+  })
+
   return (
     <HeaderWithContext
       relativePaths={relativePaths}
@@ -40,7 +80,7 @@ export const GlobalHeader = async ({ isTransparent }: Props = {}) => {
 
       <div className={styles.header__desktop}>
         <NavbarDesktop
-          navigation={navigation}
+          navigation={enrichedNavigation}
           showCart={showCart}
           showSearch={(ENABLE_SEARCH && showSearch) ?? false}
           showTrackFinder={showTrackFinder}
@@ -49,7 +89,7 @@ export const GlobalHeader = async ({ isTransparent }: Props = {}) => {
 
       <div className={styles.header__mobile}>
         <NavbarMobile
-          navigation={navigation}
+          navigation={enrichedNavigation}
           showCart={showCart}
           showSearch={(ENABLE_SEARCH && showSearch) ?? false}
           showTrackFinder={showTrackFinder}

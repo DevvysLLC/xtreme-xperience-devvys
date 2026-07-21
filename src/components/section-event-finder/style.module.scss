@@ -19,7 +19,7 @@
 
   &__body {
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: column;
 
     @include sg.min(laptopSmall) {
       flex-direction: row;
@@ -27,17 +27,45 @@
     }
   }
 
+  &__left {
+    display: contents;
+
+    @include sg.min(laptopSmall) {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      max-width: 50%;
+      padding: sg.spacing(xxlarge) sg.spacing(xlarge);
+    }
+  }
+
+  &__controls {
+    order: 1;
+    padding: sg.spacing(xlarge) sg.spacing(regular) 0;
+
+    @include sg.min(laptopSmall) {
+      order: initial;
+      padding: 0;
+    }
+  }
+
   &__media {
+    order: 2;
     flex: 1;
+
+    @include sg.min(laptopSmall) {
+      order: initial;
+    }
   }
 
   &__content {
+    order: 3;
     flex: 1;
-    padding: sg.spacing(xlarge) sg.spacing(regular);
+    padding: sg.spacing(medium) sg.spacing(regular) sg.spacing(xlarge);
 
     @include sg.min(laptopSmall) {
-      max-width: 50%;
-      padding: sg.spacing(xxlarge) sg.spacing(xlarge);
+      order: initial;
+      padding: 0;
     }
   }
 

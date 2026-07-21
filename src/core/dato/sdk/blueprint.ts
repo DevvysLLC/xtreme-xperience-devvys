@@ -7976,7 +7976,7 @@ export const GetSupercarDocument = /*#__PURE__*/ gql`
     ${SupercarFragmentDoc}`;
 export const GetSupercarsDocument = /*#__PURE__*/ gql`
     query getSupercars {
-  allSupercars {
+  allSupercars(first: 100) {
     ...Supercar
   }
 }

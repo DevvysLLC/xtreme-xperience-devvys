@@ -303,6 +303,8 @@
     color: sg.color(black);
     padding: sg.spacing(xlarge);
     border-top: 1px dashed sg.color(black-20);
+    max-height: calc(100vh - u.rem-calc(120));
+    overflow-y: auto;
   }
 
   &__overlay {
