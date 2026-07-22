@@ -8,6 +8,7 @@ import type { MapboxMapMarker, TrackWithDistance } from '../../io/types'
 import { useMapboxGeocode } from '../mapbox'
 import { useUtilsDebouncedValue } from '../utils'
 import { hasAllTracks } from './config'
+import { isEventPassed } from '../../utils/is-event-passed'
 import { useTracks } from './use-tracks'
 
 const MILES_TO_KILOMETERS = 1.60934
@@ -39,7 +40,8 @@ const getEventsFromTracks = (
     }
 
     for (const event of trackEvents) {
-      if (!event.model?.enabled) {
+      const isPassed = isEventPassed(event.model?.startDate, event.model?.endDate)
+      if (!event.model?.enabled && !isPassed) {
         continue
       }
 

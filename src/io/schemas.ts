@@ -1320,7 +1320,9 @@ export const CheckoutDetailsFormInputSchema = z.object({
   city: z.string(),
   province: z.string(),
   postalCode: z.string(),
-  country: z.string()
+  country: z.string(),
+  recipientEmail: z.string().optional().or(z.literal('')),
+  recipientName: z.string().optional()
 })
 
 export const CheckoutWizardPageDetailsSchema = z.object({

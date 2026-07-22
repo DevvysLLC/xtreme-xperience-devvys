@@ -1,0 +1,42 @@
+@use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
+
+.section {
+  @include sg.section-config;
+  position: relative;
+  width: 100%;
+}
+
+.container {
+  width: 100%;
+  margin-inline: auto;
+}
+
+.header {
+  margin-bottom: sg.spacing(large);
+  text-align: center;
+}
+
+.title {
+  font-family: sg.font-family(anton);
+  font-size: sg.font-size(large);
+  font-weight: sg.font-weight(400);
+  line-height: sg.line-height('110%');
+  text-transform: uppercase;
+
+  @include sg.min(laptopSmall) {
+    font-size: sg.font-size(xlarge);
+  }
+}
+
+.subtitle {
+  margin-top: sg.spacing(xsmall);
+  font-family: sg.font-family(barlow-semi-condensed);
+  font-size: sg.font-size(regular);
+  font-weight: sg.font-weight(500);
+  line-height: sg.line-height('140%');
+}
+
+.content {
+  width: 100%;
+}

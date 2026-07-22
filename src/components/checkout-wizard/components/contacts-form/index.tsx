@@ -24,9 +24,10 @@ type ContactsFormField = Omit<TypedFormField, 'handleChange' | 'handleBlur'> & {
 type Props = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   form: any
+  isGiftCard?: boolean
 }
 
-export const ContactsForm: FC<Props> = ({ form }) => {
+export const ContactsForm: FC<Props> = ({ form, isGiftCard = false }) => {
   const t = useTranslations('contacts_form')
 
   return (
@@ -450,6 +451,104 @@ export const ContactsForm: FC<Props> = ({ form }) => {
           </form.Field>
         </div>
       </fieldset>
+
+      {isGiftCard && (
+        <fieldset className={styles.form__section}>
+          <legend className={clsx(styles.form__legend)}>
+            {t('fields.recipient_title')}
+          </legend>
+          <div className={styles.form__fields}>
+            {/* Recipient Name */}
+            <form.Field
+              name="recipientName"
+              validators={{
+                onChange: createRequiredValidator(
+                  t('fields.recipient_name_error_required')
+                )
+              }}
+            >
+              {(field: ContactsFormField) => (
+                <div
+                  className={clsx(styles.form__field, styles['form__field--50%'])}
+                >
+                  <label htmlFor={field.name} className={styles.form__label}>
+                    {t('fields.recipient_name')}
+                    <span className={styles.form__required}>*</span>
+                  </label>
+                  <input
+                    id={field.name}
+                    type="text"
+                    value={field.state.value || ''}
+                    onChange={(e) => {
+                      field.handleChange(e.target.value)
+                    }}
+                    onBlur={field.handleBlur}
+                    placeholder={t('fields.recipient_name_placeholder')}
+                    className={clsx(
+                      styles.form__input,
+                      field.state.meta.errors.length > 0 &&
+                        styles.form__input_error
+                    )}
+                  />
+                  {field.state.meta.errors.length > 0 && (
+                    <span className={styles.form__error}>
+                      {field.state.meta.errors[0]}
+                    </span>
+                  )}
+                </div>
+              )}
+            </form.Field>
+
+            {/* Recipient Email */}
+            <form.Field
+              name="recipientEmail"
+              validators={{
+                onChange: createSchemaValidator(
+                  ContactEmailSchema,
+                  t('fields.recipient_email_error_required'),
+                  t('fields.recipient_email_error')
+                ),
+                onBlur: createSchemaValidator(
+                  ContactEmailSchema,
+                  t('fields.recipient_email_error_required'),
+                  t('fields.recipient_email_error')
+                )
+              }}
+            >
+              {(field: ContactsFormField) => (
+                <div
+                  className={clsx(styles.form__field, styles['form__field--50%'])}
+                >
+                  <label htmlFor={field.name} className={styles.form__label}>
+                    {t('fields.recipient_email')}
+                    <span className={styles.form__required}>*</span>
+                  </label>
+                  <input
+                    id={field.name}
+                    type="email"
+                    value={field.state.value || ''}
+                    onChange={(e) => {
+                      field.handleChange(e.target.value)
+                    }}
+                    onBlur={field.handleBlur}
+                    placeholder={t('fields.recipient_email_placeholder')}
+                    className={clsx(
+                      styles.form__input,
+                      field.state.meta.errors.length > 0 &&
+                        styles.form__input_error
+                    )}
+                  />
+                  {field.state.meta.errors.length > 0 && (
+                    <span className={styles.form__error}>
+                      {field.state.meta.errors[0]}
+                    </span>
+                  )}
+                </div>
+              )}
+            </form.Field>
+          </div>
+        </fieldset>
+      )}
     </form>
   )
 }

@@ -11,5 +11,7 @@ export const DEFAULT_FORM_VALUES = {
   city: '',
   province: '',
   postalCode: '',
-  country: ''
+  country: '',
+  recipientEmail: '',
+  recipientName: ''
 } as const

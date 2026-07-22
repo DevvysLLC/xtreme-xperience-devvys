@@ -1530,7 +1530,15 @@
       "country": "Country",
       "country_placeholder": "Enter your country",
       "country_error": "Please enter a valid country",
-      "country_error_required": "Country is required"
+      "country_error_required": "Country is required",
+      "recipient_title": "Gift Card Recipient Details",
+      "recipient_name": "Recipient Name",
+      "recipient_name_placeholder": "Recipient's full name",
+      "recipient_name_error_required": "Recipient name is required",
+      "recipient_email": "Recipient Email",
+      "recipient_email_placeholder": "recipient@example.com",
+      "recipient_email_error": "Please enter a valid email address",
+      "recipient_email_error_required": "Recipient email is required"
     },
     "terms": {
       "title": "Terms and Conditions",

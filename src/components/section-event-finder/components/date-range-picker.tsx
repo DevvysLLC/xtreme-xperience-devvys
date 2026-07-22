@@ -19,11 +19,8 @@ type Props = {
 
 export const DateRangePicker: FC<Props> = ({ onDateRangeChange }) => {
   const t = useTranslations('section_event_finder')
-  const [startDate, setStartDate] = useState<Date | null>(getTomorrow)
+  const [startDate, setStartDate] = useState<Date | null>(null)
   const [endDate, setEndDate] = useState<Date | null>(null)
-
-  // Compute minDate fresh on each render to avoid staleness after midnight
-  const minDate = getTomorrow()
 
   const handleStartDateChange = (date: Date | null) => {
     setStartDate(date)
@@ -62,7 +59,6 @@ export const DateRangePicker: FC<Props> = ({ onDateRangeChange }) => {
             placeholderText={t('date_range.start_date.placeholder')}
             className={styles.dateRange__input}
             dateFormat="MM/dd/yyyy"
-            minDate={minDate}
             wrapperClassName={styles.dateRange__wrapper}
           />
           {startDate && (
@@ -95,7 +91,6 @@ export const DateRangePicker: FC<Props> = ({ onDateRangeChange }) => {
             selectsEnd
             startDate={startDate}
             endDate={endDate}
-            minDate={startDate || new Date()}
             placeholderText={t('date_range.end_date.placeholder')}
             className={styles.dateRange__input}
             dateFormat="MM/dd/yyyy"

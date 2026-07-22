@@ -8,6 +8,7 @@ import type { EventDataFragment } from '../../core/dato/fragments/event-data.typ
 import type { TrackFragment } from '../../core/dato/fragments/track.typegen'
 import type { TrackDataFragment } from '../../core/dato/fragments/track-data.typegen'
 import { getRecordLink } from '../../utils/get-record-link'
+import { isEventPassed } from '../../utils/is-event-passed'
 import { BookingEventCta } from '../booking-event-cta'
 import { CoreBadge } from '../core-badge'
 import { CoreCta } from '../core-cta'
@@ -42,14 +43,10 @@ export const BookingEventCard: FC<BookingEventCardProps> = ({
   const { state, city, nickname } = track?.model ?? {}
   const title = [state, city].filter(Boolean).join('  •  ')
 
-  const isPassed = useMemo(() => {
-    if (!startDate) return false
-    const dateToTest = endDate || startDate
-    const parsedDate = new Date(dateToTest)
-    parsedDate.setHours(23, 59, 59, 999)
-    // Event is passed if its date is before now OR before July 20, 2026 (matching May/June 2026 dataset events)
-    return parsedDate.getTime() < Date.now() || parsedDate < new Date('2026-07-20T23:59:59')
-  }, [startDate, endDate])
+  const isPassed = useMemo(
+    () => isEventPassed(startDate, endDate),
+    [startDate, endDate]
+  )
 
   const showPassedBadge = isPassed
   const showSoldOutBadge = !isPassed && soldOut

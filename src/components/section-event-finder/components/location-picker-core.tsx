@@ -25,6 +25,7 @@ import {
 import { BookingLocationCta } from '../../booking-location-cta'
 import { CoreMap, type MapMarker } from '../../core-map'
 import { DEFAULT_LAT, DEFAULT_LONG } from '../../core-map/config'
+import { isEventPassed } from '../../../utils/is-event-passed'
 import styles from '../style.module.scss'
 import { DateRangePicker } from './date-range-picker'
 import { SearchBar } from './search-bar'
@@ -75,7 +76,6 @@ const filterEventsByDateRange = (
   const normalizedFilterEndExclusive = filterEnd
     ? addDays(normalizeToStartOfDay(filterEnd), 1)
     : null
-  const today = normalizeToStartOfDay(new Date())
 
   return events.filter((event) => {
     if (!event.model?.startDate) {
@@ -87,7 +87,7 @@ const filterEventsByDateRange = (
       ? addDays(normalizeToStartOfDay(new Date(event.model.endDate)), 1)
       : addDays(eventStart, 1)
 
-    const isPassed = eventEndExclusive <= today
+    const isPassed = isEventPassed(event.model.startDate, event.model.endDate)
 
     // Past events are always retained so users can view track pages & click Notify Me
     if (isPassed) {
@@ -126,10 +126,6 @@ const getEventTrackDistance = (
 }
 
 const sortEventsByDate = (events: EventDataFragment[]) => {
-  const cutoff = Math.max(
-    new Date().getTime(),
-    new Date('2026-07-20T23:59:59').getTime()
-  )
   return events.sort((a, b) => {
     const startDateA = a.model?.startDate
     const startDateB = b.model?.startDate
@@ -141,13 +137,6 @@ const sortEventsByDate = (events: EventDataFragment[]) => {
     }
     const timeA = new Date(startDateA).getTime()
     const timeB = new Date(startDateB).getTime()
-
-    const isPassedA = timeA < cutoff
-    const isPassedB = timeB < cutoff
-
-    if (isPassedA !== isPassedB) {
-      return isPassedA ? 1 : -1
-    }
 
     return timeA - timeB
   })
@@ -450,6 +439,8 @@ export const LocationPickerCore = ({
     () => sortEvents(filteredEvents, filterSortBy, tracksDistanceMap),
     [filteredEvents, filterSortBy, tracksDistanceMap]
   )
+
+
 
   // Get unique track nicknames from filtered tracks to filter map markers
   const filteredTrackNicknames = useMemo(() => {

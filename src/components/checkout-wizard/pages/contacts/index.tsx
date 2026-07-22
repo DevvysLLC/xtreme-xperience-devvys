@@ -1,6 +1,7 @@
 'use client'
 
 import { useForm } from '@tanstack/react-form'
+import { useQueryClient } from '@tanstack/react-query'
 import { useTranslations } from 'next-intl'
 import { type FC, useEffect, useMemo, useRef, useState } from 'react'
 import { UNAVAILABLE_ANALYTICS_VALUE } from '../../../../config/analytics'
@@ -11,6 +12,8 @@ import {
   useCartContactAdd,
   useCartContactUpdate
 } from '../../../../features/cart'
+import { CART_QUERY_KEY } from '../../../../features/cart/keys'
+import { cartRepository } from '../../../../features/cart/repository'
 import {
   DEFAULT_FORM_VALUES,
   useCheckoutPageDetails,
@@ -24,7 +27,7 @@ import {
   RocketRezBillingAddressSchema,
   RocketRezCartStatusSchema
 } from '../../../../io/schemas'
-import type { RocketRezAddContactsRequest } from '../../../../io/types'
+import type { CartState, RocketRezAddContactsRequest } from '../../../../io/types'
 import { CoreCta } from '../../../core-cta'
 import { CartSummary } from '../../../global-cart/components/summary'
 import { ContactsForm } from '../../components/contacts-form'
@@ -52,7 +55,24 @@ export const ContactsPage: FC<Props> = () => {
   const updateContact = useCartContactUpdate()
   const analytics = useAnalyticsEcommerceEvent()
   const beginCheckoutTrackedRef = useRef(false)
+  const qc = useQueryClient()
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Determine if a gift card is being purchased
+  const isGiftCard = useMemo(() => {
+    const hasGiftCardInLineItems = cart?.cartData?.lineItems?.some((item) => {
+      const typeStr = String(item.productType ?? item.type ?? '').toLowerCase()
+      return (
+        typeStr === 'giftcard' ||
+        typeStr === 'gift_card' ||
+        typeStr === 'gift card'
+      )
+    })
+    const hasGiftCardInMetadata = cart?.metadata?.some(
+      (item) => item.type === 'gift_card'
+    )
+    return !!(hasGiftCardInLineItems || hasGiftCardInMetadata)
+  }, [cart?.cartData?.lineItems, cart?.metadata])
 
   // Check if contact already exists in cart
   const existingContact = useMemo(() => {
@@ -88,15 +108,29 @@ export const ContactsPage: FC<Props> = () => {
           country: existingContact.billingAddress?.country ?? 'US'
         }
       : {}
+
+    const giftCardMeta = cart?.metadata?.find((item) => item.type === 'gift_card')
+    const fromGiftCardMetadata = {
+      recipientEmail:
+        giftCardMeta?.recipientEmail ??
+        giftCardMeta?.properties?.recipientEmail ??
+        '',
+      recipientName:
+        giftCardMeta?.recipientName ??
+        giftCardMeta?.properties?.recipientName ??
+        ''
+    }
+
     return {
       ...DEFAULT_FORM_VALUES,
+      ...fromGiftCardMetadata,
       ...fromStore,
       ...fromContact,
       country: 'US',
       isValid: persisted?.pageIsValid ?? false,
       isSubmitted: persisted?.userHasSubmitted ?? false
     }
-  }, [persisted, existingContact])
+  }, [persisted, existingContact, cart?.metadata])
 
   const form = useForm({
     defaultValues,
@@ -197,6 +231,33 @@ export const ContactsPage: FC<Props> = () => {
           userHasSubmitted: true
         })
 
+        // Update recipient information on gift cards in cart metadata
+        if (isGiftCard) {
+          const currentCart = qc.getQueryData<CartState>(CART_QUERY_KEY)
+          if (currentCart) {
+            const nextCart = {
+              ...currentCart,
+              metadata: currentCart.metadata.map((item) => {
+                if (item.type === 'gift_card') {
+                  return {
+                    ...item,
+                    recipientEmail: contactValue.recipientEmail || null,
+                    recipientName: contactValue.recipientName || null,
+                    properties: {
+                      ...item.properties,
+                      recipientEmail: contactValue.recipientEmail || null,
+                      recipientName: contactValue.recipientName || null
+                    }
+                  }
+                }
+                return item
+              })
+            }
+            qc.setQueryData<CartState>(CART_QUERY_KEY, nextCart)
+            cartRepository.write(nextCart)
+          }
+        }
+
         const cartData = cart?.cartData
         if (cartData && (cartData.lineItems?.length ?? 0) > 0) {
           analytics.trackAddShippingInfo(
@@ -263,7 +324,7 @@ export const ContactsPage: FC<Props> = () => {
       </header>
 
       <div className={styles.contacts__content}>
-        <ContactsForm form={form} />
+        <ContactsForm form={form} isGiftCard={isGiftCard} />
       </div>
 
       <div className={styles.contacts__summary}>

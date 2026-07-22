@@ -10,6 +10,7 @@ import { SectionAccordion } from '../section-accordion'
 import { SectionAddonsGrid } from '../section-addons-grid'
 import { SectionAnnouncementBar } from '../section-announcement-bar'
 import { SectionContact } from '../section-contact'
+import { SectionCustomHtml } from '../section-custom-html'
 import { SectionEventFinder } from '../section-event-finder'
 import { SectionEventsFeature } from '../section-events-feature'
 import { SectionFaq } from '../section-faq'
@@ -89,6 +90,11 @@ const lazyRegistry = {
   ),
   SectionContactRecord: lazySection(() =>
     import('../section-contact').then((m) => ({ default: m.SectionContact }))
+  ),
+  SectionCustomHtmlRecord: lazySection(() =>
+    import('../section-custom-html').then((m) => ({
+      default: m.SectionCustomHtml
+    }))
   ),
   SectionEventFinderRecord: lazySection(() =>
     import('../section-event-finder').then((m) => ({
@@ -250,6 +256,7 @@ const registry = {
   SectionAccordionRecord: SectionAccordion,
   SectionAddonsGridRecord: SectionAddonsGrid,
   SectionContactRecord: SectionContact,
+  SectionCustomHtmlRecord: SectionCustomHtml,
   SectionEventsFeatureRecord: SectionEventsFeature,
   SectionFaqRecord: SectionFaq,
   SectionHeadlineRecord: SectionHeadline,
@@ -306,6 +313,11 @@ const RenderSection = ({
     case 'SectionContactRecord': {
       const Component = registry.SectionContactRecord
       return <Component data={section} {...firstSectionProps} />
+    }
+    case 'SectionCustomHtmlRecord': {
+      const Component = registry.SectionCustomHtmlRecord
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return <Component data={section as any} {...firstSectionProps} />
     }
     case 'SectionEventsFeatureRecord': {
       const Component = registry.SectionEventsFeatureRecord
@@ -490,6 +502,11 @@ const LazyRenderSection = ({
       case 'SectionContactRecord': {
         const Component = lazyRegistry.SectionContactRecord
         return <Component data={section} {...firstSectionProps} />
+      }
+      case 'SectionCustomHtmlRecord': {
+        const Component = lazyRegistry.SectionCustomHtmlRecord
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return <Component data={section as any} {...firstSectionProps} />
       }
       case 'SectionEventFinderRecord': {
         const Component = lazyRegistry.SectionEventFinderRecord

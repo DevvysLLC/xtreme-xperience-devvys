@@ -52,9 +52,11 @@
   &__media {
     order: 2;
     flex: 1;
+    margin-top: sg.spacing(large);
 
     @include sg.min(laptopSmall) {
       order: initial;
+      margin-top: 0;
     }
   }
 
