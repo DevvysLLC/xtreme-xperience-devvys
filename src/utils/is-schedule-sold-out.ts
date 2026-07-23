@@ -75,9 +75,10 @@ export const isScheduleSoldOut = (
             }
           }
 
-          // Must have seat availability > 0
+          // Must have seat availability > 0 (only for physical seat types where capacity > 0)
+          const seatTypeCapacity = seatType.capacity ?? 0
           const seatTypeAvailable = seatType.available ?? 0
-          if (seatTypeAvailable <= 0) {
+          if (seatTypeCapacity > 0 && seatTypeAvailable <= 0) {
             continue
           }
 

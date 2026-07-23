@@ -22,11 +22,13 @@ export const getRequiredRateIdsForSupercar = (
   }
 
   let categoryName: string | null = null
+  let targetRateName = ''
   for (const seatType of schedule.seatTypes ?? []) {
     if (!seatType) continue
     for (const rate of seatType.rates ?? []) {
       if (rate.id === rocketRezSeatTypeId) {
         categoryName = rate.category ?? null
+        targetRateName = rate.name
         break
       }
     }
@@ -37,16 +39,40 @@ export const getRequiredRateIdsForSupercar = (
     return [rocketRezSeatTypeId]
   }
 
+  // Determine the channel suffix (e.g. "online price", "third party price", "at-track", "corporate")
+  let channel = ''
+  const lowerRateName = targetRateName.toLowerCase()
+  if (lowerRateName.includes('online price')) {
+    channel = 'online price'
+  } else if (lowerRateName.includes('third party price')) {
+    channel = 'third party price'
+  } else if (lowerRateName.includes('at-track')) {
+    channel = 'at-track'
+  } else if (lowerRateName.includes('corporate')) {
+    channel = 'corporate'
+  }
+
   const rateIds: number[] = []
   const cleanedCategory = categoryName.trim().toLowerCase()
 
   for (const seatType of schedule.seatTypes ?? []) {
     if (!seatType) continue
-    for (const rate of seatType.rates ?? []) {
-      if (rate.category?.trim().toLowerCase() === cleanedCategory) {
-        rateIds.push(rate.id)
+    const categoryRates = (seatType.rates ?? []).filter(
+      (rate) => rate.category?.trim().toLowerCase() === cleanedCategory
+    )
+    if (categoryRates.length === 0) continue
+
+    // Select exactly one rate per seatType, preferring the matching price channel
+    let selectedRate = categoryRates[0]
+    if (channel) {
+      const matchingRate = categoryRates.find((rate) =>
+        rate.name.toLowerCase().includes(channel)
+      )
+      if (matchingRate) {
+        selectedRate = matchingRate
       }
     }
+    rateIds.push(selectedRate.id)
   }
 
   return rateIds.length > 0 ? Array.from(new Set(rateIds)) : [rocketRezSeatTypeId]
@@ -331,12 +357,16 @@ export const useBookingSupercarSchedule = () => {
             }
           }
 
-          const matchedSeatType = (schedule.seatTypes ?? []).find(
-            (seatType) =>
-              seatType?.available != null &&
-              seatType.available > 0 &&
+          const matchedSeatType = (schedule.seatTypes ?? []).find((seatType) => {
+            if (!seatType) return false
+            const capacity = seatType.capacity ?? 0
+            const available = seatType.available ?? 0
+            const isAvailable = capacity > 0 ? available > 0 : true
+            return (
+              isAvailable &&
               (seatType.rates ?? []).some((rate) => rate.id === rateId)
-          )
+            )
+          })
 
           if (!matchedSeatType) {
             return null
@@ -411,10 +441,12 @@ export const useBookingSupercarSchedule = () => {
 
             const fallbackPrices = (schedule.seatTypes ?? [])
               .filter(
-                (seatType): seatType is NonNullable<typeof seatType> =>
-                  seatType != null &&
-                  seatType.available != null &&
-                  seatType.available > 0
+                (seatType): seatType is NonNullable<typeof seatType> => {
+                  if (seatType == null) return false
+                  const capacity = seatType.capacity ?? 0
+                  const available = seatType.available ?? 0
+                  return capacity > 0 ? available > 0 : true
+                }
               )
               .flatMap((seatType) =>
                 (seatType.rates ?? [])
@@ -473,12 +505,16 @@ export const useBookingSupercarSchedule = () => {
                 }
               }
 
-              const matchedSeatType = (schedule.seatTypes ?? []).find(
-                (seatType) =>
-                  seatType?.available != null &&
-                  seatType.available > 0 &&
+              const matchedSeatType = (schedule.seatTypes ?? []).find((seatType) => {
+                if (!seatType) return false
+                const capacity = seatType.capacity ?? 0
+                const available = seatType.available ?? 0
+                const isAvailable = capacity > 0 ? available > 0 : true
+                return (
+                  isAvailable &&
                   (seatType.rates ?? []).some((rate) => rate.id === rateId)
-              )
+                )
+              })
 
               if (!matchedSeatType) {
                 return null

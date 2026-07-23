@@ -396,6 +396,8 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
                         field={field}
                         schedules={schedules}
                         rocketRezSeatTypeId={rocketRezSeatTypeId}
+                        packageRateIds={packageRateIds}
+                        isMulticar={isMulticar}
                       />
                     )
                   }}

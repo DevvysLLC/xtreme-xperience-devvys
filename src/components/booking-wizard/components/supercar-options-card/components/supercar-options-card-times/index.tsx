@@ -85,8 +85,39 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
                 )
                 if (rate) {
                   matchingRate = rate
-                  matchingSeatTypeAvailable = seatType.available ?? null
                   break
+                }
+              }
+            }
+
+            if (isMulticar && packageRateIds && packageRateIds.length > 0) {
+              // For packages, find the minimum available count among physical component seat types
+              let minAvailable: number | null = null
+              for (const rateId of packageRateIds) {
+                for (const seatType of schedule.seatTypes) {
+                  if (!seatType) continue
+                  const hasRate = (seatType.rates ?? []).some((r) => r.id === rateId)
+                  if (hasRate) {
+                    if ((seatType.capacity ?? 0) > 0) {
+                      const av = seatType.available ?? 0
+                      if (minAvailable === null || av < minAvailable) {
+                        minAvailable = av
+                      }
+                    }
+                    break
+                  }
+                }
+              }
+              matchingSeatTypeAvailable = minAvailable
+            } else {
+              // Single supercar
+              for (const seatType of schedule.seatTypes) {
+                if (seatType?.rates && Array.isArray(seatType.rates)) {
+                  const rate = seatType.rates.find((r) => r?.id === rocketRezSeatTypeId)
+                  if (rate) {
+                    matchingSeatTypeAvailable = seatType.available ?? null
+                    break
+                  }
                 }
               }
             }

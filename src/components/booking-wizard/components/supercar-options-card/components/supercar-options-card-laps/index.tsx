@@ -64,13 +64,17 @@ type Props = {
   field: any
   schedules: RocketRezEventScheduleItem[]
   rocketRezSeatTypeId: number
+  isMulticar?: boolean
+  packageRateIds?: number[]
 }
 
 export const SupercarOptionsCardLaps: React.FC<Props> = ({
   supercarId,
   field,
   schedules,
-  rocketRezSeatTypeId
+  rocketRezSeatTypeId,
+  isMulticar = false,
+  packageRateIds
 }) => {
   const { state: wizardState } = useBookingWizardState()
   const {
@@ -94,11 +98,45 @@ export const SupercarOptionsCardLaps: React.FC<Props> = ({
   })
 
   useEffect(() => {
-    const count = schedules.filter(
-      (schedule) => !isScheduleSoldOut(schedule, rocketRezSeatTypeId)
-    ).length
-    setTotalAvailableSessions(count)
-  }, [schedules, rocketRezSeatTypeId, setTotalAvailableSessions])
+    let maxAvailable = 0
+    for (const schedule of schedules) {
+      const isSoldOut = isScheduleSoldOut(
+        schedule,
+        isMulticar && packageRateIds ? packageRateIds : rocketRezSeatTypeId
+      )
+      if (isSoldOut) continue
+
+      let av = 0
+      if (isMulticar && packageRateIds && packageRateIds.length > 0) {
+        let minAv: number | null = null
+        for (const rateId of packageRateIds) {
+          for (const seatType of schedule.seatTypes ?? []) {
+            if (!seatType) continue
+            if ((seatType.capacity ?? 0) > 0 && (seatType.rates ?? []).some((r) => r.id === rateId)) {
+              const a = seatType.available ?? 0
+              if (minAv === null || a < minAv) {
+                minAv = a
+              }
+              break
+            }
+          }
+        }
+        av = minAv ?? 0
+      } else {
+        for (const seatType of schedule.seatTypes ?? []) {
+          if (!seatType) continue
+          if ((seatType.rates ?? []).some((r) => r.id === rocketRezSeatTypeId)) {
+            av = seatType.available ?? 0
+            break
+          }
+        }
+      }
+      if (av > maxAvailable) {
+        maxAvailable = av
+      }
+    }
+    setTotalAvailableSessions(maxAvailable)
+  }, [schedules, rocketRezSeatTypeId, isMulticar, packageRateIds, setTotalAvailableSessions])
 
   return (
     <fieldset className={styles.laps}>
@@ -110,7 +148,10 @@ export const SupercarOptionsCardLaps: React.FC<Props> = ({
         {BOOKING_LAP_QUANTITY_OPTIONS.map((option) => {
           const isSelected =
             state.selectedLapQuantityOption.quantity === option.quantity
-          const isSoldOut = state.totalAvailableSessions < option.quantity
+          const available = state.selectedDaySchedule
+            ? (state.selectedDaySchedule.available ?? 0)
+            : state.totalAvailableSessions
+          const isSoldOut = available < option.quantity
           const configField =
             option.booking_config_label_key != null
               ? BOOKING_CONFIG_LABEL_FIELD_BY_KEY[
