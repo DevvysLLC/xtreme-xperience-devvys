@@ -33,6 +33,23 @@ const getEventsFromTracks = (
 ): EventDataFragment[] => {
   const eventsMap = new Map<string, EventDataFragment>()
 
+  // 1. Identify which tracks have any future (upcoming) events scheduled and enabled.
+  const tracksWithFutureEvents = new Set<string>()
+  for (const track of tracks) {
+    const trackEvents = track.model?.events
+    if (!trackEvents) {
+      continue
+    }
+    const hasFutureEvent = trackEvents.some((event) => {
+      const isPassed = isEventPassed(event.model?.startDate, event.model?.endDate)
+      return !isPassed && event.model?.enabled
+    })
+    if (hasFutureEvent) {
+      tracksWithFutureEvents.add(track.id)
+    }
+  }
+
+  // 2. Add events to map, filtering out past events for tracks that have future events scheduled.
   for (const track of tracks) {
     const trackEvents = track.model?.events
     if (!trackEvents) {
@@ -42,6 +59,11 @@ const getEventsFromTracks = (
     for (const event of trackEvents) {
       const isPassed = isEventPassed(event.model?.startDate, event.model?.endDate)
       if (!event.model?.enabled && !isPassed) {
+        continue
+      }
+
+      // If this is a past event, skip it if the track has future events scheduled
+      if (isPassed && tracksWithFutureEvents.has(track.id)) {
         continue
       }
 
