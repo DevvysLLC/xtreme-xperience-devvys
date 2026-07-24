@@ -95,7 +95,11 @@ const getSupercarEntries = async (sdk: Sdk): Promise<SitemapEntry[]> => {
     logger.error(error, 'Failed to fetch supercar entries')
     return []
   }
-  return mapRecords(supercars, 'supercar')
+  const filtered = supercars.filter((sc) => {
+    const handle = sc.config?.handle ?? ''
+    return !handle.endsWith('-or') && handle !== 'drift-xperience-by-team-oneil'
+  })
+  return mapRecords(filtered, 'supercar')
 }
 
 const getBlogEntries = async (sdk: Sdk): Promise<SitemapEntry[]> => {

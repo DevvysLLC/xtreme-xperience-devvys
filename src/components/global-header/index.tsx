@@ -50,7 +50,10 @@ export const GlobalHeader = async ({ isTransparent }: Props = {}) => {
     )
 
     const additionalSupercars = (allSupercars ?? []).filter(
-      (sc) => !existingSupercarIds.has(sc.id)
+      (sc) =>
+        !existingSupercarIds.has(sc.id) &&
+        sc.content?.sections &&
+        sc.content.sections.length > 0
     )
 
     const additionalChildren = additionalSupercars.map((sc) => ({

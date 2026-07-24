@@ -76,9 +76,14 @@ const main = async () => {
     const { allSupercars } = await sdk.getSupercars()
     logger.info({ count: allSupercars.length }, 'Fetched supercars from Dato')
 
+    const filteredSupercars = allSupercars.filter(
+      (sc) => sc.content?.sections && sc.content.sections.length > 0
+    )
+    logger.info({ count: filteredSupercars.length }, 'Filtered supercars with content')
+
     const lookbackInMinutes = getLookbackInMinutes()
 
-    const allDocuments = allSupercars.map(transformSupercarToDocument)
+    const allDocuments = filteredSupercars.map(transformSupercarToDocument)
     const windowStart =
       lookbackInMinutes === 0 ? null : Date.now() - lookbackInMinutes * 60_000
 
