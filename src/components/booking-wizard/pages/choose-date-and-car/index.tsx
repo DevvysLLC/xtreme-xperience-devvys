@@ -147,14 +147,12 @@ export const DateAndCarPage = () => {
   })
 
   const title = pageMetadata?.title ?? t('title')
+  const activeGroup =
+    state.configData?.supercars?.[state.activeTabIndex ?? 0] ?? null
   const selectedEventId = state.selectedEvent?.model?.rocketRezId ?? null
-  // Date tab prices use the first supercar group (Supercar Drives, index 0) — the primary cars.
-  // Using all groups would let ride-along prices ($79) appear instead of car prices ($439+).
-  // This also means tab-switching doesn't affect the date tab price, matching the live site.
   const resolvedRateIds = useMemo(() => {
-    const primaryGroup = state.configData?.supercars?.[0] ?? null
     const mappedRateIds =
-      primaryGroup?.supercars?.map((supercar) =>
+      activeGroup?.supercars?.map((supercar) =>
         getSeatTypeIdWithOverride({
           defaultSeatTypeId: supercar.rocketRezSeatTypeId,
           overrides: supercar.rocketRezSeatTypeIdOverrides,
@@ -170,7 +168,7 @@ export const DateAndCarPage = () => {
         )
       )
     )
-  }, [state.configData?.supercars, selectedEventId])
+  }, [activeGroup?.supercars, selectedEventId])
 
   const handleBack = useCallback(() => {
     requestBackNavigation({ fromPath: pathname })

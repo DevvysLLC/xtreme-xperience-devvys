@@ -105,10 +105,11 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
     return getRequiredRateIdsForSupercar(firstAvailableSchedule, rocketRezSeatTypeId, true)
   }, [isMulticar, schedules, rocketRezSeatTypeId])
 
-  // Card-level sold-out check: use only the trigger rate to match live site behavior.
-  // A package card shows "SOLD OUT" only when its own trigger seatType has no availability.
-  // Time-slot level checks (in supercar-options-card-times) still verify all components.
-  const soldOut = isScheduleSoldOut(schedules, rocketRezSeatTypeId)
+  // Check if sold out: no schedules, all unavailable, all prices are 0, or all have 0 availability
+  const soldOut = isScheduleSoldOut(
+    schedules,
+    isMulticar && packageRateIds ? packageRateIds : rocketRezSeatTypeId
+  )
 
   // Check if cart has cars with a different date than the selected date
   const getExistingCartDate = (): string | null => {
@@ -395,8 +396,6 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
                         field={field}
                         schedules={schedules}
                         rocketRezSeatTypeId={rocketRezSeatTypeId}
-                        packageRateIds={packageRateIds}
-                        isMulticar={isMulticar}
                       />
                     )
                   }}
