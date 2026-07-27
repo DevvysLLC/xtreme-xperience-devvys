@@ -53,6 +53,10 @@ export const isRateInEventSchedules = (
     for (const schedule of dayGroup.schedules ?? []) {
       for (const seatType of schedule.seatTypes ?? []) {
         if (!seatType) continue
+        // Only count if the seatType has actual capacity allocated (capacity > 0).
+        // A capacity=0 entry means the car was never offered at this event — just a template.
+        const capacity = seatType.capacity ?? 0
+        if (capacity === 0) continue
         const hasRate = (seatType.rates ?? []).some((rate) => rate.id === rateId)
         if (hasRate) return true
       }

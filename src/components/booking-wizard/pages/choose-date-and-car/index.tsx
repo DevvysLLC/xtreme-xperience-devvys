@@ -148,21 +148,19 @@ export const DateAndCarPage = () => {
 
   const title = pageMetadata?.title ?? t('title')
   const selectedEventId = state.selectedEvent?.model?.rocketRezId ?? null
-  // Date tabs should show the lowest available price across ALL supercar groups (all tabs),
-  // not just the active tab. This matches the live site — e.g., if you're on Multi-Car Packages
-  // and all packages are sold out, the date tab still shows prices from Supercar Drives.
+  // Date tab prices use the first supercar group (Supercar Drives, index 0) — the primary cars.
+  // Using all groups would let ride-along prices ($79) appear instead of car prices ($439+).
+  // This also means tab-switching doesn't affect the date tab price, matching the live site.
   const resolvedRateIds = useMemo(() => {
-    const allGroups = state.configData?.supercars ?? []
-    const mappedRateIds = allGroups.flatMap(
-      (group) =>
-        group.supercars?.map((supercar) =>
-          getSeatTypeIdWithOverride({
-            defaultSeatTypeId: supercar.rocketRezSeatTypeId,
-            overrides: supercar.rocketRezSeatTypeIdOverrides,
-            selectedEventId
-          })
-        ) ?? []
-    )
+    const primaryGroup = state.configData?.supercars?.[0] ?? null
+    const mappedRateIds =
+      primaryGroup?.supercars?.map((supercar) =>
+        getSeatTypeIdWithOverride({
+          defaultSeatTypeId: supercar.rocketRezSeatTypeId,
+          overrides: supercar.rocketRezSeatTypeIdOverrides,
+          selectedEventId
+        })
+      ) ?? []
 
     return Array.from(
       new Set(
