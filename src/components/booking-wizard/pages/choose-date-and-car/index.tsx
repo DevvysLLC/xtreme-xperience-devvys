@@ -170,6 +170,11 @@ export const DateAndCarPage = () => {
     )
   }, [activeGroup?.supercars, selectedEventId])
 
+  const isMulticarGroup = useMemo(
+    () => activeGroup?.supercars?.some((supercar) => supercar.isMulticar) ?? false,
+    [activeGroup]
+  )
+
   const handleBack = useCallback(() => {
     requestBackNavigation({ fromPath: pathname })
   }, [pathname, requestBackNavigation])
@@ -255,6 +260,7 @@ export const DateAndCarPage = () => {
                       schedules={day.schedules}
                       rateIds={resolvedRateIds}
                       isActive={state.selectedDayDate === day.date}
+                      isMulticar={isMulticarGroup}
                       onClick={() => {
                         handleDateSelect(day.date)
                       }}

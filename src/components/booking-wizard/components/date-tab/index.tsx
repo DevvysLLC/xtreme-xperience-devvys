@@ -21,6 +21,7 @@ type Props = {
   isActive: boolean
   badgeLabel?: string
   onClick?: (date: string) => void
+  isMulticar?: boolean
 }
 
 export const DayTab: React.FC<Props> = ({
@@ -29,7 +30,8 @@ export const DayTab: React.FC<Props> = ({
   rateIds,
   isActive,
   badgeLabel,
-  onClick
+  onClick,
+  isMulticar
 }) => {
   const t = useTranslations('booking_wizard.pages.date_and_car.date_tab')
   const date = parseLocalDate(day.date)
@@ -37,8 +39,8 @@ export const DayTab: React.FC<Props> = ({
   const dayNumber = format(date, 'd')
   const { lowestAvailablePriceFromRates } = useBookingSupercarSchedule()
   const lowestPrice = useMemo(() => {
-    return lowestAvailablePriceFromRates(schedules, rateIds ?? [])
-  }, [schedules, rateIds, lowestAvailablePriceFromRates])
+    return lowestAvailablePriceFromRates(schedules, rateIds ?? [], isMulticar)
+  }, [schedules, rateIds, lowestAvailablePriceFromRates, isMulticar])
 
   return (
     <button
