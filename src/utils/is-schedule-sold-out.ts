@@ -75,10 +75,15 @@ export const isScheduleSoldOut = (
             }
           }
 
-          // Must have seat availability > 0 (only for physical seat types where capacity > 0)
+          // Must have seat availability > 0
           const seatTypeCapacity = seatType.capacity ?? 0
           const seatTypeAvailable = seatType.available ?? 0
+          // Skip sold-out physical seatTypes (capacity defined but no availability)
           if (seatTypeCapacity > 0 && seatTypeAvailable <= 0) {
+            continue
+          }
+          // Skip unallocated virtual seatTypes (capacity=0 AND available=0 means this slot wasn't set up for this package)
+          if (seatTypeCapacity === 0 && seatTypeAvailable === 0) {
             continue
           }
 

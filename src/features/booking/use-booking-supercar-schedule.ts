@@ -351,17 +351,16 @@ export const useBookingSupercarSchedule = () => {
           }
 
           if (isMulticar) {
-            const requiredRateIds = getRequiredRateIdsForSupercar(schedule, rateId, true)
-            if (isScheduleSoldOut(schedule, requiredRateIds)) {
-              return null
-            }
+            // For multicar packages, we still use the trigger rate only for card-level price display.
+            // This matches the live site behavior where price is shown if the trigger seatType is available,
+            // even if not all component cars are available simultaneously on this slot.
           }
 
           const matchedSeatType = (schedule.seatTypes ?? []).find((seatType) => {
             if (!seatType) return false
-            const capacity = seatType.capacity ?? 0
             const available = seatType.available ?? 0
-            const isAvailable = capacity > 0 ? available > 0 : true
+            // Require positive availability (capacity=0 with available=0 means unallocated virtual slot)
+            const isAvailable = available > 0
             return (
               isAvailable &&
               (seatType.rates ?? []).some((rate) => rate.id === rateId)
