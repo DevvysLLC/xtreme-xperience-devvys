@@ -1,6 +1,6 @@
 import type { BookingSupercarFragment } from '../core/dato/fragments/booking-config.typegen'
 import { RocketRezScheduleStatus } from '../io/schemas'
-import type { RocketRezEventScheduleItem } from '../io/types'
+import type { RocketRezEventScheduleDate, RocketRezEventScheduleItem } from '../io/types'
 import { getRateTypePrice } from './get-rate-type-price'
 import { isScheduleSoldOut } from './is-schedule-sold-out'
 
@@ -37,39 +37,75 @@ const getLowestSchedulePriceForRateId = (
 }
 
 /**
- * Filters out supercars that have 0 availability for the specified event schedules,
- * ensuring event-specific fleet filtering so unavailable cars are hidden when available options exist.
+ * Checks whether a rate ID appears anywhere in the event schedules,
+ * regardless of availability. Used to determine if a car is actually
+ * assigned to this event in RocketRez.
+ *
+ * @param allEventSchedules - All day-level schedule groups for the entire event
+ * @param rateId - The rate ID to look for
+ * @returns true if the rate appears in any seatType across all days and time slots
+ */
+export const isRateInEventSchedules = (
+  allEventSchedules: RocketRezEventScheduleDate[],
+  rateId: number
+): boolean => {
+  for (const dayGroup of allEventSchedules) {
+    for (const schedule of dayGroup.schedules ?? []) {
+      for (const seatType of schedule.seatTypes ?? []) {
+        if (!seatType) continue
+        const hasRate = (seatType.rates ?? []).some((rate) => rate.id === rateId)
+        if (hasRate) return true
+      }
+    }
+  }
+  return false
+}
+
+/**
+ * Filters out supercars that are not assigned to the given event at all.
+ * A car is considered "not in event" if its rate ID never appears in any
+ * seatType across any time slot across any day of the event.
+ * Sold-out cars (rate exists but no availability) are kept — they appear
+ * at the bottom via sortSupercarsByAvailability.
+ *
+ * @param supercars - Full list of supercars from global DatoCMS config
+ * @param allEventSchedules - All day-level schedule groups for the entire event
+ * @param getSeatTypeId - Resolves the effective rate ID for a supercar (with overrides)
  */
 export const filterSupercarsByAvailability = (
   supercars: BookingSupercarFragment[],
-  schedules: RocketRezEventScheduleItem[],
+  allEventSchedules: RocketRezEventScheduleDate[],
   getSeatTypeId: (supercar: BookingSupercarFragment) => number = (supercar) =>
     Number(supercar.rocketRezSeatTypeId)
 ): BookingSupercarFragment[] => {
-  if (!schedules || schedules.length === 0) {
+  // If no event schedule data yet, show all cars (loading state)
+  if (!allEventSchedules || allEventSchedules.length === 0) {
     return supercars
   }
 
-  const availableSupercars = supercars.filter(
-    (supercar) => !isScheduleSoldOut(schedules, getSeatTypeId(supercar))
-  )
-
-  return availableSupercars.length > 0 ? availableSupercars : supercars
+  return supercars.filter((supercar) => {
+    const rateId = getSeatTypeId(supercar)
+    return isRateInEventSchedules(allEventSchedules, rateId)
+  })
 }
 
 /**
  * Sorts supercars so that available ones appear first and sold-out ones appear last.
  * Maintains the original order within each group (available vs sold-out).
+ *
+ * @param supercars - List of supercars (already filtered to those in this event)
+ * @param selectedDaySchedules - Time-slot schedules for the currently selected day
+ * @param getSeatTypeId - Resolves the effective rate ID for a supercar (with overrides)
  */
 export const sortSupercarsByAvailability = (
   supercars: BookingSupercarFragment[],
-  schedules: RocketRezEventScheduleItem[],
+  selectedDaySchedules: RocketRezEventScheduleItem[],
   getSeatTypeId: (supercar: BookingSupercarFragment) => number = (supercar) =>
     Number(supercar.rocketRezSeatTypeId)
 ): BookingSupercarFragment[] => {
   return [...supercars].sort((a, b) => {
-    const aSoldOut = isScheduleSoldOut(schedules, getSeatTypeId(a))
-    const bSoldOut = isScheduleSoldOut(schedules, getSeatTypeId(b))
+    const aSoldOut = isScheduleSoldOut(selectedDaySchedules, getSeatTypeId(a))
+    const bSoldOut = isScheduleSoldOut(selectedDaySchedules, getSeatTypeId(b))
 
     if (aSoldOut === bSoldOut) {
       return 0

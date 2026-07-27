@@ -35,7 +35,13 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
   const activeGroup = supercarGroups[activeTabIndex]
   const selectedEventId = state.selectedEvent?.model?.rocketRezId ?? null
 
-  // Get schedules for the selected day to check sold-out status
+  // All days' schedule groups for the event — used to check if a car is in this event at all
+  const allEventSchedules = useMemo(
+    () => state.eventData?.schedules ?? [],
+    [state.eventData?.schedules]
+  )
+
+  // Get schedules for the selected day to check sold-out status (for sorting)
   const selectedDaySchedules =
     state.eventData?.schedules?.find(
       (schedule) => schedule.date === state.selectedDayDate
@@ -44,34 +50,34 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
     () => selectedDaySchedules?.schedules ?? [],
     [selectedDaySchedules?.schedules]
   )
-  // Filter & sort supercars: filter 0-availability cars for event, available first, sold out last
+
+  // Filter & sort supercars:
+  // 1. Filter out cars not assigned to this event (rate never appears in any RocketRez schedule)
+  // 2. Available cars first, sold-out cars at the bottom
   const sortedSupercars = useMemo(() => {
     if (!activeGroup?.supercars) {
       return []
     }
 
+    const getSeatTypeId = (supercar: BookingSupercarGroupFragment['supercars'][number]) =>
+      getSeatTypeIdWithOverride({
+        defaultSeatTypeId: supercar.rocketRezSeatTypeId,
+        overrides: supercar.rocketRezSeatTypeIdOverrides,
+        selectedEventId
+      })
+
     const filtered = filterSupercarsByAvailability(
       activeGroup.supercars,
-      schedules,
-      (supercar) =>
-        getSeatTypeIdWithOverride({
-          defaultSeatTypeId: supercar.rocketRezSeatTypeId,
-          overrides: supercar.rocketRezSeatTypeIdOverrides,
-          selectedEventId
-        })
+      allEventSchedules,
+      getSeatTypeId
     )
 
     return sortSupercarsByAvailability(
       filtered,
       schedules,
-      (supercar) =>
-        getSeatTypeIdWithOverride({
-          defaultSeatTypeId: supercar.rocketRezSeatTypeId,
-          overrides: supercar.rocketRezSeatTypeIdOverrides,
-          selectedEventId
-        })
+      getSeatTypeId
     )
-  }, [activeGroup?.supercars, schedules, selectedEventId])
+  }, [activeGroup?.supercars, allEventSchedules, schedules, selectedEventId])
 
   useEffect(() => {
     if (
