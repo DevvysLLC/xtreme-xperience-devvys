@@ -127,6 +127,13 @@ const getEventTrackDistance = (
 
 const sortEventsByDate = (events: EventDataFragment[]) => {
   return events.sort((a, b) => {
+    const aPassed = isEventPassed(a.model?.startDate, a.model?.endDate)
+    const bPassed = isEventPassed(b.model?.startDate, b.model?.endDate)
+
+    if (aPassed !== bPassed) {
+      return aPassed ? 1 : -1
+    }
+
     const startDateA = a.model?.startDate
     const startDateB = b.model?.startDate
     if (!startDateA) {
@@ -148,9 +155,16 @@ const sortEventsByDistance = (
 ) => {
   const formattedEvents = events.map((event) => ({
     ...event,
-    distance: getEventTrackDistance(event, tracksDistanceMap)
+    distance: getEventTrackDistance(event, tracksDistanceMap),
+    isPassed: isEventPassed(event.model?.startDate, event.model?.endDate)
   }))
-  return formattedEvents.sort((a, b) => a.distance - b.distance)
+
+  return formattedEvents.sort((a, b) => {
+    if (a.isPassed !== b.isPassed) {
+      return a.isPassed ? 1 : -1
+    }
+    return a.distance - b.distance
+  })
 }
 
 const sortEvents = (

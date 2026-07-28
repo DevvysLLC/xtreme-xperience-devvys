@@ -6,7 +6,7 @@ import { useEffect, useMemo } from 'react'
 import type { BookingSupercarGroupFragment } from '../../../../core/dato/fragments/booking-config.typegen'
 import { getSeatTypeIdWithOverride } from '../../../../utils/get-seat-type-id-with-override'
 import {
-  filterSupercarsByAvailability,
+  filterSupercarsByEventAssignment,
   sortSupercarsByAvailability
 } from '../../../../utils/sort-supercars-by-availability'
 import { CoreIcon } from '../../../core-icon'
@@ -44,15 +44,20 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
     () => selectedDaySchedules?.schedules ?? [],
     [selectedDaySchedules?.schedules]
   )
-  // Filter & sort supercars: filter 0-availability cars for event, available first, sold out last
+  // Gather all schedules for all days of the event to check if a car is assigned to the event
+  const allEventSchedules = useMemo(
+    () => state.eventData?.schedules?.flatMap((day) => day.schedules ?? []) ?? [],
+    [state.eventData?.schedules]
+  )
+  // Filter & sort supercars: filter out unassigned cars, and sort sold-out ones to the bottom
   const sortedSupercars = useMemo(() => {
     if (!activeGroup?.supercars) {
       return []
     }
 
-    const filtered = filterSupercarsByAvailability(
+    const filtered = filterSupercarsByEventAssignment(
       activeGroup.supercars,
-      schedules,
+      allEventSchedules,
       (supercar) =>
         getSeatTypeIdWithOverride({
           defaultSeatTypeId: supercar.rocketRezSeatTypeId,
@@ -71,7 +76,7 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
           selectedEventId
         })
     )
-  }, [activeGroup?.supercars, schedules, selectedEventId])
+  }, [activeGroup?.supercars, schedules, allEventSchedules, selectedEventId])
 
   useEffect(() => {
     if (

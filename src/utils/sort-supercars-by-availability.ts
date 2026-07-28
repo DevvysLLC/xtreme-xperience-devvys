@@ -1,6 +1,7 @@
 import type { BookingSupercarFragment } from '../core/dato/fragments/booking-config.typegen'
 import { RocketRezScheduleStatus } from '../io/schemas'
 import type { RocketRezEventScheduleItem } from '../io/types'
+import { getRequiredRateIdsForSupercar } from '../features/booking/use-booking-supercar-schedule'
 import { getRateTypePrice } from './get-rate-type-price'
 import { isScheduleSoldOut } from './is-schedule-sold-out'
 
@@ -37,6 +38,68 @@ const getLowestSchedulePriceForRateId = (
 }
 
 /**
+ * Checks if a supercar or package is assigned to the event (i.e. is present in at least one schedule of the event).
+ */
+export const isSupercarAssignedToEvent = (
+  allEventSchedules: RocketRezEventScheduleItem[],
+  rateId: number,
+  isMulticar: boolean
+): boolean => {
+  if (!allEventSchedules || allEventSchedules.length === 0) {
+    return false
+  }
+
+  const firstScheduleWithRate = allEventSchedules.find((schedule) =>
+    (schedule.seatTypes ?? []).some((seatType) =>
+      (seatType?.rates ?? []).some((rate) => rate.id === rateId)
+    )
+  )
+
+  if (!firstScheduleWithRate) {
+    return false
+  }
+
+  if (!isMulticar) {
+    return true
+  }
+
+  const requiredRateIds = getRequiredRateIdsForSupercar(
+    firstScheduleWithRate,
+    rateId,
+    true
+  )
+
+  return requiredRateIds.every((reqRateId) =>
+    allEventSchedules.some((schedule) =>
+      (schedule.seatTypes ?? []).some((seatType) =>
+        (seatType?.rates ?? []).some((rate) => rate.id === reqRateId)
+      )
+    )
+  )
+}
+
+/**
+ * Filters supercars/packages to only include those built/assigned to the event.
+ */
+export const filterSupercarsByEventAssignment = (
+  supercars: BookingSupercarFragment[],
+  allEventSchedules: RocketRezEventScheduleItem[],
+  getSeatTypeId: (supercar: BookingSupercarFragment) => number
+): BookingSupercarFragment[] => {
+  if (!allEventSchedules || allEventSchedules.length === 0) {
+    return supercars
+  }
+
+  return supercars.filter((supercar) =>
+    isSupercarAssignedToEvent(
+      allEventSchedules,
+      getSeatTypeId(supercar),
+      supercar.isMulticar
+    )
+  )
+}
+
+/**
  * Filters out supercars that have 0 availability for the specified event schedules,
  * ensuring event-specific fleet filtering so unavailable cars are hidden when available options exist.
  */
@@ -67,9 +130,28 @@ export const sortSupercarsByAvailability = (
   getSeatTypeId: (supercar: BookingSupercarFragment) => number = (supercar) =>
     Number(supercar.rocketRezSeatTypeId)
 ): BookingSupercarFragment[] => {
+  const getRateIdsToCheck = (supercar: BookingSupercarFragment) => {
+    const rateId = getSeatTypeId(supercar)
+    if (!supercar.isMulticar || schedules.length === 0) {
+      return rateId
+    }
+    const firstAvailableSchedule = schedules.find(
+      (schedule) =>
+        schedule.scheduleStatus === RocketRezScheduleStatus.AVAILABLE
+    )
+    if (!firstAvailableSchedule) {
+      return rateId
+    }
+    return getRequiredRateIdsForSupercar(
+      firstAvailableSchedule,
+      rateId,
+      true
+    )
+  }
+
   return [...supercars].sort((a, b) => {
-    const aSoldOut = isScheduleSoldOut(schedules, getSeatTypeId(a))
-    const bSoldOut = isScheduleSoldOut(schedules, getSeatTypeId(b))
+    const aSoldOut = isScheduleSoldOut(schedules, getRateIdsToCheck(a))
+    const bSoldOut = isScheduleSoldOut(schedules, getRateIdsToCheck(b))
 
     if (aSoldOut === bSoldOut) {
       return 0
@@ -90,10 +172,30 @@ export const sortSupercarsByAvailabilityAndPrice = (
   getSeatTypeId: (supercar: BookingSupercarFragment) => number = (supercar) =>
     Number(supercar.rocketRezSeatTypeId)
 ): BookingSupercarFragment[] => {
+  const getRateIdsToCheck = (supercar: BookingSupercarFragment) => {
+    const rateId = getSeatTypeId(supercar)
+    if (!supercar.isMulticar || schedules.length === 0) {
+      return rateId
+    }
+    const firstAvailableSchedule = schedules.find(
+      (schedule) =>
+        schedule.scheduleStatus === RocketRezScheduleStatus.AVAILABLE
+    )
+    if (!firstAvailableSchedule) {
+      return rateId
+    }
+    return getRequiredRateIdsForSupercar(
+      firstAvailableSchedule,
+      rateId,
+      true
+    )
+  }
+
   return [...supercars]
     .map((supercar, index) => {
       const seatTypeId = getSeatTypeId(supercar)
-      const soldOut = isScheduleSoldOut(schedules, seatTypeId)
+      const rateIdsToCheck = getRateIdsToCheck(supercar)
+      const soldOut = isScheduleSoldOut(schedules, rateIdsToCheck)
       const lowestSchedulePrice = getLowestSchedulePriceForRateId(
         schedules,
         seatTypeId
