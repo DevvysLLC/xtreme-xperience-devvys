@@ -160,6 +160,48 @@ export class OrderService {
 
     logger.info({ orderId, uid: newOrder.uid }, 'order-service.createOrder.new')
 
+    // Trigger Zapier Webhook in background for gift cards
+    const webhookUrl = process.env.ZAPIER_GIFT_CARD_WEBHOOK_URL
+    const giftCardMetas = metadata?.filter((item) => item?.type === 'gift_card') ?? []
+    if (webhookUrl && giftCardMetas.length > 0) {
+      const phone = primaryContact?.phone ?? null
+      const firstName = primaryContact?.firstName ?? ''
+      const lastName = primaryContact?.lastName ?? ''
+      const customerName = `${firstName} ${lastName}`.trim()
+      const totalValue = order.total ?? 0
+
+      for (const giftMeta of giftCardMetas) {
+        const recipientEmail = giftMeta.recipientEmail ?? giftMeta.properties?.recipientEmail ?? null
+        const recipientName = giftMeta.recipientName ?? giftMeta.properties?.recipientName ?? null
+        const giftMessage = giftMeta.giftMessage ?? giftMeta.properties?.giftMessage ?? null
+
+        fetch(webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            orderId,
+            customerEmail: email,
+            customerPhone: phone,
+            customerName,
+            orderTotal: totalValue,
+            recipientEmail,
+            recipientName,
+            giftMessage
+          })
+        })
+          .then((res) => {
+            if (!res.ok) {
+              logger.error({ status: res.status, orderId }, 'Zapier webhook returned non-OK status')
+            } else {
+              logger.info({ orderId }, 'Successfully sent order webhook to Zapier')
+            }
+          })
+          .catch((err) => {
+            logger.error({ err, orderId }, 'Error sending order webhook to Zapier')
+          })
+      }
+    }
+
     return this.toOrderResponse(newOrder, locationFallback)
   }
 

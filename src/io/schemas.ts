@@ -1207,7 +1207,8 @@ export const CartLineItemMetadataPropertiesSchema = z
     laps: z.number().nullable().optional(),
     lapsPerSession: z.number().nullable().optional(),
     recipientEmail: z.string().nullable().optional(),
-    recipientName: z.string().nullable().optional()
+    recipientName: z.string().nullable().optional(),
+    giftMessage: z.string().nullable().optional()
   })
   .passthrough()
 
@@ -1223,6 +1224,7 @@ export const CartLineItemMetadataSchema = z.object({
   multicarCount: z.number().nullable().optional(),
   recipientEmail: z.string().nullable().optional(),
   recipientName: z.string().nullable().optional(),
+  giftMessage: z.string().nullable().optional(),
   properties: CartLineItemMetadataPropertiesSchema.nullable().optional()
 })
 
