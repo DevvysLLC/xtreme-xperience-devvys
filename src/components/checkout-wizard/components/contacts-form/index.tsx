@@ -546,6 +546,31 @@ export const ContactsForm: FC<Props> = ({ form, isGiftCard = false }) => {
                 </div>
               )}
             </form.Field>
+
+            {/* Gift Message */}
+            <form.Field name="giftMessage">
+              {(field: ContactsFormField) => (
+                <div
+                  className={clsx(styles.form__field, styles['form__field--100%'])}
+                >
+                  <label htmlFor={field.name} className={styles.form__label}>
+                    {t('fields.recipient_gift_message')}
+                  </label>
+                  <textarea
+                    id={field.name}
+                    value={field.state.value || ''}
+                    onChange={(e) => {
+                      field.handleChange(e.target.value)
+                    }}
+                    onBlur={field.handleBlur}
+                    placeholder={t('fields.recipient_gift_message_placeholder')}
+                    className={clsx(styles.form__input)}
+                    rows={3}
+                    style={{ height: 'auto', paddingBlock: '8px' }}
+                  />
+                </div>
+              )}
+            </form.Field>
           </div>
         </fieldset>
       )}

@@ -61,7 +61,9 @@
       "recipient_email": "Recipient Email",
       "recipient_email_placeholder": "recipient@example.com",
       "recipient_email_error": "Please enter a valid email address",
-      "recipient_email_error_required": "Recipient email is required"
+      "recipient_email_error_required": "Recipient email is required",
+      "recipient_gift_message": "Gift Message (Optional)",
+      "recipient_gift_message_placeholder": "Enter a personal message for the recipient..."
     },
     "terms": {
       "title": "Terms and Conditions",

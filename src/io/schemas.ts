@@ -1324,7 +1324,8 @@ export const CheckoutDetailsFormInputSchema = z.object({
   postalCode: z.string(),
   country: z.string(),
   recipientEmail: z.string().optional().or(z.literal('')),
-  recipientName: z.string().optional()
+  recipientName: z.string().optional(),
+  giftMessage: z.string().optional().or(z.literal(''))
 })
 
 export const CheckoutWizardPageDetailsSchema = z.object({

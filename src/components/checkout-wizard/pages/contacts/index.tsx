@@ -118,6 +118,10 @@ export const ContactsPage: FC<Props> = () => {
       recipientName:
         giftCardMeta?.recipientName ??
         giftCardMeta?.properties?.recipientName ??
+        '',
+      giftMessage:
+        giftCardMeta?.giftMessage ??
+        giftCardMeta?.properties?.giftMessage ??
         ''
     }
 
@@ -259,10 +263,12 @@ export const ContactsPage: FC<Props> = () => {
                   type: 'gift_card' as const,
                   recipientEmail: contactValue.recipientEmail || null,
                   recipientName: contactValue.recipientName || null,
+                  giftMessage: contactValue.giftMessage || null,
                   properties: {
                     ...item.properties,
                     recipientEmail: contactValue.recipientEmail || null,
-                    recipientName: contactValue.recipientName || null
+                    recipientName: contactValue.recipientName || null,
+                    giftMessage: contactValue.giftMessage || null
                   }
                 }
               }
@@ -277,9 +283,11 @@ export const ContactsPage: FC<Props> = () => {
                 title: giftCardLineItem?.name ?? 'Gift Card',
                 recipientEmail: contactValue.recipientEmail || null,
                 recipientName: contactValue.recipientName || null,
+                giftMessage: contactValue.giftMessage || null,
                 properties: {
                   recipientEmail: contactValue.recipientEmail || null,
-                  recipientName: contactValue.recipientName || null
+                  recipientName: contactValue.recipientName || null,
+                  giftMessage: contactValue.giftMessage || null
                 }
               })
             }

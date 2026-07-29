@@ -13,5 +13,6 @@ export const DEFAULT_FORM_VALUES = {
   postalCode: '',
   country: '',
   recipientEmail: '',
-  recipientName: ''
+  recipientName: '',
+  giftMessage: ''
 } as const
