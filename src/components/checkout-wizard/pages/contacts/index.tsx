@@ -235,23 +235,58 @@ export const ContactsPage: FC<Props> = () => {
         if (isGiftCard) {
           const currentCart = qc.getQueryData<CartState>(CART_QUERY_KEY)
           if (currentCart) {
-            const nextCart = {
-              ...currentCart,
-              metadata: currentCart.metadata.map((item) => {
-                if (item.type === 'gift_card') {
-                  return {
-                    ...item,
+            const giftCardLineItem = currentCart.cartData?.lineItems?.find((item) => {
+              const typeStr = String(item.productType ?? item.type ?? '').toLowerCase()
+              return (
+                typeStr === 'giftcard' ||
+                typeStr === 'gift_card' ||
+                typeStr === 'gift card'
+              )
+            })
+
+            let found = false
+            const nextMetadata = currentCart.metadata.map((item) => {
+              const isGiftCardItem =
+                item.type === 'gift_card' ||
+                (item.type === 'addon' &&
+                  (item.title?.toLowerCase().includes('gift card') ||
+                    (giftCardLineItem && item.key === `addon-${giftCardLineItem.id}`)))
+
+              if (isGiftCardItem) {
+                found = true
+                return {
+                  ...item,
+                  type: 'gift_card' as const,
+                  recipientEmail: contactValue.recipientEmail || null,
+                  recipientName: contactValue.recipientName || null,
+                  properties: {
+                    ...item.properties,
                     recipientEmail: contactValue.recipientEmail || null,
-                    recipientName: contactValue.recipientName || null,
-                    properties: {
-                      ...item.properties,
-                      recipientEmail: contactValue.recipientEmail || null,
-                      recipientName: contactValue.recipientName || null
-                    }
+                    recipientName: contactValue.recipientName || null
                   }
                 }
-                return item
+              }
+              return item
+            })
+
+            if (!found) {
+              const key = giftCardLineItem ? `addon-${giftCardLineItem.id}` : 'gift-card-meta'
+              nextMetadata.push({
+                key,
+                type: 'gift_card' as const,
+                title: giftCardLineItem?.name ?? 'Gift Card',
+                recipientEmail: contactValue.recipientEmail || null,
+                recipientName: contactValue.recipientName || null,
+                properties: {
+                  recipientEmail: contactValue.recipientEmail || null,
+                  recipientName: contactValue.recipientName || null
+                }
               })
+            }
+
+            const nextCart = {
+              ...currentCart,
+              metadata: nextMetadata
             }
             qc.setQueryData<CartState>(CART_QUERY_KEY, nextCart)
             cartRepository.write(nextCart)
