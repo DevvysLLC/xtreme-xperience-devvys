@@ -56,12 +56,15 @@ export const BookingEventCard: FC<BookingEventCardProps> = ({
 
   const handleNotifyMe = useCallback(() => {
     const trackName = nickname ?? title ?? 'this track'
+    const klaviyoFormId = process.env.NEXT_PUBLIC_KLAVIYO_NOTIFY_FORM_ID
+
     showDialog({
       translations: {
         title: `Notify Me - ${trackName}`,
         description: `This event has passed. Sign up to get notified via email as soon as new driving dates are scheduled for ${trackName}!`,
         confirmButton: 'Got It',
-        cancelButton: 'Close'
+        cancelButton: 'Close',
+        ...(klaviyoFormId && { klaviyoFormId })
       },
       onConfirm: () => {}
     })

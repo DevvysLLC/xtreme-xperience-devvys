@@ -11,14 +11,15 @@ import {
 
 export type DialogTranslations = {
   title: string
-  description: string
-  confirmButton: string
-  cancelButton: string
+  description?: string
+  confirmButton?: string
+  cancelButton?: string
+  klaviyoFormId?: string
 }
 
 export type ShowDialogOptions = {
   translations: DialogTranslations
-  onConfirm: () => Promise<void> | void
+  onConfirm?: () => Promise<void> | void
   onCancel?: () => void
 }
 
@@ -70,7 +71,9 @@ export const DialogProvider: FC<Props> = ({ children }) => {
     setPendingAction(null)
 
     // Call the confirm callback
-    await onConfirm()
+    if (onConfirm) {
+      await onConfirm()
+    }
   }, [pendingAction])
 
   const handleCancel = useCallback(() => {

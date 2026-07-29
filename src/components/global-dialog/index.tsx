@@ -60,6 +60,22 @@ export const GlobalDialog: FC = () => {
     }
   }, [isOpen, bus])
 
+  useEffect(() => {
+    if (isOpen && translations?.klaviyoFormId) {
+      const timer = setTimeout(() => {
+        try {
+          const w = window as any
+          if (w.Klaviyo && typeof w.Klaviyo.push === 'function') {
+            w.Klaviyo.push(['refresh'])
+          }
+        } catch (err) {
+          console.error('Error refreshing Klaviyo form:', err)
+        }
+      }, 100)
+      return () => clearTimeout(timer)
+    }
+  }, [isOpen, translations?.klaviyoFormId])
+
   const onConfirm = useCallback(() => {
     handleConfirm().catch((error) => {
       console.error('Error in dialog confirm handler:', error)
@@ -72,32 +88,41 @@ export const GlobalDialog: FC = () => {
       <h2 id={titleId} className={styles.dialog__title}>
         {translations?.title ?? defaultTranslations.title}
       </h2>
-      <div id={descriptionId} className={styles.dialog__description}>
-        <CoreTextMarkdown type="rte">
-          {translations?.description ?? defaultTranslations.description}
-        </CoreTextMarkdown>
-      </div>
-      <div className={styles.dialog__actions}>
-        <CoreCta
-          className={styles.dialog__submit}
-          href={null}
-          onClick={onConfirm}
-          text={
-            translations?.confirmButton ?? defaultTranslations.confirmButton
-          }
-          layoutType="button"
-          styleType="black"
-          sizeType="medium"
+      {translations?.klaviyoFormId ? (
+        <div
+          className={`klaviyo-form-${translations.klaviyoFormId}`}
+          style={{ marginTop: '16px', minHeight: '300px' }}
         />
-        <CoreCta
-          href={null}
-          onClick={handleCancel}
-          text={translations?.cancelButton ?? defaultTranslations.cancelButton}
-          layoutType="underline"
-          styleType="black"
-          sizeType="medium"
-        />
-      </div>
+      ) : (
+        <>
+          <div id={descriptionId} className={styles.dialog__description}>
+            <CoreTextMarkdown type="rte">
+              {translations?.description ?? defaultTranslations.description}
+            </CoreTextMarkdown>
+          </div>
+          <div className={styles.dialog__actions}>
+            <CoreCta
+              className={styles.dialog__submit}
+              href={null}
+              onClick={onConfirm}
+              text={
+                translations?.confirmButton ?? defaultTranslations.confirmButton
+              }
+              layoutType="button"
+              styleType="black"
+              sizeType="medium"
+            />
+            <CoreCta
+              href={null}
+              onClick={handleCancel}
+              text={translations?.cancelButton ?? defaultTranslations.cancelButton}
+              layoutType="underline"
+              styleType="black"
+              sizeType="medium"
+            />
+          </div>
+        </>
+      )}
     </Drawer>
   )
 }

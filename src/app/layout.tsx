@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Script from 'next/script'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
 import { GlobalConfigProvider } from '../components/global-config/context'
@@ -82,6 +83,13 @@ export default async function RootLayout({
           <ScriptsGoogleAnalytics enabled={true} />
         )}
         <SendlaneBeacon eventId="n3aU5n3fkeNcY" />
+        {process.env.NEXT_PUBLIC_KLAVIYO_COMPANY_ID && (
+          <Script
+            id="klaviyo-onsite"
+            strategy="afterInteractive"
+            src={`https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=${process.env.NEXT_PUBLIC_KLAVIYO_COMPANY_ID}`}
+          />
+        )}
       </body>
     </html>
   )
