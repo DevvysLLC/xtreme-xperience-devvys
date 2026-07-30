@@ -3,6 +3,7 @@ fragment PageSections on PageContentRecord {
     ...SectionAccordion
     ...SectionAddonsGrid
     ...SectionContact
+    ...SectionCustomHtml
     ...SectionEventsFeature
     ...SectionFaq
     ...SectionHeadline

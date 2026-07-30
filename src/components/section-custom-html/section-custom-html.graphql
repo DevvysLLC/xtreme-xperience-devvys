@@ -1,0 +1,11 @@
+fragment SectionCustomHtml on SectionCustomHtmlRecord {
+  id
+  title
+  subtitle
+  html
+  css
+  js
+  config {
+    ...SectionConfig
+  }
+}

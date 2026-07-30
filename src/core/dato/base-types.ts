@@ -452,6 +452,7 @@ export type BookingSupercarRecord = RecordInterface & {
   isRideAlong: Scalars['BooleanType']['output'];
   multicarCount: Maybe<Scalars['IntType']['output']>;
   priceOverride: Maybe<CorePriceRecord>;
+  restrictToEvents: Array<EventRecord>;
   rocketRezSeatTypeId: Scalars['String']['output'];
   rocketRezSeatTypeIdOverrides: Array<BookingSeatTypeIdOverrideRecord>;
   supercar: SupercarRecord;
@@ -2562,6 +2563,15 @@ export type LinksFilter = {
   notIn?: InputMaybe<Array<InputMaybe<Scalars['ItemId']['input']>>>;
 };
 
+export const MuxThumbnailFitMode = {
+  crop: 'crop',
+  pad: 'pad',
+  preserve: 'preserve',
+  smartcrop: 'smartcrop',
+  stretch: 'stretch'
+} as const;
+
+export type MuxThumbnailFitMode = typeof MuxThumbnailFitMode[keyof typeof MuxThumbnailFitMode];
 export const MuxThumbnailFormatType = {
   gif: 'gif',
   jpg: 'jpg',
@@ -2569,6 +2579,13 @@ export const MuxThumbnailFormatType = {
 } as const;
 
 export type MuxThumbnailFormatType = typeof MuxThumbnailFormatType[keyof typeof MuxThumbnailFormatType];
+export const MuxThumbnailRotation = {
+  ROTATE_90: 'ROTATE_90',
+  ROTATE_180: 'ROTATE_180',
+  ROTATE_270: 'ROTATE_270'
+} as const;
+
+export type MuxThumbnailRotation = typeof MuxThumbnailRotation[keyof typeof MuxThumbnailRotation];
 export type NavigationItemModelFilter = {
   AND?: InputMaybe<Array<InputMaybe<NavigationItemModelFilter>>>;
   OR?: InputMaybe<Array<InputMaybe<NavigationItemModelFilter>>>;
@@ -2690,7 +2707,7 @@ export type PageConfigRecordSeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
-export type PageContentModelSectionsField = SectionAccordionRecord | SectionAddonsGridRecord | SectionContactRecord | SectionEventFinderRecord | SectionEventsFeatureRecord | SectionFaqRecord | SectionHeadlineRecord | SectionHeroRecord | SectionHighlightRecord | SectionIframeRecord | SectionMediaCardGridRecord | SectionMediaGalleryRecord | SectionMediaHeroRecord | SectionPolicyRecord | SectionPressBrandGridRecord | SectionReviewRecord | SectionSocialGridRecord | SectionSplitCalloutCollageRecord | SectionSplitCalloutRecord | SectionSupercarBrandGridRecord | SectionSupercarBrandHeroRecord | SectionSupercarFleetGridRecord | SectionSupercarHeroRecord | SectionSupercarShowcaseRecord | SectionSupercarSpecRecord | SectionTrackHeroRecord | SectionTrackMapCalloutRecord | SectionTrackSpecRecord | SectionUspRecord;
+export type PageContentModelSectionsField = SectionAccordionRecord | SectionAddonsGridRecord | SectionContactRecord | SectionCustomHtmlRecord | SectionEventFinderRecord | SectionEventsFeatureRecord | SectionFaqRecord | SectionHeadlineRecord | SectionHeroRecord | SectionHighlightRecord | SectionIframeRecord | SectionMediaCardGridRecord | SectionMediaGalleryRecord | SectionMediaHeroRecord | SectionPolicyRecord | SectionPressBrandGridRecord | SectionReviewRecord | SectionSocialGridRecord | SectionSplitCalloutCollageRecord | SectionSplitCalloutRecord | SectionSupercarBrandGridRecord | SectionSupercarBrandHeroRecord | SectionSupercarFleetGridRecord | SectionSupercarHeroRecord | SectionSupercarShowcaseRecord | SectionSupercarSpecRecord | SectionTrackHeroRecord | SectionTrackMapCalloutRecord | SectionTrackSpecRecord | SectionUspRecord;
 
 export type PageContentRecord = RecordInterface & {
   __typename: 'PageContentRecord';
@@ -3912,6 +3929,48 @@ export type SectionContactRecordSeoMetaTagsArgs = {
 
 
 export type SectionContactRecordDescriptionArgs = {
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type SectionCustomHtmlRecord = RecordInterface & {
+  __typename: 'SectionCustomHtmlRecord';
+  _createdAt: Scalars['DateTime']['output'];
+  _editingUrl: Maybe<Scalars['String']['output']>;
+  _firstPublishedAt: Scalars['DateTime']['output'];
+  _isValid: Scalars['BooleanType']['output'];
+  _modelApiKey: Scalars['String']['output'];
+  _publicationScheduledAt: Maybe<Scalars['DateTime']['output']>;
+  _publishedAt: Scalars['DateTime']['output'];
+  _seoMetaTags: Array<Tag>;
+  _status: ItemStatus;
+  _unpublishingScheduledAt: Maybe<Scalars['DateTime']['output']>;
+  _updatedAt: Scalars['DateTime']['output'];
+  config: Maybe<SectionConfigRecord>;
+  css: Maybe<Scalars['String']['output']>;
+  html: Maybe<Scalars['String']['output']>;
+  id: Scalars['ItemId']['output'];
+  js: Maybe<Scalars['String']['output']>;
+  subtitle: Maybe<Scalars['String']['output']>;
+  title: Maybe<Scalars['String']['output']>;
+};
+
+
+export type SectionCustomHtmlRecordSeoMetaTagsArgs = {
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+export type SectionCustomHtmlRecordCssArgs = {
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type SectionCustomHtmlRecordHtmlArgs = {
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type SectionCustomHtmlRecordJsArgs = {
   markdown?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
@@ -5477,6 +5536,7 @@ export type UploadVideoField = {
   mp4Url: Maybe<Scalars['String']['output']>;
   muxAssetId: Scalars['String']['output'];
   muxPlaybackId: Scalars['String']['output'];
+  posterTime: Maybe<Scalars['Float']['output']>;
   streamingUrl: Scalars['String']['output'];
   thumbhash: Maybe<Scalars['String']['output']>;
   thumbnailUrl: Scalars['String']['output'];
@@ -5506,7 +5566,14 @@ export type UploadVideoFieldMp4UrlArgs = {
 
 
 export type UploadVideoFieldThumbnailUrlArgs = {
+  fitMode?: InputMaybe<MuxThumbnailFitMode>;
+  flipH?: InputMaybe<Scalars['Boolean']['input']>;
+  flipV?: InputMaybe<Scalars['Boolean']['input']>;
   format?: InputMaybe<MuxThumbnailFormatType>;
+  height?: InputMaybe<Scalars['Int']['input']>;
+  rotate?: InputMaybe<MuxThumbnailRotation>;
+  time?: InputMaybe<Scalars['Float']['input']>;
+  width?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
