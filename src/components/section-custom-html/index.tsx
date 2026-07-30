@@ -69,6 +69,7 @@ export const SectionCustomHtml: FC<SectionCustomHtmlProps> = ({
       id={getSectionId(config?.customId, id)}
       className={clsx(
         styles.section,
+        'custom-html-section',
         ...getSectionConfigClasses(config, styles)
       )}
       style={getSectionConfigStyles(config)}
@@ -76,17 +77,17 @@ export const SectionCustomHtml: FC<SectionCustomHtmlProps> = ({
     >
       {css && <style>{css}</style>}
 
-      <div className={styles.container} ref={containerRef}>
+      <div className={clsx(styles.container, 'custom-html-container')} ref={containerRef}>
         {(title || subtitle) && (
-          <div className={styles.header}>
-            {title && <HeadingTag className={styles.title}>{title}</HeadingTag>}
-            {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
+          <div className={clsx(styles.header, 'custom-html-header')}>
+            {title && <HeadingTag className={clsx(styles.title, 'custom-html-title')}>{title}</HeadingTag>}
+            {subtitle && <p className={clsx(styles.subtitle, 'custom-html-subtitle')}>{subtitle}</p>}
           </div>
         )}
 
         {html && (
           <div
-            className={styles.content}
+            className={clsx(styles.content, 'custom-html-content')}
             dangerouslySetInnerHTML={{ __html: html }}
           />
         )}
