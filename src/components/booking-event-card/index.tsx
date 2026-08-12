@@ -61,18 +61,20 @@ export const BookingEventCard: FC<BookingEventCardProps> = ({
     showDialog({
       translations: {
         title: `Notify Me - ${trackName}`,
-        description: `This event has passed. Sign up to get notified via email as soon as new driving dates are scheduled for ${trackName}!`,
+        description: soldOut
+          ? `This event is sold out. Sign up to get notified via email if tickets become available or as soon as new driving dates are scheduled for ${trackName}!`
+          : `This event has passed. Sign up to get notified via email as soon as new driving dates are scheduled for ${trackName}!`,
         confirmButton: 'Got It',
         cancelButton: 'Close',
         ...(klaviyoFormId && { klaviyoFormId })
       },
       onConfirm: () => {}
     })
-  }, [nickname, title, showDialog])
+  }, [nickname, title, showDialog, soldOut])
 
   const actions = isSelectable ? (
     <>
-      {isPassed ? (
+      {isPassed || soldOut ? (
         <CoreCta
           onClick={handleNotifyMe}
           layoutType="button"
