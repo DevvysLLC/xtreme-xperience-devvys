@@ -69,7 +69,11 @@ const getEventsFromTracks = (
 
       // Use event.id as the unique key for deduplication
       // (same event may appear across multiple tracks)
-      const eventId = event.model.id
+      const eventId = event.model?.id
+
+      if (!eventId) {
+        continue
+      }
 
       // Skip if we've already seen this event (deduplication)
       if (eventsMap.has(eventId)) {

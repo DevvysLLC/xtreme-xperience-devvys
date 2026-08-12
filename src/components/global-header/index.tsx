@@ -57,6 +57,7 @@ export const GlobalHeader = async ({ isTransparent }: Props = {}) => {
     )
 
     const additionalChildren = additionalSupercars.map((sc) => ({
+      __typename: 'NavigationItemRecord' as const,
       id: sc.id,
       label: sc.model?.title ?? null,
       path: sc.config?.handle ? `/supercars/${sc.config.handle}` : null,

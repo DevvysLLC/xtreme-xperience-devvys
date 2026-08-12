@@ -224,7 +224,6 @@ type BookingConfigRecord implements RecordInterface {
     markdown: Boolean
   ): String
   decorators: [BookingDecoratorRecord!]!
-  eventOverrides: [BookingEventOverrideRecord!]!
   id: ItemId!
   insurance: [InsuranceRecord!]!
   legalNotice(
@@ -276,37 +275,6 @@ type BookingDecoratorRecord implements RecordInterface {
   id: ItemId!
   key: String!
   metadata: [BookingMetadRecord!]!
-}
-
-"""Block of type Booking - Event Override (booking_event_override)"""
-type BookingEventOverrideRecord implements RecordInterface {
-  _createdAt: DateTime!
-
-  """Editing URL"""
-  _editingUrl: String
-  _firstPublishedAt: DateTime!
-  _isValid: BooleanType!
-  _modelApiKey: String!
-  _publicationScheduledAt: DateTime
-  _publishedAt: DateTime!
-
-  """Generates SEO and Social card meta tags to be used in your frontend"""
-  _seoMetaTags(
-    """The locale to use to fetch the field's content"""
-    locale: SiteLocale
-  ): [Tag!]!
-  _status: ItemStatus!
-  _unpublishingScheduledAt: DateTime
-  _updatedAt: DateTime!
-  event: EventRecord
-  id: ItemId!
-  lapsPerSession: IntType
-  quantityLabelNineLaps: String
-  quantityLabelSixLaps: String
-  quantityLabelThreeLaps: String
-  quantityTitleNineLaps: String
-  quantityTitleSixLaps: String
-  quantityTitleThreeLaps: String
 }
 
 union BookingMetadModelMediaField = CoreImageRecord | CoreVideoRecord
@@ -397,8 +365,6 @@ type BookingSeatTypeIdOverrideRecord implements RecordInterface {
   _updatedAt: DateTime!
   event: EventRecord
   id: ItemId!
-  rocketRezPackageCoupon: String
-  rocketRezPackageSeatTypeIds: String
   rocketRezSeatTypeId: String
 }
 
@@ -454,8 +420,6 @@ type BookingSupercarRecord implements RecordInterface {
   isRideAlong: BooleanType!
   multicarCount: IntType
   priceOverride: CorePriceRecord
-  rocketRezPackageCoupon: String
-  rocketRezPackageSeatTypeIds: String
   rocketRezSeatTypeId: String!
   rocketRezSeatTypeIdOverrides: [BookingSeatTypeIdOverrideRecord!]!
   supercar: SupercarRecord!
@@ -1044,11 +1008,9 @@ type CoreVideoRecord implements RecordInterface {
   controls: BooleanType!
   customPosterImage: AltFileField
   desktopVideo: VideoFileField
-  desktopVideoRawMp4FileUrl: String
   id: ItemId!
   loop: BooleanType!
   video: VideoFileField
-  videoRawMp4FileUrl: String
 }
 
 """Specifies how to filter by creation datetime"""
@@ -1929,13 +1891,11 @@ type GlobalConfigRecord implements RecordInterface {
     """Process content as markdown"""
     markdown: Boolean
   ): String
-  enableBookingBar: BooleanType!
   enableFacebookPixel: BooleanType!
   googleEnableAnalytics: BooleanType!
   googleEnableEventTracking: BooleanType!
   googleEnableGtm: BooleanType!
   googleGtmId: String
-  hideBookingBarOnPaths: String
   id: ItemId!
   sendlaneNewsletterListId: String
   seoSiteDescription: String
@@ -6719,7 +6679,6 @@ type SectionSupercarGridConfigRecord implements RecordInterface {
   _status: ItemStatus!
   _unpublishingScheduledAt: DateTime
   _updatedAt: DateTime!
-  addCardLinks: BooleanType!
   cardBackgroundColor: String
   cardType: String
   headerBorder: BooleanType!

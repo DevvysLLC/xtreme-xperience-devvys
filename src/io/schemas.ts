@@ -638,7 +638,9 @@ export const RocketRezLineItemSchema = z.object({
     .nullable()
     .optional(),
   taxes: z.array(RocketRezTaxSchema).nullable().optional(),
-  discounts: z.array(z.unknown()).nullable().optional()
+  discounts: z.array(z.unknown()).nullable().optional(),
+  productType: z.string().optional(),
+  name: z.string().optional()
 })
 
 export const RocketRezCouponSchema = z.object({

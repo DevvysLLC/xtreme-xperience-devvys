@@ -157,7 +157,7 @@ export const useBookingSupercarSchedule = () => {
           )
 
           if (participantRateType) {
-            return participantRateType.compareAtPrice ?? null
+            return getRateTypePrice(participantRateType)?.compareAtPrice ?? null
           }
         }
         return null
@@ -182,7 +182,7 @@ export const useBookingSupercarSchedule = () => {
             rt.price != null)
       )
 
-      return participantRateType?.compareAtPrice ?? null
+      return getRateTypePrice(participantRateType)?.compareAtPrice ?? null
     },
     []
   )

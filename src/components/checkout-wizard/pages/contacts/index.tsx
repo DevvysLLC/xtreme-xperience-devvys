@@ -42,6 +42,9 @@ type Props = {
 type DetailsFormValues = ContactsFormValues & {
   isValid?: boolean
   isSubmitted?: boolean
+  recipientEmail?: string
+  recipientName?: string
+  giftMessage?: string
 }
 
 const ContactBillingAddressSchema = RocketRezBillingAddressSchema

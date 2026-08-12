@@ -126,6 +126,8 @@ export type LineItem = {
   houseServiceCharges?: HouseServiceCharge[] | null
   taxes?: Tax[] | null
   discounts?: unknown[] | null
+  productType?: string
+  name?: string
 }
 
 export type CartCoupon = {

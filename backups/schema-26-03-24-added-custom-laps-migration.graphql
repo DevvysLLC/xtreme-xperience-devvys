@@ -397,8 +397,6 @@ type BookingSeatTypeIdOverrideRecord implements RecordInterface {
   _updatedAt: DateTime!
   event: EventRecord
   id: ItemId!
-  rocketRezPackageCoupon: String
-  rocketRezPackageSeatTypeIds: String
   rocketRezSeatTypeId: String
 }
 
@@ -454,8 +452,6 @@ type BookingSupercarRecord implements RecordInterface {
   isRideAlong: BooleanType!
   multicarCount: IntType
   priceOverride: CorePriceRecord
-  rocketRezPackageCoupon: String
-  rocketRezPackageSeatTypeIds: String
   rocketRezSeatTypeId: String!
   rocketRezSeatTypeIdOverrides: [BookingSeatTypeIdOverrideRecord!]!
   supercar: SupercarRecord!
