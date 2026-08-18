@@ -108,8 +108,8 @@ export const GlobalDialog: FC = () => {
 
   const hasContent = Boolean(
     translations?.title ||
-    translations?.description ||
-    translations?.klaviyoFormId
+      translations?.description ||
+      translations?.klaviyoFormId
   )
 
   // Always render Drawer so it can properly send close messages
@@ -140,7 +140,8 @@ export const GlobalDialog: FC = () => {
                   href={null}
                   onClick={onConfirm}
                   text={
-                    translations?.confirmButton ?? defaultTranslations.confirmButton
+                    translations?.confirmButton ??
+                    defaultTranslations.confirmButton
                   }
                   layoutType="button"
                   styleType="black"
@@ -150,7 +151,8 @@ export const GlobalDialog: FC = () => {
                   href={null}
                   onClick={handleCancel}
                   text={
-                    translations?.cancelButton ?? defaultTranslations.cancelButton
+                    translations?.cancelButton ??
+                    defaultTranslations.cancelButton
                   }
                   layoutType="underline"
                   styleType="black"
