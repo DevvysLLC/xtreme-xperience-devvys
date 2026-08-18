@@ -513,6 +513,8 @@ export const LocationPickerCore = ({
               onSortChange={handleSortChange}
               label={t('sort.label')}
             />
+          </div>
+
           <div className={styles.locationCta}>
             <BookingLocationCta />
           </div>
