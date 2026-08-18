@@ -6,26 +6,11 @@ import { useEffect, useRef } from 'react'
 import { getSectionId } from '../../core/string/get-section-id'
 import { getSectionConfigClasses } from '../../utils/get-section-config-classes'
 import { getSectionConfigStyles } from '../../utils/get-section-config-styles'
+import type { SectionCustomHtmlFragment } from './section-custom-html.typegen'
 import styles from './style.module.scss'
 
-export type SectionCustomHtmlData = {
-  id?: string
-  title?: string | null
-  subtitle?: string | null
-  html?: string | null
-  css?: string | null
-  js?: string | null
+export type SectionCustomHtmlData = Partial<SectionCustomHtmlFragment> & {
   javascript?: string | null
-  config?: {
-    id?: string
-    customId?: string | null
-    enabled?: boolean
-    mode?: string | null
-    highlightColor?: string | null
-    contrastColor?: string | null
-    addBottomBorder?: boolean
-    addFlagPattern?: boolean
-  } | null
 }
 
 export type SectionCustomHtmlProps = {
@@ -77,11 +62,22 @@ export const SectionCustomHtml: FC<SectionCustomHtmlProps> = ({
     >
       {css && <style>{css}</style>}
 
-      <div className={clsx(styles.container, 'custom-html-container')} ref={containerRef}>
+      <div
+        className={clsx(styles.container, 'custom-html-container')}
+        ref={containerRef}
+      >
         {(title || subtitle) && (
           <div className={clsx(styles.header, 'custom-html-header')}>
-            {title && <HeadingTag className={clsx(styles.title, 'custom-html-title')}>{title}</HeadingTag>}
-            {subtitle && <p className={clsx(styles.subtitle, 'custom-html-subtitle')}>{subtitle}</p>}
+            {title && (
+              <HeadingTag className={clsx(styles.title, 'custom-html-title')}>
+                {title}
+              </HeadingTag>
+            )}
+            {subtitle && (
+              <p className={clsx(styles.subtitle, 'custom-html-subtitle')}>
+                {subtitle}
+              </p>
+            )}
           </div>
         )}
 

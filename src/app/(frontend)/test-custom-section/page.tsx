@@ -6,7 +6,8 @@ export default function TestCustomSectionPage() {
   const testData = {
     id: 'test-custom-section',
     title: 'Custom Code Section Test Page',
-    subtitle: 'This page verifies that Custom HTML, CSS, and JS execute successfully.',
+    subtitle:
+      'This page verifies that Custom HTML, CSS, and JS execute successfully.',
     html: `
       <div class="custom-card">
         <h3>Interactive Demo</h3>
@@ -64,7 +65,13 @@ export default function TestCustomSectionPage() {
   }
 
   return (
-    <main style={{ padding: '4rem 2rem', minHeight: '100vh', background: '#0b0b1a' }}>
+    <main
+      style={{
+        padding: '4rem 2rem',
+        minHeight: '100vh',
+        background: '#0b0b1a'
+      }}
+    >
       <SectionCustomHtml data={testData} />
     </main>
   )

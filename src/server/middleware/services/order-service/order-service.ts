@@ -162,7 +162,8 @@ export class OrderService {
 
     // Trigger Zapier Webhook in background for gift cards
     const webhookUrl = process.env.ZAPIER_GIFT_CARD_WEBHOOK_URL
-    const giftCardMetas = metadata?.filter((item) => item?.type === 'gift_card') ?? []
+    const giftCardMetas =
+      metadata?.filter((item) => item?.type === 'gift_card') ?? []
     if (webhookUrl && giftCardMetas.length > 0) {
       const phone = primaryContact?.phone ?? null
       const firstName = primaryContact?.firstName ?? ''
@@ -171,9 +172,12 @@ export class OrderService {
       const totalValue = order.total ?? 0
 
       for (const giftMeta of giftCardMetas) {
-        const recipientEmail = giftMeta.recipientEmail ?? giftMeta.properties?.recipientEmail ?? null
-        const recipientName = giftMeta.recipientName ?? giftMeta.properties?.recipientName ?? null
-        const giftMessage = giftMeta.giftMessage ?? giftMeta.properties?.giftMessage ?? null
+        const recipientEmail =
+          giftMeta.recipientEmail ?? giftMeta.properties?.recipientEmail ?? null
+        const recipientName =
+          giftMeta.recipientName ?? giftMeta.properties?.recipientName ?? null
+        const giftMessage =
+          giftMeta.giftMessage ?? giftMeta.properties?.giftMessage ?? null
 
         fetch(webhookUrl, {
           method: 'POST',
@@ -191,13 +195,22 @@ export class OrderService {
         })
           .then((res) => {
             if (!res.ok) {
-              logger.error({ status: res.status, orderId }, 'Zapier webhook returned non-OK status')
+              logger.error(
+                { status: res.status, orderId },
+                'Zapier webhook returned non-OK status'
+              )
             } else {
-              logger.info({ orderId }, 'Successfully sent order webhook to Zapier')
+              logger.info(
+                { orderId },
+                'Successfully sent order webhook to Zapier'
+              )
             }
           })
           .catch((err) => {
-            logger.error({ err, orderId }, 'Error sending order webhook to Zapier')
+            logger.error(
+              { err, orderId },
+              'Error sending order webhook to Zapier'
+            )
           })
       }
     }

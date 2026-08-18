@@ -12,7 +12,10 @@ import { getRequiredRateIdsForSupercar } from '../../../../features/booking/use-
 import { useCart, useCartAdd, useCartClear } from '../../../../features/cart'
 import { useDialog } from '../../../../features/dialog'
 import { useToast } from '../../../../features/toast'
-import { RocketRezProductType, RocketRezScheduleStatus } from '../../../../io/schemas'
+import {
+  RocketRezProductType,
+  RocketRezScheduleStatus
+} from '../../../../io/schemas'
 import type { RocketRezAddLineItemCar } from '../../../../io/types'
 import { getAddToCartLineItemCarMetadata } from '../../../../utils/get-add-to-cart-line-item-car-metadata'
 import { getBookingLapsPerSession } from '../../../../utils/get-booking-laps-per-session'
@@ -97,12 +100,20 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
   // For packages (isMulticar), resolve all required rate IDs from the first available schedule
   // to determine sold-out status accurately
   const packageRateIds = useMemo(() => {
-    if (!isMulticar) return undefined
+    if (!isMulticar) {
+      return undefined
+    }
     const firstAvailableSchedule = schedules.find(
       (s) => s.scheduleStatus === RocketRezScheduleStatus.AVAILABLE
     )
-    if (!firstAvailableSchedule) return undefined
-    return getRequiredRateIdsForSupercar(firstAvailableSchedule, rocketRezSeatTypeId, true)
+    if (!firstAvailableSchedule) {
+      return undefined
+    }
+    return getRequiredRateIdsForSupercar(
+      firstAvailableSchedule,
+      rocketRezSeatTypeId,
+      true
+    )
   }, [isMulticar, schedules, rocketRezSeatTypeId])
 
   // Check if sold out: no schedules, all unavailable, all prices are 0, or all have 0 availability

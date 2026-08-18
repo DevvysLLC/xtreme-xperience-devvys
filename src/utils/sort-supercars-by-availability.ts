@@ -1,7 +1,7 @@
 import type { BookingSupercarFragment } from '../core/dato/fragments/booking-config.typegen'
+import { getRequiredRateIdsForSupercar } from '../features/booking/use-booking-supercar-schedule'
 import { RocketRezScheduleStatus } from '../io/schemas'
 import type { RocketRezEventScheduleItem } from '../io/types'
-import { getRequiredRateIdsForSupercar } from '../features/booking/use-booking-supercar-schedule'
 import { getRateTypePrice } from './get-rate-type-price'
 import { isScheduleSoldOut } from './is-schedule-sold-out'
 
@@ -142,11 +142,7 @@ export const sortSupercarsByAvailability = (
     if (!firstAvailableSchedule) {
       return rateId
     }
-    return getRequiredRateIdsForSupercar(
-      firstAvailableSchedule,
-      rateId,
-      true
-    )
+    return getRequiredRateIdsForSupercar(firstAvailableSchedule, rateId, true)
   }
 
   return [...supercars].sort((a, b) => {
@@ -184,11 +180,7 @@ export const sortSupercarsByAvailabilityAndPrice = (
     if (!firstAvailableSchedule) {
       return rateId
     }
-    return getRequiredRateIdsForSupercar(
-      firstAvailableSchedule,
-      rateId,
-      true
-    )
+    return getRequiredRateIdsForSupercar(firstAvailableSchedule, rateId, true)
   }
 
   return [...supercars]

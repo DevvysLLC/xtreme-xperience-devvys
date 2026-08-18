@@ -23,18 +23,22 @@ export const getTrackEventToShow = (
     (event) => event.model?.enabled && event.model?.startDate != null
   )
 
-  const availableEvents = enabledEvents.filter(
-    (event) => !event.model?.soldOut
-  )
+  const availableEvents = enabledEvents.filter((event) => !event.model?.soldOut)
 
   const getSoonestEvent = (list: typeof enabledEvents) => {
-    if (list.length === 0) return null
+    if (list.length === 0) {
+      return null
+    }
     return list.reduce((soonest, current) => {
       const soonestDate = soonest.model?.startDate
       const currentDate = current.model?.startDate
 
-      if (!soonestDate) return current
-      if (!currentDate) return soonest
+      if (!soonestDate) {
+        return current
+      }
+      if (!currentDate) {
+        return soonest
+      }
 
       return new Date(currentDate) < new Date(soonestDate) ? current : soonest
     })

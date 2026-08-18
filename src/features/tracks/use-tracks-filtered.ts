@@ -5,10 +5,10 @@ import { useMemo } from 'react'
 import type { EventDataFragment } from '../../core/dato/fragments/event-data.typegen'
 import type { TrackDataFragment } from '../../core/dato/fragments/track-data.typegen'
 import type { MapboxMapMarker, TrackWithDistance } from '../../io/types'
+import { isEventPassed } from '../../utils/is-event-passed'
 import { useMapboxGeocode } from '../mapbox'
 import { useUtilsDebouncedValue } from '../utils'
 import { hasAllTracks } from './config'
-import { isEventPassed } from '../../utils/is-event-passed'
 import { useTracks } from './use-tracks'
 
 const MILES_TO_KILOMETERS = 1.60934
@@ -41,7 +41,10 @@ const getEventsFromTracks = (
       continue
     }
     const hasFutureEvent = trackEvents.some((event) => {
-      const isPassed = isEventPassed(event.model?.startDate, event.model?.endDate)
+      const isPassed = isEventPassed(
+        event.model?.startDate,
+        event.model?.endDate
+      )
       return !isPassed && event.model?.enabled
     })
     if (hasFutureEvent) {
@@ -57,7 +60,10 @@ const getEventsFromTracks = (
     }
 
     for (const event of trackEvents) {
-      const isPassed = isEventPassed(event.model?.startDate, event.model?.endDate)
+      const isPassed = isEventPassed(
+        event.model?.startDate,
+        event.model?.endDate
+      )
       if (!event.model?.enabled && !isPassed) {
         continue
       }

@@ -95,8 +95,12 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
               let minAvailable: number | null = null
               for (const rateId of packageRateIds) {
                 for (const seatType of schedule.seatTypes) {
-                  if (!seatType) continue
-                  const hasRate = (seatType.rates ?? []).some((r) => r.id === rateId)
+                  if (!seatType) {
+                    continue
+                  }
+                  const hasRate = (seatType.rates ?? []).some(
+                    (r) => r.id === rateId
+                  )
                   if (hasRate) {
                     if ((seatType.capacity ?? 0) > 0) {
                       const av = seatType.available ?? 0
@@ -113,7 +117,9 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
               // Single supercar
               for (const seatType of schedule.seatTypes) {
                 if (seatType?.rates && Array.isArray(seatType.rates)) {
-                  const rate = seatType.rates.find((r) => r?.id === rocketRezSeatTypeId)
+                  const rate = seatType.rates.find(
+                    (r) => r?.id === rocketRezSeatTypeId
+                  )
                   if (rate) {
                     matchingSeatTypeAvailable = seatType.available ?? null
                     break

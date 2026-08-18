@@ -316,8 +316,7 @@ const RenderSection = ({
     }
     case 'SectionCustomHtmlRecord': {
       const Component = registry.SectionCustomHtmlRecord
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return <Component data={section as any} {...firstSectionProps} />
+      return <Component data={section} {...firstSectionProps} />
     }
     case 'SectionEventsFeatureRecord': {
       const Component = registry.SectionEventsFeatureRecord
@@ -505,8 +504,7 @@ const LazyRenderSection = ({
       }
       case 'SectionCustomHtmlRecord': {
         const Component = lazyRegistry.SectionCustomHtmlRecord
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return <Component data={section as any} {...firstSectionProps} />
+        return <Component data={section} {...firstSectionProps} />
       }
       case 'SectionEventFinderRecord': {
         const Component = lazyRegistry.SectionEventFinderRecord

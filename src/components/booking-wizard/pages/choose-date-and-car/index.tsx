@@ -171,7 +171,8 @@ export const DateAndCarPage = () => {
   }, [activeGroup?.supercars, selectedEventId])
 
   const isMulticarGroup = useMemo(
-    () => activeGroup?.supercars?.some((supercar) => supercar.isMulticar) ?? false,
+    () =>
+      activeGroup?.supercars?.some((supercar) => supercar.isMulticar) ?? false,
     [activeGroup]
   )
 

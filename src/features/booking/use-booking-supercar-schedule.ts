@@ -23,14 +23,18 @@ export const getRequiredRateIdsForSupercar = (
 
   let categoryName: string | null = null
   for (const seatType of schedule.seatTypes ?? []) {
-    if (!seatType) continue
+    if (!seatType) {
+      continue
+    }
     for (const rate of seatType.rates ?? []) {
       if (rate.id === rocketRezSeatTypeId) {
         categoryName = rate.category ?? null
         break
       }
     }
-    if (categoryName) break
+    if (categoryName) {
+      break
+    }
   }
 
   if (!categoryName) {
@@ -41,7 +45,9 @@ export const getRequiredRateIdsForSupercar = (
   const cleanedCategory = categoryName.trim().toLowerCase()
 
   for (const seatType of schedule.seatTypes ?? []) {
-    if (!seatType) continue
+    if (!seatType) {
+      continue
+    }
     for (const rate of seatType.rates ?? []) {
       if (rate.category?.trim().toLowerCase() === cleanedCategory) {
         rateIds.push(rate.id)
@@ -49,7 +55,9 @@ export const getRequiredRateIdsForSupercar = (
     }
   }
 
-  return rateIds.length > 0 ? Array.from(new Set(rateIds)) : [rocketRezSeatTypeId]
+  return rateIds.length > 0
+    ? Array.from(new Set(rateIds))
+    : [rocketRezSeatTypeId]
 }
 
 /**
@@ -188,16 +196,27 @@ export const useBookingSupercarSchedule = () => {
   )
 
   const isSoldOut = useCallback(
-    (schedule: RocketRezEventScheduleItem, rateId?: number, isMulticar = false) => {
+    (
+      schedule: RocketRezEventScheduleItem,
+      rateId?: number,
+      isMulticar = false
+    ) => {
       const { scheduleStatus } = schedule
       const effectivePrice = getEffectivePrice(schedule, rateId)
 
-      if (scheduleStatus !== RocketRezScheduleStatus.AVAILABLE || effectivePrice <= 0) {
+      if (
+        scheduleStatus !== RocketRezScheduleStatus.AVAILABLE ||
+        effectivePrice <= 0
+      ) {
         return true
       }
 
       if (rateId && isMulticar) {
-        const requiredRateIds = getRequiredRateIdsForSupercar(schedule, rateId, true)
+        const requiredRateIds = getRequiredRateIdsForSupercar(
+          schedule,
+          rateId,
+          true
+        )
         return isScheduleSoldOut(schedule, requiredRateIds)
       }
 
@@ -325,7 +344,11 @@ export const useBookingSupercarSchedule = () => {
           }
 
           if (isMulticar) {
-            const requiredRateIds = getRequiredRateIdsForSupercar(schedule, rateId, true)
+            const requiredRateIds = getRequiredRateIdsForSupercar(
+              schedule,
+              rateId,
+              true
+            )
             if (isScheduleSoldOut(schedule, requiredRateIds)) {
               return null
             }
@@ -467,7 +490,11 @@ export const useBookingSupercarSchedule = () => {
           const pricesForMatchedRates = normalizedRateIds
             .map((rateId) => {
               if (isMulticar) {
-                const requiredRateIds = getRequiredRateIdsForSupercar(schedule, rateId, true)
+                const requiredRateIds = getRequiredRateIdsForSupercar(
+                  schedule,
+                  rateId,
+                  true
+                )
                 if (isScheduleSoldOut(schedule, requiredRateIds)) {
                   return null
                 }

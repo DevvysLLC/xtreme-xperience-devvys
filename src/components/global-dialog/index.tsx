@@ -22,8 +22,14 @@ const defaultTranslations = {
 declare global {
   // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
   interface Window {
+    _klOnsite?: {
+      push: (args: unknown[]) => void
+    }
+    klaviyo?: {
+      push: (args: unknown[]) => void
+    }
     Klaviyo?: {
-      push?: (args: unknown[]) => void
+      push: (args: unknown[]) => void
     }
   }
 }
@@ -73,11 +79,18 @@ export const GlobalDialog: FC = () => {
     if (isOpen && translations?.klaviyoFormId) {
       const timer = setTimeout(() => {
         try {
-          if (
-            typeof window !== 'undefined' &&
-            typeof window.Klaviyo?.push === 'function'
-          ) {
-            window.Klaviyo.push(['refresh'])
+          if (typeof window !== 'undefined') {
+            if (typeof window._klOnsite?.push === 'function') {
+              window._klOnsite.push(['refresh'])
+            }
+
+            if (typeof window.klaviyo?.push === 'function') {
+              window.klaviyo.push(['refresh'])
+            }
+
+            if (typeof window.Klaviyo?.push === 'function') {
+              window.Klaviyo.push(['refresh'])
+            }
           }
         } catch (err) {
           console.error('Error refreshing Klaviyo form:', err)
@@ -93,10 +106,16 @@ export const GlobalDialog: FC = () => {
     })
   }, [handleConfirm])
 
+  const hasContent = Boolean(
+    translations?.title ||
+    translations?.description ||
+    translations?.klaviyoFormId
+  )
+
   // Always render Drawer so it can properly send close messages
   return (
     <Drawer id={DRAWER_ID} layoutType="dialog" className={styles.dialog}>
-      {isOpen && (
+      {hasContent && (
         <>
           {!translations?.klaviyoFormId && (
             <h2 id={titleId} className={styles.dialog__title}>

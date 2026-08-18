@@ -46,7 +46,8 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
   )
   // Gather all schedules for all days of the event to check if a car is assigned to the event
   const allEventSchedules = useMemo(
-    () => state.eventData?.schedules?.flatMap((day) => day.schedules ?? []) ?? [],
+    () =>
+      state.eventData?.schedules?.flatMap((day) => day.schedules ?? []) ?? [],
     [state.eventData?.schedules]
   )
   // Filter & sort supercars: filter out unassigned cars, and sort sold-out ones to the bottom
@@ -66,15 +67,12 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
         })
     )
 
-    return sortSupercarsByAvailability(
-      filtered,
-      schedules,
-      (supercar) =>
-        getSeatTypeIdWithOverride({
-          defaultSeatTypeId: supercar.rocketRezSeatTypeId,
-          overrides: supercar.rocketRezSeatTypeIdOverrides,
-          selectedEventId
-        })
+    return sortSupercarsByAvailability(filtered, schedules, (supercar) =>
+      getSeatTypeIdWithOverride({
+        defaultSeatTypeId: supercar.rocketRezSeatTypeId,
+        overrides: supercar.rocketRezSeatTypeIdOverrides,
+        selectedEventId
+      })
     )
   }, [activeGroup?.supercars, schedules, allEventSchedules, selectedEventId])
 

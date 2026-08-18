@@ -469,7 +469,10 @@ export const ContactsForm: FC<Props> = ({ form, isGiftCard = false }) => {
             >
               {(field: ContactsFormField) => (
                 <div
-                  className={clsx(styles.form__field, styles['form__field--50%'])}
+                  className={clsx(
+                    styles.form__field,
+                    styles['form__field--50%']
+                  )}
                 >
                   <label htmlFor={field.name} className={styles.form__label}>
                     {t('fields.recipient_name')}
@@ -517,7 +520,10 @@ export const ContactsForm: FC<Props> = ({ form, isGiftCard = false }) => {
             >
               {(field: ContactsFormField) => (
                 <div
-                  className={clsx(styles.form__field, styles['form__field--50%'])}
+                  className={clsx(
+                    styles.form__field,
+                    styles['form__field--50%']
+                  )}
                 >
                   <label htmlFor={field.name} className={styles.form__label}>
                     {t('fields.recipient_email')}
@@ -551,7 +557,10 @@ export const ContactsForm: FC<Props> = ({ form, isGiftCard = false }) => {
             <form.Field name="giftMessage">
               {(field: ContactsFormField) => (
                 <div
-                  className={clsx(styles.form__field, styles['form__field--100%'])}
+                  className={clsx(
+                    styles.form__field,
+                    styles['form__field--100%']
+                  )}
                 >
                   <label htmlFor={field.name} className={styles.form__label}>
                     {t('fields.recipient_gift_message')}

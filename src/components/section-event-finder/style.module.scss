@@ -63,7 +63,7 @@
   &__content {
     order: 3;
     flex: 1;
-    padding: sg.spacing(medium) sg.spacing(regular) sg.spacing(xlarge);
+    padding: sg.spacing(large) sg.spacing(regular) sg.spacing(xlarge);
 
     @include sg.min(laptopSmall) {
       order: initial;
@@ -313,7 +313,10 @@
 .events {
   position: relative;
   height: u.rem-calc(500);
-  margin-top: sg.spacing(large);
+
+  @include sg.min(laptopSmall) {
+    margin-top: sg.spacing(large);
+  }
 
   &:after {
     content: '';

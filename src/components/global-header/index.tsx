@@ -44,9 +44,12 @@ export const GlobalHeader = async ({ isTransparent }: Props = {}) => {
 
     const existingSupercarIds = new Set(
       navItem.children
-        ?.filter((child) => child.link?.__typename === 'SupercarRecord')
-        .map((child) => (child.link as { id?: string })?.id)
-        .filter(Boolean)
+        ?.map((child) =>
+          child.link?.__typename === 'SupercarRecord'
+            ? child.link.id
+            : undefined
+        )
+        .filter((id): id is string => Boolean(id))
     )
 
     const additionalSupercars = (allSupercars ?? []).filter(

@@ -7,12 +7,6 @@ import 'react-datepicker/dist/react-datepicker.css'
 import { CoreIcon } from '../../core-icon'
 import styles from '../style.module.scss'
 
-const getTomorrow = (): Date => {
-  const tomorrow = new Date()
-  tomorrow.setDate(tomorrow.getDate() + 1)
-  return tomorrow
-}
-
 type Props = {
   onDateRangeChange?: (startDate: Date | null, endDate: Date | null) => void
 }

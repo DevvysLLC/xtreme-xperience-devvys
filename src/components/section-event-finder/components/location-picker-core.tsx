@@ -22,10 +22,10 @@ import {
   useTracksFiltered,
   useTracksSortedByDistance
 } from '../../../features/tracks'
+import { isEventPassed } from '../../../utils/is-event-passed'
 import { BookingLocationCta } from '../../booking-location-cta'
 import { CoreMap, type MapMarker } from '../../core-map'
 import { DEFAULT_LAT, DEFAULT_LONG } from '../../core-map/config'
-import { isEventPassed } from '../../../utils/is-event-passed'
 import styles from '../style.module.scss'
 import { DateRangePicker } from './date-range-picker'
 import { SearchBar } from './search-bar'
@@ -46,12 +46,6 @@ export type LocationPickerCoreProps = {
 }
 
 type SearchSource = 'user' | 'track' | 'location' | 'marker'
-
-const getTomorrow = (): Date => {
-  const tomorrow = new Date()
-  tomorrow.setDate(tomorrow.getDate() + 1)
-  return tomorrow
-}
 
 const normalizeToStartOfDay = (date: Date): Date => {
   const normalizedDate = new Date(date)
@@ -382,11 +376,11 @@ export const LocationPickerCore = ({
       // 2. Lookup handle from tracks by nickname or title
       const matchedTrack = tracks.find((track) => {
         const nickname = track.model?.nickname?.trim().toLowerCase()
-        const title = track.config?.title?.trim().toLowerCase()
+        const trackTitle = track.config?.title?.trim().toLowerCase()
         const markerLabel = marker.label?.trim().toLowerCase()
         return (
           (nickname && nickname === markerLabel) ||
-          (title && title === markerLabel)
+          (trackTitle && trackTitle === markerLabel)
         )
       })
 
@@ -454,8 +448,6 @@ export const LocationPickerCore = ({
     [filteredEvents, filterSortBy, tracksDistanceMap]
   )
 
-
-
   // Get unique track nicknames from filtered tracks to filter map markers
   const filteredTrackNicknames = useMemo(() => {
     const nicknames = new Set<string>()
@@ -521,14 +513,12 @@ export const LocationPickerCore = ({
               onSortChange={handleSortChange}
               label={t('sort.label')}
             />
+          <div className={styles.locationCta}>
+            <BookingLocationCta />
           </div>
         </div>
 
         <div id={sectionContentId} className={styles.section__content}>
-          <div className={styles.locationCta}>
-            <BookingLocationCta />
-          </div>
-
           <div className={styles.events}>
             <div className={styles.events__inner}>
               {isLoading || isGeocoding ? (
@@ -536,7 +526,9 @@ export const LocationPickerCore = ({
                   {displayLoadingMessage}
                 </div>
               ) : sortedEvents.length === 0 ? (
-                <div className={styles.events__empty}>{displayEmptyMessage}</div>
+                <div className={styles.events__empty}>
+                  {displayEmptyMessage}
+                </div>
               ) : (
                 sortedEvents.map((event, index) =>
                   renderEvent(event, tracks, index)

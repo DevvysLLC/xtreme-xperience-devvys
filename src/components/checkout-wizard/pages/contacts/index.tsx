@@ -27,7 +27,10 @@ import {
   RocketRezBillingAddressSchema,
   RocketRezCartStatusSchema
 } from '../../../../io/schemas'
-import type { CartState, RocketRezAddContactsRequest } from '../../../../io/types'
+import type {
+  CartState,
+  RocketRezAddContactsRequest
+} from '../../../../io/types'
 import { CoreCta } from '../../../core-cta'
 import { CartSummary } from '../../../global-cart/components/summary'
 import { ContactsForm } from '../../components/contacts-form'
@@ -112,7 +115,9 @@ export const ContactsPage: FC<Props> = () => {
         }
       : {}
 
-    const giftCardMeta = cart?.metadata?.find((item) => item.type === 'gift_card')
+    const giftCardMeta = cart?.metadata?.find(
+      (item) => item.type === 'gift_card'
+    )
     const fromGiftCardMetadata = {
       recipientEmail:
         giftCardMeta?.recipientEmail ??
@@ -123,9 +128,7 @@ export const ContactsPage: FC<Props> = () => {
         giftCardMeta?.properties?.recipientName ??
         '',
       giftMessage:
-        giftCardMeta?.giftMessage ??
-        giftCardMeta?.properties?.giftMessage ??
-        ''
+        giftCardMeta?.giftMessage ?? giftCardMeta?.properties?.giftMessage ?? ''
     }
 
     return {
@@ -242,14 +245,18 @@ export const ContactsPage: FC<Props> = () => {
         if (isGiftCard) {
           const currentCart = qc.getQueryData<CartState>(CART_QUERY_KEY)
           if (currentCart) {
-            const giftCardLineItem = currentCart.cartData?.lineItems?.find((item) => {
-              const typeStr = String(item.productType ?? item.type ?? '').toLowerCase()
-              return (
-                typeStr === 'giftcard' ||
-                typeStr === 'gift_card' ||
-                typeStr === 'gift card'
-              )
-            })
+            const giftCardLineItem = currentCart.cartData?.lineItems?.find(
+              (item) => {
+                const typeStr = String(
+                  item.productType ?? item.type ?? ''
+                ).toLowerCase()
+                return (
+                  typeStr === 'giftcard' ||
+                  typeStr === 'gift_card' ||
+                  typeStr === 'gift card'
+                )
+              }
+            )
 
             let found = false
             const nextMetadata = currentCart.metadata.map((item) => {
@@ -257,7 +264,8 @@ export const ContactsPage: FC<Props> = () => {
                 item.type === 'gift_card' ||
                 (item.type === 'addon' &&
                   (item.title?.toLowerCase().includes('gift card') ||
-                    (giftCardLineItem && item.key === `addon-${giftCardLineItem.id}`)))
+                    (giftCardLineItem &&
+                      item.key === `addon-${giftCardLineItem.id}`)))
 
               if (isGiftCardItem) {
                 found = true
@@ -279,7 +287,9 @@ export const ContactsPage: FC<Props> = () => {
             })
 
             if (!found) {
-              const key = giftCardLineItem ? `addon-${giftCardLineItem.id}` : 'gift-card-meta'
+              const key = giftCardLineItem
+                ? `addon-${giftCardLineItem.id}`
+                : 'gift-card-meta'
               nextMetadata.push({
                 key,
                 type: 'gift_card' as const,

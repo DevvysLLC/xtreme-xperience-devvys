@@ -79,7 +79,10 @@ const main = async () => {
     const filteredSupercars = allSupercars.filter(
       (sc) => sc.content?.sections && sc.content.sections.length > 0
     )
-    logger.info({ count: filteredSupercars.length }, 'Filtered supercars with content')
+    logger.info(
+      { count: filteredSupercars.length },
+      'Filtered supercars with content'
+    )
 
     const lookbackInMinutes = getLookbackInMinutes()
 

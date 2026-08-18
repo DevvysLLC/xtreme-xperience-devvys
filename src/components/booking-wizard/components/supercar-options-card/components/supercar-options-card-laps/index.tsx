@@ -104,15 +104,22 @@ export const SupercarOptionsCardLaps: React.FC<Props> = ({
         schedule,
         isMulticar && packageRateIds ? packageRateIds : rocketRezSeatTypeId
       )
-      if (isSoldOut) continue
+      if (isSoldOut) {
+        continue
+      }
 
       let av = 0
       if (isMulticar && packageRateIds && packageRateIds.length > 0) {
         let minAv: number | null = null
         for (const rateId of packageRateIds) {
           for (const seatType of schedule.seatTypes ?? []) {
-            if (!seatType) continue
-            if ((seatType.capacity ?? 0) > 0 && (seatType.rates ?? []).some((r) => r.id === rateId)) {
+            if (!seatType) {
+              continue
+            }
+            if (
+              (seatType.capacity ?? 0) > 0 &&
+              (seatType.rates ?? []).some((r) => r.id === rateId)
+            ) {
               const a = seatType.available ?? 0
               if (minAv === null || a < minAv) {
                 minAv = a
@@ -124,8 +131,12 @@ export const SupercarOptionsCardLaps: React.FC<Props> = ({
         av = minAv ?? 0
       } else {
         for (const seatType of schedule.seatTypes ?? []) {
-          if (!seatType) continue
-          if ((seatType.rates ?? []).some((r) => r.id === rocketRezSeatTypeId)) {
+          if (!seatType) {
+            continue
+          }
+          if (
+            (seatType.rates ?? []).some((r) => r.id === rocketRezSeatTypeId)
+          ) {
             av = seatType.available ?? 0
             break
           }
@@ -136,7 +147,13 @@ export const SupercarOptionsCardLaps: React.FC<Props> = ({
       }
     }
     setTotalAvailableSessions(maxAvailable)
-  }, [schedules, rocketRezSeatTypeId, isMulticar, packageRateIds, setTotalAvailableSessions])
+  }, [
+    schedules,
+    rocketRezSeatTypeId,
+    isMulticar,
+    packageRateIds,
+    setTotalAvailableSessions
+  ])
 
   return (
     <fieldset className={styles.laps}>
