@@ -19,6 +19,16 @@
     transition-delay: 0s;
   }
 
+  &:not(&--open) {
+    pointer-events: none !important;
+    visibility: hidden !important;
+
+    * {
+      pointer-events: none !important;
+      visibility: hidden !important;
+    }
+  }
+
   &__overlay {
     position: absolute;
     top: 0;
@@ -89,11 +99,20 @@
       padding-block: sg.spacing(xlarge) sg.spacing(medium);
       padding-inline: sg.spacing(medium);
       opacity: 0;
+      pointer-events: none;
+      visibility: hidden;
+      transition:
+        transform 0.3s #{sg.easing('easeOutExpo')},
+        opacity 0.3s #{sg.easing('easeOutExpo')},
+        visibility 0s linear 0.3s;
     }
 
     #{$drawer}--dialog#{$drawer}--open & {
       transform: translate(50%, -50%) scale(1);
       opacity: 1;
+      pointer-events: auto;
+      visibility: visible;
+      transition-delay: 0s;
     }
   }
 
