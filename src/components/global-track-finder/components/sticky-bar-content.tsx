@@ -9,6 +9,8 @@ import { CoreCta } from '../../core-cta'
 import { useHeaderScroll } from '../../global-header/hooks/use-header-scroll'
 import styles from '../style.module.scss'
 import { GlobalTrackFinderWidget } from './widget'
+import { useStickyBarStore } from '../../../core/sticky-bar/store'
+import { CoreCountdown } from '../../core-countdown'
 
 type StickyBarContentProps = {
   hideBookingBarOnPaths: string | null | undefined
@@ -51,6 +53,7 @@ export const StickyBarContent: React.FC<StickyBarContentProps> = ({
   const pathname = usePathname()
   const isAtBottom = useScrollToBottom()
   const { isOffscreen, isScrolled } = useHeaderScroll()
+  const override = useStickyBarStore((s) => s.override)
   const normalizedPathname = normalizePath(pathname)
   const hiddenPaths = (hideBookingBarOnPaths ?? '')
     .split(',')
@@ -65,6 +68,51 @@ export const StickyBarContent: React.FC<StickyBarContentProps> = ({
   // Show sticky bar if there's a location track AND not at the bottom AND header is offscreen
   const headerIsOffscreen = isScrolled && isOffscreen
   const shouldShowStickyBar = !isAtBottom && headerIsOffscreen
+
+  // Campaign Override Layout
+  if (override?.enableCampaignStickyBar) {
+    return (
+      <div
+        className={clsx(
+          styles.stickyBar,
+          styles['stickyBar--campaign'],
+          shouldShowStickyBar && styles['stickyBar--open']
+        )}
+      >
+        <div className={styles.stickyBar__wrapper}>
+          <div className={styles.campaignContent}>
+            {override.campaignStickyBarHeading && (
+              <span className={styles.campaignContent__heading}>
+                {override.campaignStickyBarHeading}
+              </span>
+            )}
+            {override.campaignStickyBarTimerEnd && (
+              <div className={styles.campaignContent__timer}>
+                <CoreCountdown
+                  data={{
+                    end: override.campaignStickyBarTimerEnd,
+                    showDays: true
+                  }}
+                />
+              </div>
+            )}
+          </div>
+          {override.campaignStickyBarCtaTitle && (
+            <div className={styles.campaignCta}>
+              <CoreCta
+                text={override.campaignStickyBarCtaTitle}
+                href={override.campaignStickyBarCtaLink ?? '#'}
+                layoutType="button"
+                styleType="orange"
+                sizeType="small"
+                className={styles.campaignCta__button}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div
