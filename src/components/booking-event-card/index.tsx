@@ -48,6 +48,26 @@ export const BookingEventCard: FC<BookingEventCardProps> = ({
     [startDate, endDate]
   )
 
+  const hasUpcomingEvents = useMemo(() => {
+    const trackEvents = track?.model?.events
+    if (!trackEvents) {
+      return false
+    }
+
+    return trackEvents.some((e) => {
+      const otherModel = e?.model
+      if (!otherModel) {
+        return false
+      }
+
+      const isOtherEvent = otherModel.id !== event?.model?.id
+      const isUpcoming = !isEventPassed(otherModel.startDate, otherModel.endDate)
+      const isEnabled = otherModel.enabled
+
+      return isOtherEvent && isUpcoming && isEnabled
+    })
+  }, [track?.model?.events, event?.model?.id])
+
   const showPassedBadge = isPassed
   const showSoldOutBadge = !isPassed && soldOut
   const showPopularBadge = !isPassed && !soldOut && popular
@@ -72,17 +92,31 @@ export const BookingEventCard: FC<BookingEventCardProps> = ({
     })
   }, [nickname, title, showDialog, soldOut])
 
+  const trackConfig = track?.config
+  const trackLink = trackConfig ? getRecordLink(trackConfig, 'track') : null
+
   const actions = isSelectable ? (
     <>
       {isPassed || soldOut ? (
-        <CoreCta
-          onClick={handleNotifyMe}
-          layoutType="button"
-          styleType="black"
-          sizeType="large"
-          text="Notify Me"
-          className={styles.card__button}
-        />
+        soldOut && hasUpcomingEvents ? (
+          <CoreCta
+            href={trackLink ?? undefined}
+            layoutType="button"
+            styleType="black"
+            sizeType="large"
+            text="View Dates"
+            className={styles.card__button}
+          />
+        ) : (
+          <CoreCta
+            onClick={handleNotifyMe}
+            layoutType="button"
+            styleType="black"
+            sizeType="large"
+            text="Notify Me"
+            className={styles.card__button}
+          />
+        )
       ) : (
         <BookingEventCta
           event={event}
