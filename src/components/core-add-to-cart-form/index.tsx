@@ -10,6 +10,9 @@ import { useToast } from '../../features/toast'
 import type { RocketRezProductTypeValue } from '../../io'
 import { RocketRezProductType } from '../../io/schemas'
 import type { RocketRezAddLineItemAddon } from '../../io/types'
+import { DRAWER_REQUEST_OPEN_MESSAGE_NAME } from '../../core/messaging/main/messages/open-drawer'
+import { useMainBus } from '../../core/messaging/main/react'
+import { CART_DRAWER_ID } from '../global-cart'
 import { CoreCta } from '../core-cta'
 import type { LayoutType, SizeType, StyleType } from '../core-cta/io'
 import { QuantitySelector } from './components/quantity-selector'
@@ -54,6 +57,9 @@ export const CoreAddToCartForm: FC<CoreAddToCartFormProps> = (props) => {
   } = props
   const { mutateAsync, isPending } = useCartAddAddon()
   const { data: cart } = useCart()
+  const bus = useMainBus(DRAWER_REQUEST_OPEN_MESSAGE_NAME, () => {
+    // No-op
+  })
   const defaultValues = {
     id,
     type,
@@ -96,6 +102,10 @@ export const CoreAddToCartForm: FC<CoreAddToCartFormProps> = (props) => {
         showToast({
           message: t('notifications.added_to_cart'),
           type: 'success'
+        })
+        bus.send({
+          name: DRAWER_REQUEST_OPEN_MESSAGE_NAME,
+          details: { id: CART_DRAWER_ID }
         })
         onSuccess?.()
       } catch (err) {
