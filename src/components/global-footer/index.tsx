@@ -6,6 +6,7 @@ import { getHref } from '../../utils/get-href'
 import { CoreBrand } from '../core-brand'
 import { CoreNewsletterSignupForm } from '../core-newsletter-signup-form'
 import { CoreTextMarkdown } from '../core-text-markdown'
+import { CoreKlaviyoForm } from '../core-klaviyo-form'
 import { SectionRenderer } from '../section-renderer'
 import { NavigationGroup } from './components/navigation-group'
 import styles from './style.module.scss'
@@ -28,6 +29,8 @@ export const GlobalFooter = async () => {
   const brand = t('brand_name')
   const year = new Date().getFullYear()
 
+  const klaviyoNewsletterFormId = process.env.NEXT_PUBLIC_KLAVIYO_NEWSLETTER_FORM_ID
+
   return (
     <footer className={styles.footer}>
       <div className={styles.footer__sections}>
@@ -38,7 +41,11 @@ export const GlobalFooter = async () => {
           <div className={styles.footer__top}>
             {showNewsletterSignupForm && config && (
               <div className={styles.newsletter}>
-                <CoreNewsletterSignupForm config={config} />
+                {klaviyoNewsletterFormId ? (
+                  <CoreKlaviyoForm formId={klaviyoNewsletterFormId} />
+                ) : (
+                  <CoreNewsletterSignupForm config={config} />
+                )}
               </div>
             )}
             <div className={styles.footer__top__navigation}>
