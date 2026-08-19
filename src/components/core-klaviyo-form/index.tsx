@@ -7,13 +7,6 @@ type Props = {
   className?: string
 }
 
-declare global {
-  interface Window {
-    _klOnsite?: any[]
-    klaviyo?: any[]
-    Klaviyo?: any[]
-  }
-}
 
 /**
  * CoreKlaviyoForm renders a Klaviyo embedded signup form.
