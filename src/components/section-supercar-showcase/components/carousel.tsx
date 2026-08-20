@@ -11,7 +11,8 @@ import {
 } from 'react'
 import type { Swiper as SwiperType } from 'swiper'
 import 'swiper/css'
-import { Navigation } from 'swiper/modules'
+import 'swiper/css/thumbs'
+import { Navigation, Thumbs } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { TRANSITIONS } from '../../../config/transitions'
 import { getRecordLink } from '../../../utils/get-record-link'
@@ -75,6 +76,7 @@ export const Carousel: FC<CarouselProps> = ({
   viewAllCarsCta
 }) => {
   const [activeIndex, setActiveIndex] = useState(0)
+  const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null)
   const mainSwiperRef = useRef<SwiperType | null>(null)
 
   const packageTypes = useMemo(() => {
@@ -113,9 +115,22 @@ export const Carousel: FC<CarouselProps> = ({
     setActiveIndex(index)
   }, [allSupercarsSortedMeta])
 
+  const handleThumbsSwiper = useCallback((swiper: SwiperType) => {
+    setThumbsSwiper(swiper)
+  }, [])
+
   const handleMainSwiper = useCallback((swiper: SwiperType) => {
     mainSwiperRef.current = swiper
   }, [])
+
+  useEffect(() => {
+    const main = mainSwiperRef.current
+    if (main && !main.destroyed && thumbsSwiper && !thumbsSwiper.destroyed) {
+      main.thumbs.swiper = thumbsSwiper
+      main.thumbs.init()
+      main.thumbs.update(true)
+    }
+  }, [thumbsSwiper])
 
   const slideCount = allSupercarsSortedMeta.length
 
@@ -163,6 +178,11 @@ export const Carousel: FC<CarouselProps> = ({
   const hasTabs = packageTypes.length > 1
   const shouldLoopMainSlider = allSupercarsSortedData.length > 2
 
+  const thumbsConfig =
+    thumbsSwiper && !thumbsSwiper.destroyed
+      ? { swiper: thumbsSwiper }
+      : undefined
+
   const packageTypeLabels: Record<KnownPackageType, string> = {
     single: translations.packageTypeSingle,
     multi: translations.packageTypeMulti
@@ -177,9 +197,9 @@ export const Carousel: FC<CarouselProps> = ({
 
   return (
     <div className={styles.showcase}>
-      {/* 1. Selector Tabs (Moved to the top) */}
+      {/* 1. Mobile Selector Tabs (Rendered at the top, hidden on desktop via CSS) */}
       {hasTabs && (
-        <div className={styles.thumbs__tabs}>
+        <div className={styles.showcase__tabsMobile}>
           {packageTypes.map((type) => (
             <CoreCta
               key={type}
@@ -222,7 +242,7 @@ export const Carousel: FC<CarouselProps> = ({
           <CoreIcon icon="chevron-left" />
         </button>
         <Swiper
-          modules={[Navigation]}
+          modules={[Thumbs, Navigation]}
           slidesPerView={1.15}
           loop={shouldLoopMainSlider}
           centeredSlides={true}
@@ -230,6 +250,7 @@ export const Carousel: FC<CarouselProps> = ({
             nextEl: `.${styles.nav__next}`,
             prevEl: `.${styles.nav__prev}`
           }}
+          thumbs={thumbsConfig}
           speed={TRANSITIONS.DEFAULT_SWIPER_DURATION}
           onSlideChange={handleSlideChange}
           onSwiper={handleMainSwiper}
@@ -271,7 +292,48 @@ export const Carousel: FC<CarouselProps> = ({
       {/* 4. Supercar Details Panel (Contains specs & CTA) */}
       {activeCar && detailsById[activeCar.id]}
 
-      {/* 5. View All Cars Link */}
+      {/* 5. Desktop Thumbs & Tabs Block (Hidden on mobile via CSS) */}
+      <div className={styles.thumbs}>
+        {hasTabs && (
+          <div className={styles.thumbs__tabs}>
+            {packageTypes.map((type) => (
+              <CoreCta
+                key={type}
+                text={packageTypeLabels[type]}
+                href={null}
+                layoutType="pill"
+                styleType={getTabStyleType(activeTab === type)}
+                sizeType="small"
+                onClick={() => {
+                  handleTabChange(type)
+                }}
+                className={clsx(
+                  styles.showcase__tab,
+                  activeTab === type && styles['showcase__tab--active']
+                )}
+              />
+            ))}
+          </div>
+        )}
+
+        <Swiper
+          modules={[Thumbs]}
+          onSwiper={handleThumbsSwiper}
+          slidesPerView="auto"
+          spaceBetween={8}
+          watchSlidesProgress={true}
+          speed={TRANSITIONS.DEFAULT_SWIPER_DURATION}
+          className={styles.thumbs__slider}
+        >
+          {allSupercarsSortedData.map((car) => (
+            <SwiperSlide key={car.id} className={styles.thumbs__slide}>
+              {thumbnailsById[car.id]}
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </div>
+
+      {/* 6. View All Cars Link */}
       {viewAllCarsCta}
     </div>
   )
