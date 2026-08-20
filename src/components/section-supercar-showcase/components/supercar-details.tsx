@@ -37,10 +37,10 @@ export const SupercarDetails: FC<SupercarDetailsProps> = ({
     >
       {/* 1. Brand/Model Title & Logo */}
       <div className={styles.details__content}>
-        {isImage(activeModel?.logoMaker) && (
+        {activeModel?.logoMaker && isImage(activeModel.logoMaker) && (
           <div className={styles.details__content__logo}>
             <CoreImage
-              data={activeModel?.logoMaker}
+              data={activeModel.logoMaker}
               className={styles.details__content__logo__image}
             />
           </div>

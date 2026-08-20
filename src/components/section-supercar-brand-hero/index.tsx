@@ -79,6 +79,7 @@ export const SectionSupercarBrandHero = async ({
               controlsClassName={styles.media__controls}
               layout="fill"
               isFirstSection={isFirstSection}
+              preload="auto"
               serverPosterUrls={
                 heroImages?.mobile
                   ? {

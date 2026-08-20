@@ -64,6 +64,7 @@ export type Props = {
   serverPosterUrls?: ServerPosterUrls | null
   disablePoster?: boolean
   posterSizes?: string | null
+  preload?: 'metadata' | 'auto' | 'none'
 }
 
 /**
@@ -89,7 +90,8 @@ export const CoreVideo: FC<Props> = ({ data: datoData, ...propsData }) => {
     isFirstSection,
     serverPosterUrls,
     disablePoster,
-    posterSizes
+    posterSizes,
+    preload
   } = propsData
 
   const [containerWidth, setContainerWidth] = useState<number | null>(null)
@@ -398,6 +400,7 @@ export const CoreVideo: FC<Props> = ({ data: datoData, ...propsData }) => {
           autoplay={autoplay}
           loop={loop}
           uniqueVideoId={effectiveVideoId}
+          preload={preload}
           onEnd={onEnd}
           onPlaying={onPlaying}
         />

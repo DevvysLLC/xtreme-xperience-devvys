@@ -27,7 +27,16 @@ export type Props = {
   autoplay?: boolean
   loop?: boolean
   uniqueVideoId: string
+  preload?: 'metadata' | 'auto' | 'none'
 } & Callbacks
+
+// Check if browser has native HLS support
+const checkNativeHlsSupport = (): boolean => {
+  if (typeof window === 'undefined') return false
+  const video = document.createElement('video')
+  const support = video.canPlayType('application/vnd.apple.mpegurl')
+  return support === 'probably' || support === 'maybe'
+}
 
 /**
  * Video player component for HLS video streams
@@ -40,6 +49,7 @@ export const VideoPlayer = memo<Props>(function VideoPlayer({
   autoplay = true,
   loop,
   uniqueVideoId,
+  preload = 'metadata',
   onPlaybackSuspended: _onPlaybackSuspended,
   onEnd: _onEnd,
   onPlay: _onPlay,
@@ -47,6 +57,11 @@ export const VideoPlayer = memo<Props>(function VideoPlayer({
 }) {
   const [hlsStatus, setHlsStatus] = useState<'idle' | 'initialized'>('idle')
   const [videoEl, setVideoEl] = useState<HTMLVideoElement | null>(null)
+  const [isNativeHlsSupported, setIsNativeHlsSupported] = useState(false)
+
+  useEffect(() => {
+    setIsNativeHlsSupported(checkNativeHlsSupport())
+  }, [])
 
   // Stable ref to the last known video element, used to ignore transient null
   // callbacks from React's commit phase (Strict Mode double-invoke,
@@ -112,8 +127,8 @@ export const VideoPlayer = memo<Props>(function VideoPlayer({
     if (isDesktop === null) {
       return null
     }
-    return buildStreamingUrl(streamingUrl, !isDesktop)
-  }, [streamingUrl, isDesktop])
+    return buildStreamingUrl(streamingUrl, !isDesktop, isNativeHlsSupported)
+  }, [streamingUrl, isDesktop, isNativeHlsSupported])
 
   const playback = useCallback(
     (action: 'play' | 'pause'): void => {
@@ -333,7 +348,7 @@ export const VideoPlayer = memo<Props>(function VideoPlayer({
       height={height}
       playsInline
       controls={false}
-      preload="metadata"
+      preload={preload}
     />
   )
 })

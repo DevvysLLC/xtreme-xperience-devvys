@@ -91,12 +91,9 @@ export const SupercarSpecLayout: FC<Props> = memo(
                 <div className={styles.media__inner}>
                   <ModelViewer3d
                     modelViewer3d={modelViewer3d}
+                    thumbnail={thumbnail}
                     className={styles.media__model}
                   />
-
-                  <div className={styles.media__icon}>
-                    <CoreIcon icon="3d" />
-                  </div>
                 </div>
               ) : (
                 thumbnail &&
