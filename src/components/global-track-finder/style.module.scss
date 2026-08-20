@@ -494,7 +494,7 @@
 
   &--campaign {
     border-top: u.rem-calc(2) solid sg.color(orange);
-    background-color: sg.color(white);
+    background-color: sg.color(black);
   }
 }
 
@@ -520,7 +520,7 @@
     font-weight: sg.font-weight(700);
     line-height: sg.line-height('100%');
     text-transform: uppercase;
-    color: sg.color(black);
+    color: sg.color(white);
 
     @include sg.min(tabletPortrait) {
       font-size: sg.font-size('18px');
