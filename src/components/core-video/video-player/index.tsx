@@ -28,33 +28,40 @@ export type Props = {
   loop?: boolean
   uniqueVideoId: string
   preload?: 'metadata' | 'auto' | 'none'
+  preferMp4?: boolean
+  rawMp4Url?: string | null
 } & Callbacks
 
 // Check if browser has native HLS support
 const checkNativeHlsSupport = (): boolean => {
-  if (typeof window === 'undefined') return false
+  if (typeof window === 'undefined') {
+    return false
+  }
   const video = document.createElement('video')
   const support = video.canPlayType('application/vnd.apple.mpegurl')
   return support === 'probably' || support === 'maybe'
 }
 
 /**
- * Video player component for HLS video streams
+ * Video player component for HLS video streams or MP4 fallbacks
  *
  * Related:
  * https://docs.mux.com/guides/control-playback-resolution
  */
 export const VideoPlayer = memo<Props>(function VideoPlayer({
-  data: { streamingUrl, width, height },
+  data,
   autoplay = true,
   loop,
   uniqueVideoId,
   preload = 'metadata',
+  preferMp4 = false,
+  rawMp4Url = null,
   onPlaybackSuspended: _onPlaybackSuspended,
   onEnd: _onEnd,
   onPlay: _onPlay,
   onPlaying: _onPlaying
 }) {
+  const { streamingUrl, width, height } = data
   const [hlsStatus, setHlsStatus] = useState<'idle' | 'initialized'>('idle')
   const [videoEl, setVideoEl] = useState<HTMLVideoElement | null>(null)
   const [isNativeHlsSupported, setIsNativeHlsSupported] = useState(false)
@@ -239,7 +246,59 @@ export const VideoPlayer = memo<Props>(function VideoPlayer({
   // Defers destructive cleanup so that React's disappear/reappear cycles
   // (commitMutationEffectsOnFiber, Strict Mode) don't tear down the stream.
   useEffect(() => {
-    if (videoEl == null || url == null) {
+    if (videoEl == null) {
+      return
+    }
+
+    const mp4Url = rawMp4Url ?? data.mp4High ?? data.mp4Medium ?? data.mp4Low
+
+    if (preferMp4 && mp4Url) {
+      if (hlsTeardownRef.current != null) {
+        clearTimeout(hlsTeardownRef.current)
+        hlsTeardownRef.current = null
+      }
+
+      const scheduleTeardown = () => {
+        hlsTeardownRef.current = setTimeout(() => {
+          hlsTeardownRef.current = null
+          const active = activeHlsRef.current
+          if (active != null) {
+            if (videoEl != null) {
+              videoEl.pause()
+              videoEl.src = ''
+            }
+            if (active.hlsInstance != null) {
+              active.hlsInstance.detachMedia()
+              active.hlsInstance.destroy()
+            }
+            activeHlsRef.current = null
+          }
+        }, 0)
+      }
+
+      if (activeHlsRef.current != null && activeHlsRef.current.url === mp4Url) {
+        setHlsStatus('initialized')
+        return scheduleTeardown
+      }
+
+      if (activeHlsRef.current != null) {
+        videoEl.pause()
+        videoEl.src = ''
+        if (activeHlsRef.current.hlsInstance != null) {
+          activeHlsRef.current.hlsInstance.detachMedia()
+          activeHlsRef.current.hlsInstance.destroy()
+        }
+        activeHlsRef.current = null
+        setHlsStatus('idle')
+      }
+
+      videoEl.src = mp4Url
+      activeHlsRef.current = { url: mp4Url, hlsInstance: null }
+      setHlsStatus('initialized')
+      return scheduleTeardown
+    }
+
+    if (url == null) {
       return
     }
 
@@ -331,7 +390,16 @@ export const VideoPlayer = memo<Props>(function VideoPlayer({
       isCancelled = true
       scheduleTeardown()
     }
-  }, [url, videoEl, uniqueVideoId])
+  }, [
+    url,
+    videoEl,
+    uniqueVideoId,
+    preferMp4,
+    rawMp4Url,
+    data.mp4High,
+    data.mp4Medium,
+    data.mp4Low
+  ])
 
   useEffect(() => {
     if (hlsStatus === 'initialized' && autoplay) {

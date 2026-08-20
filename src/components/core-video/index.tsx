@@ -65,6 +65,7 @@ export type Props = {
   disablePoster?: boolean
   posterSizes?: string | null
   preload?: 'metadata' | 'auto' | 'none'
+  preferMp4?: boolean
 }
 
 /**
@@ -79,8 +80,16 @@ export type Props = {
  * when multiple videos are present on the page.
  */
 export const CoreVideo: FC<Props> = ({ data: datoData, ...propsData }) => {
-  const { video, desktopVideo, customPosterImage, autoplay, controls, loop } =
-    datoData
+  const {
+    video,
+    desktopVideo,
+    customPosterImage,
+    autoplay,
+    controls,
+    loop,
+    videoRawMp4FileUrl,
+    desktopVideoRawMp4FileUrl
+  } = datoData
   const {
     uniqueVideoId,
     hasOutsideControls,
@@ -91,7 +100,8 @@ export const CoreVideo: FC<Props> = ({ data: datoData, ...propsData }) => {
     serverPosterUrls,
     disablePoster,
     posterSizes,
-    preload
+    preload,
+    preferMp4
   } = propsData
 
   const [containerWidth, setContainerWidth] = useState<number | null>(null)
@@ -278,6 +288,16 @@ export const CoreVideo: FC<Props> = ({ data: datoData, ...propsData }) => {
       : video.video || null
   }, [video, desktopVideo, isDesktop])
 
+  // Memoize raw MP4 URL selection
+  const rawMp4Url = useMemo(() => {
+    if (isDesktop === null) {
+      return null
+    }
+    return isDesktop === true && desktopVideoRawMp4FileUrl
+      ? desktopVideoRawMp4FileUrl
+      : videoRawMp4FileUrl || null
+  }, [videoRawMp4FileUrl, desktopVideoRawMp4FileUrl, isDesktop])
+
   // Unified poster: LCP (serverPosterUrls) > responsive (customPosterImage) > fallback (posterUrl / Mux thumbnail)
   // Must run before early return so hooks are not conditional.
   // Always pass a width for Mux thumbnails so we never load full-resolution.
@@ -401,6 +421,8 @@ export const CoreVideo: FC<Props> = ({ data: datoData, ...propsData }) => {
           loop={loop}
           uniqueVideoId={effectiveVideoId}
           preload={preload}
+          preferMp4={preferMp4}
+          rawMp4Url={rawMp4Url}
           onEnd={onEnd}
           onPlaying={onPlaying}
         />

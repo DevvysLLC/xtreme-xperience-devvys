@@ -80,6 +80,7 @@ export const SectionSupercarBrandHero = async ({
               layout="fill"
               isFirstSection={isFirstSection}
               preload="auto"
+              preferMp4={true}
               serverPosterUrls={
                 heroImages?.mobile
                   ? {
