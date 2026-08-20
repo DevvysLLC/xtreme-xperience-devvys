@@ -183,10 +183,7 @@ export const SectionTrackSpec: FC<Props> = async ({
                               trackName={model?.nickname ?? specTitle ?? 'this track'}
                               soldOut={true}
                               text={t('events.badge')}
-                              className={clsx(
-                                styles.events__cta,
-                                styles['events__cta--sold-out']
-                              )}
+                              variant="badge"
                             />
                           )}
                         </span>

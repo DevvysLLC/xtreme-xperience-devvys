@@ -2,6 +2,7 @@
 
 import type { FC } from 'react'
 import { useCallback } from 'react'
+import { CoreBadge } from '../core-badge'
 import { CoreCta } from '../core-cta'
 import { useDialog } from '../global-dialog'
 
