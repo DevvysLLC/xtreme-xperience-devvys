@@ -151,34 +151,58 @@ export const SectionTrackSpec: FC<Props> = async ({
                       )
                     : null
 
+                const isSoldOut = event.model?.soldOut ?? false
+
                 return (
                   <li key={event.id} className={styles.events__item}>
-                    <BookingEventLink
-                      event={eventFragment}
-                      track={track ?? null}
-                      setHomeTrack={true}
-                      layoutType="text"
-                      text={event.model?.title}
-                      styleType="black"
-                      className={clsx(
-                        styles.events__cta,
-                        event.model?.soldOut && styles[`events__cta--sold-out`]
-                      )}
-                    >
-                      <CoreDate
-                        start={event.model?.startDate ?? ''}
-                        end={event.model?.endDate ?? undefined}
-                        monthVariant="short"
-                      />
+                    {isSoldOut ? (
+                      <div
+                        className={clsx(
+                          styles.events__cta,
+                          styles['events__cta--sold-out']
+                        )}
+                      >
+                        <CoreDate
+                          start={event.model?.startDate ?? ''}
+                          end={event.model?.endDate ?? undefined}
+                          monthVariant="short"
+                        />
 
-                      <span className={styles.events__item__inner}>
-                        {event.model?.soldOut ? (
-                          <CoreBadge
-                            label={t('events.badge')}
-                            backgroundColor={'oklch(0.232 0.004 264.4 / 0.1)'}
-                            color={'oklch(0 0 0)'}
-                          />
-                        ) : (
+                        <span className={styles.events__item__inner}>
+                          {notifyMeCta ? (
+                            <CoreCta
+                              data={notifyMeCta}
+                              text={t('events.badge')}
+                              layoutType="button"
+                              styleType="white-transparent"
+                              sizeType="small"
+                            />
+                          ) : (
+                            <CoreBadge
+                              label={t('events.badge')}
+                              backgroundColor={'oklch(0.232 0.004 264.4 / 0.1)'}
+                              color={'oklch(0 0 0)'}
+                            />
+                          )}
+                        </span>
+                      </div>
+                    ) : (
+                      <BookingEventLink
+                        event={eventFragment}
+                        track={track ?? null}
+                        setHomeTrack={true}
+                        layoutType="text"
+                        text={event.model?.title}
+                        styleType="black"
+                        className={styles.events__cta}
+                      >
+                        <CoreDate
+                          start={event.model?.startDate ?? ''}
+                          end={event.model?.endDate ?? undefined}
+                          monthVariant="short"
+                        />
+
+                        <span className={styles.events__item__inner}>
                           <CoreCta
                             inert={true}
                             text={t('events.book_now')}
@@ -186,9 +210,9 @@ export const SectionTrackSpec: FC<Props> = async ({
                             styleType="orange"
                             sizeType="small"
                           />
-                        )}
-                      </span>
-                    </BookingEventLink>
+                        </span>
+                      </BookingEventLink>
+                    )}
                   </li>
                 )
               })}

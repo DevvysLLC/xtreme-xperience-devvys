@@ -63,7 +63,8 @@ export const SectionTrackHero: FC<Props> = async ({
     badges: modelBadges,
     trackSvg: modelTrackSvg,
     events: modelEvents,
-    featuredEvent: modelFeaturedEvent
+    featuredEvent: modelFeaturedEvent,
+    notifyMeCta
   } = model ?? {}
 
   const events = modelEvents ?? []
@@ -298,16 +299,27 @@ export const SectionTrackHero: FC<Props> = async ({
 
               <ul className={styles.ctas}>
                 <li>
-                  <BookingEventLink
-                    track={track}
-                    event={bookingEventFragment}
-                    setHomeTrack={true}
-                    text={t('book_now')}
-                    layoutType="button"
-                    styleType="orange"
-                    sizeType="small"
-                    className={styles.cta}
-                  />
+                  {bookingEvent?.model?.soldOut && notifyMeCta ? (
+                    <CoreCta
+                      data={notifyMeCta}
+                      text={t('notify_me')}
+                      layoutType="button"
+                      styleType="orange"
+                      sizeType="small"
+                      className={styles.cta}
+                    />
+                  ) : (
+                    <BookingEventLink
+                      track={track}
+                      event={bookingEventFragment}
+                      setHomeTrack={true}
+                      text={t('book_now')}
+                      layoutType="button"
+                      styleType="orange"
+                      sizeType="small"
+                      className={styles.cta}
+                    />
+                  )}
                 </li>
 
                 <li>

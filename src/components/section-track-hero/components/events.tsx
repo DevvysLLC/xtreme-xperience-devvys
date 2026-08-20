@@ -1,4 +1,5 @@
 import { getTranslations } from 'next-intl/server'
+import clsx from 'clsx'
 import type { FC } from 'react'
 import type { TrackFragment } from '../../../core/dato/fragments/track.typegen'
 import type { TrackModelFragment } from '../../../core/dato/fragments/track-model.typegen'
@@ -39,6 +40,8 @@ export const Events: FC<Props> = async ({
     return null
   }
 
+  const isSoldOut = eventToShow.model.soldOut
+
   const eventFragment =
     eventToShow.model && track
       ? getEventDataFragment(
@@ -49,6 +52,31 @@ export const Events: FC<Props> = async ({
         )
       : null
 
+  if (isSoldOut) {
+    return (
+      <div className={clsx(styles.events, styles['events--sold-out'])}>
+        <CoreDate
+          start={eventToShow.model.startDate}
+          end={eventToShow.model.endDate ?? ''}
+          monthVariant="long"
+        />
+
+        {remainingCount > 0 && (
+          <>
+            {' + '}
+
+            <EventsMoreButton
+              className={styles.events__more}
+              sectionId={sectionId}
+            >
+              {t('events_more', { count: remainingCount })}
+            </EventsMoreButton>
+          </>
+        )}
+      </div>
+    )
+  }
+
   return (
     <div className={styles.events}>
       <BookingEventLink
@@ -58,8 +86,8 @@ export const Events: FC<Props> = async ({
         layoutType="text"
       >
         <CoreDate
-          start={eventToShow.model?.startDate ?? ''}
-          end={eventToShow.model?.endDate ?? ''}
+          start={eventToShow.model.startDate}
+          end={eventToShow.model.endDate ?? ''}
           monthVariant="long"
         />
       </BookingEventLink>
