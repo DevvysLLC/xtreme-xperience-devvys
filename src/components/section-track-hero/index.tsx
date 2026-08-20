@@ -299,15 +299,26 @@ export const SectionTrackHero: FC<Props> = async ({
 
               <ul className={styles.ctas}>
                 <li>
-                  {bookingEvent?.model?.soldOut && notifyMeCta ? (
-                    <CoreCta
-                      data={notifyMeCta}
-                      text={t('notify_me')}
-                      layoutType="button"
-                      styleType="orange"
-                      sizeType="small"
-                      className={styles.cta}
-                    />
+                  {bookingEvent?.model?.soldOut ? (
+                    notifyMeCta ? (
+                      <CoreCta
+                        data={notifyMeCta}
+                        text={t('notify_me')}
+                        layoutType="button"
+                        styleType="orange"
+                        sizeType="small"
+                        className={styles.cta}
+                      />
+                    ) : (
+                      <CoreCta
+                        inert={true}
+                        text={t('notify_me')}
+                        layoutType="button"
+                        styleType="orange"
+                        sizeType="small"
+                        className={styles.cta}
+                      />
+                    )
                   ) : (
                     <BookingEventLink
                       track={track}
