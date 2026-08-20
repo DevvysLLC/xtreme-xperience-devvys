@@ -447,6 +447,7 @@ export type BookingSupercarRecord = RecordInterface & {
   _updatedAt: Scalars['DateTime']['output'];
   badgeOverride: Maybe<CoreBadgeRecord>;
   cartLineItemLabel: Maybe<Scalars['String']['output']>;
+  hideLapSelection: Scalars['BooleanType']['output'];
   id: Scalars['ItemId']['output'];
   isMulticar: Scalars['BooleanType']['output'];
   isRideAlong: Scalars['BooleanType']['output'];

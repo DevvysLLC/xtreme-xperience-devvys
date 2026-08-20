@@ -20,6 +20,7 @@ fragment BookingSupercar on BookingSupercarRecord {
   isMulticar
   isRideAlong
   multicarCount
+  hideLapSelection
   thumbnailOverride {
     ...CoreImage
   }

@@ -447,6 +447,7 @@ type BookingSupercarRecord implements RecordInterface {
   _updatedAt: DateTime!
   badgeOverride: CoreBadgeRecord
   cartLineItemLabel: String
+  hideLapSelection: BooleanType!
   id: ItemId!
   isMulticar: BooleanType!
   isRideAlong: BooleanType!

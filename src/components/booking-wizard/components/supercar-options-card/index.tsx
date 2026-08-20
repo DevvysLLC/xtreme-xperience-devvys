@@ -398,7 +398,7 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
                   )}
                 </form.Field>
 
-                {!bookingSupercar.isRideAlong && (
+                {!bookingSupercar.hideLapSelection && (
                   <form.Field name="quantity">
                     {(field) => {
                       const supercarId = supercar.id ?? rocketRezSeatTypeId
