@@ -10,13 +10,15 @@ export type TrackNotifyMeButtonProps = {
   soldOut: boolean
   className?: string
   text?: string
+  variant?: 'button' | 'badge'
 }
 
 export const TrackNotifyMeButton: FC<TrackNotifyMeButtonProps> = ({
   trackName,
   soldOut,
   className,
-  text = 'Notify Me'
+  text = 'Notify Me',
+  variant = 'button'
 }) => {
   const { showDialog } = useDialog()
 
@@ -36,6 +38,30 @@ export const TrackNotifyMeButton: FC<TrackNotifyMeButtonProps> = ({
       onConfirm: () => {}
     })
   }, [trackName, showDialog, soldOut])
+
+  if (variant === 'badge') {
+    return (
+      <button
+        type="button"
+        onClick={handleNotifyMe}
+        className={className}
+        style={{
+          border: 'none',
+          background: 'none',
+          padding: 0,
+          margin: 0,
+          cursor: 'pointer',
+          display: 'inline-flex'
+        }}
+      >
+        <CoreBadge
+          label={text}
+          backgroundColor={'oklch(0.232 0.004 264.4 / 0.1)'}
+          color={'oklch(0 0 0)'}
+        />
+      </button>
+    )
+  }
 
   return (
     <CoreCta
