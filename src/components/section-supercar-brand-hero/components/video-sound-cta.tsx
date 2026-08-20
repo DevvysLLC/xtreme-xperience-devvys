@@ -50,29 +50,31 @@ export const VideoSoundCta: FC<Props> = ({ uniqueVideoId }) => {
   const handleClick = () => {
     setUserInteracted(true)
 
+    const { videoElement: latestVideoElement } = getVideoStore(uniqueVideoId).getState()
+
     if (isPlaying) {
       const newMuted = !isMuted
-      if (videoElement) {
-        videoElement.muted = newMuted
+      if (latestVideoElement) {
+        latestVideoElement.muted = newMuted
         if (!newMuted) {
-          videoElement.play().catch(() => {})
+          latestVideoElement.play().catch(() => {})
         }
       }
       setMuted(newMuted)
       return
     }
 
-    if (videoElement) {
-      videoElement.muted = false
-      videoElement
+    if (latestVideoElement) {
+      latestVideoElement.muted = false
+      latestVideoElement
         .play()
         .then(() => {
           setMuted(false)
           play()
         })
         .catch(() => {
-          videoElement.muted = true
-          videoElement
+          latestVideoElement.muted = true
+          latestVideoElement
             .play()
             .then(() => {
               setMuted(true)
