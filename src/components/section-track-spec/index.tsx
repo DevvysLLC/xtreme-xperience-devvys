@@ -16,6 +16,7 @@ import { CoreIcon } from '../core-icon'
 import { CoreImage } from '../core-image'
 import { CoreSVGImage } from '../core-svg-upload'
 import { CoreTextMarkdown } from '../core-text-markdown'
+import { TrackNotifyMeButton } from '../track-notify-me-button'
 import { TrackSpecVideo } from './components/track-spec-video'
 import type { SectionTrackSpecFragment } from './section-track-spec.typegen'
 import styles from './style.module.scss'
@@ -178,10 +179,14 @@ export const SectionTrackSpec: FC<Props> = async ({
                               sizeType="small"
                             />
                           ) : (
-                            <CoreBadge
-                              label={t('events.badge')}
-                              backgroundColor={'oklch(0.232 0.004 264.4 / 0.1)'}
-                              color={'oklch(0 0 0)'}
+                            <TrackNotifyMeButton
+                              trackName={model?.nickname ?? specTitle ?? 'this track'}
+                              soldOut={true}
+                              text={t('events.badge')}
+                              className={clsx(
+                                styles.events__cta,
+                                styles['events__cta--sold-out']
+                              )}
                             />
                           )}
                         </span>

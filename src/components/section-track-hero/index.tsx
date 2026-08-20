@@ -22,6 +22,7 @@ import { CoreTextMarkdown } from '../core-text-markdown'
 import { CoreVideo } from '../core-video'
 import { CoreVideoLcp } from '../core-video-lcp'
 import { Events } from './components/events'
+import { TrackNotifyMeButton } from '../track-notify-me-button'
 import type { SectionTrackHeroFragment } from './section-track-hero.typegen'
 import styles from './style.module.scss'
 
@@ -310,12 +311,10 @@ export const SectionTrackHero: FC<Props> = async ({
                         className={styles.cta}
                       />
                     ) : (
-                      <CoreCta
-                        inert={true}
+                      <TrackNotifyMeButton
+                        trackName={modelNickname ?? datoTitle ?? 'this track'}
+                        soldOut={true}
                         text={t('notify_me')}
-                        layoutType="button"
-                        styleType="orange"
-                        sizeType="small"
                         className={styles.cta}
                       />
                     )
