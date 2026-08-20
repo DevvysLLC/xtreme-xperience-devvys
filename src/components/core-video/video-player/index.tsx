@@ -246,11 +246,15 @@ export const VideoPlayer = memo<Props>(function VideoPlayer({
   // Defers destructive cleanup so that React's disappear/reappear cycles
   // (commitMutationEffectsOnFiber, Strict Mode) don't tear down the stream.
   useEffect(() => {
-    if (videoEl == null) {
+    if (videoEl == null || isDesktop === null) {
       return
     }
 
-    const mp4Url = rawMp4Url ?? data.mp4High ?? data.mp4Medium ?? data.mp4Low
+    const mp4Url =
+      rawMp4Url ??
+      (isDesktop === true
+        ? (data.mp4Medium ?? data.mp4High ?? data.mp4Low)
+        : (data.mp4Low ?? data.mp4Medium ?? data.mp4High))
 
     if (preferMp4 && mp4Url) {
       if (hlsTeardownRef.current != null) {
@@ -398,7 +402,8 @@ export const VideoPlayer = memo<Props>(function VideoPlayer({
     rawMp4Url,
     data.mp4High,
     data.mp4Medium,
-    data.mp4Low
+    data.mp4Low,
+    isDesktop
   ])
 
   useEffect(() => {
