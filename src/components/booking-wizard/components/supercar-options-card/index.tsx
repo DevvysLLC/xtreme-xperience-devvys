@@ -398,19 +398,21 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
                   )}
                 </form.Field>
 
-                <form.Field name="quantity">
-                  {(field) => {
-                    const supercarId = supercar.id ?? rocketRezSeatTypeId
-                    return (
-                      <SupercarOptionsCardLaps
-                        supercarId={supercarId}
-                        field={field}
-                        schedules={schedules}
-                        rocketRezSeatTypeId={rocketRezSeatTypeId}
-                      />
-                    )
-                  }}
-                </form.Field>
+                {!bookingSupercar.isRideAlong && (
+                  <form.Field name="quantity">
+                    {(field) => {
+                      const supercarId = supercar.id ?? rocketRezSeatTypeId
+                      return (
+                        <SupercarOptionsCardLaps
+                          supercarId={supercarId}
+                          field={field}
+                          schedules={schedules}
+                          rocketRezSeatTypeId={rocketRezSeatTypeId}
+                        />
+                      )
+                    }}
+                  </form.Field>
+                )}
 
                 <form.Field name="scheduleId">
                   {(field) => {

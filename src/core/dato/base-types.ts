@@ -452,7 +452,6 @@ export type BookingSupercarRecord = RecordInterface & {
   isRideAlong: Scalars['BooleanType']['output'];
   multicarCount: Maybe<Scalars['IntType']['output']>;
   priceOverride: Maybe<CorePriceRecord>;
-  restrictToEvents: Array<EventRecord>;
   rocketRezSeatTypeId: Scalars['String']['output'];
   rocketRezSeatTypeIdOverrides: Array<BookingSeatTypeIdOverrideRecord>;
   supercar: SupercarRecord;
@@ -1034,6 +1033,16 @@ export type DateFilter = {
   lt?: InputMaybe<Scalars['Date']['input']>;
   lte?: InputMaybe<Scalars['Date']['input']>;
   neq?: InputMaybe<Scalars['Date']['input']>;
+};
+
+export type DateTimeFilter = {
+  eq?: InputMaybe<Scalars['DateTime']['input']>;
+  exists?: InputMaybe<Scalars['BooleanType']['input']>;
+  gt?: InputMaybe<Scalars['DateTime']['input']>;
+  gte?: InputMaybe<Scalars['DateTime']['input']>;
+  lt?: InputMaybe<Scalars['DateTime']['input']>;
+  lte?: InputMaybe<Scalars['DateTime']['input']>;
+  neq?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 export type EventModelFilter = {
@@ -5081,6 +5090,11 @@ export type TextFilter = {
 export type TrackConfigModelFilter = {
   AND?: InputMaybe<Array<InputMaybe<TrackConfigModelFilter>>>;
   OR?: InputMaybe<Array<InputMaybe<TrackConfigModelFilter>>>;
+  campaignStickyBarCtaLink?: InputMaybe<StringFilter>;
+  campaignStickyBarCtaTitle?: InputMaybe<StringFilter>;
+  campaignStickyBarHeading?: InputMaybe<StringFilter>;
+  campaignStickyBarTimerEnd?: InputMaybe<DateTimeFilter>;
+  enableCampaignStickyBar?: InputMaybe<BooleanFilter>;
   handle?: InputMaybe<SlugFilter>;
   id?: InputMaybe<ItemIdFilter>;
   seo?: InputMaybe<SeoFilter>;
@@ -5100,6 +5114,11 @@ export type TrackConfigRecord = RecordInterface & {
   _status: ItemStatus;
   _unpublishingScheduledAt: Maybe<Scalars['DateTime']['output']>;
   _updatedAt: Scalars['DateTime']['output'];
+  campaignStickyBarCtaLink: Maybe<Scalars['String']['output']>;
+  campaignStickyBarCtaTitle: Maybe<Scalars['String']['output']>;
+  campaignStickyBarHeading: Maybe<Scalars['String']['output']>;
+  campaignStickyBarTimerEnd: Maybe<Scalars['DateTime']['output']>;
+  enableCampaignStickyBar: Scalars['BooleanType']['output'];
   handle: Maybe<Scalars['String']['output']>;
   id: Scalars['ItemId']['output'];
   seo: Maybe<SeoField>;

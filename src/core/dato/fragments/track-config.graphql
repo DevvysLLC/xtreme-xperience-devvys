@@ -11,10 +11,10 @@ fragment TrackConfig on TrackConfigRecord {
     noIndex
     twitterCard
   }
-  # Note: Uncomment these fields once they have been added to the Track Config model in DatoCMS:
-  # enableCampaignStickyBar
-  # campaignStickyBarHeading
-  # campaignStickyBarTimerEnd
-  # campaignStickyBarCtaTitle
-  # campaignStickyBarCtaLink
+  # Campaign Sticky Bar Fields
+  enableCampaignStickyBar
+  campaignStickyBarHeading
+  campaignStickyBarTimerEnd
+  campaignStickyBarCtaTitle
+  campaignStickyBarCtaLink
 }

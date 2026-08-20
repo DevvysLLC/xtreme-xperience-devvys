@@ -22,25 +22,14 @@ export const TemplateTrackDetailPage = async ({
   const handle = config?.handle ?? ''
   const trackTitle = config?.title ?? 'Track'
 
-  // Extract campaign fields with fallback to support safe local build before CMS fields are added.
-  // const campaignConfig = config
-  //   ? {
-  //       enableCampaignStickyBar: (config as any).enableCampaignStickyBar ?? false,
-  //       campaignStickyBarHeading: (config as any).campaignStickyBarHeading ?? null,
-  //       campaignStickyBarTimerEnd: (config as any).campaignStickyBarTimerEnd ?? null,
-  //       campaignStickyBarCtaTitle: (config as any).campaignStickyBarCtaTitle ?? null,
-  //       campaignStickyBarCtaLink: (config as any).campaignStickyBarCtaLink ?? null
-  //     }
-  //   : null
-
-  // Active mock campaignConfig for local testing/preview (uncomment the above block to connect to DatoCMS live later)
+  // Extract campaign fields from DatoCMS
   const campaignConfig = config
     ? {
-        enableCampaignStickyBar: true,
-        campaignStickyBarHeading: "Portland Special - Save 20% on bookings today!",
-        campaignStickyBarTimerEnd: new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString(), // 3 hours timer
-        campaignStickyBarCtaTitle: "Book Portland Now",
-        campaignStickyBarCtaLink: "/booking?track=portland"
+        enableCampaignStickyBar: config.enableCampaignStickyBar ?? false,
+        campaignStickyBarHeading: config.campaignStickyBarHeading ?? null,
+        campaignStickyBarTimerEnd: config.campaignStickyBarTimerEnd ?? null,
+        campaignStickyBarCtaTitle: config.campaignStickyBarCtaTitle ?? null,
+        campaignStickyBarCtaLink: config.campaignStickyBarCtaLink ?? null
       }
     : null
 
