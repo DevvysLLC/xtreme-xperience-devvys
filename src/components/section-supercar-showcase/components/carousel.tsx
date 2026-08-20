@@ -11,8 +11,7 @@ import {
 } from 'react'
 import type { Swiper as SwiperType } from 'swiper'
 import 'swiper/css'
-import 'swiper/css/thumbs'
-import { Navigation, Thumbs } from 'swiper/modules'
+import { Navigation } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { TRANSITIONS } from '../../../config/transitions'
 import { getRecordLink } from '../../../utils/get-record-link'
@@ -56,6 +55,10 @@ type CarouselProps = {
     exploreCar: string
   }
   allowSlideLinkDesktop: boolean
+  title?: string | null
+  titleColor?: string
+  HeadingTag?: 'h1' | 'h2'
+  viewAllCarsCta: ReactNode
 }
 
 export const Carousel: FC<CarouselProps> = ({
@@ -65,10 +68,13 @@ export const Carousel: FC<CarouselProps> = ({
   detailsById,
   mode,
   translations,
-  allowSlideLinkDesktop
+  allowSlideLinkDesktop,
+  title,
+  titleColor,
+  HeadingTag = 'h2',
+  viewAllCarsCta
 }) => {
   const [activeIndex, setActiveIndex] = useState(0)
-  const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null)
   const mainSwiperRef = useRef<SwiperType | null>(null)
 
   const packageTypes = useMemo(() => {
@@ -85,83 +91,77 @@ export const Carousel: FC<CarouselProps> = ({
     () => packageTypes[0] ?? ''
   )
 
-  const filteredSupercarsMeta = useMemo(() => {
-    if (!activeTab) {
-      return supercarsMeta
-    }
-    return supercarsMeta.filter((car) => car.packageType === activeTab)
-  }, [supercarsMeta, activeTab])
+  // Combine single and multi-car packages into a single swipe flow, singles first
+  const allSupercarsSortedData = useMemo(() => {
+    const singles = supercarsData.filter((car) => car.model?.packageType === 'single')
+    const multis = supercarsData.filter((car) => car.model?.packageType === 'multi')
+    return [...singles, ...multis]
+  }, [supercarsData])
 
-  const filteredSupercarsData = useMemo(() => {
-    if (!activeTab) {
-      return supercarsData
-    }
-    return supercarsData.filter((car) => car.model?.packageType === activeTab)
-  }, [supercarsData, activeTab])
+  const allSupercarsSortedMeta = useMemo(() => {
+    const singles = supercarsMeta.filter((car) => car.packageType === 'single')
+    const multis = supercarsMeta.filter((car) => car.packageType === 'multi')
+    return [...singles, ...multis]
+  }, [supercarsMeta])
 
   const handleSlideChange = useCallback((swiper: SwiperType) => {
-    setActiveIndex(swiper.realIndex)
-  }, [])
-
-  const handleThumbsSwiper = useCallback((swiper: SwiperType) => {
-    setThumbsSwiper(swiper)
-  }, [])
+    const index = swiper.realIndex
+    const activeCarMeta = allSupercarsSortedMeta[index]
+    if (activeCarMeta?.packageType) {
+      setActiveTab(activeCarMeta.packageType as KnownPackageType)
+    }
+    setActiveIndex(index)
+  }, [allSupercarsSortedMeta])
 
   const handleMainSwiper = useCallback((swiper: SwiperType) => {
     mainSwiperRef.current = swiper
   }, [])
 
-  useEffect(() => {
-    const main = mainSwiperRef.current
-    if (main && !main.destroyed && thumbsSwiper && !thumbsSwiper.destroyed) {
-      main.thumbs.swiper = thumbsSwiper
-      main.thumbs.init()
-      main.thumbs.update(true)
-    }
-  }, [thumbsSwiper])
+  const slideCount = allSupercarsSortedMeta.length
 
-  const slideCount = filteredSupercarsMeta.length
-
-  // Prefetch images for upcoming slides when activeIndex changes (wrap-around for loop mode)
-  // Prefetch both mobile and desktop URLs since CoreImage switches based on viewport
+  // Prefetch images for upcoming slides when activeIndex changes
   useEffect(() => {
     if (slideCount === 0) {
       return
     }
     for (let i = 1; i <= PREFETCH_AHEAD_COUNT; i++) {
       const prefetchIndex = (activeIndex + i) % slideCount
-      const carToPrefetch = filteredSupercarsMeta[prefetchIndex]
+      const carToPrefetch = allSupercarsSortedMeta[prefetchIndex]
       if (carToPrefetch) {
-        // Prefetch mobile image
         if (carToPrefetch.imageUrl) {
           const img = new Image()
           img.src = carToPrefetch.imageUrl
         }
-        // Prefetch desktop image
         if (carToPrefetch.desktopImageUrl) {
           const imgDesktop = new Image()
           imgDesktop.src = carToPrefetch.desktopImageUrl
         }
       }
     }
-  }, [activeIndex, filteredSupercarsMeta, slideCount])
+  }, [activeIndex, allSupercarsSortedMeta, slideCount])
+
+  const firstMultiIndex = useMemo(() => {
+    return allSupercarsSortedMeta.findIndex((car) => car.packageType === 'multi')
+  }, [allSupercarsSortedMeta])
 
   const handleTabChange = useCallback((tab: KnownPackageType) => {
-    mainSwiperRef.current = null
-    setThumbsSwiper(null)
+    const main = mainSwiperRef.current
+    if (main && !main.destroyed) {
+      const targetIndex = tab === 'single' ? 0 : firstMultiIndex
+      if (targetIndex !== -1) {
+        if (main.slideToLoop) {
+          main.slideToLoop(targetIndex)
+        } else {
+          main.slideTo(targetIndex)
+        }
+      }
+    }
     setActiveTab(tab)
-    setActiveIndex(0)
-  }, [])
+  }, [firstMultiIndex])
 
-  const activeCar = filteredSupercarsMeta[activeIndex]
+  const activeCar = allSupercarsSortedMeta[activeIndex]
   const hasTabs = packageTypes.length > 1
-  // Prevent Swiper loop warnings when current filtered set is too small.
-  const shouldLoopMainSlider = filteredSupercarsData.length > 2
-
-  const thumbsConfig =
-    thumbsSwiper && !thumbsSwiper.destroyed
-      ? { swiper: thumbsSwiper }
-      : undefined
+  const shouldLoopMainSlider = allSupercarsSortedData.length > 2
 
   const packageTypeLabels: Record<KnownPackageType, string> = {
     single: translations.packageTypeSingle,
@@ -177,6 +177,42 @@ export const Carousel: FC<CarouselProps> = ({
 
   return (
     <div className={styles.showcase}>
+      {/* 1. Selector Tabs (Moved to the top) */}
+      {hasTabs && (
+        <div className={styles.thumbs__tabs}>
+          {packageTypes.map((type) => (
+            <CoreCta
+              key={type}
+              text={packageTypeLabels[type]}
+              href={null}
+              layoutType="pill"
+              styleType={getTabStyleType(activeTab === type)}
+              sizeType="small"
+              onClick={() => {
+                handleTabChange(type)
+              }}
+              className={clsx(
+                styles.showcase__tab,
+                activeTab === type && styles['showcase__tab--active']
+              )}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* 2. Showcase Section Header / Title */}
+      {title && (
+        <header className={styles.section__header}>
+          <HeadingTag
+            className={styles.section__title}
+            style={{ color: titleColor }}
+          >
+            {title}
+          </HeadingTag>
+        </header>
+      )}
+
+      {/* 3. Main Swiper Slider */}
       <div className={styles.main}>
         <button
           type="button"
@@ -186,8 +222,7 @@ export const Carousel: FC<CarouselProps> = ({
           <CoreIcon icon="chevron-left" />
         </button>
         <Swiper
-          key={`main-${activeTab}`}
-          modules={[Thumbs, Navigation]}
+          modules={[Navigation]}
           slidesPerView={1.15}
           loop={shouldLoopMainSlider}
           centeredSlides={true}
@@ -195,7 +230,6 @@ export const Carousel: FC<CarouselProps> = ({
             nextEl: `.${styles.nav__next}`,
             prevEl: `.${styles.nav__prev}`
           }}
-          thumbs={thumbsConfig}
           speed={TRANSITIONS.DEFAULT_SWIPER_DURATION}
           onSlideChange={handleSlideChange}
           onSwiper={handleMainSwiper}
@@ -207,7 +241,7 @@ export const Carousel: FC<CarouselProps> = ({
             }
           }}
         >
-          {filteredSupercarsData.map((car) => (
+          {allSupercarsSortedData.map((car) => (
             <SwiperSlide key={`main-slideshow-${car.id}`}>
               <SupercarSlide data={car} />
 
@@ -234,48 +268,11 @@ export const Carousel: FC<CarouselProps> = ({
         </button>
       </div>
 
+      {/* 4. Supercar Details Panel (Contains specs & CTA) */}
       {activeCar && detailsById[activeCar.id]}
 
-      <div className={styles.thumbs}>
-        {hasTabs && (
-          <div className={styles.thumbs__tabs}>
-            {packageTypes.map((type) => (
-              <CoreCta
-                key={type}
-                text={packageTypeLabels[type]}
-                href={null}
-                layoutType="pill"
-                styleType={getTabStyleType(activeTab === type)}
-                sizeType="small"
-                onClick={() => {
-                  handleTabChange(type)
-                }}
-                className={clsx(
-                  styles.showcase__tab,
-                  activeTab === type && styles['showcase__tab--active']
-                )}
-              />
-            ))}
-          </div>
-        )}
-
-        <Swiper
-          key={`thumbs-${activeTab}`}
-          modules={[Thumbs]}
-          onSwiper={handleThumbsSwiper}
-          slidesPerView="auto"
-          spaceBetween={8}
-          watchSlidesProgress={true}
-          speed={TRANSITIONS.DEFAULT_SWIPER_DURATION}
-          className={styles.thumbs__slider}
-        >
-          {filteredSupercarsData.map((car) => (
-            <SwiperSlide key={car.id} className={styles.thumbs__slide}>
-              {thumbnailsById[car.id]}
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </div>
+      {/* 5. View All Cars Link */}
+      {viewAllCarsCta}
     </div>
   )
 }

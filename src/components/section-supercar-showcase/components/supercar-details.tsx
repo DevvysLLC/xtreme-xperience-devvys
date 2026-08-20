@@ -35,6 +35,7 @@ export const SupercarDetails: FC<SupercarDetailsProps> = ({
     <div
       className={clsx(styles.details, isMultiCar && styles['details--multi'])}
     >
+      {/* 1. Brand/Model Title & Logo */}
       <div className={styles.details__content}>
         {isImage(activeModel?.logoMaker) && (
           <div className={styles.details__content__logo}>
@@ -51,91 +52,72 @@ export const SupercarDetails: FC<SupercarDetailsProps> = ({
           </strong>
         </h3>
       </div>
-      <div className={styles.details__specs}>
-        {!isMultiCar && (
-          <div className={styles.details__specs__group}>
-            {activeModel?.topSpeed && (
-              <div className={styles.details__spec}>
-                <span className={styles.details__spec__label}>
-                  <span className={styles.details__spec__icon}>
-                    <CoreIcon icon="speed" />
-                  </span>
-                  <span className={styles.details__spec__label__text}>
-                    {translations.topSpeed}
-                  </span>
-                </span>
-                <span className={styles.details__spec__value}>
-                  {activeModel.topSpeed}
-                </span>
-              </div>
-            )}
-            {activeModel?.horsepower && (
-              <div className={styles.details__spec}>
-                <span className={styles.details__spec__label}>
-                  <span className={styles.details__spec__icon}>
-                    <CoreIcon icon="horsepower" />
-                  </span>
-                  <span className={styles.details__spec__label__text}>
-                    {translations.horsepower}
-                  </span>
-                </span>
-                <span className={styles.details__spec__value}>
-                  {activeModel.horsepower}
-                </span>
-              </div>
-            )}
-            {activeModel?.zeroToSixty && (
-              <div className={styles.details__spec}>
-                <span className={styles.details__spec__label}>
-                  <span className={styles.details__spec__icon}>
-                    <CoreIcon icon="mph" />
-                  </span>
-                  <span className={styles.details__spec__label__text}>
-                    {translations.zeroToSixty}
-                  </span>
-                </span>
-                <span className={styles.details__spec__value}>
-                  {activeModel.zeroToSixty}
-                </span>
-              </div>
-            )}
-          </div>
-        )}
-        <div className={styles.details__specs__group}>
-          {activeModel?.displayPrice && (
+
+      {/* 2. Starting Price */}
+      {activeModel?.displayPrice && (
+        <div className={styles.details__price}>
+          <span className={styles.details__price__label}>
+            {translations.startingAt}
+          </span>
+          <span className={styles.details__price__value}>
+            <CorePrice data={activeModel.displayPrice} />
+          </span>
+        </div>
+      )}
+
+      {/* 3. Specs / Stats (only for single cars) */}
+      {!isMultiCar && (
+        <div className={styles.details__specs}>
+          {activeModel?.topSpeed && (
             <div className={styles.details__spec}>
               <span className={styles.details__spec__label}>
-                {translations.startingAt}
+                <span className={styles.details__spec__icon}>
+                  <CoreIcon icon="speed" />
+                </span>
+                <span className={styles.details__spec__label__text}>
+                  {translations.topSpeed}
+                </span>
               </span>
               <span className={styles.details__spec__value}>
-                <CorePrice data={activeModel.displayPrice} />
+                {activeModel.topSpeed}
               </span>
             </div>
           )}
-
-          {isMultiCar && activeConfig?.handle && (
-            <div
-              className={clsx(
-                styles.details__cta,
-                styles['details__cta--multi']
-              )}
-            >
-              <CoreCta
-                href={getRecordLink(
-                  { handle: activeConfig.handle },
-                  'supercar'
-                )}
-                text={translations.exploreCar}
-                layoutType="button"
-                styleType={mode === 'black' ? 'white' : 'black'}
-                sizeType="medium"
-              />
+          {activeModel?.horsepower && (
+            <div className={styles.details__spec}>
+              <span className={styles.details__spec__label}>
+                <span className={styles.details__spec__icon}>
+                  <CoreIcon icon="horsepower" />
+                </span>
+                <span className={styles.details__spec__label__text}>
+                  {translations.horsepower}
+                </span>
+              </span>
+              <span className={styles.details__spec__value}>
+                {activeModel.horsepower}
+              </span>
+            </div>
+          )}
+          {activeModel?.zeroToSixty && (
+            <div className={styles.details__spec}>
+              <span className={styles.details__spec__label}>
+                <span className={styles.details__spec__icon}>
+                  <CoreIcon icon="mph" />
+                </span>
+                <span className={styles.details__spec__label__text}>
+                  {translations.zeroToSixty}
+                </span>
+              </span>
+              <span className={styles.details__spec__value}>
+                {activeModel.zeroToSixty}
+              </span>
             </div>
           )}
         </div>
-      </div>
+      )}
 
-      {!isMultiCar && activeConfig?.handle && (
+      {/* 4. Explore Car CTA */}
+      {activeConfig?.handle && (
         <div className={styles.details__cta}>
           <CoreCta
             href={getRecordLink({ handle: activeConfig.handle }, 'supercar')}

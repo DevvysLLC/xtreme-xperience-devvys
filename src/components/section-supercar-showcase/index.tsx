@@ -81,6 +81,22 @@ export const SectionSupercarShowcase: FC<Props> = async ({
     exploreCar: t('explore_car')
   }
 
+  const viewAllCarsCta = (
+    <div className={styles.section__actions}>
+      <CoreCta
+        href={ROUTES.FRONTEND.SUPERCARS.LISTING}
+        text={t('view_all_cars')}
+        layoutType="underline"
+        styleType={
+          config?.mode === 'black' || config?.mode === 'gray'
+            ? 'white'
+            : 'black'
+        }
+        sizeType="medium"
+      />
+    </div>
+  )
+
   return (
     <section
       id={getSectionId(config?.customId, id)}
@@ -91,17 +107,6 @@ export const SectionSupercarShowcase: FC<Props> = async ({
       style={getSectionConfigStyles(config)}
       data-ga-section-name="section-supercar-showcase"
     >
-      {title && (
-        <header className={styles.section__header}>
-          <HeadingTag
-            className={styles.section__title}
-            style={{ color: titleColor?.hex }}
-          >
-            {title}
-          </HeadingTag>
-        </header>
-      )}
-
       <Carousel
         supercarsMeta={supercarsMeta}
         supercarsData={supercars}
@@ -110,21 +115,11 @@ export const SectionSupercarShowcase: FC<Props> = async ({
         mode={config?.mode}
         allowSlideLinkDesktop={allowSlideLinkDesktop}
         translations={carouselTranslations}
+        title={title}
+        titleColor={titleColor?.hex}
+        HeadingTag={HeadingTag}
+        viewAllCarsCta={viewAllCarsCta}
       />
-
-      <div className={styles.section__actions}>
-        <CoreCta
-          href={ROUTES.FRONTEND.SUPERCARS.LISTING}
-          text={t('view_all_cars')}
-          layoutType="underline"
-          styleType={
-            config?.mode === 'black' || config?.mode === 'gray'
-              ? 'white'
-              : 'black'
-          }
-          sizeType="medium"
-        />
-      </div>
     </section>
   )
 }

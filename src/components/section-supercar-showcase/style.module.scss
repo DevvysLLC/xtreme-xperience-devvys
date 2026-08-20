@@ -175,6 +175,7 @@
     border-bottom: 1px dashed sg.color(black-20);
     flex-direction: row;
     align-items: flex-end;
+    gap: sg.spacing(large);
   }
 
   &--multi {
@@ -189,6 +190,7 @@
     flex-direction: column;
     gap: sg.spacing(xsmall);
     text-align: center;
+    order: 1;
 
     @include sg.min(tabletLarge) {
       flex-direction: row;
@@ -227,11 +229,50 @@
     }
   }
 
+  &__price {
+    display: flex;
+    flex-direction: column;
+    gap: sg.spacing(xsmall);
+    justify-content: flex-end;
+    align-items: center;
+    position: relative;
+    min-width: u.rem-calc(115);
+    order: 2;
+
+    &__value {
+      font-family: sg.font-family('barlow-semi-condensed');
+      font-size: sg.font-size(medium);
+      font-weight: sg.font-weight(700);
+      line-height: sg.line-height('100%');
+      letter-spacing: sg.letter-spacing('1%');
+      text-transform: uppercase;
+
+      @include sg.min(tabletLarge) {
+        font-size: sg.font-size(large);
+      }
+
+      * {
+        line-height: sg.line-height('100%');
+      }
+    }
+
+    &__label {
+      position: relative;
+      font-family: sg.font-family('barlow');
+      font-size: sg.font-size(xxsmall);
+      font-weight: sg.font-weight(400);
+      line-height: sg.line-height('100%');
+      letter-spacing: sg.letter-spacing('1%');
+      text-transform: uppercase;
+    }
+  }
+
   &__specs {
     display: flex;
     gap: sg.spacing(large);
     flex-direction: column;
     width: 100%;
+    order: 4;
 
     @include sg.min(tabletLandscape) {
       flex-direction: row;
@@ -241,23 +282,6 @@
 
     #{$details}--multi & {
       padding-top: 0;
-    }
-
-    &__group {
-      display: flex;
-      justify-content: center;
-
-      @include sg.min(tabletLandscape) {
-        gap: sg.spacing(large);
-      }
-
-      #{$details}--multi & {
-        flex-direction: column;
-
-        @include sg.min(tabletLandscape) {
-          flex-direction: row;
-        }
-      }
     }
   }
 
@@ -319,6 +343,10 @@
     position: relative;
     right: auto;
     width: 100%;
+    order: 3;
+    display: flex;
+    justify-content: center;
+    animation: ctaAppear 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
     @include sg.min(tabletPortrait) {
       width: auto;
@@ -355,6 +383,17 @@
         }
       }
     }
+  }
+}
+
+@keyframes ctaAppear {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -418,6 +457,7 @@
     display: flex;
     justify-content: center;
     gap: sg.spacing(xxsmall);
+    margin-bottom: sg.spacing(regular);
   }
 }
 
