@@ -274,7 +274,9 @@
   &__specs {
     display: flex;
     gap: sg.spacing(large);
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
     width: 100%;
     order: 4;
 
@@ -283,7 +285,6 @@
     }
 
     @include sg.min(tabletLandscape) {
-      flex-direction: row;
       width: auto;
       padding-top: u.rem-calc(30);
     }
