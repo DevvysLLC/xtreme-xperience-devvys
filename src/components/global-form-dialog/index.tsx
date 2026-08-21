@@ -94,7 +94,8 @@ export const GlobalFormDialog: FC = () => {
         styles.formDialog,
         size && styles[`formDialog--size-${size}`],
         width && styles[`formDialog--width-${width}`],
-        height && styles[`formDialog--height-${height}`]
+        height && styles[`formDialog--height-${height}`],
+        iframeEmbed && styles['formDialog--has-iframe']
       )}
       panelClassName={clsx(
         styles.formDialog__panel,
@@ -102,7 +103,10 @@ export const GlobalFormDialog: FC = () => {
         width && styles[`formDialog__panel--width-${width}`],
         height && styles[`formDialog__panel--height-${height}`]
       )}
-      contentClassName={styles.formDialog__drawerContent}
+      contentClassName={clsx(
+        styles.formDialog__drawerContent,
+        iframeEmbed && styles['formDialog__drawerContent--has-iframe']
+      )}
     >
       {isLoading && (
         <div className={styles.formDialog__loading}>

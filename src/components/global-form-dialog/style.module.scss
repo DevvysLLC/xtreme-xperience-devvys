@@ -78,6 +78,7 @@
     flex-direction: column;
     gap: sg.spacing(regular);
 
+    .formDialog--has-iframe &,
     .formDialog--size-full &,
     .formDialog--size-half &,
     .formDialog--size-large &,
@@ -104,6 +105,7 @@
     aspect-ratio: 1 / 1;
     overflow: auto;
 
+    .formDialog--has-iframe &,
     .formDialog--size-full &,
     .formDialog--size-half &,
     .formDialog--size-large &,
@@ -140,6 +142,7 @@
   }
 
   &__drawerContent {
+    &--has-iframe,
     .formDialog--size-full &,
     .formDialog--size-half &,
     .formDialog--size-large &,
