@@ -9,6 +9,63 @@
     text-align: left;
   }
 
+  &__panel {
+    &--size-full {
+      top: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      left: 0 !important;
+      transform: none !important;
+      width: 100vw !important;
+      max-width: 100vw !important;
+      height: 100dvh !important;
+      max-height: 100dvh !important;
+      border-radius: 0 !important;
+      padding: 0 !important;
+    }
+
+    &--size-half {
+      top: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      left: auto !important;
+      transform: none !important;
+      width: 100vw !important;
+      max-width: 100vw !important;
+      height: 100dvh !important;
+      max-height: 100dvh !important;
+      border-radius: 0 !important;
+      padding: 0 !important;
+
+      @include sg.min(tabletLandscape) {
+        width: 50vw !important;
+        max-width: 50vw !important;
+        right: 0 !important;
+      }
+    }
+
+    &--size-large {
+      width: 90vw !important;
+      max-width: u.rem-calc(960) !important;
+      height: 90dvh !important;
+      max-height: 90dvh !important;
+    }
+
+    &--size-medium {
+      width: 75vw !important;
+      max-width: u.rem-calc(720) !important;
+      height: 75dvh !important;
+      max-height: 75dvh !important;
+    }
+
+    &--size-small {
+      width: 50vw !important;
+      max-width: u.rem-calc(400) !important;
+      height: 50dvh !important;
+      max-height: 50dvh !important;
+    }
+  }
+
   &__loading {
     display: flex;
     justify-content: center;
@@ -20,6 +77,20 @@
     display: flex;
     flex-direction: column;
     gap: sg.spacing(regular);
+
+    .formDialog--size-full &,
+    .formDialog--size-half &,
+    .formDialog--size-large &,
+    .formDialog--size-medium & {
+      height: 100%;
+      flex: 1;
+      padding: sg.spacing(medium);
+    }
+
+    .formDialog--size-full &,
+    .formDialog--size-half & {
+      padding: 0;
+    }
   }
 
   &__error {
@@ -32,6 +103,20 @@
     width: 100%;
     aspect-ratio: 1 / 1;
     overflow: auto;
+
+    .formDialog--size-full &,
+    .formDialog--size-half &,
+    .formDialog--size-large &,
+    .formDialog--size-medium & {
+      aspect-ratio: auto;
+      flex: 1;
+      height: 100%;
+
+      iframe {
+        height: 100%;
+        min-height: 100%;
+      }
+    }
 
     iframe {
       display: block;
@@ -50,5 +135,14 @@
     font-weight: sg.font-weight(400);
     color: sg.color(orange);
     text-transform: uppercase;
+  }
+
+  &__drawerContent {
+    .formDialog--size-full &,
+    .formDialog--size-half &,
+    .formDialog--size-large &,
+    .formDialog--size-medium & {
+      overflow: hidden !important;
+    }
   }
 }

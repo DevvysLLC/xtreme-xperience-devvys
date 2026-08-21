@@ -184,6 +184,26 @@
       position: absolute;
       top: sg.spacing(small);
       right: sg.spacing(small);
+      z-index: sg.zindex(foreground);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: u.rem-calc(36);
+      height: u.rem-calc(36);
+      border-radius: 50%;
+      background-color: sg.color(white);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+      color: sg.color(black);
+      transition: background-color 0.2s, transform 0.2s;
+
+      &:hover {
+        background-color: sg.color(black-10);
+        transform: scale(1.05);
+      }
+
+      &:active {
+        transform: scale(0.95);
+      }
     }
   }
 

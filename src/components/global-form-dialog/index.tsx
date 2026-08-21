@@ -1,5 +1,6 @@
 'use client'
 
+import clsx from 'clsx'
 import { useTranslations } from 'next-intl'
 import { type FC, useCallback, useEffect, useMemo, useRef } from 'react'
 import { DRAWER_REQUEST_CLOSE_MESSAGE_NAME } from '../../core/messaging/main/messages/close-drawer'
@@ -20,7 +21,7 @@ const DRAWER_ID = 'form-dialog'
 
 export const GlobalFormDialog: FC = () => {
   const t = useTranslations('global_form_dialog')
-  const { isOpen, handle, closeFormDialog } = useFormDialog()
+  const { isOpen, handle, size, width, height, closeFormDialog } = useFormDialog()
   const { data, isLoading, isError } = useForm(isOpen ? handle : null)
   const isClosingRef = useRef(false)
   const prevIsOpenRef = useRef(false)
@@ -89,8 +90,19 @@ export const GlobalFormDialog: FC = () => {
     <Drawer
       id={DRAWER_ID}
       layoutType="dialog"
-      className={styles.formDialog}
-      panelClassName={styles.formDialog__panel}
+      className={clsx(
+        styles.formDialog,
+        size && styles[`formDialog--size-${size}`],
+        width && styles[`formDialog--width-${width}`],
+        height && styles[`formDialog--height-${height}`]
+      )}
+      panelClassName={clsx(
+        styles.formDialog__panel,
+        size && styles[`formDialog__panel--size-${size}`],
+        width && styles[`formDialog__panel--width-${width}`],
+        height && styles[`formDialog__panel--height-${height}`]
+      )}
+      contentClassName={styles.formDialog__drawerContent}
     >
       {isLoading && (
         <div className={styles.formDialog__loading}>
