@@ -75,30 +75,6 @@ export const GlobalDialog: FC = () => {
     }
   }, [isOpen, bus])
 
-  useEffect(() => {
-    if (isOpen && translations?.klaviyoFormId) {
-      const timer = setTimeout(() => {
-        try {
-          if (typeof window !== 'undefined') {
-            if (typeof window._klOnsite?.push === 'function') {
-              window._klOnsite.push(['refresh'])
-            }
-
-            if (typeof window.klaviyo?.push === 'function') {
-              window.klaviyo.push(['refresh'])
-            }
-
-            if (typeof window.Klaviyo?.push === 'function') {
-              window.Klaviyo.push(['refresh'])
-            }
-          }
-        } catch (err) {
-          console.error('Error refreshing Klaviyo form:', err)
-        }
-      }, 100)
-      return () => clearTimeout(timer)
-    }
-  }, [isOpen, translations?.klaviyoFormId])
 
   const onConfirm = useCallback(() => {
     handleConfirm().catch((error) => {
