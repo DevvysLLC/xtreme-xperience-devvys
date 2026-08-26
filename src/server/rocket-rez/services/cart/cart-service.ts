@@ -168,70 +168,94 @@ export class CartService {
   async addLineItems(
     request: RocketRezAddLineItemRequest
   ): Promise<RocketRezAddLineItemResponse> {
+    if (!request.lineItems || request.lineItems.length === 0) {
+      throw new AppError('No line items to add', {
+        traceTag: 'rocket-rez.cart-service.addLineItems'
+      })
+    }
+
     const url = `${this.baseUrl}${ROUTES.ROCKET_REZ.CART.LINE_ITEMS}`
     const tokenPreview = this.accessToken
       ? `${this.accessToken.slice(0, 10)}...${this.accessToken.slice(-10)}`
       : 'NO_TOKEN'
 
-    logger.info('rocket-rez.cart-service.addLineItems', {
+    logger.info('rocket-rez.cart-service.addLineItems.start', {
       url,
       tokenPreview,
-      request
+      itemCount: request.lineItems.length
     })
 
-    const [error, response] = await safeAwait(
-      fetch(url, {
-        method: 'POST',
-        headers: this.getHeaders(),
-        body: JSON.stringify(request)
-      })
-    )
+    let lastResult: RocketRezAddLineItemResponse | null = null
 
-    if (error) {
-      logger.error('rocket-rez.cart-service.addLineItems.fetchError', {
-        error: error.message,
-        tokenPreview
+    for (const item of request.lineItems) {
+      const singleItemRequest = { lineItems: [item] }
+      logger.info('rocket-rez.cart-service.addLineItems.singleItem', {
+        item
       })
-      throw new AppError('Failed to add line items to cart', {
-        traceTag: 'rocket-rez.cart-service.addLineItems',
-        originalError: error
+
+      const [error, response] = await safeAwait(
+        fetch(url, {
+          method: 'POST',
+          headers: this.getHeaders(),
+          body: JSON.stringify(singleItemRequest)
+        })
+      )
+
+      if (error) {
+        logger.error('rocket-rez.cart-service.addLineItems.fetchError', {
+          error: error.message,
+          tokenPreview
+        })
+        throw new AppError('Failed to add line items to cart', {
+          traceTag: 'rocket-rez.cart-service.addLineItems',
+          originalError: error
+        })
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        logger.error('rocket-rez.cart-service.addLineItems.apiError', {
+          status: response.status,
+          statusText: response.statusText,
+          errorData,
+          tokenPreview
+        })
+        throw new AppError('Failed to add line items to cart', {
+          traceTag: 'rocket-rez.cart-service.addLineItems',
+          status: response.status,
+          statusText: response.statusText,
+          errorData
+        })
+      }
+
+      const jsonData: unknown = await response.json()
+      logger.info(
+        { response: jsonData },
+        'rocket-rez.cart-service.addLineItems.raw-response'
+      )
+
+      const parsed = RocketRezAddLineItemResponseSchema.safeParse(jsonData)
+      if (parsed.success) {
+        lastResult = parsed.data
+      } else {
+        throw new AppError('Invalid response format from cart API', {
+          traceTag: 'rocket-rez.cart-service.addLineItems',
+          validationError: parsed.error
+        })
+      }
+    }
+
+    if (!lastResult) {
+      throw new AppError('Failed to obtain cart response', {
+        traceTag: 'rocket-rez.cart-service.addLineItems'
       })
     }
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}))
-      logger.error('rocket-rez.cart-service.addLineItems.apiError', {
-        status: response.status,
-        statusText: response.statusText,
-        errorData,
-        tokenPreview
-      })
-      throw new AppError('Failed to add line items to cart', {
-        traceTag: 'rocket-rez.cart-service.addLineItems',
-        status: response.status,
-        statusText: response.statusText,
-        errorData
-      })
-    }
-
-    const jsonData: unknown = await response.json()
-    logger.info(
-      { response: jsonData },
-      'rocket-rez.cart-service.addLineItems.raw-response'
-    )
-
-    const parsed = RocketRezAddLineItemResponseSchema.safeParse(jsonData)
-    if (parsed.success) {
-      logger.info('rocket-rez.cart-service.addLineItems.success', {
-        parsed: parsed.data
-      })
-      return parsed.data
-    }
-
-    throw new AppError('Invalid response format from cart API', {
-      traceTag: 'rocket-rez.cart-service.addLineItems',
-      validationError: parsed.error
+    logger.info('rocket-rez.cart-service.addLineItems.success', {
+      lastResult
     })
+
+    return lastResult
   }
 
   async updateLineItem(
