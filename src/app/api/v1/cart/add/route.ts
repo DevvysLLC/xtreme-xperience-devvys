@@ -3,6 +3,7 @@ import { NO_CACHE_HEADERS } from '../../../../../config/no-cache-headers'
 import { logger } from '../../../../../core/logger/logger'
 import { RocketRezAddLineItemRequestSchema } from '../../../../../io'
 import { getMiddlewareClient } from '../../../../../server/middleware/index'
+import { AppError } from '../../../../../core/errors/app-error'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -49,6 +50,25 @@ export const POST = async (request: Request): Promise<NextResponse> => {
     )
   } catch (error) {
     logger.error(error, 'Internal error processing cart add request')
+
+    if (error instanceof AppError) {
+      const status = error.details?.status
+      const errorData = error.details?.errorData as any
+      if (status && typeof status === 'number') {
+        const message = errorData?.errorMessage || error.message || 'API Error'
+        return NextResponse.json(
+          {
+            status: 'error',
+            message
+          },
+          {
+            status,
+            headers: NO_CACHE_HEADERS
+          }
+        )
+      }
+    }
+
     return NextResponse.json(
       {
         status: 'error',
