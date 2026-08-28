@@ -22,6 +22,7 @@ export const getRequiredRateIdsForSupercar = (
   }
 
   let categoryName: string | null = null
+  let selectedRateName: string | null = null
   for (const seatType of schedule.seatTypes ?? []) {
     if (!seatType) {
       continue
@@ -29,6 +30,7 @@ export const getRequiredRateIdsForSupercar = (
     for (const rate of seatType.rates ?? []) {
       if (rate.id === rocketRezSeatTypeId) {
         categoryName = rate.category ?? null
+        selectedRateName = rate.name ?? null
         break
       }
     }
@@ -43,6 +45,7 @@ export const getRequiredRateIdsForSupercar = (
 
   const rateIds: number[] = []
   const cleanedCategory = categoryName.trim().toLowerCase()
+  const isThirdParty = !!selectedRateName?.toLowerCase().includes('third party')
 
   for (const seatType of schedule.seatTypes ?? []) {
     if (!seatType) {
@@ -50,7 +53,12 @@ export const getRequiredRateIdsForSupercar = (
     }
     for (const rate of seatType.rates ?? []) {
       if (rate.category?.trim().toLowerCase() === cleanedCategory) {
-        rateIds.push(rate.id)
+        const rateNameLower = rate.name?.toLowerCase() || ''
+        const isRateThirdParty = rateNameLower.includes('third party')
+        
+        if (isThirdParty === isRateThirdParty) {
+          rateIds.push(rate.id)
+        }
       }
     }
   }
