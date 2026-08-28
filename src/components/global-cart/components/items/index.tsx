@@ -7,6 +7,7 @@ import type {
   RocketRezLineItem
 } from '../../../../io/types'
 import { getCartLineItemReadMetadataKey } from '../../../../utils/get-cart-line-item-metadata-key'
+import { useCartState } from '../../../../features/cart'
 import { CartLineItem } from '../item'
 import styles from './style.module.scss'
 
@@ -80,17 +81,15 @@ export const CartLineItems: FC<Props> = ({
   lineItems,
   compact: _compact = false,
   readOnly: _readOnly = false,
-  metadata
+  metadata: propMetadata
 }) => {
+  const { data: cartState } = useCartState()
+  const metadata = useMemo(() => propMetadata ?? cartState?.metadata ?? [], [propMetadata, cartState?.metadata])
   const reversedLineItems = useMemo(() => [...lineItems].reverse(), [lineItems])
 
   const getMetadataForLineItem = (
     lineItem: RocketRezLineItem
   ): CartLineItemMetadata | null | undefined => {
-    if (metadata === undefined) {
-      return undefined
-    }
-
     const key = getCartLineItemReadMetadataKey({ lineItem })
 
     return (
