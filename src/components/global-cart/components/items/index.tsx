@@ -133,6 +133,16 @@ export const CartLineItems: FC<Props> = ({
     )
   }
 
+  const visibleLineItems = useMemo(() => {
+    return reversedLineItems.filter((lineItem) => {
+      const itemMetadata = getMetadataForLineItem(lineItem)
+      if (itemMetadata?.isMulticar && lineItem.price === 0) {
+        return false
+      }
+      return true
+    })
+  }, [reversedLineItems, metadata])
+
   return (
     <div
       className={clsx(
@@ -140,7 +150,7 @@ export const CartLineItems: FC<Props> = ({
         _compact && styles['CartLineItems--compact']
       )}
     >
-      {reversedLineItems.map((lineItem) => (
+      {visibleLineItems.map((lineItem) => (
         <CartLineItem
           key={lineItem.id}
           lineItem={lineItem}

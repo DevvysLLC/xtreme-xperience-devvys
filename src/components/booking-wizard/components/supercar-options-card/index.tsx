@@ -16,9 +16,10 @@ import {
   RocketRezProductType,
   RocketRezScheduleStatus
 } from '../../../../io/schemas'
-import type { RocketRezAddLineItemCar } from '../../../../io/types'
+import type { CartLineItemMetadata, RocketRezAddLineItemCar } from '../../../../io/types'
 import { getAddToCartLineItemCarMetadata } from '../../../../utils/get-add-to-cart-line-item-car-metadata'
 import { getBookingLapsPerSession } from '../../../../utils/get-booking-laps-per-session'
+import { getSeatTypeIdWithOverride } from '../../../../utils/get-seat-type-id-with-override'
 import { isScheduleSoldOut } from '../../../../utils/is-schedule-sold-out'
 import { CoreBadge } from '../../../core-badge'
 import { CoreCta } from '../../../core-cta'
@@ -174,6 +175,7 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
     // For packages, build one line item per rate in the package category,
     // all sharing the same scheduleId — required by RocketRez API
     let lineItems: ValidatedLineItem[] = [lineItem]
+    let metadataPayload: CartLineItemMetadata | CartLineItemMetadata[] = metadata
 
     if (isMulticar && lineItem.scheduleId) {
       const selectedSchedule = schedules.find(
@@ -191,13 +193,71 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
           rateId,
           rateType: 'Participant'
         }))
+
+        // Retrieve all supercars in the active group to get their fragments (which have make, model, image, etc.)
+        const activeGroupSupercars =
+          state.configData?.supercars?.[activeTabIndex]?.supercars ?? []
+
+        // Generate metadata for each of the cars in the package
+        const metadataList: CartLineItemMetadata[] = []
+        for (const item of lineItems) {
+          // Find the supercar fragment in DatoCMS config that maps to this rateId
+          const matchingBookingSupercar = activeGroupSupercars.find((bs) => {
+            const resolvedId = getSeatTypeIdWithOverride({
+              defaultSeatTypeId: bs.rocketRezSeatTypeId,
+              overrides: bs.rocketRezSeatTypeIdOverrides,
+              selectedEventId: id
+            })
+            return resolvedId === item.rateId
+          })
+
+          if (matchingBookingSupercar) {
+            metadataList.push(
+              getAddToCartLineItemCarMetadata({
+                supercar: matchingBookingSupercar.supercar,
+                lineItem: item,
+                userSelectionState: {
+                  date: isoDate,
+                  activeGroupTitle: activeGroupTitle ?? undefined
+                },
+                bookingSupercar: {
+                  cartLineItemLabel: matchingBookingSupercar.cartLineItemLabel || bookingSupercar.cartLineItemLabel,
+                  isMulticar: matchingBookingSupercar.isMulticar,
+                  isRideAlong: matchingBookingSupercar.isRideAlong,
+                  multicarCount: matchingBookingSupercar.multicarCount
+                },
+                lapsPerSession
+              })
+            )
+          } else {
+            // Fallback: if we couldn't match a supercar from the CMS, use the primary supercar's metadata
+            metadataList.push(
+              getAddToCartLineItemCarMetadata({
+                supercar,
+                lineItem: item,
+                userSelectionState: {
+                  date: isoDate,
+                  activeGroupTitle: activeGroupTitle ?? undefined
+                },
+                bookingSupercar: {
+                  cartLineItemLabel: bookingSupercar.cartLineItemLabel,
+                  isMulticar: bookingSupercar.isMulticar,
+                  isRideAlong: bookingSupercar.isRideAlong,
+                  multicarCount: bookingSupercar.multicarCount
+                },
+                lapsPerSession
+              })
+            )
+          }
+        }
+        metadataPayload = metadataList
       }
     }
 
     try {
       await mutateAsync({
         request: { lineItems },
-        metadata
+        metadata: metadataPayload
       })
 
       showToast({
@@ -357,7 +417,7 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
                     <input
                       type="hidden"
                       name={field.name}
-                      value={field.state.value ?? ''}
+                      value={String(field.state.value ?? '')}
                     />
                   )}
                 </form.Field>
@@ -366,7 +426,7 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
                     <input
                       type="hidden"
                       name={field.name}
-                      value={field.state.value ?? ''}
+                      value={String(field.state.value ?? '')}
                     />
                   )}
                 </form.Field>
@@ -375,7 +435,7 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
                     <input
                       type="hidden"
                       name={field.name}
-                      value={field.state.value ?? ''}
+                      value={String(field.state.value ?? '')}
                     />
                   )}
                 </form.Field>
@@ -384,7 +444,7 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
                     <input
                       type="hidden"
                       name={field.name}
-                      value={field.state.value ?? ''}
+                      value={String(field.state.value ?? '')}
                     />
                   )}
                 </form.Field>
@@ -393,7 +453,7 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
                     <input
                       type="hidden"
                       name={field.name}
-                      value={field.state.value ?? ''}
+                      value={String(field.state.value ?? '')}
                     />
                   )}
                 </form.Field>

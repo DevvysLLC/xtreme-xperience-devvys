@@ -14,7 +14,7 @@ import { useCartMutation } from './use-cart-mutation'
 
 type AddToCartInput = {
   request: RocketRezAddLineItemRequest
-  metadata?: CartLineItemMetadata
+  metadata?: CartLineItemMetadata | CartLineItemMetadata[]
 }
 
 export const useCartAdd = (): UseMutationResult<
@@ -37,15 +37,24 @@ export const useCartAdd = (): UseMutationResult<
       if (!metadata || data.cart.lineItems.length === 0) {
         return
       }
+      const newMetadatas = Array.isArray(metadata) ? metadata : [metadata]
       const current =
         qc.getQueryData<CartState>(CART_QUERY_KEY) ?? initialCartState
-      const existingMetadata = current.metadata.find(
-        (meta) => meta.key === metadata.key
-      )
-      if (!existingMetadata) {
+      
+      const nextMetadataList = [...current.metadata]
+      let hasChanges = false
+      for (const item of newMetadatas) {
+        const exists = nextMetadataList.some((m) => m.key === item.key)
+        if (!exists) {
+          nextMetadataList.push(item)
+          hasChanges = true
+        }
+      }
+
+      if (hasChanges) {
         const next = {
           ...current,
-          metadata: [...current.metadata, metadata]
+          metadata: nextMetadataList
         }
         qc.setQueryData<CartState>(CART_QUERY_KEY, next)
         cartRepository.write(next)
