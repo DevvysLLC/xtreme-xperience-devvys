@@ -10,6 +10,7 @@ import { useForm } from '../../features/form'
 import { validateHtmlForEmbed } from '../../utils/is-html-safe-for-embed'
 import { CoreForm } from '../core-form'
 import { CoreHubspotForm } from '../core-hubspot-form'
+import { CoreKlaviyoForm } from '../core-klaviyo-form'
 import { CoreLoadingSpinner } from '../core-loading-spinner'
 import { CoreSendlaneForm } from '../core-sendlane-form'
 import { Drawer } from '../global-drawer'
@@ -86,6 +87,9 @@ export const GlobalFormDialog: FC = () => {
     return validateHtmlForEmbed(iframeEmbed, { requireIframe: true })
   }, [iframeEmbed])
 
+  const klaviyoFormIdMatch = /klaviyo-form-([a-zA-Z0-9]+)/.exec(sendlaneEmbed ?? '')
+  const klaviyoFormId = klaviyoFormIdMatch?.[1] ?? null
+
   return (
     <Drawer
       id={DRAWER_ID}
@@ -134,6 +138,8 @@ export const GlobalFormDialog: FC = () => {
               embedForm={hubspotEmbed}
               hubspotVersion={hubspotVersion}
             />
+          ) : klaviyoFormId ? (
+            <CoreKlaviyoForm formId={klaviyoFormId} />
           ) : sendlaneEmbed ? (
             <CoreSendlaneForm embedForm={sendlaneEmbed} />
           ) : isFormRecordForDialog(form) ? (
