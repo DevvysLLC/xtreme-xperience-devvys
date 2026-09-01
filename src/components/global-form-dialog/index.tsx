@@ -88,6 +88,7 @@ export const GlobalFormDialog: FC = () => {
 
   const klaviyoFormIdMatch = /klaviyo-form-([a-zA-Z0-9]+)/.exec(sendlaneEmbed ?? '')
   const klaviyoFormId = klaviyoFormIdMatch?.[1] ?? null
+  const isLikelyKlaviyoPopup = handle?.toLowerCase().includes('klaviyo')
 
   useEffect(() => {
     if (klaviyoFormId && typeof window !== 'undefined') {
@@ -108,6 +109,11 @@ export const GlobalFormDialog: FC = () => {
       closeFormDialog()
     }
   }, [klaviyoFormId, closeFormDialog])
+
+  // Prevent rendering the Drawer if it's a Klaviyo popup to avoid UI flashing (the "jerk")
+  if (klaviyoFormId || (isLoading && isLikelyKlaviyoPopup)) {
+    return null
+  }
 
   return (
     <Drawer
