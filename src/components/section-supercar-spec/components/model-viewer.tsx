@@ -80,8 +80,8 @@ export const ModelViewer3d: FC<Props> = ({ modelViewer3d, thumbnail, className }
   // Detect support on mount
   useEffect(() => {
     const hasWebGL = checkWebGLSupport()
-    const isSafari = isAppleSafari()
-    if (!hasWebGL || isSafari) {
+    // Safari fallback removed per client request to always show 3D models
+    if (!hasWebGL) {
       setIsSupported(false)
     }
   }, [])
