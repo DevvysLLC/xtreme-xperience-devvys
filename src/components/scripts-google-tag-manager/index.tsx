@@ -1,20 +1,16 @@
 'use client'
 
 import Script from 'next/script'
-import { IdleScriptLoader } from '../idle-script-loader'
 
 /**
  * Google Tag Manager (GTM) script.
- * Loads the custom GTM container from set.thextremexperience.com.
  * Only runs in production to avoid polluting analytics in dev/preview.
- * gtmId can be supplied from Dato (e.g. site.globalSeo.gtmId) to override defaults.
+ * gtmId is supplied from Dato (e.g. site.globalSeo.gtmId) to override defaults.
  */
-const GTM_SCRIPT_URL = 'https://set.thextremexperience.com/820qhfbfarzi.js'
-
 const isProduction = process.env.NEXT_PUBLIC_VERCEL_ENV === 'production'
 
 export type GoogleTagManagerProps = {
-  /** GTM container id or script params, e.g. from Dato site settings */
+  /** GTM container id */
   gtmId: string
 }
 
@@ -24,11 +20,24 @@ export const GoogleTagManager = ({ gtmId }: GoogleTagManagerProps) => {
   }
 
   return (
-    <IdleScriptLoader>
-      <Script
-        id="gtm"
-        strategy="lazyOnload"
-      >{`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s);j.async=true;j.src="${GTM_SCRIPT_URL}?"+i;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${gtmId}');`}</Script>
-    </IdleScriptLoader>
+    <>
+      <Script id="google-tag-manager" strategy="afterInteractive">
+        {`
+          (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+          new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+          j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+          'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+          })(window,document,'script','dataLayer','${gtmId}');
+        `}
+      </Script>
+      <noscript>
+        <iframe
+          src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
+          height="0"
+          width="0"
+          style={{ display: 'none', visibility: 'hidden' }}
+        />
+      </noscript>
+    </>
   )
 }
