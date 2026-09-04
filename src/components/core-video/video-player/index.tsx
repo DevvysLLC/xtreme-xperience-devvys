@@ -385,7 +385,12 @@ export const VideoPlayer = memo<Props>(function VideoPlayer({
       hlsInstance.loadSource(url)
       hlsInstance.attachMedia(videoEl)
       activeHlsRef.current = { url, hlsInstance }
-      setHlsStatus('initialized')
+      
+      hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+        if (!isCancelled) {
+          setHlsStatus('initialized')
+        }
+      })
     }
 
     initHls().catch((err) => {
