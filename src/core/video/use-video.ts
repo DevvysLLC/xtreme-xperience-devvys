@@ -24,7 +24,10 @@ type VideoState = {
   setVideoElement(el: HTMLVideoElement | null): void
 }
 
-const makeStore = () => {
+const registry = new Map<VideoId, ReturnType<typeof makeStore>>()
+const refCounts = new Map<VideoId, number>()
+
+const makeStore = (id: VideoId) => {
   const store = createStore<VideoState>((set) => ({
     status: 'unmounted',
     hasStartedPlaying: false,
@@ -32,6 +35,11 @@ const makeStore = () => {
     userInteracted: false,
     videoElement: null,
     play: () => {
+      registry.forEach((otherStore, otherId) => {
+        if (otherId !== id && otherStore.getState().status === 'playing') {
+          otherStore.getState().pause()
+        }
+      })
       set({ status: 'playing' })
     },
     pause: () => {
@@ -60,15 +68,12 @@ const makeStore = () => {
   return store
 }
 
-const registry = new Map<VideoId, ReturnType<typeof makeStore>>()
-const refCounts = new Map<VideoId, number>()
-
 export const getVideoStore = (id: VideoId) => {
   const s = registry.get(id)
   if (s) {
     return s
   }
-  const next = makeStore()
+  const next = makeStore(id)
   registry.set(id, next)
   refCounts.set(id, 0)
   return next
