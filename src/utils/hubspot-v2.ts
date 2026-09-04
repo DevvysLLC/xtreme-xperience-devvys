@@ -116,9 +116,21 @@ const waitForHubspotV2 = ({
 export const parseHubspotV2EmbedForm = (
   embedHtml: string
 ): ParsedHubspotV2EmbedForm => {
-  const regionMatch = /data-region=["']([^"']+)["']/.exec(embedHtml)
-  const formIdMatch = /data-form-id=["']([^"']+)["']/.exec(embedHtml)
-  const portalIdMatch = /data-portal-id=["']([^"']+)["']/.exec(embedHtml)
+  // Try V3 HTML data attributes first
+  let regionMatch = /data-region=["']([^"']+)["']/.exec(embedHtml)
+  let formIdMatch = /data-form-id=["']([^"']+)["']/.exec(embedHtml)
+  let portalIdMatch = /data-portal-id=["']([^"']+)["']/.exec(embedHtml)
+
+  // Fallback to V2 Javascript options if HTML attributes are missing
+  if (!formIdMatch) {
+    formIdMatch = /formId:\s*["']([^"']+)["']/.exec(embedHtml)
+  }
+  if (!portalIdMatch) {
+    portalIdMatch = /portalId:\s*["']([^"']+)["']/.exec(embedHtml)
+  }
+  if (!regionMatch) {
+    regionMatch = /region:\s*["']([^"']+)["']/.exec(embedHtml)
+  }
 
   return {
     region: regionMatch?.[1] ?? null,
