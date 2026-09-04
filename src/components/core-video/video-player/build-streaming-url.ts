@@ -11,7 +11,6 @@ export const buildStreamingUrl = (
   isSafariNativeHls?: boolean
 ): string => {
   const url = new URL(streamingUrl)
-  url.searchParams.set('min_resolution', '720p')
   if (isMobile) {
     url.searchParams.set('max_resolution', '720p')
   } else {
