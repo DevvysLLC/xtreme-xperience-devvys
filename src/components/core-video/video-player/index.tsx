@@ -147,7 +147,7 @@ export const VideoPlayer = memo<Props>(function VideoPlayer({
         videoEl
           .play()
           .catch((err: unknown) => {
-            if (err instanceof Error && err.name !== 'NotAllowedError') {
+            if (err instanceof Error && err.name !== 'NotAllowedError' && err.name !== 'AbortError') {
               console.warn('VideoPlayer: play() failed', err)
             }
 
@@ -182,14 +182,16 @@ export const VideoPlayer = memo<Props>(function VideoPlayer({
     }
   }, [videoEl, isMuted])
 
-  // Sync video element's play/pause state with store status
+  // Sync video element's play/pause state with store status, only after HLS is ready.
   useEffect(() => {
+    if (hlsStatus !== 'initialized') return
+
     if (status === 'playing') {
       playback('play')
     } else if (status === 'paused') {
       playback('pause')
     }
-  }, [status, playback])
+  }, [status, playback, hlsStatus])
 
   useEffect(() => {
     if (videoEl == null) {
@@ -406,11 +408,7 @@ export const VideoPlayer = memo<Props>(function VideoPlayer({
     isDesktop
   ])
 
-  useEffect(() => {
-    if (hlsStatus === 'initialized' && autoplay) {
-      playback('play')
-    }
-  }, [hlsStatus, autoplay, playback])
+
 
   return (
     <video
