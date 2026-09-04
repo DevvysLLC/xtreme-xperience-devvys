@@ -357,6 +357,33 @@ export const VideoPlayer = memo<Props>(function VideoPlayer({
     let isCancelled = false
 
     const initHls = async () => {
+      let Hls
+      try {
+        Hls = await loadHls()
+      } catch (err) {
+        console.error('Failed to load hls.js:', err)
+      }
+
+      if (isCancelled) {
+        return
+      }
+
+      // 1. Prefer hls.js for robust MSE playback (Chrome, Firefox, Edge, Desktop Safari)
+      if (Hls && Hls.isSupported()) {
+        const hlsInstance = new Hls({ ...baseConfig, progressive: true })
+        hlsInstance.loadSource(url)
+        hlsInstance.attachMedia(videoEl)
+        activeHlsRef.current = { url, hlsInstance }
+        
+        hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+          if (!isCancelled) {
+            setHlsStatus('initialized')
+          }
+        })
+        return
+      }
+
+      // 2. Fallback to Native HLS (iOS Safari where MSE is not supported)
       const hlsSupport = videoEl.canPlayType('application/vnd.apple.mpegurl')
       const supportsNativeHls =
         hlsSupport === 'probably' || hlsSupport === 'maybe'
@@ -364,33 +391,17 @@ export const VideoPlayer = memo<Props>(function VideoPlayer({
       if (supportsNativeHls) {
         videoEl.src = url
         activeHlsRef.current = { url, hlsInstance: null }
-        if (!isCancelled) {
-          setHlsStatus('initialized')
-        }
+        
+        // Give the browser DOM a tick to process the src attribute before attempting play()
+        requestAnimationFrame(() => {
+          if (!isCancelled) {
+            setHlsStatus('initialized')
+          }
+        })
         return
       }
 
-      const Hls = await loadHls()
-
-      if (isCancelled) {
-        return
-      }
-
-      if (!Hls.isSupported()) {
-        console.warn('HLS is not supported in this browser')
-        return
-      }
-
-      const hlsInstance = new Hls({ ...baseConfig, progressive: true })
-      hlsInstance.loadSource(url)
-      hlsInstance.attachMedia(videoEl)
-      activeHlsRef.current = { url, hlsInstance }
-      
-      hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
-        if (!isCancelled) {
-          setHlsStatus('initialized')
-        }
-      })
+      console.warn('HLS is not supported in this browser')
     }
 
     initHls().catch((err) => {
