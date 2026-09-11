@@ -201,7 +201,7 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
           state.configData?.supercars?.[activeTabIndex]?.supercars ?? []
 
         // Generate metadata for each of the cars in the package
-        const metadataList: CartLineItemMetadata[] = []
+        const metadataList: CartLineItemMetadata[] = [metadata]
         for (const item of lineItems) {
           // Find the supercar fragment in DatoCMS config that maps to this rateId
           const matchingBookingSupercar = activeGroupSupercars.find((bs) => {
