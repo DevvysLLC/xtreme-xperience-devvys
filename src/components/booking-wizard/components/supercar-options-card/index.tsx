@@ -167,7 +167,9 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
         cartLineItemLabel: bookingSupercar.cartLineItemLabel,
         isMulticar: bookingSupercar.isMulticar,
         isRideAlong: bookingSupercar.isRideAlong,
-        multicarCount: bookingSupercar.multicarCount
+        multicarCount: bookingSupercar.multicarCount,
+        titleOverride: bookingSupercar.titleOverride,
+        thumbnailOverride: bookingSupercar.thumbnailOverride
       },
       lapsPerSession
     })
@@ -224,7 +226,9 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
                   cartLineItemLabel: matchingBookingSupercar.cartLineItemLabel || bookingSupercar.cartLineItemLabel,
                   isMulticar: matchingBookingSupercar.isMulticar,
                   isRideAlong: matchingBookingSupercar.isRideAlong,
-                  multicarCount: matchingBookingSupercar.multicarCount
+                  multicarCount: matchingBookingSupercar.multicarCount,
+                  titleOverride: matchingBookingSupercar.titleOverride,
+                  thumbnailOverride: matchingBookingSupercar.thumbnailOverride
                 },
                 lapsPerSession
               })
@@ -243,7 +247,9 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
                   cartLineItemLabel: bookingSupercar.cartLineItemLabel,
                   isMulticar: bookingSupercar.isMulticar,
                   isRideAlong: bookingSupercar.isRideAlong,
-                  multicarCount: bookingSupercar.multicarCount
+                  multicarCount: bookingSupercar.multicarCount,
+                  titleOverride: bookingSupercar.titleOverride,
+                  thumbnailOverride: bookingSupercar.thumbnailOverride
                 },
                 lapsPerSession
               })
@@ -255,8 +261,12 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
     }
 
     try {
+      // Only send the base lineItem to RocketRez.
+      // RocketRez will automatically bundle the sub-items on the backend.
+      // However, we still pass the full metadataPayload so the UI can label
+      // the automatically generated sub-items when RocketRez returns them.
       await mutateAsync({
-        request: { lineItems },
+        request: { lineItems: [lineItem] },
         metadata: metadataPayload
       })
 

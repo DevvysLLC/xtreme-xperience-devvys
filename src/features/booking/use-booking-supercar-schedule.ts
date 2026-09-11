@@ -56,6 +56,41 @@ export const getRequiredRateIdsForSupercar = (
         const rateNameLower = rate.name?.toLowerCase() || ''
         const isRateThirdParty = rateNameLower.includes('third party')
         
+        // Disambiguate packages that share the same category
+        const packageIdentifiers = [
+          'podium',
+          'apex',
+          'track attack',
+          'italian legend',
+          'drive the fleet',
+          'porsche gt'
+        ]
+
+        const selectedPackages = packageIdentifiers.filter((pkg) =>
+          selectedRateName?.toLowerCase().includes(pkg)
+        )
+        const matchedPackages = packageIdentifiers.filter((pkg) =>
+          rateNameLower.includes(pkg)
+        )
+
+        let belongsToAnotherPackage = false
+        if (matchedPackages.length > 0 && selectedPackages.length > 0) {
+          const sharesPackage = matchedPackages.some((pkg) =>
+            selectedPackages.includes(pkg)
+          )
+          
+          // "Drive the Fleet" is known to sloppily reuse rates named after other packages
+          const isFleetPackage = selectedPackages.includes('drive the fleet')
+
+          if (!sharesPackage && !isFleetPackage) {
+            belongsToAnotherPackage = true
+          }
+        }
+
+        if (belongsToAnotherPackage) {
+          continue
+        }
+
         if (isThirdParty === isRateThirdParty) {
           rateIds.push(rate.id)
         }

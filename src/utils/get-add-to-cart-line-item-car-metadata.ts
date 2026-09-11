@@ -17,6 +17,8 @@ type GetAddToCartCarLineItemMetadataProps = {
     isMulticar?: boolean | null
     isRideAlong?: boolean | null
     multicarCount?: number | null
+    titleOverride?: string | null
+    thumbnailOverride?: { image?: { url?: string | null } | null } | null
   }
   lapsPerSession?: number | null
 }
@@ -37,14 +39,15 @@ export const getAddToCartLineItemCarMetadata = ({
   const make = supercar.model?.make
   const model = supercar.model?.model
   const title =
-    make && model
+    bookingSupercar?.titleOverride ??
+    (make && model
       ? `${make} <strong>${model}</strong>`
-      : (supercar.model?.title ?? '')
+      : (supercar.model?.title ?? ''))
   const metadata = {
     key,
     type: CartLineItemMetadataPropertiesTypeSchema.enum.car,
     title,
-    image: supercar.model?.thumbnail?.image?.url ?? '',
+    image: bookingSupercar?.thumbnailOverride?.image?.url ?? supercar.model?.thumbnail?.image?.url ?? '',
     subtitle: userSelectionState.activeGroupTitle ?? '',
     label: bookingSupercar?.cartLineItemLabel ?? null,
     isMulticar: bookingSupercar?.isMulticar ?? null,
