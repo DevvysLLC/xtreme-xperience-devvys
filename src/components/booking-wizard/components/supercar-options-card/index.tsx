@@ -201,9 +201,9 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
           rateType: 'Participant'
         }))
 
-        // Retrieve all supercars in the active group to get their fragments (which have make, model, image, etc.)
+        // Retrieve all supercars across ALL groups to properly resolve child car fragments
         const activeGroupSupercars =
-          state.configData?.supercars?.[activeTabIndex]?.supercars ?? []
+          state.configData?.supercars?.flatMap((group) => group.supercars) ?? []
 
         // Generate metadata for each of the cars in the package
         const metadataList: CartLineItemMetadata[] = [metadata]
