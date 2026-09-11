@@ -151,10 +151,15 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
     rateType: string | null
   }
 
-  const addToCart = async (lineItem: ValidatedLineItem, isoDate: string) => {
+  const addToCart = async (lineItemOriginal: ValidatedLineItem, isoDate: string) => {
     const activeTabIndex = state.activeTabIndex ?? 0
     const activeGroupTitle =
       state.configData?.supercars?.[activeTabIndex]?.title ?? null
+
+    const lineItem = {
+      ...lineItemOriginal,
+      rateType: lineItemOriginal.rateType || 'Participant'
+    }
 
     const metadata = getAddToCartLineItemCarMetadata({
       supercar,
