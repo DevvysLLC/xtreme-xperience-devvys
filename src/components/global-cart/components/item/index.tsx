@@ -45,7 +45,7 @@ export const CartLineItem: FC<Props> = ({
 
   const { id, price } = lineItem
   const { title, image, subtitle, label, properties, type } = metadata ?? {}
-  const fallbackTitle = `${lineItem.type} #${lineItem.productId}`
+  const fallbackTitle = metadata?.isMulticar ? 'Package' : `${lineItem.type} #${lineItem.productId}`
   const displayTitle = title?.trim() || lineItem.name?.trim() || fallbackTitle
   const { date, laps } = properties ?? {}
   const displaySubtitle = label ? sentenceCase(label) : subtitle

@@ -43,10 +43,12 @@ export const getAddToCartLineItemCarMetadata = ({
     (make && model
       ? `${make} <strong>${model}</strong>`
       : (supercar.model?.title ?? ''))
+      
+  const finalTitle = title || (bookingSupercar?.isMulticar ? 'Package' : '')
   const metadata = {
     key,
     type: CartLineItemMetadataPropertiesTypeSchema.enum.car,
-    title,
+    title: finalTitle,
     image: bookingSupercar?.thumbnailOverride?.image?.url ?? supercar.model?.thumbnail?.image?.url ?? '',
     subtitle: userSelectionState.activeGroupTitle ?? '',
     label: bookingSupercar?.cartLineItemLabel ?? null,
