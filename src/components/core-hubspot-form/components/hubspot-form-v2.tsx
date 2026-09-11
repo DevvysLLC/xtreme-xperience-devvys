@@ -50,6 +50,12 @@ const extractAdditionalScripts = (embedHtml: string): ParsedScripts => {
       continue
     }
 
+    // Ignore the inline hbspt.forms.create call because we explicitly
+    // create the form via React using the parsed portalId and formId.
+    if (inlineCode && inlineCode.includes('hbspt.forms.create')) {
+      continue
+    }
+
     scripts.push({
       src,
       inlineCode: inlineCode.trim() || undefined
@@ -135,16 +141,20 @@ export const HubspotFormV2: FC<Props> = ({ embedForm, className }) => {
           return
         }
 
+        // Execute external scripts (e.g. RevenueHero) BEFORE creating the form
+        // so they can intercept global 'message' events like 'onFormReady'
+        await executeAdditionalScripts(signal)
+
+        if (signal.aborted) {
+          formCreatedRef.current = false
+          return
+        }
+
         hubspotApi.forms.create({
           ...(region ? { region } : {}),
           portalId,
           formId,
-          target: `#${containerRef.current.id}`,
-          onFormReady: () => {
-            if (!signal.aborted) {
-              void executeAdditionalScripts(signal)
-            }
-          }
+          target: `#${containerRef.current.id}`
         })
       } catch {
         formCreatedRef.current = false
