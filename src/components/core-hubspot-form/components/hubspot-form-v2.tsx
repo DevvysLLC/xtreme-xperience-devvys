@@ -111,7 +111,11 @@ export const HubspotFormV2: FC<Props> = ({ embedForm, className }) => {
           const scriptEl = document.createElement('script')
           scriptEl.type = 'text/javascript'
           scriptEl.textContent = script.inlineCode
-          document.body.appendChild(scriptEl)
+          if (containerRef.current) {
+            containerRef.current.appendChild(scriptEl)
+          } else {
+            document.body.appendChild(scriptEl)
+          }
         } catch (err) {
           logger.error({ err }, 'Failed to execute inline script in HubspotFormV2')
         }

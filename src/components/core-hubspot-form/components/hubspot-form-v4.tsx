@@ -17,7 +17,7 @@ type ParsedEmbedForm = {
 }
 
 /**
- * Parses complex embed HTML (like HubSpot v4 + RevenueHero + Styles) to extract 
+ * Parses complex embed HTML (like HubSpot v4 + RevenueHero + Styles) to extract
  * script src/inline code and separate them from the rest of the HTML.
  */
 const parseEmbedForm = (embedHtml: string): ParsedEmbedForm => {
@@ -27,13 +27,13 @@ const parseEmbedForm = (embedHtml: string): ParsedEmbedForm => {
   // Extract all scripts sequentially
   const scripts: { src?: string; inlineCode?: string }[] = []
   const scriptRegex = /<script\b([^>]*)>([\s\S]*?)<\/script>/gi
-  
+
   let match
   while ((match = scriptRegex.exec(embedHtml)) !== null) {
     const attributes = match[1]
     const inlineCode = match[2]
     const srcMatch = /src=["']([^"']+)["']/.exec(attributes)
-    
+
     scripts.push({
       src: srcMatch?.[1],
       inlineCode: inlineCode.trim() || undefined
@@ -44,6 +44,7 @@ const parseEmbedForm = (embedHtml: string): ParsedEmbedForm => {
 }
 
 export const HubspotFormV4: FC<Props> = ({ embedForm, className }) => {
+  const containerRef = useRef<HTMLDivElement>(null)
   const [isClient, setIsClient] = useState(false)
   const scriptsExecutedRef = useRef(false)
 
@@ -67,7 +68,7 @@ export const HubspotFormV4: FC<Props> = ({ embedForm, className }) => {
       scriptsExecutedRef.current = true
       for (const script of scripts) {
         if (isCancelled) break
-        
+
         if (script.src) {
           try {
             await loadScriptOnce(script.src)
@@ -79,7 +80,11 @@ export const HubspotFormV4: FC<Props> = ({ embedForm, className }) => {
             const scriptEl = document.createElement('script')
             scriptEl.type = 'text/javascript'
             scriptEl.textContent = script.inlineCode
-            document.body.appendChild(scriptEl)
+            if (containerRef.current) {
+              containerRef.current.appendChild(scriptEl)
+            } else {
+              document.body.appendChild(scriptEl)
+            }
           } catch (err) {
             logger.error({ err }, 'Failed to execute inline script in HubspotFormV4')
           }
@@ -101,6 +106,7 @@ export const HubspotFormV4: FC<Props> = ({ embedForm, className }) => {
 
   return (
     <div
+      ref={containerRef}
       className={clsx(styles.hubspotFormV4, className)}
       dangerouslySetInnerHTML={{ __html: htmlWithoutScripts }}
     />
