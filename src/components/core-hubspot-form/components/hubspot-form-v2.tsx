@@ -36,7 +36,7 @@ type ParsedScripts = {
 const extractAdditionalScripts = (embedHtml: string): ParsedScripts => {
   const scripts: ParsedScripts = []
   const scriptRegex = /<script\b([^>]*)>([\s\S]*?)<\/script>/gi
-  
+
   let match
   while ((match = scriptRegex.exec(embedHtml)) !== null) {
     const attributes = match[1]
@@ -44,7 +44,7 @@ const extractAdditionalScripts = (embedHtml: string): ParsedScripts => {
     const srcMatch = /src=["']([^"']+)["']/.exec(attributes)
     const src = srcMatch?.[1]
 
-    // Ignore the standard HubSpot V4 embed script if present, 
+    // Ignore the standard HubSpot V4 embed script if present,
     // because V2 handles HubSpot initialization itself.
     if (src && src.includes('js.hsforms.net/forms/embed')) {
       continue
@@ -83,7 +83,7 @@ export const HubspotFormV2: FC<Props> = ({ embedForm, className }) => {
     () => parseHubspotV2EmbedForm(embedForm),
     [embedForm]
   )
-  
+
   const additionalScripts = useMemo(
     () => extractAdditionalScripts(embedForm),
     [embedForm]
@@ -99,7 +99,7 @@ export const HubspotFormV2: FC<Props> = ({ embedForm, className }) => {
 
     for (const script of additionalScripts) {
       if (signal.aborted) break
-      
+
       if (script.src) {
         try {
           await loadScriptOnce(script.src)
@@ -153,6 +153,23 @@ export const HubspotFormV2: FC<Props> = ({ embedForm, className }) => {
           onFormReady: () => {
             if (!signal.aborted) {
               void executeAdditionalScripts(signal)
+              
+            }
+          },
+          onFormSubmitted: () => {
+            // Fallback for RevenueHero inside SPA modals:
+            // If the external script initialized `window.hero`, manually trigger it.
+            if (typeof window !== 'undefined' && (window as any).hero) {
+              try {
+                const hero = (window as any).hero
+                if (typeof hero.submit === 'function') {
+                  hero.submit()
+                } else if (typeof hero.schedule === 'function') {
+                  hero.schedule(`hsForm_${formId}`)
+                }
+              } catch (err) {
+                logger.error({ err }, 'Failed to trigger RevenueHero natively')
+              }
             }
           }
         })
