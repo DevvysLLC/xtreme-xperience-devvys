@@ -172,6 +172,7 @@ export const HubspotFormV2: FC<Props> = ({ embedForm, className }) => {
     
     const handleMessage = (event: MessageEvent) => {
       if (event.data && event.data.type === 'hsFormCallback') {
+        console.warn(`[DEBUG-HUBSPOT] Intercepted event: ${event.data.eventName}`, event.data)
         if (event.data.eventName === 'onFormSubmit' || event.data.eventName === 'onFormSubmitted') {
           if (typeof window !== 'undefined' && (window as any).hero) {
             const heroKeys = Object.keys((window as any).hero).join(', ')
@@ -179,9 +180,9 @@ export const HubspotFormV2: FC<Props> = ({ embedForm, className }) => {
             if (Object.getPrototypeOf((window as any).hero)) {
               protoKeys = Object.getOwnPropertyNames(Object.getPrototypeOf((window as any).hero)).join(', ')
             }
-            alert(`Raw Message Intercepted: ${event.data.eventName}\nRevenueHero Keys: ${heroKeys}\nProto: ${protoKeys}`)
+            console.warn(`[DEBUG-REVENUEHERO] Keys: ${heroKeys} | Proto: ${protoKeys}`)
           } else {
-            alert(`Raw Message Intercepted: ${event.data.eventName}\nRevenueHero is UNDEFINED`)
+            console.warn(`[DEBUG-REVENUEHERO] window.hero is UNDEFINED!`)
           }
         }
       }
