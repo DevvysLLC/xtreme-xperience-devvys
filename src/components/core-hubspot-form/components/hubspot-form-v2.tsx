@@ -152,24 +152,20 @@ export const HubspotFormV2: FC<Props> = ({ embedForm, className }) => {
           target: `#${containerRef.current.id}`,
           onFormReady: () => {
             if (!signal.aborted) {
-              void executeAdditionalScripts(signal)
-              
-            }
-          },
-          onFormSubmitted: () => {
-            // Fallback for RevenueHero inside SPA modals:
-            // If the external script initialized `window.hero`, manually trigger it.
-            if (typeof window !== 'undefined' && (window as any).hero) {
-              try {
-                const hero = (window as any).hero
-                if (typeof hero.submit === 'function') {
-                  hero.submit()
-                } else if (typeof hero.schedule === 'function') {
-                  hero.schedule(`hsForm_${formId}`)
+              void executeAdditionalScripts(signal).then(() => {
+                // Once scripts are loaded, if RevenueHero was initialized, 
+                // explicitly bind it to this HubSpot form ID!
+                if (typeof window !== 'undefined' && (window as any).hero) {
+                  try {
+                    const hero = (window as any).hero
+                    if (typeof hero.schedule === 'function') {
+                      hero.schedule(`hsForm_${formId}`)
+                    }
+                  } catch (err) {
+                    logger.error({ err }, 'Failed to schedule RevenueHero natively')
+                  }
                 }
-              } catch (err) {
-                logger.error({ err }, 'Failed to trigger RevenueHero natively')
-              }
+              })
             }
           }
         })
