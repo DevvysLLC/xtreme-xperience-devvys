@@ -61,18 +61,22 @@ export const HubspotFormV2: FC<Props> = ({ embedForm, className }) => {
 
     void executeScriptsSequentially()
 
-    // Also inject a global message listener to debug form submissions for RevenueHero
+    // Also inject a global message listener to debug and manually trigger RevenueHero
     const handleMessage = (event: MessageEvent) => {
       if (event.data && event.data.type === 'hsFormCallback') {
         console.warn(`[DEBUG-HUBSPOT-UNIVERSAL] Intercepted hsFormCallback: ${event.data.eventName}`, event.data)
         if (event.data.eventName === 'onFormSubmit' || event.data.eventName === 'onFormSubmitted') {
+          
+          // Debugging keys
           if (typeof window !== 'undefined' && (window as any).hero) {
             const heroKeys = Object.keys((window as any).hero).join(', ')
-            let protoKeys = ''
-            if (Object.getPrototypeOf((window as any).hero)) {
-              protoKeys = Object.getOwnPropertyNames(Object.getPrototypeOf((window as any).hero)).join(', ')
+            console.warn(`[DEBUG-REVENUEHERO-UNIVERSAL] Keys: ${heroKeys}`)
+            
+            // Manual Bridge Execution: Ensure RevenueHero modal pops up
+            if (typeof (window as any).hero.submit === 'function') {
+              console.warn('[DEBUG-REVENUEHERO-UNIVERSAL] Manually triggering hero.submit()')
+              ;(window as any).hero.submit(event.data.data)
             }
-            console.warn(`[DEBUG-REVENUEHERO-UNIVERSAL] Keys: ${heroKeys} | Proto: ${protoKeys}`)
           } else {
             console.warn(`[DEBUG-REVENUEHERO-UNIVERSAL] window.hero is UNDEFINED!`)
           }
@@ -83,6 +87,15 @@ export const HubspotFormV2: FC<Props> = ({ embedForm, className }) => {
 
     return () => {
       isCancelled = true
+      
+      // Fix Accessibility Warning: "Blocked aria-hidden on an element because its descendant retained focus"
+      // Shift focus out of the form container (iframe) before destroying it
+      if (typeof document !== 'undefined' && document.activeElement) {
+        if (container.contains(document.activeElement) || document.activeElement.tagName === 'IFRAME') {
+          ;(document.activeElement as HTMLElement).blur()
+        }
+      }
+
       container.innerHTML = ''
       window.removeEventListener('message', handleMessage)
     }
