@@ -55,6 +55,8 @@ export const HubspotFormV4: FC<Props> = ({ embedForm, className }) => {
 
   useEffect(() => {
     setIsClient(true)
+    console.warn('[DEBUG] HubspotFormV4 Mounted!')
+    return () => console.warn('[DEBUG] HubspotFormV4 Unmounted!')
   }, [])
 
   useEffect(() => {

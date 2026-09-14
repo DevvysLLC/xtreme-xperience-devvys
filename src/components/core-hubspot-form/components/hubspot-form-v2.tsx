@@ -91,6 +91,8 @@ export const HubspotFormV2: FC<Props> = ({ embedForm, className }) => {
 
   useEffect(() => {
     setIsClient(true)
+    console.warn('[DEBUG] HubspotFormV2 Mounted!')
+    return () => console.warn('[DEBUG] HubspotFormV2 Unmounted!')
   }, [])
 
   const executeAdditionalScripts = useCallback(async (signal: AbortSignal) => {
