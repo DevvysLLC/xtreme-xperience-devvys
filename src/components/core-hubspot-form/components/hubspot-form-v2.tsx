@@ -22,19 +22,44 @@ export const HubspotFormV2: FC<Props> = ({ embedForm, className }) => {
     const range = document.createRange()
     const documentFragment = range.createContextualFragment(embedForm)
 
-    // Browsers don't run <script> tags inserted via innerHTML; recreate them explicitly
+    // Browsers don't run <script> tags inserted via innerHTML; recreate them explicitly.
+    // We must execute them sequentially to prevent ReferenceErrors (e.g. inline scripts calling hbspt before v2.js loads)
     const scripts = Array.from(documentFragment.querySelectorAll('script'))
     
-    scripts.forEach((oldScript) => {
-      const newScript = document.createElement('script')
-      Array.from(oldScript.attributes).forEach((attr) => {
-        newScript.setAttribute(attr.name, attr.value)
-      })
-      newScript.textContent = oldScript.textContent
-      oldScript.parentNode?.replaceChild(newScript, oldScript)
-    })
-
+    // Remove the scripts from the fragment so they don't execute out of order if we append the fragment
+    scripts.forEach(script => script.parentNode?.removeChild(script))
+    
     container.appendChild(documentFragment)
+
+    let isCancelled = false
+
+    const executeScriptsSequentially = async () => {
+      for (const oldScript of scripts) {
+        if (isCancelled) break
+
+        await new Promise<void>((resolve) => {
+          const newScript = document.createElement('script')
+          Array.from(oldScript.attributes).forEach((attr) => {
+            newScript.setAttribute(attr.name, attr.value)
+          })
+          newScript.textContent = oldScript.textContent
+
+          if (newScript.src) {
+            newScript.onload = () => resolve()
+            newScript.onerror = () => resolve() // Continue even on error
+          }
+
+          container.appendChild(newScript)
+
+          // If it's an inline script, it executes immediately upon append
+          if (!newScript.src) {
+            resolve()
+          }
+        })
+      }
+    }
+
+    void executeScriptsSequentially()
 
     // Also inject a global message listener to debug form submissions for RevenueHero
     const handleMessage = (event: MessageEvent) => {
@@ -57,6 +82,7 @@ export const HubspotFormV2: FC<Props> = ({ embedForm, className }) => {
     window.addEventListener('message', handleMessage)
 
     return () => {
+      isCancelled = true
       container.innerHTML = ''
       window.removeEventListener('message', handleMessage)
     }
