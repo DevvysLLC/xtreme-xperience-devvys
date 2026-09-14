@@ -152,20 +152,21 @@ export const HubspotFormV2: FC<Props> = ({ embedForm, className }) => {
           target: `#${containerRef.current.id}`,
           onFormReady: () => {
             if (!signal.aborted) {
-              void executeAdditionalScripts(signal).then(() => {
-                // Once scripts are loaded, if RevenueHero was initialized, 
-                // explicitly bind it to this HubSpot form ID!
-                if (typeof window !== 'undefined' && (window as any).hero) {
-                  try {
-                    const hero = (window as any).hero
-                    if (typeof hero.schedule === 'function') {
-                      hero.schedule(`hsForm_${formId}`)
-                    }
-                  } catch (err) {
-                    logger.error({ err }, 'Failed to schedule RevenueHero natively')
-                  }
-                }
-              })
+              void executeAdditionalScripts(signal)
+            }
+          },
+          onFormSubmitted: () => {
+            if (typeof window !== 'undefined' && (window as any).hero) {
+              const heroKeys = Object.keys((window as any).hero).join(', ')
+              let protoKeys = ''
+              if (Object.getPrototypeOf((window as any).hero)) {
+                protoKeys = Object.getOwnPropertyNames(Object.getPrototypeOf((window as any).hero)).join(', ')
+              }
+              const msg = `RevenueHero API exposed:\nKeys: ${heroKeys}\nProto: ${protoKeys}`
+              logger.info(msg)
+              alert(msg)
+            } else {
+              alert('window.hero is undefined during onFormSubmitted')
             }
           }
         })
