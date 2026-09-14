@@ -141,20 +141,16 @@ export const HubspotFormV2: FC<Props> = ({ embedForm, className }) => {
           return
         }
 
-        // Execute external scripts (e.g. RevenueHero) BEFORE creating the form
-        // so they can intercept global 'message' events like 'onFormReady'
-        await executeAdditionalScripts(signal)
-
-        if (signal.aborted) {
-          formCreatedRef.current = false
-          return
-        }
-
         hubspotApi.forms.create({
           ...(region ? { region } : {}),
           portalId,
           formId,
-          target: `#${containerRef.current.id}`
+          target: `#${containerRef.current.id}`,
+          onFormReady: () => {
+            if (!signal.aborted) {
+              void executeAdditionalScripts(signal)
+            }
+          }
         })
       } catch {
         formCreatedRef.current = false
