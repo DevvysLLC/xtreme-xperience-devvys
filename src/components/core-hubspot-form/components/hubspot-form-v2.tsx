@@ -172,7 +172,7 @@ export const HubspotFormV2: FC<Props> = ({ embedForm, className }) => {
     
     const handleMessage = (event: MessageEvent) => {
       if (event.data && event.data.type === 'hsFormCallback') {
-        console.warn(`[DEBUG-HUBSPOT] Intercepted event: ${event.data.eventName}`, event.data)
+        console.warn(`[DEBUG-HUBSPOT] Intercepted hsFormCallback: ${event.data.eventName}`, event.data)
         if (event.data.eventName === 'onFormSubmit' || event.data.eventName === 'onFormSubmitted') {
           if (typeof window !== 'undefined' && (window as any).hero) {
             const heroKeys = Object.keys((window as any).hero).join(', ')
