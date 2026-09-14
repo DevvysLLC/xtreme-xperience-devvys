@@ -205,13 +205,15 @@ export const HubspotFormV2: FC<Props> = ({ embedForm, className }) => {
     return null
   }
 
-  const containerId = `hs-form-${formId}-${sanitizedReactId}`
+  // Use the exact ID format and classes that HubSpot natively generates.
+  // RevenueHero strictly relies on this DOM signature to locate and hide the form container.
+  const containerId = `hsForm_${formId}`
 
   return (
     <div
       id={containerId}
       ref={containerRef}
-      className={clsx(styles.hubspotFormV2, className)}
+      className={clsx(styles.hubspotFormV2, className, 'hbspt-form')}
     />
   )
 }

@@ -104,10 +104,13 @@ export const HubspotFormV4: FC<Props> = ({ embedForm, className }) => {
     return null
   }
 
+  const containerId = `hsForm_${formId}`
+
   return (
     <div
+      id={containerId}
       ref={containerRef}
-      className={clsx(styles.hubspotFormV4, className)}
+      className={clsx(styles.hubspotFormV4, className, 'hbspt-form')}
       dangerouslySetInnerHTML={{ __html: htmlWithoutScripts }}
     />
   )
