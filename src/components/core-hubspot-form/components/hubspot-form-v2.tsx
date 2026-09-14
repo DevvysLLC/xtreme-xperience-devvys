@@ -154,20 +154,6 @@ export const HubspotFormV2: FC<Props> = ({ embedForm, className }) => {
             if (!signal.aborted) {
               void executeAdditionalScripts(signal)
             }
-          },
-          onFormSubmitted: () => {
-            if (typeof window !== 'undefined' && (window as any).hero) {
-              const heroKeys = Object.keys((window as any).hero).join(', ')
-              let protoKeys = ''
-              if (Object.getPrototypeOf((window as any).hero)) {
-                protoKeys = Object.getOwnPropertyNames(Object.getPrototypeOf((window as any).hero)).join(', ')
-              }
-              const msg = `RevenueHero API exposed:\nKeys: ${heroKeys}\nProto: ${protoKeys}`
-              logger.info(msg)
-              alert(msg)
-            } else {
-              alert('window.hero is undefined during onFormSubmitted')
-            }
           }
         })
       } catch {
@@ -183,10 +169,30 @@ export const HubspotFormV2: FC<Props> = ({ embedForm, className }) => {
     }
     const abortController = new AbortController()
     void createForm(abortController.signal)
+    
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data && event.data.type === 'hsFormCallback') {
+        if (event.data.eventName === 'onFormSubmit' || event.data.eventName === 'onFormSubmitted') {
+          if (typeof window !== 'undefined' && (window as any).hero) {
+            const heroKeys = Object.keys((window as any).hero).join(', ')
+            let protoKeys = ''
+            if (Object.getPrototypeOf((window as any).hero)) {
+              protoKeys = Object.getOwnPropertyNames(Object.getPrototypeOf((window as any).hero)).join(', ')
+            }
+            alert(`Raw Message Intercepted: ${event.data.eventName}\nRevenueHero Keys: ${heroKeys}\nProto: ${protoKeys}`)
+          } else {
+            alert(`Raw Message Intercepted: ${event.data.eventName}\nRevenueHero is UNDEFINED`)
+          }
+        }
+      }
+    }
+    window.addEventListener('message', handleMessage)
+
     return () => {
       abortController.abort()
       formCreatedRef.current = false
       scriptsExecutedRef.current = false
+      window.removeEventListener('message', handleMessage)
     }
   }, [isClient, createForm])
 
