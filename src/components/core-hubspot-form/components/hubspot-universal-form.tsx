@@ -9,7 +9,7 @@ type Props = {
   className?: string
 }
 
-export const HubspotFormV2: FC<Props> = ({ embedForm, className }) => {
+export const HubspotUniversalForm: FC<Props> = ({ embedForm, className }) => {
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
