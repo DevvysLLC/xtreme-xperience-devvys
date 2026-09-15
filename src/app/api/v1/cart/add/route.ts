@@ -53,9 +53,17 @@ export const POST = async (request: Request): Promise<NextResponse> => {
 
     if (error instanceof AppError) {
       const status = error.details?.status
-      const errorData = error.details?.errorData as any
+      const errorData = error.details?.errorData
       if (status && typeof status === 'number') {
-        const message = errorData?.errorMessage || error.message || 'API Error'
+        const errorMessage =
+          errorData &&
+          typeof errorData === 'object' &&
+          'errorMessage' in errorData &&
+          typeof errorData.errorMessage === 'string'
+            ? errorData.errorMessage
+            : undefined
+
+        const message = errorMessage || error.message || 'API Error'
         return NextResponse.json(
           {
             status: 'error',

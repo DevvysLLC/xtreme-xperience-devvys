@@ -140,7 +140,7 @@ export const CartLineItems: FC<Props> = ({
       }
       return true
     })
-  }, [reversedLineItems, metadata])
+  }, [reversedLineItems, getMetadataForLineItem])
 
   return (
     <div

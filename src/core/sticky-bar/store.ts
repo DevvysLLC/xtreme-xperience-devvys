@@ -1,5 +1,5 @@
 import { createStore } from 'zustand/vanilla'
-import React, { useSyncExternalStore } from 'react'
+import { useSyncExternalStore } from 'react'
 
 export type StickyBarOverride = {
   enableCampaignStickyBar: boolean

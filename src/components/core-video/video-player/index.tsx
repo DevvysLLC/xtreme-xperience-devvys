@@ -50,7 +50,7 @@ const checkNativeHlsSupport = (): boolean => {
  */
 export const VideoPlayer = memo<Props>(function VideoPlayer({
   data,
-  autoplay = true,
+  autoplay: _autoplay = true,
   loop,
   uniqueVideoId,
   preload = 'metadata',
@@ -184,7 +184,9 @@ export const VideoPlayer = memo<Props>(function VideoPlayer({
 
   // Sync video element's play/pause state with store status, only after HLS is ready.
   useEffect(() => {
-    if (hlsStatus !== 'initialized') return
+    if (hlsStatus !== 'initialized') {
+      return
+    }
 
     if (status === 'playing') {
       playback('play')

@@ -9,11 +9,22 @@ type Props = {
   className?: string
 }
 
+declare global {
+  interface Window {
+    hero?: {
+      submit?: (data: unknown) => void
+      [key: string]: unknown
+    }
+  }
+}
+
 export const HubspotUniversalForm: FC<Props> = ({ embedForm, className }) => {
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (!containerRef.current || !embedForm) return
+    if (!containerRef.current || !embedForm) {
+      return
+    }
 
     const container = containerRef.current
     container.innerHTML = ''
@@ -35,7 +46,9 @@ export const HubspotUniversalForm: FC<Props> = ({ embedForm, className }) => {
 
     const executeScriptsSequentially = async () => {
       for (const oldScript of scripts) {
-        if (isCancelled) break
+        if (isCancelled) {
+          break
+        }
 
         await new Promise<void>((resolve) => {
           const newScript = document.createElement('script')
@@ -68,14 +81,14 @@ export const HubspotUniversalForm: FC<Props> = ({ embedForm, className }) => {
         if (event.data.eventName === 'onFormSubmit' || event.data.eventName === 'onFormSubmitted') {
           
           // Debugging keys
-          if (typeof window !== 'undefined' && (window as any).hero) {
-            const heroKeys = Object.keys((window as any).hero).join(', ')
+          if (typeof window !== 'undefined' && window.hero) {
+            const heroKeys = Object.keys(window.hero).join(', ')
             console.warn(`[DEBUG-REVENUEHERO-UNIVERSAL] Keys: ${heroKeys}`)
             
             // Manual Bridge Execution: Ensure RevenueHero modal pops up
-            if (typeof (window as any).hero.submit === 'function') {
+            if (typeof window.hero.submit === 'function') {
               console.warn('[DEBUG-REVENUEHERO-UNIVERSAL] Manually triggering hero.submit()')
-              ;(window as any).hero.submit(event.data.data)
+              window.hero.submit(event.data.data)
             }
           } else {
             console.warn(`[DEBUG-REVENUEHERO-UNIVERSAL] window.hero is UNDEFINED!`)
@@ -92,7 +105,9 @@ export const HubspotUniversalForm: FC<Props> = ({ embedForm, className }) => {
       // Shift focus out of the form container (iframe) before destroying it
       if (typeof document !== 'undefined' && document.activeElement) {
         if (container.contains(document.activeElement) || document.activeElement.tagName === 'IFRAME') {
-          ;(document.activeElement as HTMLElement).blur()
+          if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur()
+          }
         }
       }
 

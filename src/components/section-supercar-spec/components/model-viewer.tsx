@@ -48,15 +48,7 @@ const checkWebGLSupport = (): boolean => {
 }
 
 // Detect Apple Safari (both mobile and desktop) where heavy 3D GLB models crash or fail
-const isAppleSafari = (): boolean => {
-  if (typeof window === 'undefined') {
-    return false
-  }
-  const ua = window.navigator.userAgent.toLowerCase()
-  const isSafari = ua.includes('safari') && !ua.includes('chrome') && !ua.includes('chromium') && !ua.includes('android')
-  const isApple = /iphone|ipad|ipod|macintosh/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
-  return isSafari && isApple
-}
+// export const isAppleSafari = (): boolean => { ... } (Removed unused function)
 
 /**
  * Lazy-loaded 3D model viewer component with capability detection and Safari/WebGL fallback.
