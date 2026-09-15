@@ -1,7 +1,10 @@
 'use client'
 
-import { useEffect, type FC } from 'react'
-import { stickyBarStore, type StickyBarOverride } from '../../core/sticky-bar/store'
+import { type FC, useEffect } from 'react'
+import {
+  type StickyBarOverride,
+  stickyBarStore
+} from '../../core/sticky-bar/store'
 
 type Props = {
   config: StickyBarOverride | null

@@ -194,7 +194,9 @@
       background-color: sg.color(white);
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
       color: sg.color(black);
-      transition: background-color 0.2s, transform 0.2s;
+      transition:
+        background-color 0.2s,
+        transform 0.2s;
 
       &:hover {
         background-color: sg.color(black-10);

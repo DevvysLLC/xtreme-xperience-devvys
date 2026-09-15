@@ -544,7 +544,7 @@
       color: sg.color(white);
       padding: u.rem-calc(4) u.rem-calc(8);
       border-radius: u.rem-calc(4);
-      font-feature-settings: "tnum";
+      font-feature-settings: 'tnum';
     }
   }
 }
@@ -562,7 +562,7 @@
 
   &__button {
     width: 100%;
-    
+
     @include sg.min(tabletPortrait) {
       width: auto;
     }

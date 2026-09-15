@@ -37,10 +37,10 @@ export const HubspotUniversalForm: FC<Props> = ({ embedForm, className }) => {
     // Browsers don't run <script> tags inserted via innerHTML; recreate them explicitly.
     // We must execute them sequentially to prevent ReferenceErrors (e.g. inline scripts calling hbspt before v2.js loads)
     const scripts = Array.from(documentFragment.querySelectorAll('script'))
-    
+
     // Remove the scripts from the fragment so they don't execute out of order if we append the fragment
-    scripts.forEach(script => script.parentNode?.removeChild(script))
-    
+    scripts.forEach((script) => script.parentNode?.removeChild(script))
+
     container.appendChild(documentFragment)
 
     let isCancelled = false
@@ -78,21 +78,30 @@ export const HubspotUniversalForm: FC<Props> = ({ embedForm, className }) => {
     // Also inject a global message listener to debug and manually trigger RevenueHero
     const handleMessage = (event: MessageEvent) => {
       if (event.data && event.data.type === 'hsFormCallback') {
-        console.warn(`[DEBUG-HUBSPOT-UNIVERSAL] Intercepted hsFormCallback: ${event.data.eventName}`, event.data)
-        if (event.data.eventName === 'onFormSubmit' || event.data.eventName === 'onFormSubmitted') {
-          
+        console.warn(
+          `[DEBUG-HUBSPOT-UNIVERSAL] Intercepted hsFormCallback: ${event.data.eventName}`,
+          event.data
+        )
+        if (
+          event.data.eventName === 'onFormSubmit' ||
+          event.data.eventName === 'onFormSubmitted'
+        ) {
           // Debugging keys
           if (typeof window !== 'undefined' && window.hero) {
             const heroKeys = Object.keys(window.hero).join(', ')
             console.warn(`[DEBUG-REVENUEHERO-UNIVERSAL] Keys: ${heroKeys}`)
-            
+
             // Manual Bridge Execution: Ensure RevenueHero modal pops up
             if (typeof window.hero.submit === 'function') {
-              console.warn('[DEBUG-REVENUEHERO-UNIVERSAL] Manually triggering hero.submit()')
+              console.warn(
+                '[DEBUG-REVENUEHERO-UNIVERSAL] Manually triggering hero.submit()'
+              )
               window.hero.submit(event.data.data)
             }
           } else {
-            console.warn(`[DEBUG-REVENUEHERO-UNIVERSAL] window.hero is UNDEFINED!`)
+            console.warn(
+              `[DEBUG-REVENUEHERO-UNIVERSAL] window.hero is UNDEFINED!`
+            )
           }
         }
       }
@@ -101,11 +110,14 @@ export const HubspotUniversalForm: FC<Props> = ({ embedForm, className }) => {
 
     return () => {
       isCancelled = true
-      
+
       // Fix Accessibility Warning: "Blocked aria-hidden on an element because its descendant retained focus"
       // Shift focus out of the form container (iframe) before destroying it
       if (typeof document !== 'undefined' && document.activeElement) {
-        if (container.contains(document.activeElement) || document.activeElement.tagName === 'IFRAME') {
+        if (
+          container.contains(document.activeElement) ||
+          document.activeElement.tagName === 'IFRAME'
+        ) {
           if (document.activeElement instanceof HTMLElement) {
             document.activeElement.blur()
           }
@@ -118,9 +130,6 @@ export const HubspotUniversalForm: FC<Props> = ({ embedForm, className }) => {
   }, [embedForm])
 
   return (
-    <div
-      ref={containerRef}
-      className={clsx(styles.hubspotFormV2, className)}
-    />
+    <div ref={containerRef} className={clsx(styles.hubspotFormV2, className)} />
   )
 }

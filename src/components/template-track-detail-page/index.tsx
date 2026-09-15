@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
+import { CampaignStickyBarInitializer } from '../campaign-sticky-bar-initializer'
 import { SectionRenderer } from '../section-renderer'
 import { StructuredData } from '../structured-data'
-import { CampaignStickyBarInitializer } from '../campaign-sticky-bar-initializer'
 import type { GetTrackQuery } from './get-track.typegen'
 
 export type TemplateTrackDetailPageProps = {
@@ -32,7 +32,6 @@ export const TemplateTrackDetailPage = async ({
         campaignStickyBarCtaLink: config.campaignStickyBarCtaLink ?? null
       }
     : null
-
 
   return (
     <>

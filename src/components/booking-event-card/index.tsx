@@ -61,7 +61,10 @@ export const BookingEventCard: FC<BookingEventCardProps> = ({
       }
 
       const isOtherEvent = otherModel.id !== event?.model?.id
-      const isUpcoming = !isEventPassed(otherModel.startDate, otherModel.endDate)
+      const isUpcoming = !isEventPassed(
+        otherModel.startDate,
+        otherModel.endDate
+      )
       const isEnabled = otherModel.enabled
 
       return isOtherEvent && isUpcoming && isEnabled

@@ -4,9 +4,9 @@ import { ROUTES } from '../../config/routes'
 import { initDatoSdk } from '../../core/dato/sdk'
 import { getHref } from '../../utils/get-href'
 import { CoreBrand } from '../core-brand'
+import { CoreKlaviyoForm } from '../core-klaviyo-form'
 import { CoreNewsletterSignupForm } from '../core-newsletter-signup-form'
 import { CoreTextMarkdown } from '../core-text-markdown'
-import { CoreKlaviyoForm } from '../core-klaviyo-form'
 import { SectionRenderer } from '../section-renderer'
 import { NavigationGroup } from './components/navigation-group'
 import styles from './style.module.scss'
@@ -29,7 +29,8 @@ export const GlobalFooter = async () => {
   const brand = t('brand_name')
   const year = new Date().getFullYear()
 
-  const klaviyoNewsletterFormId = process.env.NEXT_PUBLIC_KLAVIYO_NEWSLETTER_FORM_ID
+  const klaviyoNewsletterFormId =
+    process.env.NEXT_PUBLIC_KLAVIYO_NEWSLETTER_FORM_ID
 
   return (
     <footer className={styles.footer}>

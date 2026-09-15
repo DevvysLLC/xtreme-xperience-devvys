@@ -21,7 +21,8 @@ const DRAWER_ID = 'form-dialog'
 
 export const GlobalFormDialog: FC = () => {
   const t = useTranslations('global_form_dialog')
-  const { isOpen, handle, size, width, height, closeFormDialog } = useFormDialog()
+  const { isOpen, handle, size, width, height, closeFormDialog } =
+    useFormDialog()
   const { data, isLoading, isError } = useForm(isOpen ? handle : null)
   const isClosingRef = useRef(false)
   const prevIsOpenRef = useRef(false)
@@ -86,7 +87,9 @@ export const GlobalFormDialog: FC = () => {
     return validateHtmlForEmbed(iframeEmbed, { requireIframe: true })
   }, [iframeEmbed])
 
-  const klaviyoFormIdMatch = /klaviyo-form-([a-zA-Z0-9]+)/.exec(sendlaneEmbed ?? '')
+  const klaviyoFormIdMatch = /klaviyo-form-([a-zA-Z0-9]+)/.exec(
+    sendlaneEmbed ?? ''
+  )
   const klaviyoFormId = klaviyoFormIdMatch?.[1] ?? null
   const isLikelyKlaviyoPopup = handle?.toLowerCase().includes('klaviyo')
 
@@ -105,7 +108,7 @@ export const GlobalFormDialog: FC = () => {
       } catch (err) {
         console.error('Error opening Klaviyo popup:', err)
       }
-      
+
       closeFormDialog()
     }
   }, [klaviyoFormId, closeFormDialog])

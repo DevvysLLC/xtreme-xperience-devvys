@@ -3,11 +3,11 @@
 import clsx from 'clsx'
 import { createElement, type FC, useEffect, useMemo, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
-import { CoreIcon } from '../../core-icon'
-import { CoreImage } from '../../core-image'
 import type { SupercarModelFragment } from '../../../core/dato/fragments/supercar-model.typegen'
 import { logger } from '../../../core/logger/logger'
 import { scheduleOnIdle } from '../../../utils/schedule-on-idle'
+import { CoreIcon } from '../../core-icon'
+import { CoreImage } from '../../core-image'
 import styles from '../style.module.scss'
 
 type Props = {
@@ -53,7 +53,11 @@ const checkWebGLSupport = (): boolean => {
 /**
  * Lazy-loaded 3D model viewer component with capability detection and Safari/WebGL fallback.
  */
-export const ModelViewer3d: FC<Props> = ({ modelViewer3d, thumbnail, className }) => {
+export const ModelViewer3d: FC<Props> = ({
+  modelViewer3d,
+  thumbnail,
+  className
+}) => {
   const { url, alt } = modelViewer3d
   const [isIdleReady, setIsIdleReady] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)

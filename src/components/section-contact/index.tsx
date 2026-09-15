@@ -5,8 +5,8 @@ import { getSectionConfigClasses } from '../../utils/get-section-config-classes'
 import { getSectionConfigStyles } from '../../utils/get-section-config-styles'
 import { CoreForm } from '../core-form'
 import { CoreHubspotForm } from '../core-hubspot-form'
-import { CoreSendlaneForm } from '../core-sendlane-form'
 import { CoreKlaviyoForm } from '../core-klaviyo-form'
+import { CoreSendlaneForm } from '../core-sendlane-form'
 import { CoreTextMarkdown } from '../core-text-markdown'
 import type { SectionContactFragment } from './section-contact.typegen'
 import styles from './style.module.scss'
@@ -22,7 +22,9 @@ export const SectionContact: FC<Props> = ({ data, isFirstSection }) => {
   const hubspotEmbed = form?.hubspotEmbed?.trim()
   const sendlaneEmbed = form?.sendlaneEmbed?.trim()
 
-  const klaviyoFormIdMatch = /klaviyo-form-([a-zA-Z0-9]+)/.exec(sendlaneEmbed ?? '')
+  const klaviyoFormIdMatch = /klaviyo-form-([a-zA-Z0-9]+)/.exec(
+    sendlaneEmbed ?? ''
+  )
   const klaviyoFormId = klaviyoFormIdMatch?.[1] ?? null
 
   return (

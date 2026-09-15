@@ -7,7 +7,6 @@ type Props = {
   className?: string
 }
 
-
 /**
  * CoreKlaviyoForm renders a Klaviyo embedded signup form.
  * Pushes a refresh command to the Klaviyo onsite SDK to ensure the form

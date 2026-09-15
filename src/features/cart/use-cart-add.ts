@@ -40,7 +40,7 @@ export const useCartAdd = (): UseMutationResult<
       const newMetadatas = Array.isArray(metadata) ? metadata : [metadata]
       const current =
         qc.getQueryData<CartState>(CART_QUERY_KEY) ?? initialCartState
-      
+
       const nextMetadataList = [...current.metadata]
       let hasChanges = false
       for (const item of newMetadatas) {

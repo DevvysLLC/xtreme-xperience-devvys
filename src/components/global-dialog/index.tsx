@@ -75,7 +75,6 @@ export const GlobalDialog: FC = () => {
     }
   }, [isOpen, bus])
 
-
   const onConfirm = useCallback(() => {
     handleConfirm().catch((error) => {
       console.error('Error in dialog confirm handler:', error)

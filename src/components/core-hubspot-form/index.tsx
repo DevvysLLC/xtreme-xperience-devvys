@@ -13,9 +13,6 @@ export type Props = {
  * CoreHubspotForm delegates to the HubspotUniversalForm which natively
  * handles both Legacy (v2) and Next-Gen (v4) forms via script injection.
  */
-export const CoreHubspotForm: FC<Props> = ({
-  embedForm,
-  className
-}) => {
+export const CoreHubspotForm: FC<Props> = ({ embedForm, className }) => {
   return <HubspotUniversalForm embedForm={embedForm} className={className} />
 }

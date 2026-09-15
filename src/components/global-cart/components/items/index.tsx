@@ -1,13 +1,13 @@
 'use client'
 
 import clsx from 'clsx'
-import { type FC, useMemo, useCallback } from 'react'
+import { type FC, useCallback, useMemo } from 'react'
+import { useCartState } from '../../../../features/cart'
 import type {
   CartLineItemMetadata,
   RocketRezLineItem
 } from '../../../../io/types'
 import { getCartLineItemReadMetadataKey } from '../../../../utils/get-cart-line-item-metadata-key'
-import { useCartState } from '../../../../features/cart'
 import { CartLineItem } from '../item'
 import styles from './style.module.scss'
 
@@ -84,46 +84,51 @@ export const CartLineItems: FC<Props> = ({
   metadata: propMetadata
 }) => {
   const { data: cartState } = useCartState()
-  const metadata = useMemo(() => propMetadata ?? cartState?.metadata ?? [], [propMetadata, cartState?.metadata])
+  const metadata = useMemo(
+    () => propMetadata ?? cartState?.metadata ?? [],
+    [propMetadata, cartState?.metadata]
+  )
   const reversedLineItems = useMemo(() => [...lineItems].reverse(), [lineItems])
 
-  const getMetadataForLineItem = useCallback((
-    lineItem: RocketRezLineItem
-  ): CartLineItemMetadata | null | undefined => {
-    const key = getCartLineItemReadMetadataKey({ lineItem })
+  const getMetadataForLineItem = useCallback(
+    (lineItem: RocketRezLineItem): CartLineItemMetadata | null | undefined => {
+      const key = getCartLineItemReadMetadataKey({ lineItem })
 
-    return (
-      metadata.find((m) => m.key === key) ??
-      metadata.find((m) => {
-        const decoded = decodeMetadataKey(m.key)
-        if (!decoded) {
-          return false
-        }
+      return (
+        metadata.find((m) => m.key === key) ??
+        metadata.find((m) => {
+          const decoded = decodeMetadataKey(m.key)
+          if (!decoded) {
+            return false
+          }
 
-        const sameId =
-          toComparable(decoded.id) === toComparable(lineItem.productId)
-        const sameType =
-          toComparable(decoded.type).toLowerCase() ===
-          toComparable(lineItem.type).toLowerCase()
+          const sameId =
+            toComparable(decoded.id) === toComparable(lineItem.productId)
+          const sameType =
+            toComparable(decoded.type).toLowerCase() ===
+            toComparable(lineItem.type).toLowerCase()
 
-        if (!sameId || !sameType) {
-          return false
-        }
+          if (!sameId || !sameType) {
+            return false
+          }
 
-        // if the key is generic, check if it matches the current item. (e.g. supercar:1)
-        if (decoded.scheduleId || decoded.rateId) {
-          const sameScheduleId =
-            toComparable(decoded.scheduleId) === toComparable(lineItem.scheduleId)
-          const sameRateId =
-            toComparable(decoded.rateId) === toComparable(lineItem.rateId)
-          return sameScheduleId && sameRateId
-        }
+          // if the key is generic, check if it matches the current item. (e.g. supercar:1)
+          if (decoded.scheduleId || decoded.rateId) {
+            const sameScheduleId =
+              toComparable(decoded.scheduleId) ===
+              toComparable(lineItem.scheduleId)
+            const sameRateId =
+              toComparable(decoded.rateId) === toComparable(lineItem.rateId)
+            return sameScheduleId && sameRateId
+          }
 
-        return true
-      }) ??
-      null
-    )
-  }, [metadata])
+          return true
+        }) ??
+        null
+      )
+    },
+    [metadata]
+  )
 
   const visibleLineItems = useMemo(() => {
     return reversedLineItems.filter((lineItem) => {

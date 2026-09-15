@@ -148,7 +148,11 @@ export const VideoPlayer = memo<Props>(function VideoPlayer({
         videoEl
           .play()
           .catch((err: unknown) => {
-            if (err instanceof Error && err.name !== 'NotAllowedError' && err.name !== 'AbortError') {
+            if (
+              err instanceof Error &&
+              err.name !== 'NotAllowedError' &&
+              err.name !== 'AbortError'
+            ) {
               console.warn('VideoPlayer: play() failed', err)
             }
 
@@ -377,7 +381,7 @@ export const VideoPlayer = memo<Props>(function VideoPlayer({
         hlsInstance.loadSource(url)
         hlsInstance.attachMedia(videoEl)
         activeHlsRef.current = { url, hlsInstance }
-        
+
         hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
           if (!isCancelled) {
             setHlsStatus('initialized')
@@ -394,7 +398,7 @@ export const VideoPlayer = memo<Props>(function VideoPlayer({
       if (supportsNativeHls) {
         videoEl.src = url
         activeHlsRef.current = { url, hlsInstance: null }
-        
+
         // Give the browser DOM a tick to process the src attribute before attempting play()
         requestAnimationFrame(() => {
           if (!isCancelled) {
@@ -426,8 +430,6 @@ export const VideoPlayer = memo<Props>(function VideoPlayer({
     data.mp4Low,
     isDesktop
   ])
-
-
 
   return (
     <video

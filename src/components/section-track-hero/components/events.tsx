@@ -1,5 +1,5 @@
-import { getTranslations } from 'next-intl/server'
 import clsx from 'clsx'
+import { getTranslations } from 'next-intl/server'
 import type { FC } from 'react'
 import type { TrackFragment } from '../../../core/dato/fragments/track.typegen'
 import type { TrackModelFragment } from '../../../core/dato/fragments/track-model.typegen'

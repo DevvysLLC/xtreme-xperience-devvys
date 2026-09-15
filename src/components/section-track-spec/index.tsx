@@ -179,7 +179,9 @@ export const SectionTrackSpec: FC<Props> = async ({
                             />
                           ) : (
                             <TrackNotifyMeButton
-                              trackName={model?.nickname ?? specTitle ?? 'this track'}
+                              trackName={
+                                model?.nickname ?? specTitle ?? 'this track'
+                              }
                               soldOut={true}
                               text={t('events.badge')}
                               variant="badge"

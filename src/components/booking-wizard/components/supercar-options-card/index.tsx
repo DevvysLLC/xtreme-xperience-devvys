@@ -16,7 +16,10 @@ import {
   RocketRezProductType,
   RocketRezScheduleStatus
 } from '../../../../io/schemas'
-import type { CartLineItemMetadata, RocketRezAddLineItemCar } from '../../../../io/types'
+import type {
+  CartLineItemMetadata,
+  RocketRezAddLineItemCar
+} from '../../../../io/types'
 import { getAddToCartLineItemCarMetadata } from '../../../../utils/get-add-to-cart-line-item-car-metadata'
 import { getBookingLapsPerSession } from '../../../../utils/get-booking-laps-per-session'
 import { getSeatTypeIdWithOverride } from '../../../../utils/get-seat-type-id-with-override'
@@ -151,7 +154,10 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
     rateType: string | null
   }
 
-  const addToCart = async (lineItemOriginal: ValidatedLineItem, isoDate: string) => {
+  const addToCart = async (
+    lineItemOriginal: ValidatedLineItem,
+    isoDate: string
+  ) => {
     const activeTabIndex = state.activeTabIndex ?? 0
     const activeGroupTitle =
       state.configData?.supercars?.[activeTabIndex]?.title ?? null
@@ -182,7 +188,8 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
     // For packages, build one line item per rate in the package category,
     // all sharing the same scheduleId — required by RocketRez API
     let lineItems: ValidatedLineItem[] = [lineItem]
-    let metadataPayload: CartLineItemMetadata | CartLineItemMetadata[] = metadata
+    let metadataPayload: CartLineItemMetadata | CartLineItemMetadata[] =
+      metadata
 
     if (isMulticar && lineItem.scheduleId) {
       const selectedSchedule = schedules.find(
@@ -228,7 +235,9 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
                   activeGroupTitle: activeGroupTitle ?? undefined
                 },
                 bookingSupercar: {
-                  cartLineItemLabel: matchingBookingSupercar.cartLineItemLabel || bookingSupercar.cartLineItemLabel,
+                  cartLineItemLabel:
+                    matchingBookingSupercar.cartLineItemLabel ||
+                    bookingSupercar.cartLineItemLabel,
                   isMulticar: matchingBookingSupercar.isMulticar,
                   isRideAlong: matchingBookingSupercar.isRideAlong,
                   multicarCount: matchingBookingSupercar.multicarCount,

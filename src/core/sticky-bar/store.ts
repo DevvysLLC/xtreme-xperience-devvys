@@ -1,5 +1,5 @@
-import { createStore } from 'zustand/vanilla'
 import { useSyncExternalStore } from 'react'
+import { createStore } from 'zustand/vanilla'
 
 export type StickyBarOverride = {
   enableCampaignStickyBar: boolean
@@ -19,7 +19,9 @@ export const stickyBarStore = createStore<StickyBarStoreState>((set) => ({
   setOverride: (override) => set({ override })
 }))
 
-export const useStickyBarStore = <T>(selector: (s: StickyBarStoreState) => T) => {
+export const useStickyBarStore = <T>(
+  selector: (s: StickyBarStoreState) => T
+) => {
   return useSyncExternalStore(
     stickyBarStore.subscribe,
     () => selector(stickyBarStore.getState()),

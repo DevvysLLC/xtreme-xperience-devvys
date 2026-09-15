@@ -55,7 +55,7 @@ export const getRequiredRateIdsForSupercar = (
       if (rate.category?.trim().toLowerCase() === cleanedCategory) {
         const rateNameLower = rate.name?.toLowerCase() || ''
         const isRateThirdParty = rateNameLower.includes('third party')
-        
+
         // Disambiguate packages that share the same category
         const packageIdentifiers = [
           'podium',
@@ -78,7 +78,7 @@ export const getRequiredRateIdsForSupercar = (
           const sharesPackage = matchedPackages.some((pkg) =>
             selectedPackages.includes(pkg)
           )
-          
+
           // "Drive the Fleet" is known to sloppily reuse rates named after other packages
           const isFleetPackage = selectedPackages.includes('drive the fleet')
 

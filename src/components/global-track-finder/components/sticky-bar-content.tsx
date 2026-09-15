@@ -3,14 +3,14 @@
 import clsx from 'clsx'
 import { usePathname } from 'next/navigation'
 import type { GetGlobalConfigQuery } from '../../../core/dato/sdk/blueprint'
+import { useStickyBarStore } from '../../../core/sticky-bar/store'
 import { useScrollToBottom } from '../../../features/scroll'
 import { getHref } from '../../../utils/get-href'
+import { CoreCountdown } from '../../core-countdown'
 import { CoreCta } from '../../core-cta'
 import { useHeaderScroll } from '../../global-header/hooks/use-header-scroll'
 import styles from '../style.module.scss'
 import { GlobalTrackFinderWidget } from './widget'
-import { useStickyBarStore } from '../../../core/sticky-bar/store'
-import { CoreCountdown } from '../../core-countdown'
 
 type StickyBarContentProps = {
   hideBookingBarOnPaths: string | null | undefined
