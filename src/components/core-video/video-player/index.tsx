@@ -50,6 +50,7 @@ const checkNativeHlsSupport = (): boolean => {
  */
 export const VideoPlayer = memo<Props>(function VideoPlayer({
   data,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   autoplay: _autoplay = true,
   loop,
   uniqueVideoId,

@@ -1,7 +1,7 @@
 'use client'
 
 import clsx from 'clsx'
-import { type FC, useMemo } from 'react'
+import { type FC, useMemo, useCallback } from 'react'
 import type {
   CartLineItemMetadata,
   RocketRezLineItem
@@ -87,7 +87,7 @@ export const CartLineItems: FC<Props> = ({
   const metadata = useMemo(() => propMetadata ?? cartState?.metadata ?? [], [propMetadata, cartState?.metadata])
   const reversedLineItems = useMemo(() => [...lineItems].reverse(), [lineItems])
 
-  const getMetadataForLineItem = (
+  const getMetadataForLineItem = useCallback((
     lineItem: RocketRezLineItem
   ): CartLineItemMetadata | null | undefined => {
     const key = getCartLineItemReadMetadataKey({ lineItem })
@@ -110,27 +110,20 @@ export const CartLineItems: FC<Props> = ({
           return false
         }
 
-        if (
-          decoded.scheduleId != null &&
-          lineItem.scheduleId != null &&
-          toComparable(decoded.scheduleId) !== toComparable(lineItem.scheduleId)
-        ) {
-          return false
-        }
-
-        if (
-          decoded.rateId != null &&
-          lineItem.rateId != null &&
-          toComparable(decoded.rateId) !== toComparable(lineItem.rateId)
-        ) {
-          return false
+        // if the key is generic, check if it matches the current item. (e.g. supercar:1)
+        if (decoded.scheduleId || decoded.rateId) {
+          const sameScheduleId =
+            toComparable(decoded.scheduleId) === toComparable(lineItem.scheduleId)
+          const sameRateId =
+            toComparable(decoded.rateId) === toComparable(lineItem.rateId)
+          return sameScheduleId && sameRateId
         }
 
         return true
       }) ??
       null
     )
-  }
+  }, [metadata])
 
   const visibleLineItems = useMemo(() => {
     return reversedLineItems.filter((lineItem) => {

@@ -10,6 +10,7 @@ type Props = {
 }
 
 declare global {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
   interface Window {
     hero?: {
       submit?: (data: unknown) => void
