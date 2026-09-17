@@ -7,4 +7,4 @@ export type JSONValue = string | number | boolean | { [x: string]: JSONValue } |
 
 import type * as Types from '../base-types';
 
-export type SectionConfigFragment = { __typename: 'SectionConfigRecord', id: string, customId: string | null, enabled: boolean, mode: string | null, highlightColor: string | null, contrastColor: string | null, addBottomBorder: boolean, addFlagPattern: boolean, enableCampaignStickyBar: boolean | null, campaignStickyBarHeading: string | null, campaignStickyBarTimerEnd: string | null, campaignStickyBarCtaTitle: string | null, campaignStickyBarCtaLink: string | null };
+export type SectionConfigFragment = { __typename: 'SectionConfigRecord', id: string, customId: string | null, enabled: boolean, mode: string | null, highlightColor: string | null, contrastColor: string | null, addBottomBorder: boolean, addFlagPattern: boolean, enableCampaignStickyBar: boolean, campaignStickyBarHeading: string | null, campaignStickyBarTimerEnd: string | null, campaignStickyBarCtaTitle: string | null, campaignStickyBarCtaLink: string | null };

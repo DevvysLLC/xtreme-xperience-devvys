@@ -3898,8 +3898,13 @@ export type SectionConfigRecord = RecordInterface & {
   _updatedAt: Scalars['DateTime']['output'];
   addBottomBorder: Scalars['BooleanType']['output'];
   addFlagPattern: Scalars['BooleanType']['output'];
+  campaignStickyBarCtaLink: Maybe<Scalars['String']['output']>;
+  campaignStickyBarCtaTitle: Maybe<Scalars['String']['output']>;
+  campaignStickyBarHeading: Maybe<Scalars['String']['output']>;
+  campaignStickyBarTimerEnd: Maybe<Scalars['DateTime']['output']>;
   contrastColor: Maybe<Scalars['String']['output']>;
   customId: Maybe<Scalars['String']['output']>;
+  enableCampaignStickyBar: Scalars['BooleanType']['output'];
   enabled: Scalars['BooleanType']['output'];
   highlightColor: Maybe<Scalars['String']['output']>;
   id: Scalars['ItemId']['output'];
