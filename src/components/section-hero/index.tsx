@@ -175,7 +175,12 @@ export const SectionHero: FC<Props> = async ({ data, isFirstSection }) => {
           <div className={styles.content}>
             {title && (
               <header>
-                {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
+                {subtitle && (
+                  <div
+                    className={styles.subtitle}
+                    dangerouslySetInnerHTML={{ __html: subtitle }}
+                  />
+                )}
 
                 <HeadingTag className={styles.title}>{title}</HeadingTag>
               </header>
