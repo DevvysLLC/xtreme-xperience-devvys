@@ -222,6 +222,10 @@ export const SectionHero: FC<Props> = async ({ data, isFirstSection }) => {
               }}
               containerClass={styles.marquee}
               innerClass={styles.marquee__inner}
+              style={{
+                backgroundColor: config?.highlightColor || undefined,
+                color: config?.contrastColor || undefined
+              }}
             />
           )}
         </div>
