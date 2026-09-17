@@ -256,7 +256,12 @@ export const SectionTrackHero: FC<Props> = async ({
                 </div>
               )}
 
-              {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
+              {subtitle && (
+                <div
+                  className={styles.subtitle}
+                  dangerouslySetInnerHTML={{ __html: subtitle }}
+                />
+              )}
 
               {title && (
                 <HeadingTag className={styles.title}>{title}</HeadingTag>
@@ -366,6 +371,10 @@ export const SectionTrackHero: FC<Props> = async ({
             }}
             containerClass={styles.marquee}
             innerClass={styles.marquee__inner}
+            style={{
+              backgroundColor: config?.highlightColor || undefined,
+              color: config?.contrastColor || undefined
+            }}
           />
         )}
       </div>
