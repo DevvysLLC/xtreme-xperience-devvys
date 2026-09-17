@@ -7,4 +7,9 @@ fragment SectionConfig on SectionConfigRecord {
   contrastColor
   addBottomBorder
   addFlagPattern
+  enableCampaignStickyBar
+  campaignStickyBarHeading
+  campaignStickyBarTimerEnd
+  campaignStickyBarCtaTitle
+  campaignStickyBarCtaLink
 }

@@ -5,6 +5,7 @@ import type { SupercarFragment } from '../../core/dato/fragments/supercar.typege
 import type { SupercarModelFragment } from '../../core/dato/fragments/supercar-model.typegen'
 import type { TrackFragment } from '../../core/dato/fragments/track.typegen'
 import type { TrackModelFragment } from '../../core/dato/fragments/track-model.typegen'
+import { CampaignStickyBarInitializer } from '../campaign-sticky-bar-initializer'
 import { CoreLoadingSection } from '../core-loading-section'
 import { SectionAccordion } from '../section-accordion'
 import { SectionAddonsGrid } from '../section-addons-grid'
@@ -668,8 +669,24 @@ export const SectionRenderer: FC<SectionRendererProps> = ({
       section.config.enabled !== false
   )
 
+  const campaignConfig = filtered.find(
+    (section) =>
+      'config' in section && section.config?.enableCampaignStickyBar === true
+  )?.config
+
   return (
     <>
+      {campaignConfig && (
+        <CampaignStickyBarInitializer
+          config={{
+            enableCampaignStickyBar: campaignConfig.enableCampaignStickyBar,
+            campaignStickyBarHeading: campaignConfig.campaignStickyBarHeading,
+            campaignStickyBarTimerEnd: campaignConfig.campaignStickyBarTimerEnd,
+            campaignStickyBarCtaTitle: campaignConfig.campaignStickyBarCtaTitle,
+            campaignStickyBarCtaLink: campaignConfig.campaignStickyBarCtaLink
+          }}
+        />
+      )}
       {filtered.map((section, index) => (
         <React.Fragment key={`${section.__typename}-${index}`}>
           {index < LAZY_SECTION_THRESHOLD ||
