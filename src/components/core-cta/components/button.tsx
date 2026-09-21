@@ -18,7 +18,7 @@ export type ButtonProps = {
   ariaLabel?: string | null
   children?: React.ReactNode
   disabled?: boolean
-  style?: React.CSSProperties
+  style?: React.CSSProperties & Record<string, string | undefined>
 }
 
 export const Button: FC<ButtonProps> = (props) => {

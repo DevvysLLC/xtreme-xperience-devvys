@@ -46,7 +46,7 @@ export type Props = {
   children?: React.ReactNode
   disabled?: boolean
   inert?: boolean
-  inlineStyle?: React.CSSProperties
+  inlineStyle?: React.CSSProperties & Record<string, string | undefined>
 }
 
 export const CoreCta: FC<Props> = ({ data, ...props }) => {

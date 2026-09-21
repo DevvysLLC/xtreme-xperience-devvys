@@ -19,7 +19,7 @@ export type AnchorProps = {
   iconPosition?: 'left' | 'right'
   ariaLabel?: string | null
   children?: React.ReactNode
-  style?: React.CSSProperties
+  style?: React.CSSProperties & Record<string, string | undefined>
 }
 
 export const Anchor: FC<AnchorProps> = (props) => {
