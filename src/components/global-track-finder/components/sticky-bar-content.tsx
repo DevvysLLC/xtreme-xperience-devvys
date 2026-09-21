@@ -78,16 +78,30 @@ export const StickyBarContent: React.FC<StickyBarContentProps> = ({
           styles['stickyBar--campaign'],
           shouldShowStickyBar && styles['stickyBar--open']
         )}
+        style={{
+          backgroundColor: override.campaignStickyBarBackgroundColor || undefined,
+          color: override.campaignStickyBarTextColor || undefined
+        }}
       >
         <div className={styles.stickyBar__wrapper}>
           <div className={styles.campaignContent}>
             {override.campaignStickyBarHeading && (
-              <span className={styles.campaignContent__heading}>
+              <span
+                className={styles.campaignContent__heading}
+                style={{
+                  color: override.campaignStickyBarTextColor || undefined
+                }}
+              >
                 {override.campaignStickyBarHeading}
               </span>
             )}
             {override.campaignStickyBarTimerEnd && (
-              <div className={styles.campaignContent__timer}>
+              <div
+                className={styles.campaignContent__timer}
+                style={{
+                  color: override.campaignStickyBarTimerColor || undefined
+                }}
+              >
                 <CoreCountdown
                   data={{
                     end: override.campaignStickyBarTimerEnd,
@@ -106,6 +120,11 @@ export const StickyBarContent: React.FC<StickyBarContentProps> = ({
                 styleType="orange"
                 sizeType="small"
                 className={styles.campaignCta__button}
+                inlineStyle={{
+                  backgroundColor: override.campaignStickyBarButtonBackgroundColor || undefined,
+                  color: override.campaignStickyBarButtonTextColor || undefined,
+                  borderColor: override.campaignStickyBarButtonBackgroundColor || undefined
+                }}
               />
             </div>
           )}

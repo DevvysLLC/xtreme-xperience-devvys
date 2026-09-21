@@ -18,6 +18,7 @@ export type ButtonProps = {
   ariaLabel?: string | null
   children?: React.ReactNode
   disabled?: boolean
+  style?: React.CSSProperties
 }
 
 export const Button: FC<ButtonProps> = (props) => {
@@ -34,7 +35,8 @@ export const Button: FC<ButtonProps> = (props) => {
     iconPosition = 'right',
     ariaLabel,
     children,
-    disabled
+    disabled,
+    style
   } = props
 
   const _className = clsx(className, styles[`coreCta--${layoutType}`])
@@ -50,6 +52,7 @@ export const Button: FC<ButtonProps> = (props) => {
       tabIndex={tabIndex}
       aria-label={ariaLabel ?? text ?? undefined}
       disabled={disabled}
+      style={style}
       data-ga-section-name="core-cta"
       data-ga-action="click"
       data-ga-label={text}

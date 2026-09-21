@@ -12,4 +12,9 @@ fragment SectionConfig on SectionConfigRecord {
   campaignStickyBarTimerEnd
   campaignStickyBarCtaTitle
   campaignStickyBarCtaLink
+  campaignStickyBarBackgroundColor
+  campaignStickyBarTextColor
+  campaignStickyBarTimerColor
+  campaignStickyBarButtonBackgroundColor
+  campaignStickyBarButtonTextColor
 }

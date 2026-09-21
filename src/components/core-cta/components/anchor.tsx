@@ -19,6 +19,7 @@ export type AnchorProps = {
   iconPosition?: 'left' | 'right'
   ariaLabel?: string | null
   children?: React.ReactNode
+  style?: React.CSSProperties
 }
 
 export const Anchor: FC<AnchorProps> = (props) => {
@@ -35,7 +36,8 @@ export const Anchor: FC<AnchorProps> = (props) => {
     icon,
     iconPosition = 'right',
     ariaLabel,
-    children
+    children,
+    style
   } = props
 
   const _className = clsx(className, styles[`coreCta--${layoutType}`])
@@ -52,6 +54,7 @@ export const Anchor: FC<AnchorProps> = (props) => {
       tabIndex={tabIndex}
       aria-label={ariaLabel ?? text ?? undefined}
       title={ariaLabel ?? text ?? undefined}
+      style={style}
     >
       {children ?? (
         <>

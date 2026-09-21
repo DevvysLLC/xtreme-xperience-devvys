@@ -6085,9 +6085,14 @@ type SectionConfigRecord implements RecordInterface {
   _updatedAt: DateTime!
   addBottomBorder: BooleanType!
   addFlagPattern: BooleanType!
+  campaignStickyBarBackgroundColor: String
+  campaignStickyBarButtonBackgroundColor: String
+  campaignStickyBarButtonTextColor: String
   campaignStickyBarCtaLink: String
   campaignStickyBarCtaTitle: String
   campaignStickyBarHeading: String
+  campaignStickyBarTextColor: String
+  campaignStickyBarTimerColor: String
   campaignStickyBarTimerEnd: DateTime
   contrastColor: String
   customId: String

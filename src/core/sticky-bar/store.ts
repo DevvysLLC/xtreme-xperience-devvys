@@ -7,6 +7,11 @@ export type StickyBarOverride = {
   campaignStickyBarTimerEnd?: string | null
   campaignStickyBarCtaTitle?: string | null
   campaignStickyBarCtaLink?: string | null
+  campaignStickyBarBackgroundColor?: string | null
+  campaignStickyBarTextColor?: string | null
+  campaignStickyBarTimerColor?: string | null
+  campaignStickyBarButtonBackgroundColor?: string | null
+  campaignStickyBarButtonTextColor?: string | null
 }
 
 type StickyBarStoreState = {

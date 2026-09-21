@@ -46,6 +46,7 @@ export type Props = {
   children?: React.ReactNode
   disabled?: boolean
   inert?: boolean
+  inlineStyle?: React.CSSProperties
 }
 
 export const CoreCta: FC<Props> = ({ data, ...props }) => {
@@ -80,7 +81,8 @@ export const CoreCta: FC<Props> = ({ data, ...props }) => {
     iconPosition,
     children,
     disabled,
-    inert = false
+    inert = false,
+    inlineStyle
   } = props
 
   const _sizeType: SizeType = sizeTypeParser(sizeType ?? datoSize)
@@ -161,6 +163,7 @@ export const CoreCta: FC<Props> = ({ data, ...props }) => {
         icon={_icon}
         iconPosition={iconPosition}
         ariaLabel={ariaLabel || datoSeoTitle}
+        style={inlineStyle}
         disabled={disabled}
       >
         {children}
