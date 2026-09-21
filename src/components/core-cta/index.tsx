@@ -186,6 +186,7 @@ export const CoreCta: FC<Props> = ({ data, ...props }) => {
       icon={_icon}
       iconPosition={iconPosition}
       ariaLabel={ariaLabel || datoSeoTitle}
+      style={inlineStyle}
     >
       {children}
     </Anchor>
@@ -204,6 +205,7 @@ export const CoreCta: FC<Props> = ({ data, ...props }) => {
       iconPosition={iconPosition}
       ariaLabel={ariaLabel || datoSeoTitle}
       disabled={disabled}
+      style={inlineStyle}
     >
       {children}
     </Button>
