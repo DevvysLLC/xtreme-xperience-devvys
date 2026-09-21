@@ -12,6 +12,20 @@ import { useHeaderScroll } from '../../global-header/hooks/use-header-scroll'
 import styles from '../style.module.scss'
 import { GlobalTrackFinderWidget } from './widget'
 
+const darkenHex = (hex: string, amount: number = 40): string => {
+  let color = hex.replace('#', '')
+  if (color.length === 3) color = color.split('').map(c => c + c).join('')
+  const num = parseInt(color, 16)
+  if (isNaN(num)) return hex
+  let r = (num >> 16) - amount
+  let g = ((num >> 8) & 0x00ff) - amount
+  let b = (num & 0x0000ff) - amount
+  r = Math.max(0, Math.min(255, r))
+  g = Math.max(0, Math.min(255, g))
+  b = Math.max(0, Math.min(255, b))
+  return `#${(b | (g << 8) | (r << 16)).toString(16).padStart(6, '0')}`
+}
+
 type StickyBarContentProps = {
   hideBookingBarOnPaths: string | null | undefined
   stickyTrackFinderHeading: string | null | undefined
@@ -80,7 +94,10 @@ export const StickyBarContent: React.FC<StickyBarContentProps> = ({
         )}
         style={{
           backgroundColor: override.campaignStickyBarBackgroundColor || undefined,
-          color: override.campaignStickyBarTextColor || undefined
+          color: override.campaignStickyBarTextColor || undefined,
+          borderTopColor: override.campaignStickyBarBackgroundColor
+            ? darkenHex(override.campaignStickyBarBackgroundColor)
+            : undefined
         }}
       >
         <div className={styles.stickyBar__wrapper}>
@@ -117,14 +134,18 @@ export const StickyBarContent: React.FC<StickyBarContentProps> = ({
                 text={override.campaignStickyBarCtaTitle}
                 href={override.campaignStickyBarCtaLink ?? '#'}
                 layoutType="button"
-                styleType="orange"
+                styleType="highlight"
                 sizeType="small"
                 className={styles.campaignCta__button}
-                inlineStyle={{
-                  backgroundColor: override.campaignStickyBarButtonBackgroundColor || undefined,
-                  color: override.campaignStickyBarButtonTextColor || undefined,
-                  borderColor: override.campaignStickyBarButtonBackgroundColor || undefined
-                }}
+                inlineStyle={
+                  {
+                    '--core-cta-highlight-color': override.campaignStickyBarButtonBackgroundColor || undefined,
+                    '--core-cta-highlight-contrast': override.campaignStickyBarButtonTextColor || undefined,
+                    backgroundColor: override.campaignStickyBarButtonBackgroundColor || undefined,
+                    color: override.campaignStickyBarButtonTextColor || undefined,
+                    borderColor: override.campaignStickyBarButtonBackgroundColor || undefined
+                  } as React.CSSProperties
+                }
               />
             </div>
           )}
