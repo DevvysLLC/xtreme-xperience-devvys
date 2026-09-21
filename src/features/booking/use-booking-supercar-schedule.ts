@@ -92,6 +92,15 @@ export const getRequiredRateIdsForSupercar = (
         }
 
         if (isThirdParty === isRateThirdParty) {
+          // EXCEPTION: The Apex package has been reduced from 5 cars to 4 cars, removing the Ferrari 488.
+          // We must explicitly exclude it so that availability isn't blocked by the Ferrari 488.
+          if (
+            cleanedCategory === 'apex' &&
+            rateNameLower.includes('ferrari 488')
+          ) {
+            continue
+          }
+
           rateIds.push(rate.id)
         }
       }
