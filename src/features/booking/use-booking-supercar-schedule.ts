@@ -95,10 +95,14 @@ export const getRequiredRateIdsForSupercar = (
           // EXCEPTION: The Apex package has been reduced from 5 to 4 cars, and Drive the Fleet has also been reduced, removing the Ferrari 488.
           // We must explicitly exclude it so that availability isn't blocked by the Ferrari 488.
           if (
-            (cleanedCategory.includes('apex') || cleanedCategory.includes('drive the fleet')) &&
+            (selectedPackages.includes('apex') || selectedPackages.includes('drive the fleet')) &&
             rateNameLower.includes('ferrari 488')
           ) {
             continue
+          }
+
+          if (selectedPackages.includes('apex') || selectedPackages.includes('drive the fleet')) {
+             console.log(`[DEBUG] Adding rate to ${selectedPackages.join(', ')}:`, rateNameLower, 'ID:', rate.id);
           }
 
           rateIds.push(rate.id)
