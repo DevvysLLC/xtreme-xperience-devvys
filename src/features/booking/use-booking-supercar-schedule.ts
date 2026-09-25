@@ -92,6 +92,16 @@ export const getRequiredRateIdsForSupercar = (
         }
 
         if (isThirdParty === isRateThirdParty) {
+          // EXCLUDE unwanted rate types that shouldn't block booking a driving package
+          if (
+            rateNameLower.includes('ride along') ||
+            rateNameLower.includes('corporate rate') ||
+            rateNameLower.includes('at-track price') ||
+            rateNameLower.includes('hellcat')
+          ) {
+            continue
+          }
+
           // EXCEPTION: The Apex package has been reduced from 5 to 4 cars, and Drive the Fleet has also been reduced, removing the Ferrari 488.
           // We must explicitly exclude it so that availability isn't blocked by the Ferrari 488.
           if (
