@@ -93,9 +93,6 @@ export const isScheduleSoldOut = (
 
     // If any of the required rates in the package is missing/sold out, the schedule is sold out
     if (!rateFoundAndAvailable) {
-      if (isPackageMode && typeof window !== 'undefined') {
-        console.log(`[DEBUG] Package sold out because rate ID ${rateId} is not available in schedule ${schedule.id || 'unknown'}`);
-      }
       return true
     }
   }

@@ -111,10 +111,6 @@ export const getRequiredRateIdsForSupercar = (
             continue
           }
 
-          if (selectedPackages.includes('apex') || selectedPackages.includes('drive the fleet')) {
-             console.log(`[DEBUG] Adding rate to ${selectedPackages.join(', ')}:`, rateNameLower, 'ID:', rate.id);
-          }
-
           rateIds.push(rate.id)
         }
       }
