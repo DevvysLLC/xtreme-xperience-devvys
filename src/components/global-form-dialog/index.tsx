@@ -133,7 +133,8 @@ export const GlobalFormDialog: FC = () => {
         styles.formDialog__panel,
         size && styles[`formDialog__panel--size-${size}`],
         width && styles[`formDialog__panel--width-${width}`],
-        height && styles[`formDialog__panel--height-${height}`]
+        height && styles[`formDialog__panel--height-${height}`],
+        (sendlaneEmbed || handle?.toLowerCase().includes('group') || handle?.toLowerCase().includes('pricing')) && styles['formDialog__panel--transparent']
       )}
       contentClassName={clsx(
         styles.formDialog__drawerContent,

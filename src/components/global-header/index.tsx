@@ -32,50 +32,6 @@ export const GlobalHeader = async ({ isTransparent }: Props = {}) => {
     featuredMobileNavigation
   } = config ?? {}
 
-  // Automatically enrich supercars dropdown menu with all supercars from DatoCMS
-  // so no cars are omitted if only 8 were manually linked in DatoCMS navigation settings.
-  const enrichedNavigation = navigation?.map((navItem) => {
-    const hasSupercarChildren = navItem.children?.some(
-      (child) => child.link?.__typename === 'SupercarRecord'
-    )
-    if (!hasSupercarChildren) {
-      return navItem
-    }
-
-    const existingSupercarIds = new Set(
-      navItem.children
-        ?.map((child) =>
-          child.link?.__typename === 'SupercarRecord'
-            ? child.link.id
-            : undefined
-        )
-        .filter((id): id is string => Boolean(id))
-    )
-
-    const additionalSupercars = (allSupercars ?? []).filter(
-      (sc) =>
-        !existingSupercarIds.has(sc.id) &&
-        sc.content?.sections &&
-        sc.content.sections.length > 0
-    )
-
-    const additionalChildren = additionalSupercars.map((sc) => ({
-      __typename: 'NavigationItemRecord' as const,
-      id: sc.id,
-      label: sc.model?.title ?? null,
-      path: sc.config?.handle ? `/supercars/${sc.config.handle}` : null,
-      target: null,
-      link: sc,
-      media: null,
-      children: []
-    }))
-
-    return {
-      ...navItem,
-      children: [...(navItem.children ?? []), ...additionalChildren]
-    }
-  })
-
   return (
     <HeaderWithContext
       relativePaths={relativePaths}
@@ -87,7 +43,7 @@ export const GlobalHeader = async ({ isTransparent }: Props = {}) => {
 
       <div className={styles.header__desktop}>
         <NavbarDesktop
-          navigation={enrichedNavigation}
+          navigation={navigation}
           showCart={showCart}
           showSearch={(ENABLE_SEARCH && showSearch) ?? false}
           showTrackFinder={showTrackFinder}
@@ -96,7 +52,7 @@ export const GlobalHeader = async ({ isTransparent }: Props = {}) => {
 
       <div className={styles.header__mobile}>
         <NavbarMobile
-          navigation={enrichedNavigation}
+          navigation={navigation}
           showCart={showCart}
           showSearch={(ENABLE_SEARCH && showSearch) ?? false}
           showTrackFinder={showTrackFinder}

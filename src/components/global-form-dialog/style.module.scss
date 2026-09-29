@@ -81,6 +81,12 @@
         max-height: 50dvh !important;
       }
     }
+
+    &--transparent {
+      background-color: transparent !important;
+      padding: 0 !important;
+      box-shadow: none !important;
+    }
   }
 
   &__loading {
