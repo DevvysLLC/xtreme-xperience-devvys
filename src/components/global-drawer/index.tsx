@@ -17,6 +17,7 @@ type Props = {
   className?: string
   panelClassName?: string
   contentClassName?: string
+  closeClassName?: string
   layoutType?: 'default' | 'search' | 'dialog' | 'cart'
 }
 
@@ -27,6 +28,7 @@ export const Drawer = ({
   className,
   panelClassName,
   contentClassName,
+  closeClassName,
   layoutType = 'default'
 }: Props) => {
   const t = useTranslations('global_drawer')
@@ -161,7 +163,7 @@ export const Drawer = ({
           {layoutType === 'dialog' && (
             <button
               type="button"
-              className={styles.drawer__close}
+              className={clsx(styles.drawer__close, closeClassName)}
               onClick={handleClose}
               aria-label={t('aria.close')}
             >

@@ -118,6 +118,8 @@ export const GlobalFormDialog: FC = () => {
     return null
   }
 
+  const isTransparent = sendlaneEmbed || handle?.toLowerCase().includes('group') || handle?.toLowerCase().includes('pricing')
+
   return (
     <Drawer
       id={DRAWER_ID}
@@ -134,7 +136,10 @@ export const GlobalFormDialog: FC = () => {
         size && styles[`formDialog__panel--size-${size}`],
         width && styles[`formDialog__panel--width-${width}`],
         height && styles[`formDialog__panel--height-${height}`],
-        (sendlaneEmbed || handle?.toLowerCase().includes('group') || handle?.toLowerCase().includes('pricing')) && styles['formDialog__panel--transparent']
+        isTransparent && styles['formDialog__panel--transparent']
+      )}
+      closeClassName={clsx(
+        isTransparent && styles['formDialog__close--transparent']
       )}
       contentClassName={clsx(
         styles.formDialog__drawerContent,

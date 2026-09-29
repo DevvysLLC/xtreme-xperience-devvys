@@ -89,6 +89,14 @@
     }
   }
 
+  &__close {
+    &--transparent {
+      &:hover {
+        background-color: #f0f0f0 !important;
+      }
+    }
+  }
+
   &__loading {
     display: flex;
     justify-content: center;
