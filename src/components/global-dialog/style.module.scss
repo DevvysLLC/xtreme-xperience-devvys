@@ -31,4 +31,9 @@
     width: 100%;
     max-width: u.rem-calc(200);
   }
+
+  &__klaviyoPanel {
+    background-color: transparent !important;
+    padding: 0 !important;
+  }
 }
