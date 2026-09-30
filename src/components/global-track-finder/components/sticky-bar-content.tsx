@@ -15,9 +15,12 @@ import { GlobalTrackFinderWidget } from './widget'
 const darkenHex = (hex: string, amount: number = 40): string => {
   let color = hex.replace('#', '')
   if (color.length === 3) {
-    color = color.split('').map((c) => c + c).join('')
+    color = color
+      .split('')
+      .map((c) => c + c)
+      .join('')
   }
-  const num = parseInt(color, 16)
+  const num = Number.parseInt(color, 16)
   if (isNaN(num)) {
     return hex
   }
@@ -97,7 +100,8 @@ export const StickyBarContent: React.FC<StickyBarContentProps> = ({
           shouldShowStickyBar && styles['stickyBar--open']
         )}
         style={{
-          backgroundColor: override.campaignStickyBarBackgroundColor || undefined,
+          backgroundColor:
+            override.campaignStickyBarBackgroundColor || undefined,
           color: override.campaignStickyBarTextColor || undefined,
           borderTopColor: override.campaignStickyBarBackgroundColor
             ? darkenHex(override.campaignStickyBarBackgroundColor)
@@ -141,15 +145,19 @@ export const StickyBarContent: React.FC<StickyBarContentProps> = ({
                 styleType="highlight"
                 sizeType="small"
                 className={styles.campaignCta__button}
-                inlineStyle={
-                  {
-                    '--core-cta-highlight-color': override.campaignStickyBarButtonBackgroundColor || undefined,
-                    '--core-cta-highlight-contrast': override.campaignStickyBarButtonTextColor || undefined,
-                    backgroundColor: override.campaignStickyBarButtonBackgroundColor || undefined,
-                    color: override.campaignStickyBarButtonTextColor || undefined,
-                    borderColor: override.campaignStickyBarButtonBackgroundColor || undefined
-                  }
-                }
+                inlineStyle={{
+                  '--core-cta-highlight-color':
+                    override.campaignStickyBarButtonBackgroundColor ||
+                    undefined,
+                  '--core-cta-highlight-contrast':
+                    override.campaignStickyBarButtonTextColor || undefined,
+                  backgroundColor:
+                    override.campaignStickyBarButtonBackgroundColor ||
+                    undefined,
+                  color: override.campaignStickyBarButtonTextColor || undefined,
+                  borderColor:
+                    override.campaignStickyBarButtonBackgroundColor || undefined
+                }}
               />
             </div>
           )}

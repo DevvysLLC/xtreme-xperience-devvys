@@ -118,7 +118,10 @@ export const GlobalFormDialog: FC = () => {
     return null
   }
 
-  const isTransparent = sendlaneEmbed || handle?.toLowerCase().includes('group') || handle?.toLowerCase().includes('pricing')
+  const isTransparent =
+    sendlaneEmbed ||
+    handle?.toLowerCase().includes('group') ||
+    handle?.toLowerCase().includes('pricing')
 
   return (
     <Drawer

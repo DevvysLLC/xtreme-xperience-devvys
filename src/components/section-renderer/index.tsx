@@ -684,11 +684,16 @@ export const SectionRenderer: FC<SectionRendererProps> = ({
             campaignStickyBarTimerEnd: campaignConfig.campaignStickyBarTimerEnd,
             campaignStickyBarCtaTitle: campaignConfig.campaignStickyBarCtaTitle,
             campaignStickyBarCtaLink: campaignConfig.campaignStickyBarCtaLink,
-            campaignStickyBarBackgroundColor: campaignConfig.campaignStickyBarBackgroundColor,
-            campaignStickyBarTextColor: campaignConfig.campaignStickyBarTextColor,
-            campaignStickyBarTimerColor: campaignConfig.campaignStickyBarTimerColor,
-            campaignStickyBarButtonBackgroundColor: campaignConfig.campaignStickyBarButtonBackgroundColor,
-            campaignStickyBarButtonTextColor: campaignConfig.campaignStickyBarButtonTextColor
+            campaignStickyBarBackgroundColor:
+              campaignConfig.campaignStickyBarBackgroundColor,
+            campaignStickyBarTextColor:
+              campaignConfig.campaignStickyBarTextColor,
+            campaignStickyBarTimerColor:
+              campaignConfig.campaignStickyBarTimerColor,
+            campaignStickyBarButtonBackgroundColor:
+              campaignConfig.campaignStickyBarButtonBackgroundColor,
+            campaignStickyBarButtonTextColor:
+              campaignConfig.campaignStickyBarButtonTextColor
           }}
         />
       )}

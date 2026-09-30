@@ -89,11 +89,13 @@ export const GlobalDialog: FC = () => {
 
   // Always render Drawer so it can properly send close messages
   return (
-    <Drawer 
-      id={DRAWER_ID} 
-      layoutType="dialog" 
+    <Drawer
+      id={DRAWER_ID}
+      layoutType="dialog"
       className={styles.dialog}
-      panelClassName={translations?.klaviyoFormId ? styles.dialog__klaviyoPanel : undefined}
+      panelClassName={
+        translations?.klaviyoFormId ? styles.dialog__klaviyoPanel : undefined
+      }
     >
       {hasContent && (
         <>
