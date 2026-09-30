@@ -25,6 +25,10 @@ type Props = {
   field: any
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   form: any
+  priceOverride?: {
+    price?: number | null
+    compareAtPrice?: number | null
+  } | null
 }
 
 const SHOW_AVAILABLE_THRESHOLD = 9
@@ -36,7 +40,8 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
   isMulticar,
   schedules,
   field,
-  form
+  form,
+  priceOverride
 }) => {
   const { state, setSelectedDaySchedule } = useSupercarOptionsCard()
   const t = useTranslations(
@@ -131,6 +136,19 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
 
           const rateType = matchingRate?.rateTypes?.[0]
           const rateTypePrice = getRateTypePrice(rateType)
+          
+          let displayPrice = rateTypePrice?.price ?? null
+          let displayCompareAtPrice: number | null = null
+          
+          if (priceOverride) {
+            if (priceOverride.price != null) {
+              displayPrice = priceOverride.price / 100
+            }
+            if (priceOverride.compareAtPrice != null) {
+              displayCompareAtPrice = priceOverride.compareAtPrice / 100
+            }
+          }
+
           const price = rateTypePrice?.price ?? null
           const hasPrice = rateTypePrice?.hasPrice ?? false
           const isSoldOut = isScheduleSoldOut(
@@ -190,8 +208,8 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
                   <CoreRocketRezPrice
                     data={{
                       id: `schedule-price-${scheduleId}`,
-                      price,
-                      compareAtPrice: null
+                      price: displayPrice,
+                      compareAtPrice: displayCompareAtPrice
                     }}
                   />
                 </span>

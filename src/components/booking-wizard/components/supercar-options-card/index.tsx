@@ -402,11 +402,15 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
                   data={{
                     id: `${cardState.selectedDaySchedule.scheduleId}-price`,
                     compareAtPrice:
-                      (cardState.selectedDaySchedule?.rateTypePrice
-                        ?.compareAtPrice ?? 0) *
+                      ((bookingSupercar.priceOverride?.compareAtPrice != null
+                        ? bookingSupercar.priceOverride.compareAtPrice / 100
+                        : cardState.selectedDaySchedule?.rateTypePrice
+                            ?.compareAtPrice) ?? 0) *
                       (cardState.selectedQuantity ?? 0),
                     price:
-                      (cardState.selectedDaySchedule?.rateTypePrice?.price ??
+                      ((bookingSupercar.priceOverride?.price != null
+                        ? bookingSupercar.priceOverride.price / 100
+                        : cardState.selectedDaySchedule?.rateTypePrice?.price) ??
                         0) * (cardState.selectedQuantity ?? 0)
                   }}
                   showPrefix={true}
@@ -417,8 +421,8 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
                     <CoreRocketRezPrice
                       data={{
                         id: `${rocketRezSeatTypeId}-lowest-price`,
-                        price: lowestPrice.price,
-                        compareAtPrice: null
+                        price: bookingSupercar.priceOverride?.price != null ? bookingSupercar.priceOverride.price / 100 : lowestPrice.price,
+                        compareAtPrice: bookingSupercar.priceOverride?.compareAtPrice != null ? bookingSupercar.priceOverride.compareAtPrice / 100 : null
                       }}
                       showPrefix={true}
                     />
@@ -510,6 +514,7 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
                         schedules={schedules}
                         field={field}
                         form={form}
+                        priceOverride={bookingSupercar.priceOverride}
                       />
                     )
                   }}
