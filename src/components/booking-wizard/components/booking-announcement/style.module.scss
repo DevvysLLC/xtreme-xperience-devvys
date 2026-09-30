@@ -108,7 +108,7 @@
 
 .typography {
   font-size: sg.font-size(small);
-  line-height: 1.4;
+  // line-height: 1.4;
 
   @include sg.min(tabletLandscape) {
     font-size: sg.font-size(regular);
@@ -121,13 +121,13 @@
   h5,
   h6,
   strong {
-    font-family: sg.font-family(anton);
+    // font-family: sg.font-family(anton);
     font-size: sg.font-size(mediuml);
     font-weight: bold;
     text-transform: uppercase;
     letter-spacing: sg.letter-spacing('5%');
-    margin-bottom: sg.spacing(xsmall);
-    line-height: 1.2;
+    // margin-bottom: sg.spacing(xsmall);
+    // line-height: 1.2;
 
     @include sg.min(tabletLandscape) {
       font-size: sg.font-size(large);
