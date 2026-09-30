@@ -6,6 +6,7 @@ import { CoreAnnouncement } from '../../../core-announcement'
 import type { SectionAnnouncementBarFragment } from '../../../section-announcement-bar/section-announcement-bar.typegen'
 import { BookingAnnouncementBarWrapper } from './components/announcement-bar-wrapper'
 import { Carousel } from './components/carousel'
+import styles from './style.module.scss'
 
 export type BookingAnnouncementProps = {
   /**
@@ -26,7 +27,7 @@ export const BookingAnnouncement: FC<BookingAnnouncementProps> = ({ data }) => {
   }
 
   const announcementCards = cards.map((card) => (
-    <CoreAnnouncement key={card.id} data={card} />
+    <CoreAnnouncement key={card.id} data={card} className={styles.typography} />
   ))
 
   return (

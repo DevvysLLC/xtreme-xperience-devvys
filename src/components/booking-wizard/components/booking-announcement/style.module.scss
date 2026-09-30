@@ -13,6 +13,8 @@
     max-width: sg.unit('page-max-width');
     padding: sg.spacing(xsmall) sg.spacing(regular);
     margin: 0 auto;
+    background-color: var(--section-highlight-color, var(--background-color));
+    color: var(--section-contrast-color, var(--color));
   }
 
   &--closed {
@@ -100,4 +102,46 @@
 .slide {
   display: flex;
   justify-content: center;
+}
+
+.typography {
+  font-size: sg.font-size(small) !important;
+  line-height: 1.4;
+
+  @include sg.min(tabletLandscape) {
+    font-size: sg.font-size(regular) !important;
+  }
+
+  span,
+  p,
+  div {
+    font-size: inherit !important;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  strong {
+    font-family: sg.font-family(anton);
+    font-size: sg.font-size(mediuml) !important;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: sg.letter-spacing('5%');
+    margin-bottom: sg.spacing(xsmall);
+    line-height: 1.2;
+
+    @include sg.min(tabletLandscape) {
+      font-size: sg.font-size(large) !important;
+    }
+  }
+
+  p {
+    margin-bottom: sg.spacing(xxsmall);
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
 }
