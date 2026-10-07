@@ -9,11 +9,6 @@
     width: 100%;
     max-width: sg.unit('page-max-width');
     margin: 0 auto;
-    padding: sg.spacing(medium) 0 0;
-
-    @include sg.min(mobileLarge) {
-      padding: 0;
-    }
   }
 
   &__main {

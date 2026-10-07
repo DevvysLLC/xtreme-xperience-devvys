@@ -34,9 +34,11 @@ export const GlobalFooter = async () => {
 
   return (
     <footer className={styles.footer}>
-      <div className={styles.footer__sections}>
-        {sections.length > 0 && <SectionRenderer sections={sections} />}
-      </div>
+      {sections.length > 0 && (
+        <div className={styles.footer__sections}>
+          <SectionRenderer sections={sections} />
+        </div>
+      )}
       <div className={styles.footer__main}>
         <div className={styles.footer__content}>
           <div className={styles.footer__top}>
