@@ -19,9 +19,11 @@ export const _makeClient = ({
 }: ClientFactoryProps): Client => {
   const logger = parentLogger.child({ name: 'dato-api' })
 
-  const isProduction = process.env.NEXT_PUBLIC_VERCEL_ENV === 'production'
   const datoToken = process.env.NEXT_PUBLIC_DATOCMS_READONLY_TOKEN || ''
-  const datoEnvironment = process.env.NEXT_PUBLIC_DATOCMS_ENVIRONMENT || ''
+  // Server-only and read at runtime: leave it unset to always read the
+  // primary environment. A NEXT_PUBLIC_ variable would be frozen into each
+  // build, so old deployments kept requesting old sandboxes.
+  const datoEnvironment = process.env.DATOCMS_ENVIRONMENT || ''
 
   if (!datoToken) {
     throw new Error('NEXT_PUBLIC_DATOCMS_READONLY_TOKEN value is missing')
@@ -32,9 +34,9 @@ export const _makeClient = ({
     'X-Exclude-Invalid': 'true'
   }
 
-  // Drafts are excluded on all environments to prevent unpublished
-  // records from appearing in the frontend or API responses.
-  if (datoEnvironment && !isProduction) {
+  // No X-Include-Drafts header is sent, so every environment returns only
+  // published content.
+  if (datoEnvironment) {
     baseHeaders['X-Environment'] = datoEnvironment
   }
 
