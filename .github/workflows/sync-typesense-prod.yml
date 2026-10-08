@@ -31,7 +31,6 @@ jobs:
       TYPESENSE_BASE_URL: ${{ vars.TYPESENSE_BASE_URL }}
       TYPESENSE_API_KEY: ${{ secrets.TYPESENSE_API_KEY }}
       NEXT_PUBLIC_DATOCMS_READONLY_TOKEN: ${{ secrets.NEXT_PUBLIC_DATOCMS_READONLY_TOKEN }}
-      NEXT_PUBLIC_DATOCMS_ENVIRONMENT: ${{ vars.NEXT_PUBLIC_DATOCMS_ENVIRONMENT }}
       SYNC_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || 'new' }}
     steps:
       - name: 'Checkout everything'
