@@ -140,13 +140,18 @@ export const DateSelect: FC<Props> = ({ label }) => {
             disabled={resetAfter.isPending || setEvent.isPending}
             className={styles['event-range-button']}
           >
-            <strong>
-              {formatEventDateRangeShort(
-                event.model?.startDate,
-                event.model?.endDate
-              )}
-            </strong>
-            <small>{year}</small>
+            <div>
+              <strong>
+                {formatEventDateRangeShort(
+                  event.model?.startDate,
+                  event.model?.endDate
+                )}
+              </strong>
+              <small>{year}</small>
+            </div>
+            <span className={styles['event-range-check']} aria-hidden="true">
+              ✓
+            </span>
           </button>
         )
       })}

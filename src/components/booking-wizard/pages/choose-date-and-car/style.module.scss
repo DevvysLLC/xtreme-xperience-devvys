@@ -108,12 +108,21 @@
 }
 
 .gift-shop-cta {
-  background: sg.color(white);
-  border: 1px solid #ccc;
-  padding: u.rem-calc(8) u.rem-calc(16);
-  font-weight: 600;
+  background: sg.color(black);
+  color: sg.color(white);
+  border: 1px solid sg.color(black);
+  padding: u.rem-calc(10) u.rem-calc(20);
+  font-weight: 700;
   border-radius: u.rem-calc(4);
   cursor: pointer;
+  text-transform: uppercase;
+  font-size: u.rem-calc(13);
+  font-family: sg.font-family(barlow);
+  letter-spacing: u.rem-calc(0.5);
+
+  &:hover {
+    background: #333;
+  }
 }
 
 .sectionhead {

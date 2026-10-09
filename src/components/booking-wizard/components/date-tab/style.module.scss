@@ -18,33 +18,34 @@
   }
 
   &__weekday {
-    font-size: u.rem-calc(12);
-    text-transform: uppercase;
-    letter-spacing: u.rem-calc(1);
-    color: sg.color(black);
+    font-size: u.rem-calc(14);
+    text-transform: none;
+    letter-spacing: 0;
+    color: inherit;
   }
 
   &__day {
-    font-size: u.rem-calc(27);
-    font-weight: 700;
-    margin: u.rem-calc(2) 0;
-    color: sg.color(black);
+    font-size: u.rem-calc(30);
+    font-weight: 600;
+    margin: u.rem-calc(6) 0;
+    color: inherit;
   }
 
   &__price {
-    font-size: u.rem-calc(13);
-    color: #555;
+    font-size: u.rem-calc(14);
+    color: inherit;
     
     [data-price-prefix] {
-      font-size: u.rem-calc(13);
+      font-size: u.rem-calc(14);
       margin-right: u.rem-calc(4);
     }
   }
 
   &.active {
-    border: 2px solid #ff6900;
-    background: #fff6ef;
-    padding: u.rem-calc(11) u.rem-calc(4);
+    border: 1px solid sg.color(black);
+    background: sg.color(black);
+    color: sg.color(white);
+    padding: u.rem-calc(12) u.rem-calc(5);
 
     &::after {
       content: '✓';
@@ -53,11 +54,7 @@
       top: u.rem-calc(6);
       font-size: u.rem-calc(12);
       font-weight: 700;
-      color: sg.color(black);
-    }
-
-    .date__price {
-      color: #8c3600;
+      color: sg.color(white);
     }
   }
 
@@ -69,12 +66,12 @@
 
   &:disabled {
     opacity: 1;
-    background: #f5f5f5;
-    color: #929292;
+    background: sg.color(white);
+    color: #777;
     cursor: default;
 
     .date__price {
-      color: #777;
+      color: inherit;
     }
   }
 }
