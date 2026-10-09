@@ -11,7 +11,6 @@ import type {
 } from '../../../../io/types'
 import { parseLocalDate } from '../../../../utils/date-time'
 import { CoreBadge } from '../../../core-badge'
-import { CoreRocketRezPrice } from '../../../core-rocketrez-price'
 import styles from './style.module.scss'
 
 type Props = {

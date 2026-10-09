@@ -9,7 +9,6 @@ import type {
 } from '../../../../../../io/types'
 import { getRateTypePrice } from '../../../../../../utils/get-rate-type-price'
 import { isScheduleSoldOut } from '../../../../../../utils/is-schedule-sold-out'
-import { CoreBadge } from '../../../../../core-badge'
 import { CoreRocketRezPrice } from '../../../../../core-rocketrez-price'
 import { formatStartTimeForUsLocale } from '../../../../config'
 import { useSupercarOptionsCard } from '../../context'
@@ -52,26 +51,17 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
     return null
   }
 
-  const selectedAvailable = state.selectedDaySchedule?.available ?? null
-  const selectedAvailableDisplay =
-    selectedAvailable !== null && selectedAvailable > 0
-      ? Math.min(selectedAvailable, SHOW_AVAILABLE_THRESHOLD)
-      : null
-
   return (
     <fieldset className={styles.times}>
       <legend className={styles.times__legend}>
-        <span className={styles.times__title}>{t('label.schedules')}</span>
-        {selectedAvailableDisplay !== null && (
-          <CoreBadge
-            label={t('badge.spots_left', {
-              count: selectedAvailableDisplay
-            })}
-            backgroundColor="oklch(0.6803 0.214372 39.8015)"
-            color="oklch(1 0 0)"
-          />
-        )}
+        <span className={styles.times__title}>Choose a start time</span>
       </legend>
+      <p className={styles.times__subtitle}>
+        9:00 and 9:30 AM starts have lower prices.
+      </p>
+      <p className={styles.times__key}>
+        Number badge = spots available
+      </p>
       <div className={styles.times__options}>
         {schedules.map((schedule) => {
           const scheduleId = schedule.id ?? 0

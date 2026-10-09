@@ -225,7 +225,17 @@ export const SupercarOptionsCardLaps: React.FC<Props> = ({
                 {optionTitleFromCms || option.label}
               </span>
 
-              {optionLabelFromCms && !isSoldOut && (
+              <span className={styles.lap__label}>
+                {option.quantity} session{option.quantity === 1 ? '' : 's'}
+              </span>
+
+              {option.badge && !isSoldOut && (
+                <span className={styles.lap__saving}>
+                  {option.badge.label}
+                </span>
+              )}
+
+              {optionLabelFromCms && !option.badge && !isSoldOut && (
                 <span className={styles.lap__label}>{optionLabelFromCms}</span>
               )}
 

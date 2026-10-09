@@ -79,22 +79,52 @@
   }
 }
 
-.info {
+.filterbar {
   display: flex;
   align-items: center;
-  gap: sg.spacing(xsmall);
-  font-size: sg.font-size(small);
-  line-height: sg.line-height('120%');
+  justify-content: space-between;
+  margin-bottom: u.rem-calc(10);
 
-  &__icon {
-    color: sg.color(orange);
+  &__count {
+    color: #666;
+    font-size: u.rem-calc(14);
+  }
+}
+
+.guide {
+  margin-bottom: u.rem-calc(20);
+  font-size: u.rem-calc(13);
+  color: #666;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: u.rem-calc(12);
+
+  &__intro {
+    margin: 0;
+  }
+
+  &__details {
+    summary {
+      cursor: pointer;
+      color: #111;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      font-weight: 500;
+    }
+
+    p {
+      margin: u.rem-calc(8) 0 0;
+      color: #666;
+      line-height: 1.4;
+    }
   }
 }
 
 .supercars {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: u.rem-calc(24);
+  gap: u.rem-calc(20);
 
   @include sg.min(tabletLandscape) {
     grid-template-columns: repeat(2, minmax(0, 1fr));

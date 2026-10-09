@@ -1,15 +1,14 @@
 'use client'
 
 import clsx from 'clsx'
-import { useTranslations } from 'next-intl'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { ROUTES } from '../../../../config/routes'
 import type { BookingSupercarGroupFragment } from '../../../../core/dato/fragments/booking-config.typegen'
 import { getSeatTypeIdWithOverride } from '../../../../utils/get-seat-type-id-with-override'
 import {
   filterSupercarsByEventAssignment,
   sortSupercarsByAvailability
 } from '../../../../utils/sort-supercars-by-availability'
-import { CoreIcon } from '../../../core-icon'
 import { useBookingWizardState } from '../../context'
 import { SupercarOptionsCard } from '../supercar-options-card'
 import styles from './style.module.scss'
@@ -19,10 +18,8 @@ type Props = {
 }
 
 export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
-  const t = useTranslations(
-    'booking_wizard.pages.date_and_car.supercar_options'
-  )
   const { state, setActiveTabIndex } = useBookingWizardState()
+  const [selectedCarKey, setSelectedCarKey] = useState<string | null>(null)
   const supercarGroups: BookingSupercarGroupFragment[] =
     state.configData?.supercars ?? []
   const contextActiveTabIndex = state?.activeTabIndex ?? 0
@@ -34,6 +31,11 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
         : 0
   const activeGroup = supercarGroups[activeTabIndex]
   const selectedEventId = state.selectedEvent?.model?.rocketRezId ?? null
+
+  // Reset selected card when active tab or day changes
+  useEffect(() => {
+    setSelectedCarKey(null)
+  }, [activeTabIndex, state.selectedDayDate])
 
   // Get schedules for the selected day to check sold-out status
   const selectedDaySchedules =
@@ -98,9 +100,13 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
           {supercarGroups.map((group, index) => {
             const title = group.title ?? `Group ${index + 1}`
             let description = 'Choose your option'
-            if (title.toLowerCase().includes('drive')) description = 'Pick your car'
-            if (title.toLowerCase().includes('package')) description = 'Drive 2-8 supercars'
-            if (title.toLowerCase().includes('ride')) description = 'A pro drives. You ride.'
+            if (title.toLowerCase().includes('drive')) {
+              description = 'Pick your car'
+            } else if (title.toLowerCase().includes('package')) {
+              description = 'Drive 2-8 supercars'
+            } else if (title.toLowerCase().includes('ride')) {
+              description = 'A pro drives. You ride.'
+            }
 
             return (
               <li key={index}>
@@ -121,31 +127,64 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
               </li>
             )
           })}
+          <li>
+            <a
+              href={ROUTES.FRONTEND.GIFT_CARDS}
+              className={styles.tabs__button}
+              style={{ textDecoration: 'none' }}
+              data-tab="gifts"
+            >
+              <span className={styles.tabs__tab_title}>Gift cards</span>
+              <span className={styles.tabs__tab_description}>Let them choose</span>
+            </a>
+          </li>
         </ul>
+      </div>
 
-        <div className={styles.info}>
-          <CoreIcon
-            icon="info"
-            className={styles.info__icon}
-            aria-hidden={true}
-          />
+      <div className={styles.filterbar}>
+        <span className={styles.filterbar__count}>
+          {sortedSupercars.length} supercars{state.selectedDayDate ? ` • ${state.selectedDayDate}` : ''}
+        </span>
+      </div>
 
-          {t('info')}
-        </div>
+      <div className={styles.guide}>
+        <p className={styles.guide__intro}>
+          Early sessions cost less. Choose a time for your exact price.
+        </p>
+        <details className={styles.guide__details}>
+          <summary>How savings are calculated</summary>
+          <p>
+            Savings compare your selected price with the highest standard price for that session.
+          </p>
+        </details>
       </div>
 
       <div className={styles.supercars}>
-        {sortedSupercars.map((option, index) => (
-          <SupercarOptionsCard
-            key={`${activeTabIndex}-${index}`}
-            rocketRezSeatTypeId={getSeatTypeIdWithOverride({
-              defaultSeatTypeId: option.rocketRezSeatTypeId,
-              overrides: option.rocketRezSeatTypeIdOverrides,
-              selectedEventId
-            })}
-            supercar={option}
-          />
-        ))}
+        {sortedSupercars.map((option, index) => {
+          const seatTypeId = getSeatTypeIdWithOverride({
+            defaultSeatTypeId: option.rocketRezSeatTypeId,
+            overrides: option.rocketRezSeatTypeIdOverrides,
+            selectedEventId
+          })
+          const carKey = `${activeTabIndex}-${seatTypeId}-${index}`
+          const isSelected = selectedCarKey === carKey
+
+          return (
+            <SupercarOptionsCard
+              key={carKey}
+              cardIndex={index}
+              rocketRezSeatTypeId={seatTypeId}
+              supercar={option}
+              isSelected={isSelected}
+              onToggleSelect={() => {
+                setSelectedCarKey((prev) => (prev === carKey ? null : carKey))
+              }}
+              onClose={() => {
+                setSelectedCarKey(null)
+              }}
+            />
+          )
+        })}
       </div>
     </div>
   )

@@ -13,10 +13,10 @@
   &__legend {
     display: flex;
     flex-direction: column;
-    gap: sg.spacing(xxxsmall);
-    margin-bottom: sg.spacing(small);
+    gap: u.rem-calc(4);
+    margin-bottom: u.rem-calc(10);
     font-family: sg.font-family(barlow);
-    font-size: sg.font-size(small);
+    font-size: u.rem-calc(14);
     line-height: sg.line-height('120%');
 
     @include sg.min(tabletLandscape) {
@@ -28,17 +28,20 @@
 
   &__title {
     flex-shrink: 0;
-    font-weight: sg.font-weight(600);
+    font-weight: 700;
+    color: #111;
   }
 
   &__description {
-    font-weight: sg.font-weight(400);
+    font-weight: 400;
+    color: #666;
+    font-size: u.rem-calc(12);
   }
 
   &__options {
     display: grid;
-    grid-template-columns: repeat(auto-fill, u.rem-calc(100));
-    gap: sg.spacing(xxsmall);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: u.rem-calc(6);
   }
 }
 
@@ -50,27 +53,27 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: sg.spacing(xsmall);
-  min-width: u.rem-calc(95);
-  min-height: u.rem-calc(50);
-  padding: sg.spacing(xsmall) sg.spacing(xxsmall);
-  border: u.rem-calc(1) solid sg.color(border-dark);
-  border-radius: u.rem-calc(4);
+  justify-content: center;
+  gap: u.rem-calc(3);
+  min-height: u.rem-calc(66);
+  padding: u.rem-calc(8) u.rem-calc(4);
+  border: 1px solid #ccc;
+  border-radius: u.rem-calc(3);
   background-color: sg.color(white);
   font-family: sg.font-family(barlow);
   font-size: sg.font-size(small);
   line-height: sg.line-height('100%');
-  text-transform: uppercase;
   cursor: pointer;
   text-align: center;
   transition:
-    background-color 0.2s ease,
-    border-color 0.2s ease,
-    color 0.2s ease;
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
 
   @include sg.hover {
     &:hover:not(&--selected):not(&--sold-out) {
-      border-color: sg.color(black);
+      background: #eee;
+      border-color: #111;
     }
   }
 
@@ -79,13 +82,22 @@
   }
 
   &--selected {
-    background-color: sg.color(black);
-    border-color: sg.color(black);
-    color: sg.color(white);
+    background-color: #111 !important;
+    border-color: #111 !important;
+    color: #fff !important;
+
+    .lap__title,
+    .lap__label,
+    span {
+      color: #fff !important;
+      -webkit-text-fill-color: #fff !important;
+    }
   }
 
   &--sold-out {
-    background-color: sg.color(black-10);
+    background-color: #f3f3f3;
+    color: #888;
+    border-style: dashed;
     cursor: not-allowed;
   }
 
@@ -102,10 +114,22 @@
   }
 
   &__title {
-    font-weight: sg.font-weight(600);
+    font-weight: 700;
+    font-size: u.rem-calc(14);
+    line-height: 1.2;
+    color: #111;
   }
 
   &__label {
-    font-size: sg.font-size(xsmall);
+    font-size: u.rem-calc(11);
+    line-height: 1.2;
+    color: #666;
+  }
+
+  &__saving {
+    font-size: u.rem-calc(11);
+    font-weight: 700;
+    line-height: 1.2;
+    color: #9d3d00;
   }
 }

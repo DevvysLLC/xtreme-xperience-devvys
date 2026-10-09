@@ -3,7 +3,7 @@
 import { useForm } from '@tanstack/react-form'
 import clsx from 'clsx'
 import { useTranslations } from 'next-intl'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { BOOKING_LAP_QUANTITY_OPTIONS } from '../../../../config/settings'
 import type { BookingSupercarFragment } from '../../../../core/dato/fragments/booking-config.typegen'
 import { logger } from '../../../../core/logger/logger'
@@ -37,11 +37,19 @@ import styles from './style.module.scss'
 type Props = {
   rocketRezSeatTypeId: number
   supercar: BookingSupercarFragment
+  cardIndex?: number
+  isSelected?: boolean
+  onToggleSelect?: () => void
+  onClose?: () => void
 }
 
 const SupercarOptionsCardContent: React.FC<Props> = ({
   supercar: bookingSupercar,
-  rocketRezSeatTypeId
+  rocketRezSeatTypeId,
+  cardIndex = 0,
+  isSelected: isSelectedProp,
+  onToggleSelect,
+  onClose
 }) => {
   const t = useTranslations(
     'booking_wizard.pages.date_and_car.supercar_options_card'
@@ -55,7 +63,26 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
   const { lowestAvailablePrice, getEffectivePrice } =
     useBookingSupercarSchedule()
   const { mutateAsync, isPending } = useCartAdd()
-  const [isSelected, setIsSelected] = useState(false)
+  const [internalSelected, setInternalSelected] = useState(false)
+  const isSelected =
+    isSelectedProp !== undefined ? isSelectedProp : internalSelected
+
+  const toggleSelected = useCallback(() => {
+    if (onToggleSelect) {
+      onToggleSelect()
+    } else {
+      setInternalSelected((prev) => !prev)
+    }
+  }, [onToggleSelect])
+
+  const closeSelected = useCallback(() => {
+    if (onClose) {
+      onClose()
+    } else {
+      setInternalSelected(false)
+    }
+  }, [onClose])
+
   const { data } = useCart()
   const clearCart = useCartClear()
   const { showDialog } = useDialog()
@@ -380,162 +407,286 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
   useEffect(() => {
     setSelectedDaySchedule(null)
     setSelectedQuantity(1)
-    setIsSelected(false)
+    closeSelected()
     form.reset()
-  }, [state.selectedDayDate, form, setSelectedDaySchedule, setSelectedQuantity])
+  }, [
+    state.selectedDayDate,
+    form,
+    setSelectedDaySchedule,
+    setSelectedQuantity,
+    closeSelected
+  ])
 
   const handleRemove = () => {
-    setIsSelected(false)
+    closeSelected()
     setSelectedDaySchedule(null)
     setSelectedQuantity(1)
     form.reset()
   }
 
-  return (
-    <article className={clsx(styles.card, isSelected && styles['card--active'])}>
-      <div className={styles.card__media}>
-        {thumbnail && <CoreImage data={thumbnail} />}
-        {badge && (
-          <div className={styles.card__badge}>
-            <CoreBadge data={badge} />
-          </div>
-        )}
-      </div>
+  const r = Math.floor(cardIndex / 2)
+  const cardOrderDesktop = r * 3 + (cardIndex % 2)
+  const inlineOrderDesktop = r * 3 + 2
+  const cardOrderMobile = cardIndex * 2
+  const inlineOrderMobile = cardIndex * 2 + 1
+
+  const cardStyle: React.CSSProperties & Record<string, number> = {
+    '--card-order-desktop': cardOrderDesktop,
+    '--card-order-mobile': cardOrderMobile
+  }
+  const inlineStyle: React.CSSProperties & Record<string, number> = {
+    '--inline-order-desktop': inlineOrderDesktop,
+    '--inline-order-mobile': inlineOrderMobile
+  }
+
+  const trackName = state.selectedEvent?.model?.track?.model?.nickname ?? ''
+  const panelTitle =
+    supercar.model?.make && supercar.model?.model && !bookingSupercar.titleOverride
+      ? `${supercar.model.make} ${supercar.model.model}`
+      : null
+
+  // Prototype tags shown when the CMS has no badge for this car
+  const fallbackTag = useMemo(() => {
+    const name = `${supercar.model?.make ?? ''} ${supercar.model?.model ?? ''} ${bookingSupercar.titleOverride ?? ''}`.toLowerCase()
+    if (name.includes('296')) {
+      return 'Hybrid supercar'
+    }
+    if (name.includes('temerario')) {
+      return 'New in 2027'
+    }
+    if (name.includes('hurac') || name.includes('evo')) {
+      return 'Italian icon'
+    }
+    if (name.includes('gt3') || name.includes('porsche')) {
+      return 'Track favorite'
+    }
+    if (name.includes('gt-r') || name.includes('gtr')) {
+      return 'Accessible adrenaline'
+    }
+    if (name.includes('corvette') || name.includes('z06')) {
+      return 'American muscle'
+    }
+    if (name.includes('mclaren')) {
+      return 'British precision'
+    }
+    if (name.includes('audi') || name.includes('r8')) {
+      return 'German engineering'
+    }
+    return isMulticar ? 'Multi-car package' : 'Track favorite'
+  }, [supercar.model, bookingSupercar.titleOverride, isMulticar])
+  const cmsBadge = badge ?? supercar.model?.badges?.[0] ?? null
+
+  const renderPrice = (selectedMode: boolean) => {
+    const showSelected =
+      selectedMode && !!cardState.selectedDaySchedule?.price
+    const quantity = showSelected ? (cardState.selectedQuantity ?? 1) : 1
+    const currentPrice = showSelected
+      ? ((bookingSupercar.priceOverride?.price != null
+          ? bookingSupercar.priceOverride.price / 100
+          : cardState.selectedDaySchedule?.rateTypePrice?.price) ?? 0) *
+        quantity
+      : bookingSupercar.priceOverride?.price != null
+        ? bookingSupercar.priceOverride.price / 100
+        : (lowestPrice?.price ?? null)
+    if (currentPrice === null || currentPrice === 0) {
+      return null
+    }
+    const cmsCompareAt = showSelected
+      ? ((bookingSupercar.priceOverride?.compareAtPrice != null
+          ? bookingSupercar.priceOverride.compareAtPrice / 100
+          : cardState.selectedDaySchedule?.rateTypePrice?.compareAtPrice) ??
+          0) * quantity
+      : bookingSupercar.priceOverride?.compareAtPrice != null
+        ? bookingSupercar.priceOverride.compareAtPrice / 100
+        : (lowestPrice?.compareAtPrice ?? 0)
+    const referenceValue =
+      cmsCompareAt > currentPrice
+        ? cmsCompareAt
+        : standardValue !== null
+          ? standardValue * quantity
+          : 0
+    const savings =
+      referenceValue > currentPrice
+        ? Math.floor(referenceValue - currentPrice)
+        : 0
+    return (
       <div
-        className={clsx(
-          styles.card__header,
-          soldOut && styles['card__header--sold-out']
-        )}
+        className={styles.price_display}
+        data-price={currentPrice}
+        data-savings={savings}
       >
-        {!bookingSupercar.titleOverride && supercar.model?.make && (
-          <p className={styles.card__make}>{supercar.model.make}</p>
+        {savings > 0 && (
+          <span className={styles.price_display__reference}>
+            {isMulticar ? 'Full value' : 'Standard value'}{' '}
+            <del>${Math.ceil(referenceValue)}</del>
+          </span>
         )}
-        <h3 className={styles.card__title}>
-          <CoreTextMarkdown>{title}</CoreTextMarkdown>
-        </h3>
-        <div className={styles.card__price}>
-          {soldOut ? (
-            <CoreBadge
-              label={t('badge.sold_out')}
-              backgroundColor="#F0EDEB"
-              color="#111111"
-            />
-          ) : (
-            (() => {
-              const showSelected =
-                isSelected && !!cardState.selectedDaySchedule?.price
-              const quantity = showSelected ? (cardState.selectedQuantity ?? 1) : 1
-              const currentPrice = showSelected
-                ? ((bookingSupercar.priceOverride?.price != null
-                    ? bookingSupercar.priceOverride.price / 100
-                    : cardState.selectedDaySchedule?.rateTypePrice?.price) ?? 0) *
-                  quantity
-                : bookingSupercar.priceOverride?.price != null
-                  ? bookingSupercar.priceOverride.price / 100
-                  : (lowestPrice?.price ?? null)
-              if (currentPrice === null || currentPrice === 0) {
-                return null
-              }
-              const cmsCompareAt = showSelected
-                ? ((bookingSupercar.priceOverride?.compareAtPrice != null
-                    ? bookingSupercar.priceOverride.compareAtPrice / 100
-                    : cardState.selectedDaySchedule?.rateTypePrice
-                        ?.compareAtPrice) ?? 0) * quantity
-                : bookingSupercar.priceOverride?.compareAtPrice != null
-                  ? bookingSupercar.priceOverride.compareAtPrice / 100
-                  : (lowestPrice?.compareAtPrice ?? 0)
-              const referenceValue =
-                cmsCompareAt > currentPrice
-                  ? cmsCompareAt
-                  : standardValue !== null
-                    ? standardValue * quantity
-                    : 0
-              const savings =
-                referenceValue > currentPrice
-                  ? Math.floor(referenceValue - currentPrice)
-                  : 0
-              return (
-                <div
-                  className={styles.price_display}
-                  data-price={currentPrice}
-                  data-savings={savings}
-                >
-                  {savings > 0 && (
-                    <span className={styles.price_display__reference}>
-                      {isMulticar ? 'Full value' : 'Standard value'}{' '}
-                      <del>${Math.ceil(referenceValue)}</del>
-                    </span>
-                  )}
-                  <div className={styles.price_display__line}>
-                    <span className={styles.price_display__money}>
-                      {!showSelected && (
-                        <span className={styles.price_display__from}>From </span>
-                      )}
-                      ${Math.ceil(currentPrice)}
-                    </span>
-                    {savings > 0 && (
-                      <span className={styles.price_display__saving}>
-                        Save {!showSelected && 'up to '}${savings}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              )
-            })()
+        <div className={styles.price_display__line}>
+          <span className={styles.price_display__money}>
+            {!showSelected && (
+              <span className={styles.price_display__from}>From </span>
+            )}
+            ${Math.ceil(currentPrice)}
+          </span>
+          {savings > 0 && (
+            <span className={styles.price_display__saving}>
+              Save {!showSelected && 'up to '}${savings}
+            </span>
           )}
         </div>
       </div>
-      {!soldOut && (
-        <div className={styles.card__content}>
-          {isSelected && (
-            <div className={styles.card__form} role="form">
-              <div className={styles.card__options}>
-                <form.Field name="id">
-                  {(field) => (
-                    <input
-                      type="hidden"
-                      name={field.name}
-                      value={String(field.state.value ?? '')}
-                    />
-                  )}
-                </form.Field>
-                <form.Field name="type">
-                  {(field) => (
-                    <input
-                      type="hidden"
-                      name={field.name}
-                      value={String(field.state.value ?? '')}
-                    />
-                  )}
-                </form.Field>
-                <form.Field name="scheduleId">
-                  {(field) => (
-                    <input
-                      type="hidden"
-                      name={field.name}
-                      value={String(field.state.value ?? '')}
-                    />
-                  )}
-                </form.Field>
-                <form.Field name="rateId">
-                  {(field) => (
-                    <input
-                      type="hidden"
-                      name={field.name}
-                      value={String(field.state.value ?? '')}
-                    />
-                  )}
-                </form.Field>
-                <form.Field name="rateType">
-                  {(field) => (
-                    <input
-                      type="hidden"
-                      name={field.name}
-                      value={String(field.state.value ?? '')}
-                    />
-                  )}
-                </form.Field>
+    )
+  }
 
+  return (
+    <>
+      <article
+        className={clsx(styles.card, isSelected && styles['card--open'])}
+        style={cardStyle}
+      >
+        <div className={styles.card__media}>
+          {thumbnail && <CoreImage data={thumbnail} />}
+          {cmsBadge ? (
+            <div className={styles.card__badge}>
+              <CoreBadge data={cmsBadge} />
+            </div>
+          ) : (
+            fallbackTag && (
+              <span className={styles.card__tag}>{fallbackTag}</span>
+            )
+          )}
+        </div>
+        <div
+          className={clsx(
+            styles.card__header,
+            soldOut && styles['card__header--sold-out']
+          )}
+        >
+          {!bookingSupercar.titleOverride && supercar.model?.make && (
+            <p className={styles.card__make}>{supercar.model.make}</p>
+          )}
+          <h3 className={styles.card__title}>
+            <CoreTextMarkdown>{title}</CoreTextMarkdown>
+          </h3>
+          <div className={styles.card__price}>
+            {soldOut ? (
+              <CoreBadge
+                label={t('badge.sold_out')}
+                backgroundColor="#F0EDEB"
+                color="#111111"
+              />
+            ) : (
+              renderPrice(false)
+            )}
+          </div>
+          {!soldOut && (
+            <div className={styles.card__actions}>
+              <CoreCta
+                text={isSelected ? t('button.selecting') : t('button.select')}
+                href={null}
+                type="button"
+                layoutType="button"
+                styleType="black"
+                sizeType="medium"
+                onClick={toggleSelected}
+              />
+            </div>
+          )}
+        </div>
+
+        {!soldOut && (
+          <div className={styles.card__foot}>
+            <a href="#whats-included" className={styles.card__foot_link}>
+              What&apos;s included
+            </a>
+            <label className={styles.card__compare}>
+              <input type="checkbox" name="compare" />
+              <span>Compare</span>
+            </label>
+          </div>
+        )}
+      </article>
+
+      {!soldOut && isSelected && (
+        <section
+          className={styles.inline}
+          aria-label={`${t('label.quantity')} / ${t('label.schedules')}`}
+          style={inlineStyle}
+        >
+          <div className={styles.inline__heading}>
+            <div>
+              {panelTitle ? (
+                <h2 className={styles.inline__title}>{panelTitle}</h2>
+              ) : (
+                <h2 className={styles.inline__title}>
+                  <CoreTextMarkdown>{title}</CoreTextMarkdown>
+                </h2>
+              )}
+              {trackName && (
+                <p className={styles.inline__subtitle}>
+                  {trackName} · Local track time
+                </p>
+              )}
+            </div>
+            <button
+              type="button"
+              className={styles.inline__close}
+              onClick={handleRemove}
+              aria-label={t('button.remove')}
+            >
+              ×
+            </button>
+          </div>
+
+          <div className={styles.card__form} role="form">
+            <form.Field name="id">
+              {(field) => (
+                <input
+                  type="hidden"
+                  name={field.name}
+                  value={String(field.state.value ?? '')}
+                />
+              )}
+            </form.Field>
+            <form.Field name="type">
+              {(field) => (
+                <input
+                  type="hidden"
+                  name={field.name}
+                  value={String(field.state.value ?? '')}
+                />
+              )}
+            </form.Field>
+            <form.Field name="scheduleId">
+              {(field) => (
+                <input
+                  type="hidden"
+                  name={field.name}
+                  value={String(field.state.value ?? '')}
+                />
+              )}
+            </form.Field>
+            <form.Field name="rateId">
+              {(field) => (
+                <input
+                  type="hidden"
+                  name={field.name}
+                  value={String(field.state.value ?? '')}
+                />
+              )}
+            </form.Field>
+            <form.Field name="rateType">
+              {(field) => (
+                <input
+                  type="hidden"
+                  name={field.name}
+                  value={String(field.state.value ?? '')}
+                />
+              )}
+            </form.Field>
+
+            <div className={styles.inline__body}>
+              <div className={styles.inline__config}>
                 {!bookingSupercar.hideLapSelection && (
                   <form.Field name="quantity">
                     {(field) => {
@@ -551,7 +702,9 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
                     }}
                   </form.Field>
                 )}
+              </div>
 
+              <div className={styles.inline__times}>
                 <form.Field name="scheduleId">
                   {(field) => {
                     const supercarId = supercar.id ?? rocketRezSeatTypeId
@@ -570,63 +723,43 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
                   }}
                 </form.Field>
               </div>
-
-              <div className={styles.card__actions}>
-                <CoreCta
-                  text={t('button.add_to_cart')}
-                  disabled={!cardState.selectedDaySchedule || isPending}
-                  onClick={() => {
-                    form.handleSubmit()
-                  }}
-                  layoutType="button"
-                  styleType="black"
-                  sizeType="medium"
-                />
-                <CoreCta
-                  onClick={handleRemove}
-                  className={styles.card__link}
-                  text={t('button.remove')}
-                  styleType="black"
-                  layoutType="text"
-                  type="button"
-                />
-              </div>
             </div>
-          )}
-          {!isSelected && (
-            <div className={styles.card__actions}>
+
+            <div className={styles.inline__bottom}>
+              <div className={styles.inline__total}>
+                {renderPrice(true)}
+                {!cardState.selectedDaySchedule && (
+                  <p className={styles.inline__note}>
+                    Choose a start time to confirm your price.
+                  </p>
+                )}
+              </div>
               <CoreCta
-                text={t('button.select')}
-                href={null}
-                type="submit"
-                layoutType="button"
-                styleType="black"
-                sizeType="medium"
+                text={t('button.add_to_cart')}
+                disabled={!cardState.selectedDaySchedule || isPending}
                 onClick={() => {
-                  setIsSelected(true)
+                  form.handleSubmit()
                 }}
+                layoutType="button"
+                styleType="orange"
+                sizeType="medium"
+                className={styles.inline__add}
               />
             </div>
-          )}
-        </div>
+          </div>
+        </section>
       )}
-      
-      {!soldOut && (
-        <div className={styles.card__foot}>
-          <a href="#whats-included" className="small underline">What&apos;s included</a>
-          <label className="comparebox">
-            <input type="checkbox" name="compare" />
-            <span className="small">Compare</span>
-          </label>
-        </div>
-      )}
-    </article>
+    </>
   )
 }
 
 export const SupercarOptionsCard: React.FC<Props> = ({
   supercar,
-  rocketRezSeatTypeId
+  rocketRezSeatTypeId,
+  cardIndex,
+  isSelected,
+  onToggleSelect,
+  onClose
 }) => {
   const initialLapQuantityOption = BOOKING_LAP_QUANTITY_OPTIONS.find(
     (option) => option.quantity === 1
@@ -645,6 +778,10 @@ export const SupercarOptionsCard: React.FC<Props> = ({
       <SupercarOptionsCardContent
         supercar={supercar}
         rocketRezSeatTypeId={rocketRezSeatTypeId}
+        cardIndex={cardIndex}
+        isSelected={isSelected}
+        onToggleSelect={onToggleSelect}
+        onClose={onClose}
       />
     </SupercarOptionsCardProvider>
   )

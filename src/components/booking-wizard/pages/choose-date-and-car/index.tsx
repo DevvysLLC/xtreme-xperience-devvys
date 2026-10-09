@@ -119,6 +119,9 @@ export const DateAndCarPage = () => {
     : t('footer.subtitle.select_car')
 
   const locationTitle = state.selectedEvent?.model?.track?.model?.nickname ?? ''
+  const locationCity = state.selectedEvent?.model?.track?.model?.city ?? ''
+  const locationState = state.selectedEvent?.model?.track?.model?.state ?? ''
+  const locationSubtitle = [locationCity, locationState].filter(Boolean).join(', ')
   const locationHandle = state.selectedEvent?.model?.track?.config?.handle ?? ''
   const eventDateRange = formatEventDateRangeLong(
     state.selectedEvent?.model?.startDate,
@@ -253,7 +256,6 @@ export const DateAndCarPage = () => {
           <div className={styles.panel}>
             <div className={styles.location}>
               <div className={styles.flex}>
-                <div className={styles.pin} aria-hidden="true">⌖</div>
                 <div>
                   <strong>
                     {trackHref ? (
@@ -264,9 +266,11 @@ export const DateAndCarPage = () => {
                       locationTitle
                     )}
                   </strong>
-                  <div className={styles.muted}>
-                    {/* Optional: Add city/state if available in track data */}
-                  </div>
+                  {locationSubtitle && (
+                    <div className={styles.muted}>
+                      {locationSubtitle}
+                    </div>
+                  )}
                 </div>
               </div>
               <button type="button" className={styles.textbutton} onClick={handleBack}>
@@ -310,8 +314,11 @@ export const DateAndCarPage = () => {
                 type="button" 
                 className={styles['gift-shop-cta']} 
                 onClick={() => {
-                  const giftsTabBtn = document.querySelector('button[data-tab="gifts"]') as HTMLButtonElement
-                  if (giftsTabBtn) giftsTabBtn.click()
+                  const giftsTabBtn =
+                    document.querySelector('[data-tab="gifts"]')
+                  if (giftsTabBtn instanceof HTMLElement) {
+                    giftsTabBtn.click()
+                  }
                 }}
               >
                 Shop gift cards
