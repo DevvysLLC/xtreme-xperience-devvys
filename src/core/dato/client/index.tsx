@@ -20,11 +20,11 @@ export const _makeClient = ({
   const logger = parentLogger.child({ name: 'dato-api' })
 
   const datoToken = process.env.NEXT_PUBLIC_DATOCMS_READONLY_TOKEN || ''
-  // Server-only: leave it unset (including in Production) to always read the
-  // primary environment. Unlike the old NEXT_PUBLIC_ variable, it isn't
-  // compiled into the build, but Vercel still fixes it per deployment, so a
-  // change needs a redeploy.
+  // Server-only, so builds don't lock it in. Vercel still fixes variables per
+  // deployment, so a change needs a redeploy. Vercel Production deployments
+  // ignore it and always read the primary environment.
   const datoEnvironment = process.env.DATOCMS_ENVIRONMENT || ''
+  const isVercelProduction = process.env.VERCEL_ENV === 'production'
 
   if (!datoToken) {
     throw new Error('NEXT_PUBLIC_DATOCMS_READONLY_TOKEN value is missing')
@@ -37,7 +37,7 @@ export const _makeClient = ({
 
   // No X-Include-Drafts header is sent, so every environment returns only
   // published content.
-  if (datoEnvironment) {
+  if (datoEnvironment && !isVercelProduction) {
     baseHeaders['X-Environment'] = datoEnvironment
   }
 
