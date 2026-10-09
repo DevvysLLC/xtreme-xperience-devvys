@@ -317,21 +317,21 @@ export const DateAndCarPage = () => {
                 Shop gift cards
               </button>
             </div>
-          </div>
 
-          <div className={styles.sectionhead}>
-            <h2>
-              <span className={styles.stepnum}>2</span>
-              Choose your experience
-            </h2>
-          </div>
+            <div className={styles.sectionhead}>
+              <h2>
+                <span className={styles.stepnum}>2</span>
+                Choose your experience
+              </h2>
+            </div>
 
-          <div className={styles.section__cars}>
-            {state.isLoadingEventData ? (
-              <CoreLoadingSpinner aspectRatio="4/1" />
-            ) : (
-              <SupercarOptions />
-            )}
+            <div className={styles.section__cars}>
+              {state.isLoadingEventData ? (
+                <CoreLoadingSpinner aspectRatio="4/1" />
+              ) : (
+                <SupercarOptions />
+              )}
+            </div>
           </div>
 
           <form

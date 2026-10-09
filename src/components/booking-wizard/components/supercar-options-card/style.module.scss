@@ -2,53 +2,51 @@
 @use '../../../../styles/core/unit' as u;
 
 .card {
-  display: grid;
-  grid-template-columns: u.rem-calc(100) 1fr;
-  gap: sg.spacing(regular) sg.spacing(xxsmall);
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  padding: u.rem-calc(24);
   border: 1px solid #d5d5d2;
   border-radius: u.rem-calc(12);
   background: sg.color(white);
   overflow: hidden;
   position: relative;
-
-  @include sg.min(tabletLandscape) {
-    grid-template-columns: u.rem-calc(160) 1fr;
-    align-items: start;
-  }
+}
 
   &__media {
+    width: 100%;
+    height: u.rem-calc(140);
+    background: #f7f7f7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
     img {
-      width: 100%;
-      height: auto;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
       mix-blend-mode: multiply;
     }
-    @include sg.min(tabletLandscape) {
-      grid-row: span 2;
-    }
+  }
+
+  &__badge {
+    position: absolute;
+    top: u.rem-calc(8);
+    left: u.rem-calc(8);
+    z-index: 1;
+
+    /* Override any default badge backgrounds if necessary, or just rely on CoreBadge */
   }
 
   &__content {
-    grid-column: span 2;
-    padding-top: sg.spacing(regular);
-    border-top: u.rem-calc(1) dashed sg.color(border-dark);
-
-    @include sg.min(tabletLandscape) {
-      grid-column: span 1;
-    }
+    padding: sg.spacing(regular);
+    padding-top: 0;
   }
 
   &__header {
     display: flex;
     flex-direction: column;
-    gap: sg.spacing(small);
-
-    @include sg.min(tabletLandscape) {
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-    }
+    padding: u.rem-calc(16);
+    flex: 1;
   }
 
   &__title {
@@ -66,6 +64,9 @@
     flex-wrap: wrap;
     align-items: center;
     gap: sg.spacing(xxsmall);
+    margin: u.rem-calc(12) 0;
+    padding-top: u.rem-calc(12);
+    border-top: 1px solid #d5d5d2;
   }
 
   &__form {
@@ -82,9 +83,14 @@
 
   &__actions {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: sg.spacing(regular);
+    flex-direction: column;
+    gap: sg.spacing(small);
+    width: 100%;
+    margin-top: auto;
+
+    & > * {
+      width: 100%;
+    }
   }
 
   &__link {

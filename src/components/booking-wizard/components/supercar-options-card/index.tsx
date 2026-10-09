@@ -378,6 +378,11 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
     <article className={styles.card}>
       <div className={styles.card__media}>
         {thumbnail && <CoreImage data={thumbnail} />}
+        {badge && (
+          <div className={styles.card__badge}>
+            <CoreBadge data={badge} />
+          </div>
+        )}
       </div>
       <div
         className={clsx(
@@ -429,8 +434,6 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
                   )}
                 </>
               )}
-
-              {badge && <CoreBadge data={badge} />}
             </>
           )}
         </div>
@@ -529,7 +532,7 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
                     form.handleSubmit()
                   }}
                   layoutType="button"
-                  styleType="black"
+                  styleType="orange"
                   sizeType="medium"
                 />
                 <CoreCta
@@ -550,7 +553,7 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
                 href={null}
                 type="submit"
                 layoutType="button"
-                styleType="black"
+                styleType="orange"
                 sizeType="medium"
                 onClick={() => {
                   setIsSelected(true)
