@@ -9,14 +9,16 @@
   position: relative;
   display: grid;
   grid-template-columns: u.rem-calc(32) 1fr 1fr;
-  gap: sg.spacing(regular);
+  gap: u.rem-calc(12);
   width: 100%;
-  padding: sg.spacing(regular);
-  border: u.rem-calc(1) solid sg.color(border-dark);
+  padding: u.rem-calc(22) u.rem-calc(16);
+  border: 1px solid #777;
+  margin: u.rem-calc(12) 0;
 
   @include sg.min(laptopSmall) {
-    grid-template-columns: 1.8fr 1.2fr 1.2fr 0.5fr 1fr;
-    row-gap: sg.spacing(small);
+    grid-template-columns: 1fr 1.3fr 1.15fr 0.65fr 1.4fr;
+    row-gap: 0;
+    align-items: center;
   }
 
   &__title {
@@ -108,7 +110,8 @@
     order: 6;
     grid-column: span 3;
     padding-top: sg.spacing(regular);
-    border-top: u.rem-calc(1) solid sg.color(border-light);
+    border-top: 1px solid #ccc;
+    margin-top: u.rem-calc(12);
 
     @include sg.min(laptopSmall) {
       order: 6;
@@ -138,10 +141,9 @@
       display: inline-flex;
       align-items: center;
       gap: sg.spacing(xxsmall);
-      font-family: sg.font-family(barlow);
-      font-size: sg.font-size(small);
-      font-weight: sg.font-weight(600);
-      line-height: sg.line-height('140%');
+      font-size: u.rem-calc(11);
+      letter-spacing: u.rem-calc(1);
+      font-weight: 700;
       color: sg.color(black);
       text-transform: uppercase;
       cursor: pointer;
@@ -170,13 +172,13 @@
   input {
     flex-shrink: 0;
     display: block;
-    width: u.rem-calc(32);
-    height: u.rem-calc(32);
+    width: u.rem-calc(19);
+    height: u.rem-calc(19);
     border: 1px solid sg.color(black);
     border-radius: 50%;
     background-color: sg.color(white);
-    outline: u.rem-calc(7) solid sg.color(white);
-    outline-offset: u.rem-calc(-8);
+    outline: u.rem-calc(4) solid sg.color(white);
+    outline-offset: u.rem-calc(-5);
     cursor: pointer;
     appearance: none;
 

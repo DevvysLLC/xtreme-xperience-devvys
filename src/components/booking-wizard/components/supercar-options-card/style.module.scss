@@ -6,14 +6,24 @@
   grid-template-columns: u.rem-calc(100) 1fr;
   gap: sg.spacing(regular) sg.spacing(xxsmall);
   width: 100%;
-  padding: sg.spacing(regular);
-  border: u.rem-calc(1) solid sg.color(border-dark);
+  padding: u.rem-calc(24);
+  border: 1px solid #d5d5d2;
+  border-radius: u.rem-calc(12);
+  background: sg.color(white);
+  overflow: hidden;
+  position: relative;
 
   @include sg.min(tabletLandscape) {
-    grid-template-columns: u.rem-calc(204) 1fr;
+    grid-template-columns: u.rem-calc(160) 1fr;
+    align-items: start;
   }
 
   &__media {
+    img {
+      width: 100%;
+      height: auto;
+      mix-blend-mode: multiply;
+    }
     @include sg.min(tabletLandscape) {
       grid-row: span 2;
     }
@@ -43,6 +53,8 @@
 
   &__title {
     font-size: sg.font-size(regular);
+    font-family: sg.font-family(barlow);
+    font-weight: 700;
 
     @include sg.min(tabletLandscape) {
       font-size: sg.font-size(mediuml);

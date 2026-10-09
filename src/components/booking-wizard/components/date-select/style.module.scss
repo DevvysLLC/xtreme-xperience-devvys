@@ -1,69 +1,38 @@
 @use '../../../../styles/styleguide' as sg;
 @use '../../../../styles/core/unit' as u;
 
-.select {
+.event-ranges {
   display: flex;
-  flex-direction: column;
-  gap: sg.spacing(xsmall);
+  flex-wrap: wrap;
+  gap: u.rem-calc(8);
+  margin-bottom: u.rem-calc(14);
+}
 
-  &__label {
-    font-family: sg.font-family(barlow-semi-condensed);
-    font-size: sg.font-size(regular);
-    font-weight: sg.font-weight(600);
-    line-height: sg.line-height('120%');
-    text-transform: uppercase;
+.event-range-button {
+  background: sg.color(white);
+  border: 1px solid #ccc;
+  padding: u.rem-calc(10) u.rem-calc(14);
+  font-family: sg.font-family(barlow);
+  font-weight: 600;
+  font-size: u.rem-calc(14);
+  cursor: pointer;
+  text-align: left;
+  border-radius: u.rem-calc(4);
+
+  &[aria-pressed='true'] {
+    background: sg.color(black);
+    color: sg.color(white);
+    border-color: sg.color(black);
   }
 
-  &__container {
-    position: relative;
+  strong {
+    display: block;
+    font-size: u.rem-calc(16);
   }
 
-  &__icon {
-    position: absolute;
-    top: 50%;
-    right: sg.spacing(small);
-    transform: translateY(-50%);
-  }
-
-  &__select {
-    width: 100%;
-    height: u.rem-calc(40);
-    padding: 0 sg.spacing(small);
-    border: u.rem-calc(1) solid sg.color(border-dark);
-    font-family: sg.font-family(barlow);
-    font-size: sg.font-size(small);
-    font-weight: sg.font-weight(400);
-    line-height: sg.line-height('120%');
-    appearance: none;
-
-    &::-ms-expand {
-      display: none;
-    }
-
-    &:focus {
-      outline: none;
-      border-color: sg.color(black);
-    }
-
-    &::placeholder {
-      color: sg.color(dove);
-    }
-  }
-
-  &--has-error {
-    input {
-      border-color: sg.color(error);
-
-      &:focus {
-        border-color: sg.color(error);
-      }
-    }
-  }
-
-  &__error {
-    color: sg.color(error);
-    font-family: sg.font-family(barlow);
-    font-size: sg.font-size(small);
-    line-height: sg.line-height('120%');
+  small {
+    display: block;
+    font-weight: 400;
+    font-size: u.rem-calc(12);
   }
 }

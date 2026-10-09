@@ -14,14 +14,13 @@
   justify-content: flex-end;
   gap: sg.spacing(regular);
   width: 100%;
-  padding: sg.spacing(medium);
-  background-color: sg.color(gray-50);
+  background-color: #f6f5f4;
 
   &--featured {
     @include sg.min(laptopSmall) {
-      flex-direction: row;
-      align-items: center;
-      gap: sg.spacing(medium);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
     }
   }
 
@@ -43,7 +42,14 @@
   &__media {
     position: relative;
     width: 100%;
-    aspect-ratio: 420 / 240;
+    
+    #{$card}--featured & {
+      height: 100%;
+      img {
+        min-height: u.rem-calc(270);
+        object-fit: cover;
+      }
+    }
 
     #{$card}--upsell & {
       @include sg.min(laptopSmall) {
@@ -59,11 +65,11 @@
     gap: sg.spacing(regular);
     height: 100%;
     width: 100%;
+    padding: u.rem-calc(24);
 
     #{$card}--featured & {
       @include sg.min(laptopSmall) {
-        max-width: calc(u.rem-calc(320) + (sg.spacing(xlarge) * 2));
-        padding-inline: sg.spacing(xlarge);
+        /* No max-width restriction like before, keep padding */
       }
     }
 
@@ -87,20 +93,24 @@
   &__header {
     display: flex;
     justify-content: space-between;
-    padding: sg.spacing(xsmall) 0 sg.spacing(regular);
-    border-bottom: u.rem-calc(1) dashed sg.color(border-dark);
+    padding: 0;
+    border: none;
+    flex-wrap: wrap;
+    gap: u.rem-calc(12);
   }
 
   &__title {
-    font-size: sg.font-size(regular);
-    font-weight: sg.font-weight(700);
-    line-height: sg.line-height('140%');
+    font-family: sg.font-family(barlow);
+    text-transform: none;
+    font-size: u.rem-calc(22);
+    font-weight: 800;
+    line-height: 1.2;
+    margin: 0;
   }
 
   &__description {
-    font-size: sg.font-size(regular);
-    font-weight: sg.font-weight(400);
-    line-height: sg.line-height('140%');
+    line-height: 1.6;
+    font-size: u.rem-calc(15);
   }
 
   &__actions {

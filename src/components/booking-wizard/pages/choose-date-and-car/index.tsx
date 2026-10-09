@@ -250,12 +250,45 @@ export const DateAndCarPage = () => {
       <section className={styles.section}>
         <PageHeader title={title} description={description} centeredDesktop />
         <div>
-          <div className={styles.section__container}>
+          <div className={styles.panel}>
+            <div className={styles.location}>
+              <div className={styles.flex}>
+                <div className={styles.pin} aria-hidden="true">⌖</div>
+                <div>
+                  <strong>
+                    {trackHref ? (
+                      <a href={trackHref} target="_blank" rel="noopener noreferrer">
+                        {locationTitle}
+                      </a>
+                    ) : (
+                      locationTitle
+                    )}
+                  </strong>
+                  <div className={styles.muted}>
+                    {/* Optional: Add city/state if available in track data */}
+                  </div>
+                </div>
+              </div>
+              <button type="button" className={styles.textbutton} onClick={handleBack}>
+                Change
+              </button>
+            </div>
+
+            <div className={styles.datehead}>
+              <h2 id="date-selector-title">
+                <span className={styles.stepnum}>1</span>
+                Choose your date
+              </h2>
+            </div>
+
             <DateSelect label={t('label.date_select')} />
-            <ul className={styles.section__dates}>
+            
+            <p className={styles['day-selector-label']}>Choose a day</p>
+            
+            <ul className={styles.dates}>
               {state.eventData?.schedules?.map((day) => {
                 return (
-                  <li key={day.date}>
+                  <li key={day.date} style={{ display: 'flex' }}>
                     <DayTab
                       day={day}
                       schedules={day.schedules}
@@ -270,6 +303,27 @@ export const DateAndCarPage = () => {
                 )
               })}
             </ul>
+
+            <div className={styles.giftline}>
+              <span>Not ready to pick a date?</span>
+              <button 
+                type="button" 
+                className={styles['gift-shop-cta']} 
+                onClick={() => {
+                  const giftsTabBtn = document.querySelector('button[data-tab="gifts"]') as HTMLButtonElement
+                  if (giftsTabBtn) giftsTabBtn.click()
+                }}
+              >
+                Shop gift cards
+              </button>
+            </div>
+          </div>
+
+          <div className={styles.sectionhead}>
+            <h2>
+              <span className={styles.stepnum}>2</span>
+              Choose your experience
+            </h2>
           </div>
 
           <div className={styles.section__cars}>

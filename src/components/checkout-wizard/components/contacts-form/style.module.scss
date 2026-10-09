@@ -77,9 +77,9 @@
 
   &__input {
     width: 100%;
-    height: u.rem-calc(40);
-    padding-inline: sg.spacing(small);
-    border: 1px solid sg.color(border-dark);
+    padding: u.rem-calc(12);
+    border: 1px solid #aaa;
+    border-radius: u.rem-calc(4);
     background-color: sg.color(white);
     font-family: sg.font-family(barlow);
     font-size: sg.font-size(small);

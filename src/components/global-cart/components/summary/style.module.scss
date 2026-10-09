@@ -7,11 +7,10 @@
   gap: sg.spacing(regular);
 
   &__title {
-    margin: 0;
+    margin: 0 0 u.rem-calc(24);
     font-family: sg.font-family(anton);
-    font-size: sg.font-size(medium);
-    font-weight: sg.font-weight(400);
-    line-height: sg.line-height('100%');
+    font-size: u.rem-calc(27);
+    font-weight: 400;
     text-transform: uppercase;
   }
 
@@ -24,17 +23,28 @@
   &__data {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    line-height: sg.line-height('100%');
+    align-items: flex-start;
+    gap: u.rem-calc(20);
+    font-size: u.rem-calc(14);
+    margin: u.rem-calc(15) 0;
   }
 
   &__total {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: sg.font-size(mediuml);
-    font-weight: sg.font-weight(700);
-    line-height: sg.line-height('100%');
+    background: #111;
+    color: #fff;
+    padding: u.rem-calc(18);
+    margin: u.rem-calc(20) u.rem-calc(-10) 0;
+    font-size: u.rem-calc(22);
+    border-radius: u.rem-calc(4);
+    
+    small {
+      font-size: u.rem-calc(12);
+      font-weight: 400;
+      display: block;
+    }
   }
 
   &__coupons {

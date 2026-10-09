@@ -18,8 +18,8 @@
   }
 
   &__input {
-    padding: sg.spacing(xsmall) sg.spacing(small);
-    border: 1px solid sg.color(border-dark);
+    padding: u.rem-calc(12);
+    border: 1px solid #aaa;
     border-radius: 0;
     font-family: sg.font-family(barlow);
     font-size: sg.font-size(regular);

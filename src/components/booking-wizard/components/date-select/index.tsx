@@ -80,8 +80,7 @@ export const DateSelect: FC<Props> = ({ label }) => {
     setSelectedDayDate
   ])
 
-  const handleChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newEventId = e.target.value
+  const handleChange = async (newEventId: string) => {
     const isNewEvent = newEventId !== selectedEventId
     const newEvent = events.find((event) => event.model?.id === newEventId)
     if (!newEvent?.model || !booking?.track) {
@@ -126,34 +125,31 @@ export const DateSelect: FC<Props> = ({ label }) => {
   }
 
   return (
-    <div className={styles.select}>
-      <label htmlFor="date-select" className={styles.select__label}>
-        {label}
-      </label>
-
-      <div className={styles.select__container}>
-        <select
-          name="date-select"
-          id="date-select"
-          className={styles.select__select}
-          value={selectedEventId}
-          onChange={handleChange}
-          disabled={resetAfter.isPending || setEvent.isPending}
-        >
-          {events.map((event) => (
-            <option key={event.model?.id} value={event.model?.id ?? ''}>
+    <div className={styles['event-ranges']} role="group" aria-label={label}>
+      {events.map((event) => {
+        const isSelected = event.model?.id === selectedEventId
+        const year = event.model?.startDate
+          ? new Date(event.model.startDate).getFullYear()
+          : ''
+        return (
+          <button
+            key={event.model?.id}
+            type="button"
+            aria-pressed={isSelected}
+            onClick={() => handleChange(event.model?.id ?? '')}
+            disabled={resetAfter.isPending || setEvent.isPending}
+            className={styles['event-range-button']}
+          >
+            <strong>
               {formatEventDateRangeShort(
                 event.model?.startDate,
                 event.model?.endDate
               )}
-            </option>
-          ))}
-        </select>
-
-        <span className={styles.select__icon} aria-hidden="true">
-          <CoreIcon icon="chevron-down" />
-        </span>
-      </div>
+            </strong>
+            <small>{year}</small>
+          </button>
+        )
+      })}
     </div>
   )
 }

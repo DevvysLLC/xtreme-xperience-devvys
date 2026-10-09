@@ -10,24 +10,22 @@
 }
 
 .header {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: sg.spacing(xlarge);
-  margin-bottom: sg.spacing(small);
+  display: none;
+  font-weight: 700;
+  margin: 0 u.rem-calc(16) u.rem-calc(12);
 
   @include sg.min(laptopSmall) {
-    grid-template-columns: 1.8fr 1.2fr 1.2fr 0.5fr 1fr;
-    gap: sg.spacing(regular);
-    padding-inline: sg.spacing(regular);
+    display: grid;
+    grid-template-columns: 1fr 1.3fr 1.15fr 0.65fr 1.4fr;
+    gap: u.rem-calc(12);
+    align-items: center;
   }
 }
 
 .title {
-  padding-inline: sg.spacing(regular);
   font-size: sg.font-size(regular);
-  font-weight: sg.font-weight(500);
   line-height: sg.line-height('120%');
-  color: sg.color(black-50);
+  color: sg.color(black);
 
   @include sg.min(laptopSmall) {
     padding-inline: 0;

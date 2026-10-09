@@ -2,73 +2,79 @@
 @use '../../../../styles/core/unit' as u;
 
 .date {
+  border: 1px solid #d5d5d2;
+  border-radius: u.rem-calc(5);
+  background: sg.color(white);
+  padding: u.rem-calc(12) u.rem-calc(5);
+  min-height: u.rem-calc(104);
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: sg.spacing(xsmall);
-  width: u.rem-calc(120);
-  height: 100%;
-  padding-block: sg.spacing(medium) sg.spacing(regular);
-  padding-inline: sg.spacing(xsmall);
-  border: u.rem-calc(1) solid sg.color(border-dark);
-  border-radius: u.rem-calc(4);
+  display: block;
+  text-align: center;
+  width: 100%;
+  cursor: pointer;
 
-  @include sg.min(tabletLandscape) {
-    gap: sg.spacing(regular);
-  }
-
-  &.active {
-    background-color: sg.color(black);
-    border-color: sg.color(black);
-    color: sg.color(white);
-  }
-
-  &__badge {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1;
-    white-space: nowrap;
+  span {
+    display: block;
   }
 
   &__weekday {
-    font-family: sg.font-family(barlow);
-    font-size: sg.font-size(regular);
-    font-weight: sg.font-weight(400);
-    line-height: sg.line-height('100%');
+    font-size: u.rem-calc(12);
+    text-transform: uppercase;
+    letter-spacing: u.rem-calc(1);
+    color: sg.color(black);
   }
 
   &__day {
-    font-family: sg.font-family(barlow);
-    font-size: sg.font-size(large);
-    font-weight: sg.font-weight(600);
-    line-height: sg.line-height('100%');
+    font-size: u.rem-calc(27);
+    font-weight: 700;
+    margin: u.rem-calc(2) 0;
+    color: sg.color(black);
   }
 
   &__price {
-    flex: 1;
-    flex-wrap: wrap;
-    justify-content: center;
-    font-size: sg.font-size('18px');
-    row-gap: 0;
-
+    font-size: u.rem-calc(13);
+    color: #555;
+    
     [data-price-prefix] {
-      width: 100%;
-      font-size: sg.font-size(xsmall);
+      font-size: u.rem-calc(13);
+      margin-right: u.rem-calc(4);
+    }
+  }
+
+  &.active {
+    border: 2px solid #ff6900;
+    background: #fff6ef;
+    padding: u.rem-calc(11) u.rem-calc(4);
+
+    &::after {
+      content: '✓';
+      position: absolute;
+      right: u.rem-calc(7);
+      top: u.rem-calc(6);
+      font-size: u.rem-calc(12);
+      font-weight: 700;
+      color: sg.color(black);
+    }
+
+    .date__price {
+      color: #8c3600;
     }
   }
 
   &__sold_out {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    font-family: sg.font-family(barlow);
-    font-size: sg.font-size(small);
-    font-weight: sg.font-weight(400);
-    line-height: sg.line-height('100%');
-    text-align: center;
+    font-size: u.rem-calc(13);
+    color: #555;
+    margin-top: u.rem-calc(4);
+  }
+
+  &:disabled {
+    opacity: 1;
+    background: #f5f5f5;
+    color: #929292;
+    cursor: default;
+
+    .date__price {
+      color: #777;
+    }
   }
 }

@@ -95,22 +95,32 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
     <div className={styles.container}>
       <div className={styles.header}>
         <ul className={styles.tabs}>
-          {supercarGroups.map((group, index) => (
-            <li key={index}>
-              <button
-                type="button"
-                className={clsx(
-                  styles.tabs__button,
-                  activeTabIndex === index && styles.active
-                )}
-                onClick={() => {
-                  handleTabClick(index)
-                }}
-              >
-                {group.title ?? `Group ${index + 1}`}
-              </button>
-            </li>
-          ))}
+          {supercarGroups.map((group, index) => {
+            const title = group.title ?? `Group ${index + 1}`
+            let description = 'Choose your option'
+            if (title.toLowerCase().includes('drive')) description = 'Pick your car'
+            if (title.toLowerCase().includes('package')) description = 'Drive 2-8 supercars'
+            if (title.toLowerCase().includes('ride')) description = 'A pro drives. You ride.'
+
+            return (
+              <li key={index}>
+                <button
+                  type="button"
+                  className={clsx(
+                    styles.tabs__button,
+                    activeTabIndex === index && styles.active
+                  )}
+                  onClick={() => {
+                    handleTabClick(index)
+                  }}
+                  aria-pressed={activeTabIndex === index}
+                >
+                  <span className={styles.tabs__tab_title}>{title}</span>
+                  <span className={styles.tabs__tab_description}>{description}</span>
+                </button>
+              </li>
+            )
+          })}
         </ul>
 
         <div className={styles.info}>

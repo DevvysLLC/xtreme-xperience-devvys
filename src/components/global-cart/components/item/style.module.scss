@@ -22,126 +22,97 @@
 .CartLineItem {
   $item: &;
   display: grid;
-  grid-template-columns: u.rem-calc(90) 1fr;
-  gap: sg.spacing(xsmall) sg.spacing(small);
-  padding-block: sg.spacing(regular);
-  border-bottom: u.rem-calc(1) solid sg.color(border-dark);
+  grid-template-columns: u.rem-calc(90) minmax(0, 1fr) auto;
+  gap: u.rem-calc(18);
+  padding: u.rem-calc(20);
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: u.rem-calc(6);
+  margin-bottom: u.rem-calc(12);
+  align-items: start;
 
-  @include sg.container-min(tabletPortrait) {
-    grid-template-columns: u.rem-calc(100) 0.5fr 1fr;
+  @include sg.min(tabletLandscape) {
+    /* desktop adjustments if needed */
   }
 
-  &:first-child {
-    border-top: u.rem-calc(1) dashed sg.color(border-dark);
-  }
+  &__media {
+    width: u.rem-calc(90);
+    align-self: start;
+    margin-top: u.rem-calc(15);
 
-  &:last-child {
-    border-bottom-style: dashed;
+    img {
+      width: 100%;
+      object-fit: contain;
+    }
   }
 
   &__title {
-    align-self: center;
-    font-size: sg.font-size('18px');
-    line-height: sg.line-height('140%');
-
-    @include sg.container-min(tabletPortrait) {
-      font-size: sg.font-size(mediuml);
+    h3 {
+      font-size: u.rem-calc(19);
+      line-height: 1.3;
+      margin: 0 0 u.rem-calc(7);
     }
   }
 
   &__subtitle {
-    font-size: sg.font-size(small);
-
-    @include sg.container-min(tabletPortrait) {
-      font-size: sg.font-size(regular);
-    }
+    font-size: u.rem-calc(14);
+    line-height: 1.45;
+    margin: u.rem-calc(4) 0;
+    color: #444;
   }
 
   &__content {
     grid-column: 2;
     display: flex;
     flex-direction: column;
-    gap: sg.spacing(xsmall);
-    line-height: sg.line-height('100%');
-
-    @include sg.container-min(tabletPortrait) {
-      grid-column: 3;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-    }
+    gap: 0; /* content gap is handled by individual margins */
   }
 
-  &__date {
-    min-width: u.rem-calc(140);
-  }
-
-  &__time {
-    display: flex;
-    align-items: center;
-    gap: sg.spacing(xsmall);
+  &__date, &__time {
+    font-size: u.rem-calc(14);
+    line-height: 1.45;
+    margin: u.rem-calc(4) 0;
+    color: #444;
   }
 
   &__laps {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    flex-wrap: wrap;
     gap: sg.spacing(xsmall);
-
-    &--mobile {
-      display: flex;
-
-      @include sg.container-min(tabletPortrait) {
-        display: none;
-      }
-    }
-
-    &--desktop {
-      display: none;
-
-      @include sg.container-min(tabletPortrait) {
-        display: flex;
-      }
-    }
-
-    [data-price] {
-      font-weight: sg.font-weight(400);
-    }
-
-    [data-compare-at-price] {
-      font-weight: sg.font-weight(400);
+    
+    &--desktop, &--mobile {
+      display: inline-flex;
     }
   }
 
   &__inner {
+    grid-column: 3;
+    grid-row: 1;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: sg.spacing(medium);
-    margin-top: sg.spacing(small);
-
-    @include sg.container-min(tabletPortrait) {
-      flex-direction: row-reverse;
-      align-items: center;
-      gap: sg.spacing(xsmall);
-    }
+    align-items: flex-end;
+    gap: u.rem-calc(6);
+    text-align: right;
   }
 
   &__remove {
-    font-weight: sg.font-weight(600);
-    color: sg.color(black-50);
-    text-transform: uppercase;
+    font-size: u.rem-calc(13);
+    margin-top: u.rem-calc(12);
+    font-weight: 400;
+    text-transform: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+    grid-column: 2; /* place in the middle column controls area */
+    align-self: start;
+    padding: 0;
   }
 
   &__price {
-    min-width: u.rem-calc(110);
-    font-size: sg.font-size(mediuml);
-    line-height: sg.line-height('100%');
-
-    @include sg.container-min(tabletPortrait) {
-      justify-content: flex-end;
-      text-align: right;
-    }
+    font-size: u.rem-calc(20);
+    font-weight: 700;
+    line-height: 1;
   }
 }
 
