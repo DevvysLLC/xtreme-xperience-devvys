@@ -13,7 +13,7 @@ import { useCart } from '../../../../features/cart'
 import { useDialog } from '../../../../features/dialog'
 import { formatEventDateRangeShort } from '../../../../utils/date-time'
 import { getEventDataFragment } from '../../../../utils/get-event-data-fragment'
-import { CoreIcon } from '../../../core-icon'
+// import { CoreIcon } from '../../../core-icon'
 import { useBookingWizardState } from '../../context'
 import styles from './style.module.scss'
 
