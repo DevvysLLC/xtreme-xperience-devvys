@@ -138,7 +138,7 @@
     "help": "fish -c 'help'",
     "preinstall": "node -e '!process.env.npm_config_user_agent.startsWith(\"pnpm/\")&&!console.log(\"Use `pnpm install` to install dependencies in this repository\\n\")&&process.exit(1)'",
     "vercel-build": "./devops/bin/vercel-build.sh",
-    "typegen": "dotenv -- cross-var \"DATOCMS_ENVIRONMENT=%DATOCMS_ENVIRONMENT% graphql-codegen --config graphql.config.mjs --project dato_schema && DATOCMS_ENVIRONMENT=%DATOCMS_ENVIRONMENT% graphql-codegen --config graphql.config.mjs --project dato_sdk\"",
+    "typegen": "dotenv -- graphql-codegen --config graphql.config.mjs --project dato_schema && dotenv -- graphql-codegen --config graphql.config.mjs --project dato_sdk",
     "sync-typesense:supercars": "bun run src/server/typesense/scripts/sync-supercars.ts",
     "sync-typesense:tracks": "bun run src/server/typesense/scripts/sync-tracks.ts",
     "sync-typesense:pages": "bun run src/server/typesense/scripts/sync-pages.ts",

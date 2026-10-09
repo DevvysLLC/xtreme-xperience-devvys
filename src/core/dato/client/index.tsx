@@ -20,9 +20,10 @@ export const _makeClient = ({
   const logger = parentLogger.child({ name: 'dato-api' })
 
   const datoToken = process.env.NEXT_PUBLIC_DATOCMS_READONLY_TOKEN || ''
-  // Server-only and read at runtime: leave it unset to always read the
-  // primary environment. A NEXT_PUBLIC_ variable would be frozen into each
-  // build, so old deployments kept requesting old sandboxes.
+  // Server-only: leave it unset (including in Production) to always read the
+  // primary environment. Unlike the old NEXT_PUBLIC_ variable, it isn't
+  // compiled into the build, but Vercel still fixes it per deployment, so a
+  // change needs a redeploy.
   const datoEnvironment = process.env.DATOCMS_ENVIRONMENT || ''
 
   if (!datoToken) {
