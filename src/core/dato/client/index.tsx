@@ -20,9 +20,10 @@ export const _makeClient = ({
   const logger = parentLogger.child({ name: 'dato-api' })
 
   const datoToken = process.env.NEXT_PUBLIC_DATOCMS_READONLY_TOKEN || ''
-  // Server-only, so builds don't lock it in. Vercel still fixes variables per
-  // deployment, so a change needs a redeploy. Vercel Production deployments
-  // ignore it and always read the primary environment.
+  // Server-only, so the environment name stays out of the browser bundle. Like
+  // every Vercel variable, a change takes effect only after a redeploy. Vercel
+  // Production ignores it and always reads the primary environment. Outside
+  // Vercel (local dev, GitHub Actions), it applies whenever it's set.
   const datoEnvironment = process.env.DATOCMS_ENVIRONMENT || ''
   const isVercelProduction = process.env.VERCEL_ENV === 'production'
 
