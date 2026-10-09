@@ -13,8 +13,10 @@ import styles from './style.module.scss'
 
 export const GlobalFooter = async () => {
   const sdk = initDatoSdk()
-  const { footer } = await sdk.getFooter()
-  const { globalConfig } = await sdk.getGlobalConfig()
+  const [{ footer }, { globalConfig }] = await Promise.all([
+    sdk.getFooter(),
+    sdk.getGlobalConfig()
+  ])
   const { contactPhoneNumber, workingHours } = globalConfig ?? {}
   const { config, content } = footer ?? {}
   const { sections = [] } = content ?? { sections: [] }

@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation'
 import { cache } from 'react'
-import { ErrorMessage } from '../../../../../components/error-message'
 import { TemplateBlogListingPage } from '../../../../../components/template-blog-listing-page'
 import {
   POSTS_PER_PAGE,
@@ -8,6 +7,11 @@ import {
 } from '../../../../../config/settings'
 import { initDatoSdk } from '../../../../../core/dato/sdk'
 import { logger } from '../../../../../core/logger/logger'
+import { rethrowPageError } from '../../../../../core/errors/rethrow-page-error'
+
+// No pages are prebuilt: each one renders on its first request, then the
+// cache serves it and regenerates it at most every 60 s (time-based ISR).
+export const generateStaticParams = async () => []
 
 // Revalidate page data every 60 seconds for faster server responses
 export const revalidate = 60
@@ -31,7 +35,7 @@ const getCategoriesData = cache(async () => {
   return await sdk.getAllCategories()
 })
 
-export default async function BlogListingPagePaginated({ params }: Props) {
+const BlogListingPagePaginated = async ({ params }: Props) => {
   try {
     const { number } = await params
     const pageNumber = Number.parseInt(number, 10)
@@ -57,7 +61,7 @@ export default async function BlogListingPagePaginated({ params }: Props) {
       notFound()
     }
 
-    logger.info(
+    logger.debug(
       {
         response,
         categories: categories,
@@ -75,9 +79,8 @@ export default async function BlogListingPagePaginated({ params }: Props) {
       />
     )
   } catch (err) {
-    logger.error({ error: err }, 'Blog listing request failed')
-    const errorMessage =
-      err instanceof Error ? err.message : 'Failed to load blog listing'
-    return <ErrorMessage message={errorMessage} />
+    rethrowPageError(err, 'Blog listing request failed')
   }
 }
+
+export default BlogListingPagePaginated

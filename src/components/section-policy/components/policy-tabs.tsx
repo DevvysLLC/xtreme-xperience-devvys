@@ -59,6 +59,28 @@ type Props = {
 
 const SEARCH_PARAM_KEY = 'policy'
 
+const noopSetRef = () => undefined
+
+/**
+ * Server-rendered tab bar with the default tab active, shown until PolicyTabs hydrates.
+ * PolicyTabs reads useSearchParams(), so it renders only in the browser on static pages.
+ * Without this, crawlers, no-JS visitors and the first paint get no tabs.
+ */
+export const PolicyTabsFallback: FC<Props> = ({ tabs, defaultTabId }) => (
+  <ul className={styles.tabs}>
+    {tabs.map((tab) => (
+      <TabButton
+        key={tab.id}
+        tabId={tab.id}
+        tabTitle={tab.title}
+        isActive={defaultTabId === tab.id}
+        href={`?${SEARCH_PARAM_KEY}=${encodeURIComponent(tab.id)}`}
+        setRef={noopSetRef}
+      />
+    ))}
+  </ul>
+)
+
 export const PolicyTabs: FC<Props> = ({ tabs, defaultTabId }) => {
   const pathname = usePathname()
   const searchParams = useSearchParams()

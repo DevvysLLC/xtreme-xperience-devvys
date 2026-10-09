@@ -290,20 +290,14 @@ const main = async () => {
     const db = getDb()
 
     logger.info('Initializing DatoCMS SDK')
-    const datoEnvironment = process.env.NEXT_PUBLIC_DATOCMS_ENVIRONMENT || ''
-    const vercelEnv = process.env.NEXT_PUBLIC_VERCEL_ENV || 'not-set'
-    const mode: 'production' | 'development' =
-      vercelEnv === 'production' ? 'production' : 'development'
-    const effectiveDatoEnvironment = datoEnvironment || 'main/production'
+    const datoEnvironment = process.env.DATOCMS_ENVIRONMENT || ''
 
     logger.info(
       {
-        datoEnvironment: effectiveDatoEnvironment,
-        datoEnvironmentRaw: datoEnvironment || '(not set, using default)',
-        vercelEnv,
-        mode,
-        includeDrafts: mode !== 'production',
-        usingEnvironmentHeader: datoEnvironment && mode !== 'production'
+        datoEnvironment: datoEnvironment || '(primary)',
+        // Matches the client: Vercel Production always reads the primary.
+        usingEnvironmentHeader:
+          Boolean(datoEnvironment) && process.env.VERCEL_ENV !== 'production'
       },
       'DatoCMS environment configuration'
     )

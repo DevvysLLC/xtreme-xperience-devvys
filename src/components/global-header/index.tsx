@@ -13,10 +13,12 @@ type Props = {
 
 export const GlobalHeader = async ({ isTransparent }: Props = {}) => {
   const sdk = initDatoSdk()
-  const [{ globalConfig }, { header }, { allSupercars }] = await Promise.all([
+  // The header renders on every page, so keep its queries small. It used to also fetch
+  // getSupercars (about 13 MB, unused). Next.js can't cache responses over 2 MB, so that
+  // query reached DatoCMS on every render and caused most of the project's API traffic.
+  const [{ globalConfig }, { header }] = await Promise.all([
     sdk.getGlobalConfig(),
-    sdk.getHeader(),
-    sdk.getSupercars()
+    sdk.getHeader()
   ])
   const { contactPhoneNumber, workingHours } = globalConfig ?? {}
   const { config, content } = header ?? {}

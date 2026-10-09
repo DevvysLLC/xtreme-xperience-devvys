@@ -19,9 +19,13 @@ export const _makeClient = ({
 }: ClientFactoryProps): Client => {
   const logger = parentLogger.child({ name: 'dato-api' })
 
-  const isProduction = process.env.NEXT_PUBLIC_VERCEL_ENV === 'production'
   const datoToken = process.env.NEXT_PUBLIC_DATOCMS_READONLY_TOKEN || ''
-  const datoEnvironment = process.env.NEXT_PUBLIC_DATOCMS_ENVIRONMENT || ''
+  // Server-only, so the environment name stays out of the browser bundle. Like
+  // every Vercel variable, a change takes effect only after a redeploy. Vercel
+  // Production ignores it and always reads the primary environment. Outside
+  // Vercel (local dev, GitHub Actions), it applies whenever it's set.
+  const datoEnvironment = process.env.DATOCMS_ENVIRONMENT || ''
+  const isVercelProduction = process.env.VERCEL_ENV === 'production'
 
   if (!datoToken) {
     throw new Error('NEXT_PUBLIC_DATOCMS_READONLY_TOKEN value is missing')
@@ -32,14 +36,16 @@ export const _makeClient = ({
     'X-Exclude-Invalid': 'true'
   }
 
-  // Drafts are excluded on all environments to prevent unpublished
-  // records from appearing in the frontend or API responses.
-  if (datoEnvironment && !isProduction) {
+  // No X-Include-Drafts header is sent, so every environment returns only
+  // published content.
+  if (datoEnvironment && !isVercelProduction) {
     baseHeaders['X-Environment'] = datoEnvironment
   }
 
   return createClient({
     url: 'https://graphql.datocms.com',
+    // GraphQL errors arrive as HTTP 200, so Next caches error responses for
+    // this long too. Keep it short.
     fetchOptions: { headers: baseHeaders, next: { revalidate: 60 } },
     requestPolicy: 'network-only',
     exchanges: [
@@ -47,7 +53,10 @@ export const _makeClient = ({
         initialDelayMs: 500,
         maxDelayMs: 30_000,
         maxNumberAttempts: 5,
-        retryIf: (err) => err.message.includes('THROTTLED')
+        // Also retry network failures, such as timeouts or non-JSON 5xx
+        // responses. Static pages fetch during `next build`, so one transient
+        // failure would otherwise fail the deploy.
+        retryIf: (err) => Boolean(err.networkError) || err.message.includes('THROTTLED')
       }),
       errorExchange({
         onError: (error, operation) => {

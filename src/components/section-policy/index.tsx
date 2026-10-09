@@ -1,8 +1,9 @@
 import type { FC } from 'react'
+import { Suspense } from 'react'
 import { getSectionId } from '../../core/string/get-section-id'
 import { getSectionConfigStyles } from '../../utils/get-section-config-styles'
 import { CoreTextMarkdown } from '../core-text-markdown'
-import { PolicyTabs } from './components/policy-tabs'
+import { PolicyTabs, PolicyTabsFallback } from './components/policy-tabs'
 import type { SectionPolicyFragment } from './section-policy.typegen'
 import styles from './style.module.scss'
 
@@ -41,8 +42,13 @@ export const SectionPolicy: FC<Props> = ({ data, isFirstSection }) => {
         {title && <HeadingTag className={styles.title}>{title}</HeadingTag>}
         {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
 
-        {/* Client component only for interactive tab selection */}
-        <PolicyTabs tabs={tabs} defaultTabId={defaultTabId} />
+        {/* Client component only for interactive tab selection. It reads
+            useSearchParams(), so it needs a Suspense boundary to keep the
+            page statically renderable. The fallback is the server-rendered
+            tab bar with the default tab active. */}
+        <Suspense fallback={<PolicyTabsFallback tabs={tabs} defaultTabId={defaultTabId} />}>
+          <PolicyTabs tabs={tabs} defaultTabId={defaultTabId} />
+        </Suspense>
       </div>
 
       {/* Server-render all tab contents, hidden by CSS - enables instant switching */}

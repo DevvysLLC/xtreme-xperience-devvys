@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { cache } from 'react'
-import { ErrorMessage } from '../../../components/error-message'
 import { generateSeoMetadata } from '../../../components/global-seo'
 import { TemplateSupercarListingPage } from '../../../components/template-supercar-listing-page'
 import { initDatoSdk } from '../../../core/dato/sdk'
 import { logger } from '../../../core/logger/logger'
+import { rethrowPageError } from '../../../core/errors/rethrow-page-error'
 
 // Revalidate page data every 60 seconds for faster server responses
 export const revalidate = 60
@@ -34,20 +34,16 @@ export const generateMetadata = async (): Promise<Metadata> => {
   }
 }
 
-export default async function SupercarsListingPage() {
+const SupercarsListingPage = async () => {
   try {
     const response = await getPageData()
 
-    if (!response) {
+    if (!response?.allPages?.length) {
+      logger.warn('No page found for supercars listing')
       notFound()
     }
 
-    if (!response?.allPages?.length) {
-      logger.warn('No page found for supercars listing')
-      return <ErrorMessage message="Supercars listing page not found" />
-    }
-
-    logger.info(
+    logger.debug(
       {
         response
       },
@@ -56,9 +52,8 @@ export default async function SupercarsListingPage() {
 
     return <TemplateSupercarListingPage data={response} />
   } catch (err) {
-    logger.error({ error: err }, 'Supercars listing request failed')
-    const errorMessage =
-      err instanceof Error ? err.message : 'Failed to load supercars listing'
-    return <ErrorMessage message={errorMessage} />
+    rethrowPageError(err, 'Supercars listing request failed')
   }
 }
+
+export default SupercarsListingPage

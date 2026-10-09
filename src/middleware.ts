@@ -38,7 +38,13 @@ export const middleware = (request: NextRequest) => {
     }
   })
 
-  if (!request.cookies.get(COOKIE_NAME)?.value) {
+  // Public content routes don't use the GUID, and a Set-Cookie header stops
+  // the CDN from caching them despite their s-maxage.
+  const isPublicContentGet =
+    request.method === 'GET' &&
+    request.nextUrl.pathname.startsWith('/api/v1/frontend/')
+
+  if (!request.cookies.get(COOKIE_NAME)?.value && !isPublicContentGet) {
     const expiryDate = getGuidExpiryDate()
     const isProduction = process.env.NODE_ENV === 'production'
 
