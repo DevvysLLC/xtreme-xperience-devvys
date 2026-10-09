@@ -67,7 +67,7 @@ export const PageFooter: React.FC<Props> = ({
         className={styles.footer__submit}
         href={null}
         layoutType="button"
-        styleType="black"
+        styleType="orange"
         sizeType="small"
         text={isPending ? savingText : submitText}
       />
