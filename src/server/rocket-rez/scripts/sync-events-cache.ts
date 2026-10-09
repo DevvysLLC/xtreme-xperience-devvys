@@ -295,7 +295,9 @@ const main = async () => {
     logger.info(
       {
         datoEnvironment: datoEnvironment || '(primary)',
-        usingEnvironmentHeader: Boolean(datoEnvironment)
+        // Matches the client: Vercel Production always reads the primary.
+        usingEnvironmentHeader:
+          Boolean(datoEnvironment) && process.env.VERCEL_ENV !== 'production'
       },
       'DatoCMS environment configuration'
     )
