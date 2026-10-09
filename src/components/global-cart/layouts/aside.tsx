@@ -26,15 +26,20 @@ export const CartAside: FC<Props> = ({ className }) => {
     return (
       <aside className={clsx(styles.cart, className)}>
         <div className={styles.cart__container}>
-          <h2 className={styles.cart__title}>{t('aside.title')}</h2>
-
-          <hr className={styles.cart__divider} />
-
-          <div className={styles.cart__empty}>
-            <span>{t('aside.empty')}</span>
+          <div className={styles.cart__header}>
+            <h2 className={styles.cart__title}>{t('aside.title')}</h2>
+            <span className={styles.cart__count}>0 items</span>
           </div>
 
-          <hr className={styles.cart__divider} />
+          <div className={styles.cart__empty_state}>
+            <p className={styles.cart__empty_eyebrow}>Your cart is ready.</p>
+            <p className={styles.cart__empty_desc}>Choose a car, date and start time.</p>
+            <ul className={styles.cart__empty_reasons}>
+              <li>Professional Instruction included</li>
+              <li>Track supervision, Pit crew and helmets</li>
+              <li>450,000+ Experiences Delivered</li>
+            </ul>
+          </div>
         </div>
       </aside>
     )
@@ -43,7 +48,12 @@ export const CartAside: FC<Props> = ({ className }) => {
   return (
     <aside className={clsx(styles.cart)}>
       <div className={styles.cart__container}>
-        <h2 className={styles.cart__title}>{t('aside.title')}</h2>
+        <div className={styles.cart__header}>
+          <h2 className={styles.cart__title}>{t('aside.title')}</h2>
+          <span className={styles.cart__count}>
+            {lineItems.length} {lineItems.length === 1 ? 'item' : 'items'}
+          </span>
+        </div>
 
         {track && (
           <>

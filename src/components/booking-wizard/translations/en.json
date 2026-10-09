@@ -183,7 +183,8 @@
             "selected_laps": "{laps} laps = {sessions} session(s)"
           },
           "button": {
-            "select": "View Availability",
+            "select": "Choose a Time",
+            "selecting": "Selecting Time",
             "remove": "Close Selection",
             "add_to_cart": "Add to Cart"
           },

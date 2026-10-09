@@ -27,7 +27,6 @@ import { isScheduleSoldOut } from '../../../../utils/is-schedule-sold-out'
 import { CoreBadge } from '../../../core-badge'
 import { CoreCta } from '../../../core-cta'
 import { CoreImage } from '../../../core-image'
-import { CoreRocketRezPrice } from '../../../core-rocketrez-price'
 import { CoreTextMarkdown } from '../../../core-text-markdown'
 import { useBookingWizardState } from '../../context'
 import { SupercarOptionsCardLaps } from './components/supercar-options-card-laps'
@@ -53,7 +52,8 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
   const tToast = useTranslations('booking_wizard')
   const { state } = useBookingWizardState()
   const { state: cardState } = useSupercarOptionsCard()
-  const { lowestAvailablePrice } = useBookingSupercarSchedule()
+  const { lowestAvailablePrice, getEffectivePrice } =
+    useBookingSupercarSchedule()
   const { mutateAsync, isPending } = useCartAdd()
   const [isSelected, setIsSelected] = useState(false)
   const { data } = useCart()
@@ -100,6 +100,23 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
     () => lowestAvailablePrice(schedules, rocketRezSeatTypeId, isMulticar),
     [schedules, rocketRezSeatTypeId, lowestAvailablePrice, isMulticar]
   )
+
+  // Highest standard price for this car across every event day (prototype's "Standard value")
+  const standardValue = useMemo(() => {
+    if (isMulticar) {
+      return null
+    }
+    const allSchedules =
+      state.eventData?.schedules?.flatMap((day) => day.schedules ?? []) ?? []
+    let highest = 0
+    for (const schedule of allSchedules) {
+      const value = getEffectivePrice(schedule, rocketRezSeatTypeId)
+      if (value > highest) {
+        highest = value
+      }
+    }
+    return highest > 0 ? highest : null
+  }, [state.eventData?.schedules, getEffectivePrice, rocketRezSeatTypeId, isMulticar])
 
   // For packages (isMulticar), resolve all required rate IDs from the first available schedule
   // to determine sold-out status accurately
@@ -404,40 +421,67 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
               color="#111111"
             />
           ) : (
-            <>
-              {isSelected && cardState.selectedDaySchedule?.price ? (
-                <CoreRocketRezPrice
-                  data={{
-                    id: `${cardState.selectedDaySchedule.scheduleId}-price`,
-                    compareAtPrice:
-                      ((bookingSupercar.priceOverride?.compareAtPrice != null
-                        ? bookingSupercar.priceOverride.compareAtPrice / 100
-                        : cardState.selectedDaySchedule?.rateTypePrice
-                            ?.compareAtPrice) ?? 0) *
-                      (cardState.selectedQuantity ?? 0),
-                    price:
-                      ((bookingSupercar.priceOverride?.price != null
-                        ? bookingSupercar.priceOverride.price / 100
-                        : cardState.selectedDaySchedule?.rateTypePrice?.price) ??
-                        0) * (cardState.selectedQuantity ?? 0)
-                  }}
-                  showPrefix={true}
-                />
-              ) : (
-                <>
-                  {lowestPrice && (
-                    <CoreRocketRezPrice
-                      data={{
-                        id: `${rocketRezSeatTypeId}-lowest-price`,
-                        price: bookingSupercar.priceOverride?.price != null ? bookingSupercar.priceOverride.price / 100 : lowestPrice.price,
-                        compareAtPrice: bookingSupercar.priceOverride?.compareAtPrice != null ? bookingSupercar.priceOverride.compareAtPrice / 100 : null
-                      }}
-                      showPrefix={true}
-                    />
+            (() => {
+              const showSelected =
+                isSelected && !!cardState.selectedDaySchedule?.price
+              const quantity = showSelected ? (cardState.selectedQuantity ?? 1) : 1
+              const currentPrice = showSelected
+                ? ((bookingSupercar.priceOverride?.price != null
+                    ? bookingSupercar.priceOverride.price / 100
+                    : cardState.selectedDaySchedule?.rateTypePrice?.price) ?? 0) *
+                  quantity
+                : bookingSupercar.priceOverride?.price != null
+                  ? bookingSupercar.priceOverride.price / 100
+                  : (lowestPrice?.price ?? null)
+              if (currentPrice === null || currentPrice === 0) {
+                return null
+              }
+              const cmsCompareAt = showSelected
+                ? ((bookingSupercar.priceOverride?.compareAtPrice != null
+                    ? bookingSupercar.priceOverride.compareAtPrice / 100
+                    : cardState.selectedDaySchedule?.rateTypePrice
+                        ?.compareAtPrice) ?? 0) * quantity
+                : bookingSupercar.priceOverride?.compareAtPrice != null
+                  ? bookingSupercar.priceOverride.compareAtPrice / 100
+                  : (lowestPrice?.compareAtPrice ?? 0)
+              const referenceValue =
+                cmsCompareAt > currentPrice
+                  ? cmsCompareAt
+                  : standardValue !== null
+                    ? standardValue * quantity
+                    : 0
+              const savings =
+                referenceValue > currentPrice
+                  ? Math.floor(referenceValue - currentPrice)
+                  : 0
+              return (
+                <div
+                  className={styles.price_display}
+                  data-price={currentPrice}
+                  data-savings={savings}
+                >
+                  {savings > 0 && (
+                    <span className={styles.price_display__reference}>
+                      {isMulticar ? 'Full value' : 'Standard value'}{' '}
+                      <del>${Math.ceil(referenceValue)}</del>
+                    </span>
                   )}
-                </>
-              )}
-            </>
+                  <div className={styles.price_display__line}>
+                    <span className={styles.price_display__money}>
+                      {!showSelected && (
+                        <span className={styles.price_display__from}>From </span>
+                      )}
+                      ${Math.ceil(currentPrice)}
+                    </span>
+                    {savings > 0 && (
+                      <span className={styles.price_display__saving}>
+                        Save {!showSelected && 'up to '}${savings}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )
+            })()
           )}
         </div>
       </div>

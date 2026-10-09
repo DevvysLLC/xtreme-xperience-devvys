@@ -27,18 +27,23 @@
   &__day {
     font-size: u.rem-calc(30);
     font-weight: 600;
-    margin: u.rem-calc(6) 0;
+    margin: u.rem-calc(4) 0 u.rem-calc(2);
+    line-height: 1.1;
+    color: inherit;
+  }
+
+  &__month {
+    font-size: u.rem-calc(12);
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: u.rem-calc(8);
     color: inherit;
   }
 
   &__price {
-    font-size: u.rem-calc(14);
+    font-size: u.rem-calc(13);
     color: inherit;
-    
-    [data-price-prefix] {
-      font-size: u.rem-calc(14);
-      margin-right: u.rem-calc(4);
-    }
   }
 
   &.active {
