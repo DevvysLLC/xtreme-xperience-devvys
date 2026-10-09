@@ -84,7 +84,7 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
   const title = bookingSupercar.titleOverride
     ? bookingSupercar.titleOverride
     : supercar.model?.make && supercar.model?.model
-      ? `${supercar.model?.make} <strong>${supercar.model?.model}</strong>`
+      ? `<strong>${supercar.model?.model}</strong>`
       : (supercar.model?.title ??
         `Supercar <strong>${rocketRezSeatTypeId}</strong>`)
   const thumbnail = bookingSupercar.thumbnailOverride
@@ -375,7 +375,7 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
   }
 
   return (
-    <article className={styles.card}>
+    <article className={clsx(styles.card, isSelected && styles['card--active'])}>
       <div className={styles.card__media}>
         {thumbnail && <CoreImage data={thumbnail} />}
         {badge && (
@@ -390,6 +390,9 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
           soldOut && styles['card__header--sold-out']
         )}
       >
+        {!bookingSupercar.titleOverride && supercar.model?.make && (
+          <p className={styles.card__make}>{supercar.model.make}</p>
+        )}
         <h3 className={styles.card__title}>
           <CoreTextMarkdown>{title}</CoreTextMarkdown>
         </h3>
@@ -532,7 +535,7 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
                     form.handleSubmit()
                   }}
                   layoutType="button"
-                  styleType="orange"
+                  styleType="black"
                   sizeType="medium"
                 />
                 <CoreCta
@@ -553,7 +556,7 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
                 href={null}
                 type="submit"
                 layoutType="button"
-                styleType="orange"
+                styleType="black"
                 sizeType="medium"
                 onClick={() => {
                   setIsSelected(true)
@@ -561,6 +564,16 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
               />
             </div>
           )}
+        </div>
+      )}
+      
+      {!soldOut && (
+        <div className={styles.card__foot}>
+          <a href="#whats-included" className="small underline">What&apos;s included</a>
+          <label className="comparebox">
+            <input type="checkbox" name="compare" />
+            <span className="small">Compare</span>
+          </label>
         </div>
       )}
     </article>

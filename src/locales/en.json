@@ -245,7 +245,7 @@
         },
         "supercar_options_card": {
           "button": {
-            "select": "View Availability",
+            "select": "CHOOSE A TIME",
             "remove": "Close Selection",
             "add_to_cart": "Add to Cart"
           },
