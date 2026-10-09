@@ -10,7 +10,7 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: sg.spacing(xsmall) sg.spacing(medium);
+  padding: sg.spacing(xsmall) sg.spacing(medium) calc(sg.spacing(xsmall) + env(safe-area-inset-bottom, 0px));
   border-top: u.rem-calc(1) solid sg.color(border-dark);
   background-color: sg.color(white);
 

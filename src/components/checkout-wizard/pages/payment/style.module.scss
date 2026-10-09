@@ -65,6 +65,9 @@
 
     @include sg.min(laptopSmall) {
       grid-row: span 2;
+      position: sticky;
+      top: 0;
+      align-self: start;
       padding-block: sg.spacing(xlarge) sg.spacing(medium);
       padding-inline: sg.spacing(medium);
       border-left: u.rem-calc(1) solid sg.color(border-light);
