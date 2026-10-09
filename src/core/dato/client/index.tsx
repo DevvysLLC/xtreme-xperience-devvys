@@ -50,8 +50,12 @@ export const _makeClient = ({
       retryExchange({
         initialDelayMs: 500,
         maxDelayMs: 30_000,
-        maxNumberAttempts: 5,
-        retryIf: (err) => err.message.includes('THROTTLED')
+        maxNumberAttempts: 3,
+        // Also retry network failures, such as timeouts or non-JSON 5xx
+        // responses, so one transient failure doesn't fail a build or a page.
+        // Three attempts keep a real outage from stalling each call for long.
+        retryIf: (err) =>
+          Boolean(err.networkError) || err.message.includes('THROTTLED')
       }),
       errorExchange({
         onError: (error, operation) => {
