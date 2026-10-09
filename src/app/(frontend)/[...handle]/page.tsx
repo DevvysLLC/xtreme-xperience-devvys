@@ -4,7 +4,12 @@ import { cache } from 'react'
 import { generateSeoMetadata } from '../../../components/global-seo'
 import { TemplatePage } from '../../../components/template-page'
 import { initDatoSdk } from '../../../core/dato/sdk'
+import { rethrowPageError } from '../../../core/errors/rethrow-page-error'
 import { logger } from '../../../core/logger/logger'
+
+// No pages are prebuilt: each one renders on its first request, then the
+// cache serves it and regenerates it at most every 60 s (time-based ISR).
+export const generateStaticParams = async () => []
 
 // Revalidate page data every 60 seconds for faster server responses
 export const revalidate = 60
@@ -23,6 +28,12 @@ const getPageData = cache(async (params: RouteParams) => {
 
   if (!slug) {
     logger.warn({ params }, 'Missing slug in catch-all route params')
+    return null
+  }
+
+  // Pages have single-segment handles. Without this, /about/x/y would serve
+  // /about and get its own cache entry for every extra path.
+  if (params.handle.length > 1) {
     return null
   }
 
@@ -69,7 +80,6 @@ export default async function CatchAllPage({ params }: Props) {
     logger.info({ response }, 'Page response')
     return <TemplatePage data={response} />
   } catch (error) {
-    logger.error({ error, params: awaitedParams }, 'Page request failed')
-    notFound()
+    rethrowPageError(error, 'Page request failed', { params: awaitedParams })
   }
 }

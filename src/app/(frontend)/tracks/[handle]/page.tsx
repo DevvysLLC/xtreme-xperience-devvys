@@ -1,11 +1,15 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { cache } from 'react'
-import { ErrorMessage } from '../../../../components/error-message'
 import { generateSeoMetadata } from '../../../../components/global-seo'
 import { TemplateTrackDetailPage } from '../../../../components/template-track-detail-page'
 import { initDatoSdk } from '../../../../core/dato/sdk'
+import { rethrowPageError } from '../../../../core/errors/rethrow-page-error'
 import { logger } from '../../../../core/logger/logger'
+
+// No pages are prebuilt: each one renders on its first request, then the
+// cache serves it and regenerates it at most every 60 s (time-based ISR).
+export const generateStaticParams = async () => []
 
 // Revalidate page data every 60 seconds for faster server responses
 export const revalidate = 60
@@ -61,9 +65,6 @@ export default async function TrackDetailPage({ params }: Props) {
 
     return <TemplateTrackDetailPage data={response} />
   } catch (err) {
-    logger.error({ error: err }, 'Track detail request failed')
-    const errorMessage =
-      err instanceof Error ? err.message : 'Failed to load track detail'
-    return <ErrorMessage message={errorMessage} />
+    rethrowPageError(err, 'Track detail request failed')
   }
 }
