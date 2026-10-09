@@ -1,9 +1,13 @@
-import { getTranslations } from 'next-intl/server'
+import { notFound } from 'next/navigation'
 import { cache } from 'react'
-import { ErrorMessage } from '../../../../../components/error-message'
 import { TemplateBlogListingPage } from '../../../../../components/template-blog-listing-page'
 import { initDatoSdk } from '../../../../../core/dato/sdk'
 import { logger } from '../../../../../core/logger/logger'
+import { rethrowPageError } from '../../../../../core/errors/rethrow-page-error'
+
+// No pages are prebuilt: each one renders on its first request, then the
+// cache serves it and regenerates it at most every 60 s (time-based ISR).
+export const generateStaticParams = async () => []
 
 // Revalidate page data every 60 seconds for faster server responses
 export const revalidate = 60
@@ -24,7 +28,7 @@ const getPostsByCategoryData = cache(async (categoryId: string) => {
   return await sdk.getPostsByCategory({ categoryId })
 })
 
-export default async function BlogCategoryPage({ params }: Props) {
+const BlogCategoryPage = async ({ params }: Props) => {
   try {
     const { handle } = await params
 
@@ -35,13 +39,12 @@ export default async function BlogCategoryPage({ params }: Props) {
 
     if (!category) {
       logger.warn({ handle }, 'Category not found')
-      const t = await getTranslations('error_message')
-      return <ErrorMessage message={t('category_not_found', { handle })} />
+      notFound()
     }
 
     const response = await getPostsByCategoryData(category.id)
 
-    logger.info(
+    logger.debug(
       {
         response,
         categoryHandle: handle,
@@ -59,9 +62,8 @@ export default async function BlogCategoryPage({ params }: Props) {
       />
     )
   } catch (err) {
-    logger.error({ error: err }, 'Blog category request failed')
-    const errorMessage =
-      err instanceof Error ? err.message : 'Failed to load blog category'
-    return <ErrorMessage message={errorMessage} />
+    rethrowPageError(err, 'Blog category request failed')
   }
 }
+
+export default BlogCategoryPage

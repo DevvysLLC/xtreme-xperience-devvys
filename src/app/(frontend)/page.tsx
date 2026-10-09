@@ -1,10 +1,10 @@
 import type { Metadata } from 'next'
 import { cache } from 'react'
-import { ErrorMessage } from '../../components/error-message'
 import { generateSeoMetadata } from '../../components/global-seo'
 import { TemplateHomepage } from '../../components/template-homepage'
 import { initDatoSdk } from '../../core/dato/sdk'
 import { logger } from '../../core/logger/logger'
+import { rethrowPageError } from '../../core/errors/rethrow-page-error'
 
 // Revalidate homepage data every 60 seconds for faster server responses
 // This enables ISR (Incremental Static Regeneration) to serve cached HTML
@@ -26,22 +26,16 @@ export const generateMetadata = async (): Promise<Metadata> => {
   }
 }
 
-export default async function FrontendHomePage() {
+const FrontendHomePage = async () => {
   try {
     const response = await getHomepageData()
 
-    logger.info(
-      {
-        response
-      },
-      'Homepage response:'
-    )
+    logger.debug({ response }, 'Homepage response:')
 
     return <TemplateHomepage data={response} />
   } catch (err) {
-    logger.error({ error: err }, 'Homepage request failed')
-    const errorMessage =
-      err instanceof Error ? err.message : 'Failed to load homepage'
-    return <ErrorMessage message={errorMessage} />
+    rethrowPageError(err, 'Homepage request failed')
   }
 }
+
+export default FrontendHomePage

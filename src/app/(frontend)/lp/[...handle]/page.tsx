@@ -5,6 +5,11 @@ import { generateSeoMetadata } from '../../../../components/global-seo'
 import { TemplateLandingPage } from '../../../../components/template-landing-page'
 import { initDatoSdk } from '../../../../core/dato/sdk'
 import { logger } from '../../../../core/logger/logger'
+import { rethrowPageError } from '../../../../core/errors/rethrow-page-error'
+
+// No pages are prebuilt: each one renders on its first request, then the
+// cache serves it and regenerates it at most every 60 s (time-based ISR).
+export const generateStaticParams = async () => []
 
 // Revalidate page data every 60 seconds for faster server responses
 export const revalidate = 60
@@ -23,6 +28,12 @@ const getLandingPageData = cache(async (params: RouteParams) => {
 
   if (!slug) {
     logger.warn({ params }, 'Missing slug in landing-page route params')
+    return null
+  }
+
+  // Landing pages have single-segment handles. Without this, /lp/foo/x/y would
+  // serve /lp/foo and get its own cache entry for every extra path.
+  if (params.handle.length > 1) {
     return null
   }
 
@@ -57,7 +68,7 @@ export const generateMetadata = async ({
   }
 }
 
-export default async function LandingPage({ params }: Props) {
+const LandingPage = async ({ params }: Props) => {
   const awaitedParams = await params
   try {
     const response = await getLandingPageData(awaitedParams)
@@ -66,13 +77,11 @@ export default async function LandingPage({ params }: Props) {
       notFound()
     }
 
-    logger.info({ response }, 'Landing page response')
+    logger.debug({ response }, 'Landing page response')
     return <TemplateLandingPage data={response} />
   } catch (error) {
-    logger.error(
-      { error, params: awaitedParams },
-      'Landing page request failed'
-    )
-    notFound()
+    rethrowPageError(error, 'Landing page request failed', { params: awaitedParams })
   }
 }
+
+export default LandingPage
