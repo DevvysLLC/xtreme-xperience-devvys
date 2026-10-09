@@ -1,35 +1,46 @@
 'use client'
 
-import { usePathname, useSearchParams } from 'next/navigation'
-import { useEffect, useRef } from 'react'
+import { usePathname } from 'next/navigation'
+import { useCallback, useEffect, useRef } from 'react'
+import { onQueryChange } from './query-change'
 
 // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
 type RouteChangeCallback = () => (() => void) | void
 
+// Watches the pathname, plus query-only changes published by
+// QueryChangePublisher in the (frontend) layout. Calling useSearchParams() here
+// would force every page that renders the header to render in the browser.
 export const useRouteChange = (
   callback: RouteChangeCallback,
   options?: { immediate?: boolean }
 ): void => {
   const pathname = usePathname()
-  const searchParams = useSearchParams()
   const callbackRef = useRef(callback)
   const cleanupRef = useRef<(() => void) | undefined>(undefined)
   const isFirstRender = useRef(true)
   const previousPathnameRef = useRef<string | null>(null)
-  const previousSearchParamsRef = useRef<string | null>(null)
 
   useEffect(() => {
     callbackRef.current = callback
   }, [callback])
 
+  /** Runs the previous cleanup, then the callback, and stores its new cleanup. */
+  const runCallback = useCallback(() => {
+    cleanupRef.current?.()
+    const result = callbackRef.current()
+    cleanupRef.current = typeof result === 'function' ? result : undefined
+  }, [])
+
+  // Pathname changes run through the effect below; query-only changes arrive
+  // from QueryChangePublisher.
+  useEffect(() => onQueryChange(runCallback), [runCallback])
+
   useEffect(() => {
     const currentPathname = pathname
-    const currentSearchParams = searchParams.toString()
 
     if (isFirstRender.current) {
       isFirstRender.current = false
       previousPathnameRef.current = currentPathname
-      previousSearchParamsRef.current = currentSearchParams
 
       if (options?.immediate) {
         const result = callbackRef.current()
@@ -45,22 +56,12 @@ export const useRouteChange = (
     }
 
     const previousPathname = previousPathnameRef.current
-    const previousSearchParams = previousSearchParamsRef.current
 
     const hasPathnameChanged = previousPathname !== currentPathname
-    const hasSearchParamsChanged = previousSearchParams !== currentSearchParams
 
-    if (hasPathnameChanged || hasSearchParamsChanged) {
-      if (cleanupRef.current) {
-        cleanupRef.current()
-        cleanupRef.current = undefined
-      }
-
-      const result = callbackRef.current()
-      cleanupRef.current = typeof result === 'function' ? result : undefined
-
+    if (hasPathnameChanged) {
+      runCallback()
       previousPathnameRef.current = currentPathname
-      previousSearchParamsRef.current = currentSearchParams
     }
 
     return () => {
@@ -69,5 +70,5 @@ export const useRouteChange = (
         cleanupRef.current = undefined
       }
     }
-  }, [pathname, searchParams, options?.immediate])
+  }, [pathname, options?.immediate, runCallback])
 }
