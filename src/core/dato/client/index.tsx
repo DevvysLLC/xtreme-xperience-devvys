@@ -19,9 +19,13 @@ export const _makeClient = ({
 }: ClientFactoryProps): Client => {
   const logger = parentLogger.child({ name: 'dato-api' })
 
-  const isProduction = process.env.NEXT_PUBLIC_VERCEL_ENV === 'production'
   const datoToken = process.env.NEXT_PUBLIC_DATOCMS_READONLY_TOKEN || ''
-  const datoEnvironment = process.env.NEXT_PUBLIC_DATOCMS_ENVIRONMENT || ''
+  // Server-only, so the environment name stays out of the browser bundle. Like
+  // every Vercel variable, a change takes effect only after a redeploy. Vercel
+  // Production ignores it and always reads the primary environment. Outside
+  // Vercel (local dev, GitHub Actions), it applies whenever it's set.
+  const datoEnvironment = process.env.DATOCMS_ENVIRONMENT || ''
+  const isVercelProduction = process.env.VERCEL_ENV === 'production'
 
   if (!datoToken) {
     throw new Error('NEXT_PUBLIC_DATOCMS_READONLY_TOKEN value is missing')
@@ -32,9 +36,9 @@ export const _makeClient = ({
     'X-Exclude-Invalid': 'true'
   }
 
-  // Drafts are excluded on all environments to prevent unpublished
-  // records from appearing in the frontend or API responses.
-  if (datoEnvironment && !isProduction) {
+  // No X-Include-Drafts header is sent, so every environment returns only
+  // published content.
+  if (datoEnvironment && !isVercelProduction) {
     baseHeaders['X-Environment'] = datoEnvironment
   }
 
