@@ -12,100 +12,99 @@
   position: relative;
 }
 
-  &__media {
+&__media {
+  width: 100%;
+  height: u.rem-calc(140);
+  background: #f7f7f7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    mix-blend-mode: multiply;
+  }
+}
+
+&__badge {
+  position: absolute;
+  top: u.rem-calc(8);
+  left: u.rem-calc(8);
+  z-index: 1;
+
+  /* Override any default badge backgrounds if necessary, or just rely on CoreBadge */
+}
+
+&__content {
+  padding: sg.spacing(regular);
+  padding-top: 0;
+}
+
+&__header {
+  display: flex;
+  flex-direction: column;
+  padding: u.rem-calc(16);
+  flex: 1;
+}
+
+&__title {
+  font-size: sg.font-size(regular);
+  font-family: sg.font-family(barlow);
+  font-weight: 700;
+
+  @include sg.min(tabletLandscape) {
+    font-size: sg.font-size(mediuml);
+  }
+}
+
+&__price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: sg.spacing(xxsmall);
+  margin: u.rem-calc(12) 0;
+  padding-top: u.rem-calc(12);
+  border-top: 1px solid #d5d5d2;
+}
+
+&__form {
+  display: flex;
+  flex-direction: column;
+  gap: sg.spacing(regular);
+}
+
+&__options {
+  display: flex;
+  flex-direction: column;
+  gap: sg.spacing(regular);
+}
+
+&__actions {
+  display: flex;
+  flex-direction: column;
+  gap: sg.spacing(small);
+  width: 100%;
+  margin-top: auto;
+
+  & > * {
     width: 100%;
-    height: u.rem-calc(140);
-    background: #f7f7f7;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    
-    img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-      mix-blend-mode: multiply;
-    }
   }
+}
 
-  &__badge {
-    position: absolute;
-    top: u.rem-calc(8);
-    left: u.rem-calc(8);
-    z-index: 1;
+&__link {
+  font-family: sg.font-family(barlow);
+  font-weight: sg.font-weight(600);
+  font-size: sg.font-size(regular);
+  line-height: sg.line-height('100%');
+  color: sg.color(black-50);
+  text-transform: uppercase;
+  transition: color 0.2s ease;
 
-    /* Override any default badge backgrounds if necessary, or just rely on CoreBadge */
-  }
-
-  &__content {
-    padding: sg.spacing(regular);
-    padding-top: 0;
-  }
-
-  &__header {
-    display: flex;
-    flex-direction: column;
-    padding: u.rem-calc(16);
-    flex: 1;
-  }
-
-  &__title {
-    font-size: sg.font-size(regular);
-    font-family: sg.font-family(barlow);
-    font-weight: 700;
-
-    @include sg.min(tabletLandscape) {
-      font-size: sg.font-size(mediuml);
-    }
-  }
-
-  &__price {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: sg.spacing(xxsmall);
-    margin: u.rem-calc(12) 0;
-    padding-top: u.rem-calc(12);
-    border-top: 1px solid #d5d5d2;
-  }
-
-  &__form {
-    display: flex;
-    flex-direction: column;
-    gap: sg.spacing(regular);
-  }
-
-  &__options {
-    display: flex;
-    flex-direction: column;
-    gap: sg.spacing(regular);
-  }
-
-  &__actions {
-    display: flex;
-    flex-direction: column;
-    gap: sg.spacing(small);
-    width: 100%;
-    margin-top: auto;
-
-    & > * {
-      width: 100%;
-    }
-  }
-
-  &__link {
-    font-family: sg.font-family(barlow);
-    font-weight: sg.font-weight(600);
-    font-size: sg.font-size(regular);
-    line-height: sg.line-height('100%');
-    color: sg.color(black-50);
-    text-transform: uppercase;
-    transition: color 0.2s ease;
-
-    @include sg.hover {
-      &:hover {
-        color: sg.color(black);
-      }
+  @include sg.hover {
+    &:hover {
+      color: sg.color(black);
     }
   }
 }
