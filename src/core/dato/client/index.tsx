@@ -44,6 +44,8 @@ export const _makeClient = ({
 
   return createClient({
     url: 'https://graphql.datocms.com',
+    // GraphQL errors arrive as HTTP 200, so Next caches error responses for
+    // this long too. Keep it short.
     fetchOptions: { headers: baseHeaders, next: { revalidate: 60 } },
     requestPolicy: 'network-only',
     exchanges: [
@@ -51,7 +53,10 @@ export const _makeClient = ({
         initialDelayMs: 500,
         maxDelayMs: 30_000,
         maxNumberAttempts: 5,
-        retryIf: (err) => err.message.includes('THROTTLED')
+        // Also retry network failures, such as timeouts or non-JSON 5xx
+        // responses. Static pages fetch during `next build`, so one transient
+        // failure would otherwise fail the deploy.
+        retryIf: (err) => Boolean(err.networkError) || err.message.includes('THROTTLED')
       }),
       errorExchange({
         onError: (error, operation) => {
