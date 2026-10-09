@@ -11,7 +11,7 @@ The translation system automatically discovers and gathers translations for all 
 1. **Build-Time Gathering**: Before each build, the system runs a script that scans `src/components/` for translation files
 2. **Automatic Discovery**: The script finds all `component/translations/*.json` files and groups them by locale
 3. **Merging**: Component translations are merged into the corresponding `src/locales/[locale].json` files
-4. **Cookie-Based Locale Detection**: At runtime, the system reads the locale from a `locale` cookie. If no cookie is present, it defaults to `en` (English)
+4. **Fixed Locale**: The site ships only `en`, so `request.ts` hardcodes it. Don't read the locale from a cookie: `cookies()` opts every route into dynamic rendering and disables page caching. To add locales, use path-based routing instead
 5. **Static Loading**: The merged locale files are loaded statically based on the current locale
 6. **Configuration**: The i18n system is configured via `request.ts` and integrated with Next.js via `next.config.ts`
 
@@ -113,30 +113,18 @@ t('nested.key') // Returns "Nested translation"
 
 ## Locale Detection
 
-The application uses **cookie-based locale detection**. The locale is determined by reading a `locale` cookie from the request:
+The locale is fixed to `en` in `src/i18n/request.ts`. The site ships only English.
 
-- **Cookie Name**: `locale`
-- **Default Locale**: `en` (English) - used if the cookie is not present or invalid
-- **Implementation**: Located in `src/i18n/request.ts` using Next.js `cookies()` API
-
-The locale cookie is read on each request, allowing users to switch languages dynamically. The value is used to load the appropriate translation files for that locale.
-
-**Example cookie values:**
-- `locale=en` → Loads English translations
-- `locale=de` → Loads German translations
-
-To change the locale, set the `locale` cookie to the desired locale code. The change will take effect on the next request.
+Don't read the locale from a cookie or header there. `cookies()` and `headers()` make every page render on every request, which disables page caching (ISR) site-wide. To add locales, use locale-based routing (for example `/[locale]/...` with next-intl's routing), so each locale's pages stay cacheable.
 
 ## Supported Locales
 
-Currently supported locales:
-- `en` (English) - Default
-- `de` (German)
+The site ships `en` (English) only.
 
-To add support for a new locale:
+To serve another locale:
 1. Create translation files with the new locale code (e.g., `fr.json`, `es.json`)
-2. Set the `locale` cookie to the new locale code (e.g., `locale=fr`)
-3. The system will automatically discover and load the new locale files
+2. Add locale-based routing (for example `/[locale]/...` with next-intl's routing), and pass the route's locale to `request.ts`
+3. Don't switch locales with a cookie or header: that disables page caching
 
 ## Examples
 
@@ -216,7 +204,7 @@ src/
 - **Build-Time Gathering**: Translations are gathered before build using `devops/bin/build-locales.ts`
 - **Script Execution**: The script runs automatically before each build via `prebuild` hook, or manually via `pnpm run gather-translations`
 - **Merging Strategy**: Component translations are deep-merged into locale files using `remeda.mergeDeep`
-- **Locale Detection**: Cookie-based locale detection via `cookies()` from `next/headers` in `request.ts`
+- **Locale**: Fixed to `en` in `request.ts`; no `cookies()` or `headers()`, so pages stay cacheable
 - **Error Handling**: Missing translation files for a locale are handled gracefully (component is skipped)
 - **Next.js Integration**: Uses `createNextIntlPlugin()` in `next.config.ts`
 - **Request Config**: Locale messages are loaded statically via `getRequestConfig` in `request.ts`

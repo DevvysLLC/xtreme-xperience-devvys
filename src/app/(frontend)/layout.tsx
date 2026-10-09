@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { CartDrawer } from '../../components/global-cart'
 import { DrawerManager } from '../../components/global-drawer/drawer-manager'
 import { GlobalFooter } from '../../components/global-footer'
@@ -9,6 +10,7 @@ import { GlobalToast } from '../../components/global-toast'
 import { TrackFinderDrawer } from '../../components/global-track-finder/components/drawer'
 import { GlobalTrackFinderStickyBar } from '../../components/global-track-finder/components/sticky-bar'
 import { ENABLE_SEARCH } from '../../config/settings'
+import { QueryChangePublisher } from '../../features/route/query-change'
 
 // Revalidate so document can be cached (helps back/forward cache)
 export const revalidate = 60
@@ -31,6 +33,9 @@ export default function RootLayout({
       <GlobalToast />
       <DrawerManager />
       <GlobalSpeculationRules />
+      <Suspense fallback={null}>
+        <QueryChangePublisher />
+      </Suspense>
     </>
   )
 }

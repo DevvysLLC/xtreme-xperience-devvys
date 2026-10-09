@@ -1,15 +1,12 @@
-import { cookies } from 'next/headers'
 import { getRequestConfig } from 'next-intl/server'
+import messages from '../locales/en.json'
 
-export default getRequestConfig(async () => {
-  const store = await cookies()
-  const currentLocale = store.get('locale')?.value || 'en'
-
-  return {
-    locale: currentLocale,
-    messages: (await import(`../locales/${currentLocale}.json`)).default,
-    interpolation: {
-      escapeValue: true
-    }
+// The site ships a single locale. Reading it from a cookie (via `cookies()`)
+// opted every route into dynamic rendering and disabled page caching.
+export default getRequestConfig(async () => ({
+  locale: 'en',
+  messages,
+  interpolation: {
+    escapeValue: true
   }
-})
+}))
