@@ -4,6 +4,7 @@ import { useForm } from '@tanstack/react-form'
 import clsx from 'clsx'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { BOOKING_LAP_QUANTITY_OPTIONS } from '../../../../config/settings'
 import type { BookingSupercarFragment } from '../../../../core/dato/fragments/booking-config.typegen'
 import { logger } from '../../../../core/logger/logger'
@@ -83,6 +84,8 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
     }
   }, [onClose])
 
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false)
+
   const { data } = useCart()
   const clearCart = useCartClear()
   const { showDialog } = useDialog()
@@ -122,6 +125,21 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
   const id = state.selectedEvent?.model?.rocketRezId ?? null
   const badge = bookingSupercar.badgeOverride ?? null
   const isMulticar = bookingSupercar.isMulticar
+
+  const modalTitle = useMemo(() => {
+    if (bookingSupercar.titleOverride) {
+      return bookingSupercar.titleOverride.replace(/<[^>]*>/g, '').trim()
+    }
+    if (supercar.model?.make && supercar.model?.model) {
+      return `${supercar.model.make} ${supercar.model.model}`.toUpperCase()
+    }
+    return (supercar.model?.title ?? `SUPERCAR ${rocketRezSeatTypeId}`).toUpperCase()
+  }, [bookingSupercar.titleOverride, supercar.model, rocketRezSeatTypeId])
+
+  const lapsText = useMemo(() => {
+    const laps = lapsPerSession ?? (isMulticar ? (bookingSupercar.multicarCount ? bookingSupercar.multicarCount * 4 : 8) : 4)
+    return `${laps} total laps on track. `
+  }, [lapsPerSession, isMulticar, bookingSupercar.multicarCount])
 
   const lowestPrice = useMemo(
     () => lowestAvailablePrice(schedules, rocketRezSeatTypeId, isMulticar),
@@ -596,9 +614,13 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
 
         {!soldOut && (
           <div className={styles.card__foot}>
-            <a href="#whats-included" className={styles.card__foot_link}>
+            <button
+              type="button"
+              className={styles.card__foot_link}
+              onClick={() => setIsDetailsOpen(true)}
+            >
               What&apos;s included
-            </a>
+            </button>
             <label className={styles.card__compare}>
               <input type="checkbox" name="compare" />
               <span>Compare</span>
@@ -606,6 +628,87 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
           </div>
         )}
       </article>
+
+      {isDetailsOpen &&
+        typeof document !== 'undefined' &&
+        createPortal(
+          <div
+            className={styles.modal_backdrop}
+            onClick={() => setIsDetailsOpen(false)}
+          >
+            <div
+              className={styles.modal}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby={`modal-title-${rocketRezSeatTypeId}`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className={styles.modal__head}>
+                <h2
+                  id={`modal-title-${rocketRezSeatTypeId}`}
+                  className={styles.modal__title}
+                >
+                  {modalTitle}
+                </h2>
+                <button
+                  type="button"
+                  className={styles.modal__close}
+                  aria-label="Close dialog"
+                  onClick={() => setIsDetailsOpen(false)}
+                >
+                  ×
+                </button>
+              </div>
+              <div className={styles.modal__body}>
+                <div className={styles.modal__visual}>
+                  {thumbnail && <CoreImage data={thumbnail} />}
+                </div>
+                <p className={styles.modal__lead}>
+                  <strong>
+                    {bookingSupercar.isRideAlong
+                      ? 'Ride with a professional driver.'
+                      : isMulticar
+                        ? 'Experience more than one dream car.'
+                        : 'You drive. A professional instructor rides with you.'}
+                  </strong>
+                </p>
+                <p className={styles.modal__desc}>
+                  {lapsText}
+                  {bookingSupercar.isRideAlong
+                    ? 'A passenger experience.'
+                    : 'No prior track experience needed. Instruction included.'}
+                </p>
+
+                <div className={styles.modal__price}>
+                  {renderPrice(false)}
+                </div>
+
+                <div className={styles.modal__notice}>
+                  {isMulticar && (bookingSupercar.titleOverride?.toLowerCase().includes('fleet') || bookingSupercar.multicarCount === 8)
+                    ? 'Includes all 8 cars, track insurance, a lead-car ride, Full-Throttle and skip-the-line access.'
+                    : bookingSupercar.isRideAlong
+                      ? 'Confirm passenger eligibility in the live booking flow.'
+                      : 'Required coverage is additional and shown before you continue. Photos, video, and ride-alongs are optional.'}
+                </div>
+
+                <button
+                  type="button"
+                  className={styles.modal__cta}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setIsDetailsOpen(false)
+                    if (!isSelected) {
+                      toggleSelected()
+                    }
+                  }}
+                >
+                  Choose a time
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
 
       {!soldOut && isSelected && (
         <section

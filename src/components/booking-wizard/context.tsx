@@ -143,13 +143,13 @@ export const BookingWizardProvider = ({ children }: Props) => {
 
   // Auto-select first available day when event data loads and no day is selected
   useEffect(() => {
+    const firstDate = resolvedEventData?.schedules?.[0]?.date
     if (
-      resolvedEventData?.schedules &&
-      resolvedEventData.schedules.length > 0 &&
+      firstDate &&
       selectedDayDateOverride === null &&
       persistedSelectedDayDate === null
     ) {
-      setSelectedDayDateOverride(resolvedEventData.schedules[0].date)
+      setSelectedDayDateOverride(firstDate)
     }
   }, [
     resolvedEventData?.schedules,

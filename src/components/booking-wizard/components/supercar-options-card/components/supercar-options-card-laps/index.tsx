@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl'
 import { useEffect } from 'react'
 import { BOOKING_LAP_QUANTITY_OPTIONS } from '../../../../../../config/settings'
 import type { RocketRezEventScheduleItem } from '../../../../../../io/types'
-import { getBookingLapsPerSession } from '../../../../../../utils/get-booking-laps-per-session'
+// import { getBookingLapsPerSession } from '../../../../../../utils/get-booking-laps-per-session'
 import { isScheduleSoldOut } from '../../../../../../utils/is-schedule-sold-out'
 import { useBookingWizardState } from '../../../../context'
 import { useSupercarOptionsCard } from '../../context'
@@ -86,16 +86,16 @@ export const SupercarOptionsCardLaps: React.FC<Props> = ({
   const t = useTranslations(
     'booking_wizard.pages.date_and_car.supercar_options_card'
   )
-  const lapsPerSession = getBookingLapsPerSession({
-    configData: wizardState.configData,
-    selectedEventId: wizardState.selectedEvent?.id
-  })
-  const selectedSessions = state.selectedLapQuantityOption.quantity
-  const selectedLaps = selectedSessions * lapsPerSession
-  const legendDescription = t('description.selected_laps', {
-    laps: selectedLaps,
-    sessions: selectedSessions
-  })
+  // const lapsPerSession = getBookingLapsPerSession({
+  //   configData: wizardState.configData,
+  //   selectedEventId: wizardState.selectedEvent?.id
+  // })
+  // const selectedSessions = state.selectedLapQuantityOption.quantity
+  // const selectedLaps = selectedSessions * lapsPerSession
+  // const legendDescription = t('description.selected_laps', {
+  //   laps: selectedLaps,
+  //   sessions: selectedSessions
+  // })
 
   useEffect(() => {
     let maxAvailable = 0
@@ -159,7 +159,7 @@ export const SupercarOptionsCardLaps: React.FC<Props> = ({
     <fieldset className={styles.laps}>
       <legend className={styles.laps__legend}>
         <span className={styles.laps__title}>{t('label.quantity')}</span>
-        <span className={styles.laps__description}>{legendDescription}</span>
+        {/* <span className={styles.laps__description}>{legendDescription}</span> */}
       </legend>
       <div className={styles.laps__options}>
         {BOOKING_LAP_QUANTITY_OPTIONS.map((option) => {
