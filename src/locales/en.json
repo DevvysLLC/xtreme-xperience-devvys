@@ -203,6 +203,7 @@
       },
       "date_and_car": {
         "title": "Select Car, Date, & Time",
+        "description": "Choose a date, then select your car and session.",
         "footer": {
           "title": "Drive Your Dream Supercar",
           "subtitle": {
@@ -231,7 +232,6 @@
         "validation": {
           "required": "Date and car is required"
         },
-        "description_dynamic": "<link>{location}</link> • {date}",
         "progress_bar": {
           "title": "Choose Date & Car"
         },

@@ -137,7 +137,8 @@
           "title": "Choose Date & Car"
         },
         "title": "Select Car, Date, & Time",
-        "description_dynamic": "<link>{location}</link> • {date}",
+        "description": "Choose a date, then select your car and session.",
+        "description_dynamic": "Choose a date, then select your car and session.",
         "footer": {
           "title": "Drive Your Dream Supercar",
           "subtitle": {

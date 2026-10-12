@@ -213,3 +213,63 @@ export const sortSupercarsByAvailabilityAndPrice = (
     })
     .map(({ supercar }) => supercar)
 }
+
+/**
+ * Sorts supercars by availability first (available first, sold out at the bottom),
+ * and then by price according to direction ('low' for price low to high, 'high' for price high to low).
+ */
+export const sortSupercarsByPrice = (
+  supercars: BookingSupercarFragment[],
+  schedules: RocketRezEventScheduleItem[],
+  direction: 'low' | 'high',
+  getSeatTypeId: (supercar: BookingSupercarFragment) => number = (supercar) =>
+    Number(supercar.rocketRezSeatTypeId)
+): BookingSupercarFragment[] => {
+  const getRateIdsToCheck = (supercar: BookingSupercarFragment) => {
+    const rateId = getSeatTypeId(supercar)
+    if (!supercar.isMulticar || schedules.length === 0) {
+      return rateId
+    }
+    const firstAvailableSchedule = schedules.find(
+      (schedule) =>
+        schedule.scheduleStatus === RocketRezScheduleStatus.AVAILABLE
+    )
+    if (!firstAvailableSchedule) {
+      return rateId
+    }
+    return getRequiredRateIdsForSupercar(firstAvailableSchedule, rateId, true)
+  }
+
+  return [...supercars]
+    .map((supercar, index) => {
+      const seatTypeId = getSeatTypeId(supercar)
+      const rateIdsToCheck = getRateIdsToCheck(supercar)
+      const soldOut = isScheduleSoldOut(schedules, rateIdsToCheck)
+      const lowestSchedulePrice = getLowestSchedulePriceForRateId(
+        schedules,
+        seatTypeId
+      )
+      const fallbackPrice =
+        supercar.priceOverride?.price != null
+          ? supercar.priceOverride.price / 100
+          : supercar.supercar.model?.displayPrice?.price ??
+            (direction === 'low' ? Number.POSITIVE_INFINITY : 0)
+      const sortPrice = lowestSchedulePrice ?? fallbackPrice
+
+      return { supercar, soldOut, sortPrice, index }
+    })
+    .sort((a, b) => {
+      if (a.soldOut !== b.soldOut) {
+        return a.soldOut ? 1 : -1
+      }
+
+      if (a.sortPrice !== b.sortPrice) {
+        return direction === 'low'
+          ? a.sortPrice - b.sortPrice
+          : b.sortPrice - a.sortPrice
+      }
+
+      return a.index - b.index
+    })
+    .map(({ supercar }) => supercar)
+}

@@ -1,15 +1,18 @@
 'use client'
 
 import clsx from 'clsx'
+import { format } from 'date-fns'
 import { useEffect, useMemo, useState } from 'react'
-import { ROUTES } from '../../../../config/routes'
 import type { BookingSupercarGroupFragment } from '../../../../core/dato/fragments/booking-config.typegen'
+import { parseLocalDate } from '../../../../utils/date-time'
 import { getSeatTypeIdWithOverride } from '../../../../utils/get-seat-type-id-with-override'
 import {
   filterSupercarsByEventAssignment,
-  sortSupercarsByAvailability
+  sortSupercarsByAvailability,
+  sortSupercarsByPrice
 } from '../../../../utils/sort-supercars-by-availability'
 import { useBookingWizardState } from '../../context'
+import { GiftCardShop } from '../gift-card-shop'
 import { SupercarOptionsCard } from '../supercar-options-card'
 import styles from './style.module.scss'
 
@@ -17,19 +20,25 @@ type Props = {
   initialTabIndex?: number
 }
 
+const GIFTS_TAB_INDEX = -1
+
 export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
   const { state, setActiveTabIndex } = useBookingWizardState()
   const [selectedCarKey, setSelectedCarKey] = useState<string | null>(null)
+  const [sortBy, setSortBy] = useState<'featured' | 'low' | 'high'>('featured')
   const supercarGroups: BookingSupercarGroupFragment[] =
     state.configData?.supercars ?? []
   const contextActiveTabIndex = state?.activeTabIndex ?? 0
   const activeTabIndex =
-    contextActiveTabIndex !== 0
-      ? contextActiveTabIndex
-      : initialTabIndex >= 0 && initialTabIndex < supercarGroups.length
-        ? initialTabIndex
-        : 0
-  const activeGroup = supercarGroups[activeTabIndex]
+    contextActiveTabIndex === GIFTS_TAB_INDEX
+      ? GIFTS_TAB_INDEX
+      : contextActiveTabIndex !== 0
+        ? contextActiveTabIndex
+        : initialTabIndex >= 0 && initialTabIndex < supercarGroups.length
+          ? initialTabIndex
+          : 0
+  const isGiftsTab = activeTabIndex === GIFTS_TAB_INDEX
+  const activeGroup = isGiftsTab ? null : supercarGroups[activeTabIndex]
   const selectedEventId = state.selectedEvent?.model?.rocketRezId ?? null
 
   // Reset selected card when active tab or day changes
@@ -69,6 +78,20 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
         })
     )
 
+    if (sortBy === 'low' || sortBy === 'high') {
+      return sortSupercarsByPrice(
+        filtered,
+        schedules,
+        sortBy,
+        (supercar) =>
+          getSeatTypeIdWithOverride({
+            defaultSeatTypeId: supercar.rocketRezSeatTypeId,
+            overrides: supercar.rocketRezSeatTypeIdOverrides,
+            selectedEventId
+          })
+      )
+    }
+
     return sortSupercarsByAvailability(filtered, schedules, (supercar) =>
       getSeatTypeIdWithOverride({
         defaultSeatTypeId: supercar.rocketRezSeatTypeId,
@@ -76,7 +99,30 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
         selectedEventId
       })
     )
-  }, [activeGroup?.supercars, schedules, allEventSchedules, selectedEventId])
+  }, [activeGroup?.supercars, schedules, allEventSchedules, selectedEventId, sortBy])
+
+  const formattedDate = useMemo(() => {
+    if (!state.selectedDayDate) {
+      return null
+    }
+    try {
+      const parsed = parseLocalDate(state.selectedDayDate)
+      return format(parsed, 'EEE, MMM d')
+    } catch {
+      return state.selectedDayDate
+    }
+  }, [state.selectedDayDate])
+
+  const resultTypeLabel = useMemo(() => {
+    const title = activeGroup?.title?.toLowerCase() ?? ''
+    if (title.includes('package')) {
+      return 'packages'
+    }
+    if (title.includes('ride')) {
+      return 'ride-alongs'
+    }
+    return 'supercars'
+  }, [activeGroup?.title])
 
   useEffect(() => {
     if (
@@ -114,12 +160,12 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
                   type="button"
                   className={clsx(
                     styles.tabs__button,
-                    activeTabIndex === index && styles.active
+                    !isGiftsTab && activeTabIndex === index && styles.active
                   )}
                   onClick={() => {
                     handleTabClick(index)
                   }}
-                  aria-pressed={activeTabIndex === index}
+                  aria-pressed={!isGiftsTab && activeTabIndex === index}
                 >
                   <span className={styles.tabs__tab_title}>{title}</span>
                   <span className={styles.tabs__tab_description}>{description}</span>
@@ -128,64 +174,94 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
             )
           })}
           <li>
-            <a
-              href={ROUTES.FRONTEND.GIFT_CARDS}
-              className={styles.tabs__button}
-              style={{ textDecoration: 'none' }}
+            <button
+              type="button"
+              className={clsx(
+                styles.tabs__button,
+                isGiftsTab && styles.active
+              )}
+              onClick={() => {
+                handleTabClick(GIFTS_TAB_INDEX)
+              }}
+              aria-pressed={isGiftsTab}
               data-tab="gifts"
             >
               <span className={styles.tabs__tab_title}>Gift cards</span>
               <span className={styles.tabs__tab_description}>Let them choose</span>
-            </a>
+            </button>
           </li>
         </ul>
       </div>
 
-      <div className={styles.filterbar}>
-        <span className={styles.filterbar__count}>
-          {sortedSupercars.length} supercars{state.selectedDayDate ? ` • ${state.selectedDayDate}` : ''}
-        </span>
-      </div>
+      {isGiftsTab ? (
+        <GiftCardShop />
+      ) : (
+        <>
+          <div className={styles.filterbar}>
+            <span className={styles.filterbar__count}>
+              {sortedSupercars.length} {resultTypeLabel}{formattedDate ? ` · ${formattedDate}` : ''}
+            </span>
+            <div className={styles.filterbar__sort}>
+              <label htmlFor="supercar-sort-select">Sort: </label>
+              <select
+                id="supercar-sort-select"
+                aria-label="Sort experiences"
+                value={sortBy}
+                onChange={(e) => {
+                  const val = e.target.value
+                  if (val === 'low' || val === 'high' || val === 'featured') {
+                    setSortBy(val)
+                  }
+                }}
+              >
+                <option value="featured">Featured</option>
+                <option value="low">Price: low to high</option>
+                <option value="high">Price: high to low</option>
+              </select>
+            </div>
+          </div>
 
-      <div className={styles.guide}>
-        <p className={styles.guide__intro}>
-          Early sessions cost less. Choose a time for your exact price.
-        </p>
-        <details className={styles.guide__details}>
-          <summary>How savings are calculated</summary>
-          <p>
-            Savings compare your selected price with the highest standard price for that session.
-          </p>
-        </details>
-      </div>
+          <div className={styles.guide}>
+            <p className={styles.guide__intro}>
+              Early sessions cost less. Choose a time for your exact price.
+            </p>
+            <details className={styles.guide__details}>
+              <summary>How savings are calculated</summary>
+              <p>
+                Savings compare your selected price with the highest Thursday–Sunday standard price. For packages, the reference is the highest full value, including the listed inclusions. Starting prices use 9:00 or 9:30 AM sessions. Coverage is additional except where included in Full Fleet.
+              </p>
+            </details>
+          </div>
 
-      <div className={styles.supercars}>
-        {sortedSupercars.map((option, index) => {
-          const seatTypeId = getSeatTypeIdWithOverride({
-            defaultSeatTypeId: option.rocketRezSeatTypeId,
-            overrides: option.rocketRezSeatTypeIdOverrides,
-            selectedEventId
-          })
-          const carKey = `${activeTabIndex}-${seatTypeId}-${index}`
-          const isSelected = selectedCarKey === carKey
+          <div className={styles.supercars}>
+            {sortedSupercars.map((option, index) => {
+              const seatTypeId = getSeatTypeIdWithOverride({
+                defaultSeatTypeId: option.rocketRezSeatTypeId,
+                overrides: option.rocketRezSeatTypeIdOverrides,
+                selectedEventId
+              })
+              const carKey = `${activeTabIndex}-${seatTypeId}-${index}`
+              const isSelected = selectedCarKey === carKey
 
-          return (
-            <SupercarOptionsCard
-              key={carKey}
-              cardIndex={index}
-              rocketRezSeatTypeId={seatTypeId}
-              supercar={option}
-              isSelected={isSelected}
-              onToggleSelect={() => {
-                setSelectedCarKey((prev) => (prev === carKey ? null : carKey))
-              }}
-              onClose={() => {
-                setSelectedCarKey(null)
-              }}
-            />
-          )
-        })}
-      </div>
+              return (
+                <SupercarOptionsCard
+                  key={carKey}
+                  cardIndex={index}
+                  rocketRezSeatTypeId={seatTypeId}
+                  supercar={option}
+                  isSelected={isSelected}
+                  onToggleSelect={() => {
+                    setSelectedCarKey((prev) => (prev === carKey ? null : carKey))
+                  }}
+                  onClose={() => {
+                    setSelectedCarKey(null)
+                  }}
+                />
+              )
+            })}
+          </div>
+        </>
+      )}
     </div>
   )
 }

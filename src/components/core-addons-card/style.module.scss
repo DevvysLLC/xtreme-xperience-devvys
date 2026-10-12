@@ -42,8 +42,10 @@
   &__media {
     position: relative;
     width: 100%;
+    aspect-ratio: 420 / 240;
     
     #{$card}--featured & {
+      aspect-ratio: auto;
       height: 100%;
       img {
         min-height: u.rem-calc(270);
@@ -93,8 +95,8 @@
   &__header {
     display: flex;
     justify-content: space-between;
-    padding: 0;
-    border: none;
+    padding-bottom: sg.spacing(regular);
+    border-bottom: u.rem-calc(1) dashed sg.color(border-dark);
     flex-wrap: wrap;
     gap: u.rem-calc(12);
   }

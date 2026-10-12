@@ -35,9 +35,9 @@ export const CartAside: FC<Props> = ({ className }) => {
             <p className={styles.cart__empty_eyebrow}>Your cart is ready.</p>
             <p className={styles.cart__empty_desc}>Choose a car, date and start time.</p>
             <ul className={styles.cart__empty_reasons}>
-              <li>Professional Instruction included</li>
-              <li>Track supervision, Pit crew and helmets</li>
-              <li>450,000+ Experiences Delivered</li>
+              <li>Professional instruction included</li>
+              <li>Real supercars. Real racetracks.</li>
+              <li>760,000+ Experiences Delivered</li>
             </ul>
           </div>
         </div>
