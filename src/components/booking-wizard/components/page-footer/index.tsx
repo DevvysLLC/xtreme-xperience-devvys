@@ -46,12 +46,16 @@ export const PageFooter: React.FC<Props> = ({
 }) => {
   const router = useRouter()
   const { data: cartData } = useCart()
-  const subtotal = cartData?.cartData?.subTotal ?? 0
   const discountTotal = cartData?.cartData?.discountTotal ?? 0
-  const metadata = cartData?.metadata ?? []
+
+  const subtotal = useMemo(() => {
+    const items = cartData?.cartData?.lineItems ?? []
+    return items.reduce((acc, item) => acc + item.price * (item.quantity ?? 1), 0)
+  }, [cartData?.cartData?.lineItems])
 
   const totalSavings = useMemo(() => {
     let metadataSavings = 0
+    const metadata = cartData?.metadata ?? []
     for (const item of metadata) {
       const props = item.properties
       const itemSavings =
@@ -65,8 +69,8 @@ export const PageFooter: React.FC<Props> = ({
         metadataSavings += itemSavings
       }
     }
-    return Math.max(discountTotal, metadataSavings)
-  }, [metadata, discountTotal])
+    return Math.round(Math.max(discountTotal, metadataSavings))
+  }, [cartData?.metadata, discountTotal])
 
   const handleBack =
     onBack ??

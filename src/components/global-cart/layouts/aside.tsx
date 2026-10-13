@@ -14,9 +14,12 @@ type Props = {
 export const CartAside: FC<Props> = ({ className }) => {
   const { data, isLoading, isRefreshing } = useCart()
   const { data: cartState } = useCartState()
-  const lineItems = data?.cartData?.lineItems ?? []
+  const rawLineItems = data?.cartData?.lineItems
+  const lineItems = rawLineItems ?? []
   const isEmpty = lineItems.length === 0
-  const subtotal = data?.cartData?.subTotal ?? 0
+  const subtotal = useMemo(() => {
+    return (rawLineItems ?? []).reduce((acc, item) => acc + item.price * (item.quantity ?? 1), 0)
+  }, [rawLineItems])
   const discountTotal = data?.cartData?.discountTotal ?? 0
 
   // Calculate dynamic savings from metadata
@@ -37,7 +40,7 @@ export const CartAside: FC<Props> = ({ className }) => {
         }
       }
     }
-    return Math.max(discountTotal, metadataSavings)
+    return Math.round(Math.max(discountTotal, metadataSavings))
   }, [cartState?.metadata, discountTotal])
 
   if (isEmpty) {
