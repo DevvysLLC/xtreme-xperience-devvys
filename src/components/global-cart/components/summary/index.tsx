@@ -1,5 +1,6 @@
 'use client'
 
+import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { type FC, useMemo } from 'react'
 import { useBooking } from '../../../../features/booking'
@@ -13,6 +14,7 @@ import { CouponForm } from '../coupon-form'
 import { CouponRemove } from '../coupon-remove'
 import { CartExpiry } from '../expiry'
 import { CartLocation } from '../location'
+import { CartLineItems } from '../items'
 import styles from './style.module.scss'
 
 const getTaxAmount = (tax: unknown): number => {
@@ -25,9 +27,13 @@ const getTaxAmount = (tax: unknown): number => {
 
 export const CartSummary: FC = () => {
   const t = useTranslations('global_cart')
+  const pathname = usePathname()
+  const isReviewPage = pathname?.includes('/review')
   const { data: booking } = useBooking()
   const { data: cart } = useCart()
   const track = booking?.track
+  const rawLineItems = cart?.cartData?.lineItems
+  const lineItems = useMemo(() => rawLineItems ?? [], [rawLineItems])
   const subtotal = useCartLineItemsTotal(cart?.cartData?.lineItems)
   const ticketingFee = cart?.cartData?.variableFeeTotal ?? 0
   const total = cart?.cartData?.total ?? 0
@@ -84,14 +90,28 @@ export const CartSummary: FC = () => {
     return Math.round(Math.max(discountTotal, metadataSavings))
   }, [cartState?.metadata, discountTotal])
 
+  const experienceItems = useMemo(() => {
+    return lineItems.filter((item) => item.type !== 'insurance')
+  }, [lineItems])
+
+  const insuranceItems = useMemo(() => {
+    return lineItems.filter((item) => item.type === 'insurance')
+  }, [lineItems])
+
   return (
     <div className={styles.summary}>
       <h2 className={styles.summary__title}>{t('summary.title')}</h2>
 
-      {track && (
+      {track && !isReviewPage && (
         <>
           <hr className={styles.summary__divider} />
           <CartLocation track={track} />
+          <CartExpiry />
+        </>
+      )}
+
+      {track && isReviewPage && (
+        <>
           <CartExpiry />
         </>
       )}
@@ -108,9 +128,26 @@ export const CartSummary: FC = () => {
         </div>
       )}
 
+      {isReviewPage && experienceItems.length > 0 && (
+        <>
+          <hr className={styles.summary__divider} />
+          <CartLineItems lineItems={experienceItems} compact={true} />
+        </>
+      )}
+
+      {isReviewPage && insuranceItems.length > 0 && (
+        <>
+          <hr className={styles.summary__divider} />
+          <div className={styles.summary__sectionHeader}>
+            COVERAGE &amp; ADD-ONS
+          </div>
+          <CartLineItems lineItems={insuranceItems} compact={true} />
+        </>
+      )}
+
       <hr className={styles.summary__divider} />
 
-      <div className={styles.summary__data}>
+      <div className={`${styles.summary__data} ${styles['summary__data--subtotal']}`}>
         <strong className={styles.summary__label}>
           {t('summary.subtotal')}
         </strong>
@@ -146,19 +183,22 @@ export const CartSummary: FC = () => {
       )}
 
       {houseServiceChargeTotal > 0 && (
-        <div className={styles.summary__data}>
-          <span className={styles.summary__label}>
-            {t('summary.house_service_charge')}
-          </span>
+        <>
+          {totalSavings === 0 && <hr className={styles.summary__divider} />}
+          <div className={styles.summary__data}>
+            <span className={styles.summary__label}>
+              {t('summary.house_service_charge')}
+            </span>
 
-          <CoreRocketRezPrice
-            className={styles.summary__value}
-            data={{
-              id: 'house-service-charge-total',
-              price: houseServiceChargeTotal
-            }}
-          />
-        </div>
+            <CoreRocketRezPrice
+              className={styles.summary__value}
+              data={{
+                id: 'house-service-charge-total',
+                price: houseServiceChargeTotal
+              }}
+            />
+          </div>
+        </>
       )}
 
       <div className={styles.summary__data}>

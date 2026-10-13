@@ -23,6 +23,7 @@ type GetAddToCartCarLineItemMetadataProps = {
   lapsPerSession?: number | null
   referenceValue?: number | null
   savings?: number | null
+  seatTypeId?: number | null
 }
 
 export const getAddToCartLineItemCarMetadata = ({
@@ -32,7 +33,8 @@ export const getAddToCartLineItemCarMetadata = ({
   bookingSupercar,
   lapsPerSession,
   referenceValue,
-  savings
+  savings,
+  seatTypeId
 }: GetAddToCartCarLineItemMetadataProps): CartLineItemMetadata => {
   const key = getAddToCartLineItemWriteMetadataKey({ lineItem })
   const isoDate = userSelectionState.date ?? ''
@@ -49,6 +51,9 @@ export const getAddToCartLineItemCarMetadata = ({
       : (supercar.model?.title ?? ''))
 
   const finalTitle = title || (bookingSupercar?.isMulticar ? 'Package' : '')
+  const resolvedSeatTypeId =
+    seatTypeId || lineItem.id || lineItem.rateId || null
+
   const metadata = {
     key,
     type: CartLineItemMetadataPropertiesTypeSchema.enum.car,
@@ -66,7 +71,7 @@ export const getAddToCartLineItemCarMetadata = ({
     multicarCount: bookingSupercar?.multicarCount ?? null,
     properties: {
       date: isoDate,
-      seatTypeId: lineItem.id || lineItem.rateId || null,
+      seatTypeId: resolvedSeatTypeId,
       lapsPerSession: resolvedLapsPerSession,
       laps: (lineItem.quantity ?? 0) * resolvedLapsPerSession,
       referenceValue: referenceValue ?? null,

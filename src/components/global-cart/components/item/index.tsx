@@ -223,23 +223,35 @@ export const CartLineItem: FC<Props> = ({
             )}
           </div>
 
-          {!readOnly && !isInsurance && (
+          {!readOnly && (
             <div className={styles.CartLineItemCompact__actions}>
-              <button
-                type="button"
-                className={styles.CartLineItemCompact__actionBtn}
-                onClick={handleEdit}
-              >
-                Edit
-              </button>
-              <button
-                type="button"
-                className={styles.CartLineItemCompact__actionBtn}
-                onClick={handleRemove}
-                aria-label={t('item.remove')}
-              >
-                {t('item.remove')}
-              </button>
+              {isInsurance ? (
+                <button
+                  type="button"
+                  className={styles.CartLineItemCompact__actionBtn}
+                  onClick={() => router.push(ROUTES.BOOKING.COVERAGE_OPTIONS)}
+                >
+                  Edit coverage
+                </button>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    className={styles.CartLineItemCompact__actionBtn}
+                    onClick={handleEdit}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.CartLineItemCompact__actionBtn}
+                    onClick={handleRemove}
+                    aria-label={t('item.remove')}
+                  >
+                    {t('item.remove')}
+                  </button>
+                </>
+              )}
             </div>
           )}
         </div>

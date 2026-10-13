@@ -120,27 +120,14 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
       let targetGroupIdx = -1
       let targetCarIndex = -1
 
-      // Search in current group first
-      const foundCurrentIndex = sortedSupercars.findIndex((s) => {
-        const id = getSeatTypeIdWithOverride({
-          defaultSeatTypeId: s.rocketRezSeatTypeId,
-          overrides: s.rocketRezSeatTypeIdOverrides,
-          selectedEventId
-        })
-        return id === targetSeatTypeId
-      })
-
-      if (foundCurrentIndex >= 0) {
-        targetGroupIdx = activeTabIndex
-        targetCarIndex = foundCurrentIndex
-      } else {
-        // Search in other groups
-        for (let gIdx = 0; gIdx < supercarGroups.length; gIdx++) {
-          const group = supercarGroups[gIdx]
-          if (!group) {
-            continue
-          }
-          const cIdx = group.supercars?.findIndex((s) => {
+      // Search in other groups or current group
+      for (let gIdx = 0; gIdx < supercarGroups.length; gIdx++) {
+        const group = supercarGroups[gIdx]
+        if (!group) {
+          continue
+        }
+        const cIdx =
+          group.supercars?.findIndex((s) => {
             const id = getSeatTypeIdWithOverride({
               defaultSeatTypeId: s.rocketRezSeatTypeId,
               overrides: s.rocketRezSeatTypeIdOverrides,
@@ -148,11 +135,10 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
             })
             return id === targetSeatTypeId
           }) ?? -1
-          if (cIdx >= 0) {
-            targetGroupIdx = gIdx
-            targetCarIndex = cIdx
-            break
-          }
+        if (cIdx >= 0) {
+          targetGroupIdx = gIdx
+          targetCarIndex = cIdx
+          break
         }
       }
 
@@ -164,19 +150,26 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
         setSelectedCarKey(targetCarKey)
       }
 
-      // Schedule scrolling into view and clicking select button if needed
-      setTimeout(() => {
+      // Schedule scrolling into view and opening card schedule
+      const attemptOpen = (attemptsLeft: number) => {
         const cardEl = document.getElementById(`supercar-card-${targetSeatTypeId}`)
         if (cardEl) {
           cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
           const selectBtn = cardEl.querySelector(
             '[class*="card__actions"] button, button[data-style="black"]'
           )
-          if (selectBtn instanceof HTMLButtonElement && !cardEl.className.includes('card--open')) {
+          if (
+            selectBtn instanceof HTMLButtonElement &&
+            !cardEl.className.includes('card--open')
+          ) {
             selectBtn.click()
           }
+        } else if (attemptsLeft > 0) {
+          setTimeout(() => attemptOpen(attemptsLeft - 1), 100)
         }
-      }, 250)
+      }
+
+      setTimeout(() => attemptOpen(5), 150)
     }
 
     const handleOpenSchedule = (event: Event) => {
@@ -202,7 +195,7 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
         if (!isNaN(pendingSeat) && pendingSeat > 0) {
           setTimeout(() => {
             openTarget(pendingSeat)
-          }, 150)
+          }, 200)
         }
       }
     } catch (error) {
@@ -215,7 +208,6 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
     }
   }, [
     activeTabIndex,
-    sortedSupercars,
     supercarGroups,
     selectedEventId,
     setActiveTabIndex

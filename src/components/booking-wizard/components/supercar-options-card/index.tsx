@@ -270,7 +270,8 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
       },
       lapsPerSession,
       referenceValue: refVal > 0 ? refVal : null,
-      savings: carSavings > 0 ? carSavings : null
+      savings: carSavings > 0 ? carSavings : null,
+      seatTypeId: rocketRezSeatTypeId
     })
 
     // For packages, build one line item per rate in the package category,

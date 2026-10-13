@@ -69,7 +69,9 @@ export const CartPage: FC<Props> = ({
           isRefreshing && styles['is-refreshing']
         )}
       >
-        <CartLineItems lineItems={lineItems} readOnly={readOnly} />
+        {showActions && (
+          <CartLineItems lineItems={lineItems} readOnly={readOnly} />
+        )}
 
         {!readOnly && (
           <div className={styles.upsells}>
@@ -104,11 +106,8 @@ export const CartPage: FC<Props> = ({
                 <a href="mailto:info@xxspeed.com">info@xxspeed.com</a> within the eligible window.
               </p>
               <p>
-                After 7 days, experiences are non-refundable.{' '}
-                <strong>
-                  Tickets can be transferred to another eligible participant; rescheduling is
-                  limited to the original event weekend.
-                </strong>
+                After 7 days, experiences are non-refundable. Tickets can be transferred to another eligible participant; rescheduling is
+                limited to the original event weekend.
               </p>
               <p>
                 <a href="/policies" className={styles.policySection__link}>
@@ -118,14 +117,21 @@ export const CartPage: FC<Props> = ({
             </div>
           </details>
 
-          <details className={styles.policySection__accordion}>
+          <details className={styles.policySection__accordion} open>
             <summary className={styles.policySection__summary}>
               Terms &amp; Conditions
             </summary>
             <div className={styles.policySection__content}>
               <p>
-                Please refer to our policies page for full terms and conditions.
-                Drivers must have a valid driver&apos;s license and meet track safety guidelines.
+                Drivers must be 18 or older with a valid driver&apos;s license. Participants must meet eligibility requirements and complete the liability waiver. Driver protection is required for drives.
+              </p>
+              <p>
+                No-shows forfeit their booking. Weather or vehicle availability may affect your reservation; see the full policies for applicable changes and restrictions.
+              </p>
+              <p>
+                <a href="/terms" className={styles.policySection__link}>
+                  Read full Terms &amp; Conditions &nearr;
+                </a>
               </p>
             </div>
           </details>

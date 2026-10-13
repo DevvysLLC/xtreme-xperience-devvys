@@ -21,26 +21,37 @@
   &__left {
     display: flex;
     align-items: center;
-    gap: sg.spacing(large);
+    gap: sg.spacing(small);
+    min-width: 0;
+
+    @include sg.min(tabletLandscape) {
+      gap: sg.spacing(large);
+    }
   }
 
   &__back {
     display: flex;
     align-items: center;
+    flex-shrink: 0;
 
     &_button {
       display: inline-flex;
       align-items: center;
-      gap: u.rem-calc(6);
+      gap: u.rem-calc(4);
       background: none;
       border: none;
       padding: 0;
       cursor: pointer;
       font-family: sg.font-family(barlow);
-      font-size: u.rem-calc(14);
+      font-size: u.rem-calc(13);
       font-weight: 700;
       color: #111;
       text-transform: none;
+
+      @include sg.min(tabletLandscape) {
+        font-size: u.rem-calc(14);
+        gap: u.rem-calc(6);
+      }
 
       &:hover {
         opacity: 0.8;
@@ -48,7 +59,7 @@
     }
 
     &_arrow {
-      font-size: u.rem-calc(16);
+      font-size: u.rem-calc(15);
       line-height: 1;
     }
 
@@ -61,28 +72,50 @@
   &__pricing {
     display: flex;
     align-items: baseline;
-    gap: u.rem-calc(6);
+    gap: u.rem-calc(4);
     font-family: sg.font-family(barlow);
+    min-width: 0;
+    white-space: nowrap;
+
+    @include sg.min(tabletLandscape) {
+      gap: u.rem-calc(6);
+    }
   }
 
   &__pricing_label {
-    font-size: u.rem-calc(13);
+    font-size: u.rem-calc(12);
     color: #555;
     font-weight: 500;
+
+    @include sg.min(tabletLandscape) {
+      font-size: u.rem-calc(13);
+    }
   }
 
   &__pricing_value {
-    font-size: u.rem-calc(22);
+    font-size: u.rem-calc(18);
     font-weight: 800;
     color: #111;
     font-family: sg.font-family(barlow);
+
+    @include sg.min(tabletLandscape) {
+      font-size: u.rem-calc(22);
+    }
   }
 
   &__savings {
-    font-size: u.rem-calc(12);
+    font-size: u.rem-calc(11);
     color: #ff6900;
     font-weight: 700;
-    margin-left: u.rem-calc(4);
+    margin-left: u.rem-calc(2);
+    white-space: normal;
+    display: inline-block;
+
+    @include sg.min(tabletLandscape) {
+      font-size: u.rem-calc(12);
+      margin-left: u.rem-calc(4);
+      white-space: nowrap;
+    }
   }
 
   &__content {
@@ -113,14 +146,17 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    flex-shrink: 0;
   }
 
   &__submit {
     &[data-size='small'] {
-      min-width: u.rem-calc(200);
+      min-width: u.rem-calc(130);
+      padding-inline: u.rem-calc(16);
 
       @include sg.min(tabletLandscape) {
-        min-width: u.rem-calc(260);
+        min-width: u.rem-calc(220);
+        padding-inline: u.rem-calc(28);
       }
     }
   }
