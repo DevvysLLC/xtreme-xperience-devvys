@@ -3,7 +3,7 @@
 import { useForm } from '@tanstack/react-form'
 import clsx from 'clsx'
 import { useTranslations } from 'next-intl'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { BOOKING_LAP_QUANTITY_OPTIONS } from '../../../../config/settings'
 import type { BookingSupercarFragment } from '../../../../core/dato/fragments/booking-config.typegen'
@@ -422,11 +422,15 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
   })
 
   // Reset card state when selected day changes
+  const prevSelectedDayDateRef = useRef(state.selectedDayDate)
   useEffect(() => {
-    setSelectedDaySchedule(null)
-    setSelectedQuantity(1)
-    closeSelected()
-    form.reset()
+    if (prevSelectedDayDateRef.current !== state.selectedDayDate) {
+      prevSelectedDayDateRef.current = state.selectedDayDate
+      setSelectedDaySchedule(null)
+      setSelectedQuantity(1)
+      closeSelected()
+      form.reset()
+    }
   }, [
     state.selectedDayDate,
     form,

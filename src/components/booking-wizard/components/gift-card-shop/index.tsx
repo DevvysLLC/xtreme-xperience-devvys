@@ -48,7 +48,10 @@ export const GiftCardShop: React.FC<Props> = ({ className }) => {
     if (cmsGiftCards && cmsGiftCards.length > 0) {
       return cmsGiftCards
         .map((addon) => {
-          const price = addon.model?.price?.price ?? 0
+          const rawPrice = addon.model?.price?.price ?? 0
+          // In DatoCMS / RocketRez, prices are typically stored in cents (e.g. 10000 = $100).
+          // If rawPrice >= 10000, convert from cents to dollars.
+          const price = rawPrice >= 10000 ? Math.round(rawPrice / 100) : rawPrice
           const fallbackDesc =
             FALLBACK_GIFT_OPTIONS.find(([val]) => val === price)?.[1] ?? ''
           return {
