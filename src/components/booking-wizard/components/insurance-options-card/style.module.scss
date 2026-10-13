@@ -11,7 +11,7 @@
   grid-template-columns: u.rem-calc(32) 1fr 1fr;
   gap: u.rem-calc(12);
   width: 100%;
-  padding: u.rem-calc(20) u.rem-calc(18);
+  padding: u.rem-calc(20) 0;
   border: 1px solid #777;
   background-color: #fff;
   margin: 0;
@@ -30,6 +30,7 @@
   &__title {
     order: 1;
     grid-column: span 2;
+    padding-left: u.rem-calc(18);
 
     @include sg.min(laptopSmall) {
       grid-column: span 1;
@@ -37,16 +38,22 @@
     }
   }
 
+  &__title_no_desc {
+    font-weight: 600;
+    text-wrap: nowrap;
+  }
+
   &__tags {
     order: 2;
     justify-self: flex-end;
+    padding-right: u.rem-calc(18);
 
     @include sg.min(laptopSmall) {
       order: 5;
       align-self: center;
     }
 
-    [class*="root"] {
+    [class*='root'] {
       border-radius: 0;
       padding: u.rem-calc(6) u.rem-calc(14);
       background-color: #e64a19 !important;
@@ -55,13 +62,13 @@
       justify-content: center;
     }
 
-    [class*="label"] {
-      font-family: sg.font-family(barlow-semi-condensed);
-      font-size: u.rem-calc(11);
-      font-weight: 700;
+    [class*='label'] {
+      // font-family: sg.font-family(barlow-semi-condensed);
+      font-size: u.rem-calc(12);
+      font-weight: 300;
       letter-spacing: u.rem-calc(1);
       text-transform: uppercase;
-      color: #fff !important;
+      color: #111 !important;
     }
   }
 
@@ -112,19 +119,19 @@
       color: #111;
     }
 
-    [class*="root"] {
+    [class*='root'] {
       border-radius: 0;
-      padding: u.rem-calc(3) u.rem-calc(8);
-      background-color: #f1edeb !important;
+      padding: 0;
+      background-color: transparent !important;
     }
 
-    [class*="label"] {
-      font-family: sg.font-family(barlow-semi-condensed);
-      font-size: u.rem-calc(11);
-      font-weight: 700;
+    [class*='label'] {
+      // font-family: sg.font-family(barlow-semi-condensed);
+      font-size: 14px;
+      font-weight: 300;
       letter-spacing: u.rem-calc(0.5);
       text-transform: uppercase;
-      color: #444 !important;
+      color: #111 !important;
     }
   }
 
@@ -155,15 +162,21 @@
   &__description {
     order: 6;
     grid-column: span 3;
-    padding-top: u.rem-calc(10);
+    padding: u.rem-calc(10) u.rem-calc(18) 0;
     border-top: 1px solid #eee;
     margin-top: u.rem-calc(12);
 
     @include sg.min(laptopSmall) {
       order: 6;
       grid-column: span 5;
-      padding-top: u.rem-calc(10);
+      padding: u.rem-calc(10) u.rem-calc(18) 0;
     }
+  }
+
+  &__nodescription {
+    padding: 0;
+    border-top: none;
+    margin-top: 0;
   }
 
   &__label {

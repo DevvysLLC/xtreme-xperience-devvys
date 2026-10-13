@@ -51,7 +51,7 @@ export const InsuranceOptionsCard: React.FC<InsuranceOptionsCardProps> = ({
               isSelected && styles['card--selected']
             )}
           >
-            <div className={styles.card__title}>
+            <div className={`${styles.card__title} ${!description && styles.card__title_no_desc}`}>
               <div className={styles.radio}>
                 <input
                   type="radio"
@@ -133,7 +133,7 @@ export const InsuranceOptionsCard: React.FC<InsuranceOptionsCardProps> = ({
               )}
             </div>
 
-            <div className={styles.card__description}>
+            <div className={`${styles.card__description} ${!description && styles.card__nodescription}`}>
               {description && (
                 <details className={styles.card__details}>
                   <summary className={styles.card__details__summary}>

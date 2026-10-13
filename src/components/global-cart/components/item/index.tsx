@@ -65,8 +65,8 @@ export const CartLineItem: FC<Props> = ({
   if (compact) {
     const isGiftCard =
       lineItem.type === 'giftcard' ||
-      type === 'gift_card' ||
-      lineItem.name?.toLowerCase().includes('gift')
+      (lineItem.name != null && lineItem.name.toLowerCase().includes('gift')) ||
+      (displayTitle != null && displayTitle.toLowerCase().includes('gift'))
     const trackNickname = subtitle || ''
 
     const referenceValue =

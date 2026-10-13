@@ -128,8 +128,11 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
         return
       }
 
-      // If it's a package or car in a different tab, find which group contains this seatTypeId
-      const foundInCurrent = sortedSupercars.some((s) => {
+      let targetGroupIdx = -1
+      let targetCarIndex = -1
+
+      // Search in current group first
+      const foundCurrentIndex = sortedSupercars.findIndex((s) => {
         const id = getSeatTypeIdWithOverride({
           defaultSeatTypeId: s.rocketRezSeatTypeId,
           overrides: s.rocketRezSeatTypeIdOverrides,
@@ -138,23 +141,41 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
         return id === targetSeatTypeId
       })
 
-      if (!foundInCurrent && supercarGroups.length > 0) {
-        const foundGroupIdx = supercarGroups.findIndex((group) =>
-          group.supercars?.some((s) => {
+      if (foundCurrentIndex >= 0) {
+        targetGroupIdx = activeTabIndex
+        targetCarIndex = foundCurrentIndex
+      } else {
+        // Search in other groups
+        for (let gIdx = 0; gIdx < supercarGroups.length; gIdx++) {
+          const group = supercarGroups[gIdx]
+          if (!group) {
+            continue
+          }
+          const cIdx = group.supercars?.findIndex((s) => {
             const id = getSeatTypeIdWithOverride({
               defaultSeatTypeId: s.rocketRezSeatTypeId,
               overrides: s.rocketRezSeatTypeIdOverrides,
               selectedEventId
             })
             return id === targetSeatTypeId
-          })
-        )
-        if (foundGroupIdx >= 0) {
-          setActiveTabIndex(foundGroupIdx)
+          }) ?? -1
+          if (cIdx >= 0) {
+            targetGroupIdx = gIdx
+            targetCarIndex = cIdx
+            break
+          }
         }
       }
 
-      // Schedule opening after tab state / DOM update
+      if (targetGroupIdx >= 0) {
+        if (targetGroupIdx !== activeTabIndex) {
+          setActiveTabIndex(targetGroupIdx)
+        }
+        const targetCarKey = `${targetGroupIdx}-${targetSeatTypeId}-${targetCarIndex}`
+        setSelectedCarKey(targetCarKey)
+      }
+
+      // Schedule scrolling into view and clicking select button if needed
       setTimeout(() => {
         const cardEl = document.getElementById(`supercar-card-${targetSeatTypeId}`)
         if (cardEl) {
