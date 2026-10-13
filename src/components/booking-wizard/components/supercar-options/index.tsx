@@ -37,8 +37,10 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
   const [sortBy, setSortBy] = useState<'featured' | 'low' | 'high'>('featured')
   const [comparedSeatTypeIds, setComparedSeatTypeIds] = useState<number[]>([])
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false)
-  const supercarGroups: BookingSupercarGroupFragment[] =
-    state.configData?.supercars ?? []
+  const supercarGroups: BookingSupercarGroupFragment[] = useMemo(
+    () => state.configData?.supercars ?? [],
+    [state.configData?.supercars]
+  )
   const contextActiveTabIndex = state?.activeTabIndex ?? 0
   const activeTabIndex =
     contextActiveTabIndex === GIFTS_TAB_INDEX
@@ -68,10 +70,7 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
   )
   // Gather all schedules for all days of the event to check if a car is assigned to the event
   const allEventSchedules = useMemo(
-    () =>
-      state.eventData?.schedules?.flatMap(
-        (day: { schedules?: any[] | null }) => day.schedules ?? []
-      ) ?? [],
+    () => state.eventData?.schedules?.flatMap((day) => day.schedules ?? []) ?? [],
     [state.eventData?.schedules]
   )
   // Filter & sort supercars: filter out unassigned cars, and sort sold-out ones to the bottom
@@ -113,6 +112,74 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
       })
     )
   }, [activeGroup?.supercars, schedules, allEventSchedules, selectedEventId, sortBy])
+
+  // Listen for custom event to edit/open a specific car or package schedule
+  useEffect(() => {
+    const handleOpenSchedule = (event: Event) => {
+      if (!(event instanceof CustomEvent)) {
+        return
+      }
+      const eventDetail = event.detail
+      const targetSeatTypeId =
+        'seatTypeId' in eventDetail && typeof eventDetail.seatTypeId === 'number'
+          ? eventDetail.seatTypeId
+          : undefined
+      if (!targetSeatTypeId) {
+        return
+      }
+
+      // If it's a package or car in a different tab, find which group contains this seatTypeId
+      const foundInCurrent = sortedSupercars.some((s) => {
+        const id = getSeatTypeIdWithOverride({
+          defaultSeatTypeId: s.rocketRezSeatTypeId,
+          overrides: s.rocketRezSeatTypeIdOverrides,
+          selectedEventId
+        })
+        return id === targetSeatTypeId
+      })
+
+      if (!foundInCurrent && supercarGroups.length > 0) {
+        const foundGroupIdx = supercarGroups.findIndex((group) =>
+          group.supercars?.some((s) => {
+            const id = getSeatTypeIdWithOverride({
+              defaultSeatTypeId: s.rocketRezSeatTypeId,
+              overrides: s.rocketRezSeatTypeIdOverrides,
+              selectedEventId
+            })
+            return id === targetSeatTypeId
+          })
+        )
+        if (foundGroupIdx >= 0) {
+          setActiveTabIndex(foundGroupIdx)
+        }
+      }
+
+      // Schedule opening after tab state / DOM update
+      setTimeout(() => {
+        const cardEl = document.getElementById(`supercar-card-${targetSeatTypeId}`)
+        if (cardEl) {
+          cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          const selectBtn = cardEl.querySelector(
+            '[class*="card__actions"] button, button[data-style="black"]'
+          )
+          if (selectBtn instanceof HTMLButtonElement && !cardEl.className.includes('card--open')) {
+            selectBtn.click()
+          }
+        }
+      }, 150)
+    }
+
+    window.addEventListener('open-supercar-schedule', handleOpenSchedule)
+    return () => {
+      window.removeEventListener('open-supercar-schedule', handleOpenSchedule)
+    }
+  }, [
+    activeTabIndex,
+    sortedSupercars,
+    supercarGroups,
+    selectedEventId,
+    setActiveTabIndex
+  ])
 
   const formattedDate = useMemo(() => {
     if (!state.selectedDayDate) {
@@ -179,7 +246,9 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
         })
         return resolvedId === seatTypeId
       })
-      if (!option) continue
+      if (!option) {
+        continue
+      }
 
       const isMulticar = option.isMulticar ?? false
       const lowestPrice = lowestAvailablePrice(schedules, seatTypeId, isMulticar)

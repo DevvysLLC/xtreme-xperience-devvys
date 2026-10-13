@@ -66,6 +66,7 @@ export const getAddToCartLineItemCarMetadata = ({
     multicarCount: bookingSupercar?.multicarCount ?? null,
     properties: {
       date: isoDate,
+      seatTypeId: lineItem.id || lineItem.rateId || null,
       lapsPerSession: resolvedLapsPerSession,
       laps: (lineItem.quantity ?? 0) * resolvedLapsPerSession,
       referenceValue: referenceValue ?? null,

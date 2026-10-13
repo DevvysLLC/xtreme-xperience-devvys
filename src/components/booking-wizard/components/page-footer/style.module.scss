@@ -27,6 +27,35 @@
   &__back {
     display: flex;
     align-items: center;
+
+    &_button {
+      display: inline-flex;
+      align-items: center;
+      gap: u.rem-calc(6);
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      font-family: sg.font-family(barlow);
+      font-size: u.rem-calc(14);
+      font-weight: 700;
+      color: #111;
+      text-transform: none;
+
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+
+    &_arrow {
+      font-size: u.rem-calc(16);
+      line-height: 1;
+    }
+
+    &_text {
+      text-decoration: underline;
+      text-underline-offset: u.rem-calc(3);
+    }
   }
 
   &__pricing {

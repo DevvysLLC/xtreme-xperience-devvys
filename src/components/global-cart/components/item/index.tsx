@@ -3,7 +3,8 @@
 import clsx from 'clsx'
 import { format } from 'date-fns'
 import { useTranslations } from 'next-intl'
-import type { FC } from 'react'
+import { type FC, useState } from 'react'
+import { EditGiftCardModal } from '../../../booking-wizard/components/edit-gift-card-modal'
 import { logger } from '../../../../core/logger/logger'
 import { sentenceCase } from '../../../../core/string/sentence-case'
 import {
@@ -59,6 +60,8 @@ export const CartLineItem: FC<Props> = ({
     }
   }
 
+  const [isGiftModalOpen, setIsGiftModalOpen] = useState(false)
+
   if (compact) {
     const isGiftCard =
       lineItem.type === 'giftcard' ||
@@ -86,33 +89,43 @@ export const CartLineItem: FC<Props> = ({
         return
       }
       if (isGiftCard) {
-        // Open gift card shop modal or scroll to gift tab
-        const giftBtn = document.querySelector(
-          'button[data-gift-shop-trigger]'
-        )
-        if (giftBtn instanceof HTMLButtonElement) {
-          giftBtn.click()
-        }
+        setIsGiftModalOpen(true)
         return
       }
 
-      // Scroll to car card and trigger the select button to open inline schedules panel
-      const seatId = lineItem.productId || lineItem.rateId
-      const cardEl = seatId
-        ? document.getElementById(`supercar-card-${seatId}`)
-        : null
+      // Check if metadata has saved seatTypeId, or fallback to lineItem identifiers
+      const rawProps = properties && typeof properties === 'object' ? properties : null
+      const metaSeatId =
+        rawProps && 'seatTypeId' in rawProps && typeof rawProps.seatTypeId === 'number'
+          ? rawProps.seatTypeId
+          : null
+      const seatId = metaSeatId || lineItem.productId || lineItem.rateId
 
-      if (cardEl) {
-        cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
-        const selectBtn = cardEl.querySelector(
-          'button[data-style="black"], [class*="card__actions"] button, button'
+      if (seatId) {
+        // Dispatch custom event to notify SupercarOptions component to switch tabs & open schedules
+        window.dispatchEvent(
+          new CustomEvent('open-supercar-schedule', {
+            detail: {
+              seatTypeId: seatId,
+              isPackage: metadata?.isMulticar ?? false
+            }
+          })
         )
-        if (
-          selectBtn instanceof HTMLButtonElement &&
-          !cardEl.classList.contains('card--open') &&
-          !cardEl.className.includes('card--open')
-        ) {
-          selectBtn.click()
+
+        // Also check if card element is currently in the DOM
+        const cardEl = document.getElementById(`supercar-card-${seatId}`)
+        if (cardEl) {
+          cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          const selectBtn = cardEl.querySelector(
+            'button[data-style="black"], [class*="card__actions"] button, button'
+          )
+          if (
+            selectBtn instanceof HTMLButtonElement &&
+            !cardEl.classList.contains('card--open') &&
+            !cardEl.className.includes('card--open')
+          ) {
+            selectBtn.click()
+          }
         }
       }
     }
@@ -202,6 +215,14 @@ export const CartLineItem: FC<Props> = ({
             </div>
           )}
         </div>
+
+        {isGiftCard && (
+          <EditGiftCardModal
+            isOpen={isGiftModalOpen}
+            lineItem={lineItem}
+            onClose={() => setIsGiftModalOpen(false)}
+          />
+        )}
       </article>
     )
   }

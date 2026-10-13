@@ -98,14 +98,14 @@ export const PageFooter: React.FC<Props> = ({
     <div className={styles.footer}>
       <div className={styles.footer__left}>
         <div className={styles.footer__back}>
-          <CoreCta
+          <button
             type="button"
             onClick={handleBack}
-            layoutType="underline"
-            styleType="black"
-            sizeType="large"
-            text={backText}
-          />
+            className={styles.footer__back_button}
+          >
+            <span className={styles.footer__back_arrow}>&larr;</span>
+            <span className={styles.footer__back_text}>{backText}</span>
+          </button>
         </div>
 
         <div className={styles.footer__pricing}>

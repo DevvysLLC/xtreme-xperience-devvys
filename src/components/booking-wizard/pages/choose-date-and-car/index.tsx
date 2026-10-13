@@ -32,7 +32,7 @@ export const DateAndCarPage = () => {
   const t = useTranslations('booking_wizard.pages.date_and_car')
   const { booking, cart } = useBookingWithCart()
   const { cartData, metadata, contents } = cart ?? {}
-  const { hasCars, totalCars, totalSessions } = contents ?? {}
+  const { hasCars, totalCars } = contents ?? {}
   const { state, setSelectedDayDate } = useBookingWizardState()
   const { showDialog } = useDialog()
   const { showToast } = useToast()
@@ -109,8 +109,8 @@ export const DateAndCarPage = () => {
   const lastAppliedDefaultValuesKeyRef = useRef(resolvedDefaultValuesKey)
 
   const submitButtonText = hasCars
-    ? t('button.book_sessions', { count: totalSessions ?? 0 })
-    : t('button.select_a_drive')
+    ? t('button.continue')
+    : 'CHOOSE A CAR'
 
   const footerSubtitle = hasCars
     ? t('footer.subtitle.cars_added', { count: totalCars ?? 0 })
