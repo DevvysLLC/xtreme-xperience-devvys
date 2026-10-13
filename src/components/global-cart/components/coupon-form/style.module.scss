@@ -12,6 +12,13 @@
     gap: sg.spacing(xxsmall);
   }
 
+  &__label {
+    font-family: sg.font-family(barlow);
+    font-size: u.rem-calc(13);
+    color: #444;
+    font-weight: 500;
+  }
+
   &__row {
     display: flex;
     gap: sg.spacing(xsmall);

@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo } from 'react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { ROUTES } from '../../../../config/routes'
 import { useCart } from '../../../../features/cart'
 import { CoreCta } from '../../../core-cta'
@@ -45,6 +45,7 @@ export const PageFooter: React.FC<Props> = ({
   onSubmit
 }) => {
   const router = useRouter()
+  const pathname = usePathname()
   const { data: cartData } = useCart()
   const discountTotal = cartData?.cartData?.discountTotal ?? 0
 
@@ -110,7 +111,11 @@ export const PageFooter: React.FC<Props> = ({
 
         <div className={styles.footer__pricing}>
           <span className={styles.footer__pricing_label}>
-            {subtotal > 0 ? 'Subtotal' : 'Your booking'}
+            {pathname.includes('/review')
+              ? 'Estimated total before tax'
+              : subtotal > 0
+                ? 'Subtotal'
+                : 'Your booking'}
           </span>
           <strong className={styles.footer__pricing_value}>
             ${subtotal.toLocaleString()}

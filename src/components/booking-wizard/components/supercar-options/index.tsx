@@ -3,6 +3,7 @@
 import clsx from 'clsx'
 import { format } from 'date-fns'
 import { useEffect, useMemo, useState } from 'react'
+import { logger } from '../../../../core/logger/logger'
 import type { BookingSupercarGroupFragment } from '../../../../core/dato/fragments/booking-config.typegen'
 import { parseLocalDate } from '../../../../utils/date-time'
 import { getSeatTypeIdWithOverride } from '../../../../utils/get-seat-type-id-with-override'

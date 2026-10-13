@@ -1,9 +1,13 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import type { FC } from 'react'
+import { type FC, useMemo } from 'react'
 import { useBooking } from '../../../../features/booking'
-import { useCart, useCartLineItemsTotal } from '../../../../features/cart'
+import {
+  useCart,
+  useCartLineItemsTotal,
+  useCartState
+} from '../../../../features/cart'
 import { CoreRocketRezPrice } from '../../../core-rocketrez-price'
 import { CouponForm } from '../coupon-form'
 import { CouponRemove } from '../coupon-remove'
@@ -59,6 +63,27 @@ export const CartSummary: FC = () => {
     0
   )
 
+  const { data: cartState } = useCartState()
+  const totalSavings = useMemo(() => {
+    let metadataSavings = 0
+    if (cartState?.metadata) {
+      for (const item of cartState.metadata) {
+        const props = item.properties
+        const itemSavings =
+          props &&
+          typeof props === 'object' &&
+          'savings' in props &&
+          typeof props.savings === 'number'
+            ? props.savings
+            : 0
+        if (itemSavings > 0) {
+          metadataSavings += itemSavings
+        }
+      }
+    }
+    return Math.round(Math.max(discountTotal, metadataSavings))
+  }, [cartState?.metadata, discountTotal])
+
   return (
     <div className={styles.summary}>
       <h2 className={styles.summary__title}>{t('summary.title')}</h2>
@@ -99,6 +124,27 @@ export const CartSummary: FC = () => {
         />
       </div>
 
+      {totalSavings > 0 && (
+        <div className={styles.summary__savingsBlock}>
+          <div className={styles.summary__savingsHeader}>
+            <span className={styles.summary__savingsTitle}>
+              You saved ${totalSavings.toLocaleString()}
+            </span>
+            <span className={styles.summary__savingsSubtitle}>
+              Included in your prices
+            </span>
+          </div>
+          <details className={styles.summary__savingsDetails}>
+            <summary className={styles.summary__savingsSummary}>
+              See savings details
+            </summary>
+            <div className={styles.summary__savingsContent}>
+              Discounts applied automatically to selected packages and vehicles.
+            </div>
+          </details>
+        </div>
+      )}
+
       {houseServiceChargeTotal > 0 && (
         <div className={styles.summary__data}>
           <span className={styles.summary__label}>
@@ -114,6 +160,23 @@ export const CartSummary: FC = () => {
           />
         </div>
       )}
+
+      <div className={styles.summary__data}>
+        <span className={styles.summary__label}>{t('summary.tax')}</span>
+        <span className={styles.summary__taxNote}>
+          {taxTotal > 0 ? (
+            <CoreRocketRezPrice
+              className={styles.summary__value}
+              data={{
+                id: 'summary-tax',
+                price: taxTotal
+              }}
+            />
+          ) : (
+            'Calculated at checkout'
+          )}
+        </span>
+      </div>
 
       {ticketingFee > 0 && (
         <div className={styles.summary__data}>
@@ -131,7 +194,7 @@ export const CartSummary: FC = () => {
         </div>
       )}
 
-      {discountTotal > 0 && (
+      {discountTotal > 0 && totalSavings === 0 && (
         <div className={styles.summary__data}>
           <span className={styles.summary__label}>{t('summary.discount')}</span>
 
@@ -146,33 +209,26 @@ export const CartSummary: FC = () => {
         </div>
       )}
 
-      {taxTotal > 0 && (
-        <div className={styles.summary__data}>
-          <span className={styles.summary__label}>{t('summary.tax')}</span>
-
-          <CoreRocketRezPrice
-            className={styles.summary__value}
-            data={{
-              id: 'summary-tax',
-              price: taxTotal
-            }}
-          />
-        </div>
-      )}
-
       <hr className={styles.summary__divider} />
 
       <div className={styles.summary__total}>
-        <strong className={styles.summary__label}>{t('summary.total')}</strong>
+        <div className={styles.summary__totalLabelGroup}>
+          <strong className={styles.summary__totalTitle}>Estimated total</strong>
+          <small className={styles.summary__totalSub}>before tax</small>
+        </div>
 
         <CoreRocketRezPrice
-          className={styles.summary__value}
+          className={styles.summary__totalAmount}
           data={{
             id: 'summary-total',
             price: total
           }}
         />
       </div>
+
+      <p className={styles.summary__legalNote}>
+        Sample fees. Final amount including tax requires a live checkout quote.
+      </p>
     </div>
   )
 }

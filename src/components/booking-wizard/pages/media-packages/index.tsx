@@ -76,7 +76,7 @@ export const MediaPackagesPage = () => {
           onBack={handleBack}
           onSubmit={handleSubmit}
           backText={t('button.back')}
-          submitText={t('button.continue')}
+          submitText="REVIEW CART"
           savingText={t('button.saving')}
         />
       </section>

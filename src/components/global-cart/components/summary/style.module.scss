@@ -26,25 +26,115 @@
     align-items: flex-start;
     gap: u.rem-calc(20);
     font-size: u.rem-calc(14);
-    margin: u.rem-calc(15) 0;
+    margin: u.rem-calc(8) 0;
+  }
+
+  &__taxNote {
+    font-size: u.rem-calc(12);
+    color: #666;
+  }
+
+  &__savingsBlock {
+    margin: u.rem-calc(6) 0;
+    display: flex;
+    flex-direction: column;
+    gap: u.rem-calc(4);
+  }
+
+  &__savingsHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  &__savingsTitle {
+    color: #ff6900;
+    font-weight: 700;
+    font-size: u.rem-calc(14);
+  }
+
+  &__savingsSubtitle {
+    color: #666;
+    font-size: u.rem-calc(12);
+  }
+
+  &__savingsDetails {
+    margin-top: u.rem-calc(2);
+
+    summary {
+      font-size: u.rem-calc(12);
+      color: #333;
+      cursor: pointer;
+      list-style: none;
+      display: inline-flex;
+      align-items: center;
+      gap: u.rem-calc(4);
+
+      &::-webkit-details-marker {
+        display: none;
+      }
+
+      &::before {
+        content: '▶';
+        font-size: u.rem-calc(9);
+        display: inline-block;
+        transition: transform 0.2s ease;
+      }
+    }
+
+    &[open] summary::before {
+      transform: rotate(90deg);
+    }
+  }
+
+  &__savingsContent {
+    font-size: u.rem-calc(12);
+    color: #666;
+    margin-top: u.rem-calc(4);
+    padding-left: u.rem-calc(12);
   }
 
   &__total {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    background: #111;
-    color: #fff;
-    padding: u.rem-calc(18);
-    margin: u.rem-calc(20) u.rem-calc(-10) 0;
-    font-size: u.rem-calc(22);
-    border-radius: u.rem-calc(4);
-    
-    small {
-      font-size: u.rem-calc(12);
-      font-weight: 400;
-      display: block;
+    align-items: baseline;
+    margin-top: u.rem-calc(8);
+  }
+
+  &__totalLabelGroup {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__totalTitle {
+    font-size: u.rem-calc(20);
+    font-weight: 700;
+    color: #111;
+    font-family: sg.font-family(barlow);
+  }
+
+  &__totalSub {
+    font-size: u.rem-calc(11);
+    color: #888;
+  }
+
+  &__totalAmount {
+    font-size: u.rem-calc(24);
+    font-weight: 800;
+    color: #111;
+    font-family: sg.font-family(barlow);
+
+    [data-price] {
+      font-size: u.rem-calc(24);
+      font-weight: 800;
     }
+  }
+
+  &__legalNote {
+    font-size: u.rem-calc(11);
+    color: #777;
+    line-height: 1.4;
+    margin: u.rem-calc(12) 0 0;
   }
 
   &__coupons {

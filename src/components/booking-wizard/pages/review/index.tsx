@@ -43,13 +43,17 @@ export const ReviewPage = () => {
   return (
     <BookingLayout>
       <section>
-        <CartPage showActions={false} />
+        <CartPage
+          showActions={false}
+          title="REVIEW YOUR TRACK DAY"
+          description="Check every item, charge and saving before continuing."
+        />
         <PageFooter
           title={t('footer.title')}
           isPending={false}
           onBack={handleBack}
           backText={t('button.back')}
-          submitText={t('button.continue')}
+          submitText="CHECKOUT"
           savingText={t('button.saving')}
           onSubmit={handleSubmit}
         />

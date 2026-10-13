@@ -195,7 +195,7 @@ export const CoreAddToCartForm: FC<CoreAddToCartFormProps> = (props) => {
         styleType={styleType}
         sizeType={sizeType}
         disabled={isPending || hasValidationError}
-        className={styles.form__button}
+        className={clsx(styles.form__button, className)}
       />
 
       {displayError && (

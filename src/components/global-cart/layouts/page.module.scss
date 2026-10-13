@@ -35,14 +35,18 @@
     font-weight: sg.font-weight(400);
     line-height: sg.line-height('100%');
     text-transform: uppercase;
+    letter-spacing: u.rem-calc(0.5);
 
     @include sg.min(tabletLandscape) {
-      font-size: sg.font-size(xlarge);
+      font-size: u.rem-calc(36);
     }
   }
 
   &__description {
-    text-transform: uppercase;
+    font-size: u.rem-calc(14);
+    color: #666;
+    text-transform: none;
+    margin: 0;
   }
 
   &__summary {
@@ -93,13 +97,159 @@
 
   &__title {
     font-family: sg.font-family(anton);
+    font-size: sg.font-size(large);
+    font-weight: sg.font-weight(400);
+    line-height: sg.line-height('100%');
+    text-transform: uppercase;
+    letter-spacing: u.rem-calc(0.5);
+
+    @include sg.min(tabletLandscape) {
+      font-size: u.rem-calc(36);
+    }
+  }
+
+  &__description {
+    font-size: u.rem-calc(14);
+    color: #666;
+    text-transform: none;
+    margin: 0;
+  }
+}
+
+/* ===================================================== */
+/* Upsells */
+/* ===================================================== */
+
+.upsells {
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: u.rem-calc(6);
+    margin-bottom: sg.spacing(medium);
+  }
+
+  &__title {
+    font-family: sg.font-family(anton);
     font-size: sg.font-size(medium);
     font-weight: sg.font-weight(400);
     line-height: sg.line-height('100%');
     text-transform: uppercase;
+    letter-spacing: u.rem-calc(0.5);
 
     @include sg.min(tabletLandscape) {
-      font-size: sg.font-size('28px');
+      font-size: u.rem-calc(26);
+    }
+  }
+
+  &__description {
+    p {
+      margin: 0;
+      font-size: u.rem-calc(14);
+      color: #666;
+    }
+  }
+}
+
+/* ===================================================== */
+/* Before You Finish / Policy Section */
+/* ===================================================== */
+
+.policySection {
+  margin-top: sg.spacing(large);
+  display: flex;
+  flex-direction: column;
+  gap: u.rem-calc(16);
+
+  &__title {
+    font-family: sg.font-family(anton);
+    font-size: u.rem-calc(24);
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: u.rem-calc(0.5);
+    margin: 0 0 u.rem-calc(8);
+  }
+
+  &__accordion {
+    border-bottom: 1px solid #e5e5e5;
+    padding-bottom: u.rem-calc(16);
+
+    &[open] &__summary {
+      margin-bottom: u.rem-calc(12);
+    }
+  }
+
+  &__summary {
+    font-family: sg.font-family(barlow);
+    font-size: u.rem-calc(15);
+    font-weight: 700;
+    color: #111;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: u.rem-calc(8);
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &::before {
+      content: '▶';
+      font-size: u.rem-calc(10);
+      display: inline-block;
+      transition: transform 0.2s ease;
+    }
+  }
+
+  &__accordion[open] &__summary::before {
+    transform: rotate(90deg);
+  }
+
+  &__content {
+    font-family: sg.font-family(barlow);
+    font-size: u.rem-calc(13);
+    line-height: 1.6;
+    color: #444;
+    display: flex;
+    flex-direction: column;
+    gap: u.rem-calc(12);
+
+    p {
+      margin: 0;
+    }
+
+    strong {
+      color: #111;
+      font-weight: 700;
+    }
+
+    a {
+      color: #111;
+      text-decoration: underline;
+
+      &:hover {
+        color: #ff4d00;
+      }
+    }
+  }
+
+  &__link {
+    font-weight: 600;
+  }
+
+  &__contact {
+    font-family: sg.font-family(barlow);
+    font-size: u.rem-calc(13);
+    color: #777;
+    margin-top: u.rem-calc(8);
+
+    a {
+      color: #777;
+      text-decoration: underline;
+
+      &:hover {
+        color: #111;
+      }
     }
   }
 }

@@ -142,21 +142,35 @@ export const CartLineItem: FC<Props> = ({
       }
     }
 
+    const isInsurance = type === 'insurance'
+    const compactDisplayTitle = isInsurance
+      ? 'Base Driver protection'
+      : displayTitle
+
     return (
-      <article className={styles.CartLineItemCompact}>
+      <article className={clsx(styles.CartLineItemCompact, isInsurance && styles['CartLineItemCompact--insurance'])}>
         <div className={styles.CartLineItemCompact__media}>
-          <img
-            src={image || '/images/fallback.png'}
-            alt={displayTitle}
-            className={styles.CartLineItemCompact__image}
-            loading="lazy"
-          />
+          {isInsurance ? (
+            <div className={styles.CartLineItemCompact__shieldIcon} aria-hidden="true">
+              <svg width="20" height="22" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                <path d="m9 12 2 2 4-4" />
+              </svg>
+            </div>
+          ) : (
+            <img
+              src={image || '/images/fallback.png'}
+              alt={compactDisplayTitle}
+              className={styles.CartLineItemCompact__image}
+              loading="lazy"
+            />
+          )}
         </div>
 
         <div className={styles.CartLineItemCompact__content}>
           <div className={styles.CartLineItemCompact__header}>
             <div className={styles.CartLineItemCompact__title}>
-              <CoreTextMarkdown>{displayTitle}</CoreTextMarkdown>
+              <CoreTextMarkdown>{compactDisplayTitle}</CoreTextMarkdown>
             </div>
 
             <div className={styles.CartLineItemCompact__priceWrapper}>
@@ -182,7 +196,11 @@ export const CartLineItem: FC<Props> = ({
           </div>
 
           <div className={styles.CartLineItemCompact__details}>
-            {isGiftCard ? (
+            {isInsurance ? (
+              <p className={styles.CartLineItemCompact__meta}>
+                {lineItem.quantity ?? 1} session &times; ${price}
+              </p>
+            ) : isGiftCard ? (
               <p>Digital gift card</p>
             ) : (
               <>
@@ -205,7 +223,7 @@ export const CartLineItem: FC<Props> = ({
             )}
           </div>
 
-          {!readOnly && (
+          {!readOnly && !isInsurance && (
             <div className={styles.CartLineItemCompact__actions}>
               <button
                 type="button"
@@ -214,16 +232,14 @@ export const CartLineItem: FC<Props> = ({
               >
                 Edit
               </button>
-              {type !== 'insurance' && (
-                <button
-                  type="button"
-                  className={styles.CartLineItemCompact__actionBtn}
-                  onClick={handleRemove}
-                  aria-label={t('item.remove')}
-                >
-                  {t('item.remove')}
-                </button>
-              )}
+              <button
+                type="button"
+                className={styles.CartLineItemCompact__actionBtn}
+                onClick={handleRemove}
+                aria-label={t('item.remove')}
+              >
+                {t('item.remove')}
+              </button>
             </div>
           )}
         </div>
