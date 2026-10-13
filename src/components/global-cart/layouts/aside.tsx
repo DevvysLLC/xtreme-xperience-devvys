@@ -1,8 +1,8 @@
 'use client'
 
 import clsx from 'clsx'
-import type { FC } from 'react'
-import { useCart } from '../../../features/cart'
+import { type FC, useMemo } from 'react'
+import { useCart, useCartState } from '../../../features/cart'
 import { CartExpiry } from '../components/expiry'
 import { CartLineItems } from '../components/items'
 import styles from './aside.module.scss'
@@ -13,10 +13,32 @@ type Props = {
 
 export const CartAside: FC<Props> = ({ className }) => {
   const { data, isLoading, isRefreshing } = useCart()
+  const { data: cartState } = useCartState()
   const lineItems = data?.cartData?.lineItems ?? []
   const isEmpty = lineItems.length === 0
   const subtotal = data?.cartData?.subTotal ?? 0
   const discountTotal = data?.cartData?.discountTotal ?? 0
+
+  // Calculate dynamic savings from metadata
+  const totalSavings = useMemo(() => {
+    let metadataSavings = 0
+    if (cartState?.metadata) {
+      for (const item of cartState.metadata) {
+        const props = item.properties
+        const itemSavings =
+          props &&
+          typeof props === 'object' &&
+          'savings' in props &&
+          typeof props.savings === 'number'
+            ? props.savings
+            : 0
+        if (itemSavings > 0) {
+          metadataSavings += itemSavings
+        }
+      }
+    }
+    return Math.max(discountTotal, metadataSavings)
+  }, [cartState?.metadata, discountTotal])
 
   if (isEmpty) {
     return (
@@ -65,9 +87,9 @@ export const CartAside: FC<Props> = ({ className }) => {
           <CartLineItems lineItems={lineItems} compact />
         </div>
 
-        {discountTotal > 0 && (
+        {totalSavings > 0 && (
           <div className={styles.cart__savings}>
-            <strong>You save ${discountTotal.toLocaleString()}</strong>
+            <strong>You save ${totalSavings.toLocaleString()}</strong>
             <small>Already included in these prices.</small>
           </div>
         )}

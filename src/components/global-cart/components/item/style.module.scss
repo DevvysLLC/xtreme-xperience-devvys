@@ -183,6 +183,17 @@
     flex-shrink: 0;
     white-space: nowrap;
     text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  &__cutPrice {
+    font-size: u.rem-calc(12);
+    color: #888;
+    text-decoration: line-through;
+    line-height: 1.2;
+    display: block;
   }
 
   &__price {
@@ -194,6 +205,15 @@
     [data-price] {
       font-weight: 700;
     }
+  }
+
+  &__saving {
+    font-size: u.rem-calc(12);
+    font-weight: 700;
+    color: #ff6900;
+    line-height: 1.2;
+    display: block;
+    margin-top: u.rem-calc(2);
   }
 
   &__details {

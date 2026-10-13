@@ -21,6 +21,8 @@ type GetAddToCartCarLineItemMetadataProps = {
     thumbnailOverride?: { image?: { url?: string | null } | null } | null
   }
   lapsPerSession?: number | null
+  referenceValue?: number | null
+  savings?: number | null
 }
 
 export const getAddToCartLineItemCarMetadata = ({
@@ -28,7 +30,9 @@ export const getAddToCartLineItemCarMetadata = ({
   lineItem,
   userSelectionState,
   bookingSupercar,
-  lapsPerSession
+  lapsPerSession,
+  referenceValue,
+  savings
 }: GetAddToCartCarLineItemMetadataProps): CartLineItemMetadata => {
   const key = getAddToCartLineItemWriteMetadataKey({ lineItem })
   const isoDate = userSelectionState.date ?? ''
@@ -63,7 +67,9 @@ export const getAddToCartLineItemCarMetadata = ({
     properties: {
       date: isoDate,
       lapsPerSession: resolvedLapsPerSession,
-      laps: (lineItem.quantity ?? 0) * resolvedLapsPerSession
+      laps: (lineItem.quantity ?? 0) * resolvedLapsPerSession,
+      referenceValue: referenceValue ?? null,
+      savings: savings ?? null
     }
   }
   return metadata

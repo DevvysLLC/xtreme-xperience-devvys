@@ -1,0 +1,244 @@
+@use '../../../../styles/styleguide' as sg;
+@use '../../../../styles/core/unit' as u;
+
+.compareBar {
+  position: fixed;
+  bottom: u.rem-calc(20);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1a1a1a;
+  color: #fff;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.4);
+  z-index: 100;
+  padding: u.rem-calc(12) u.rem-calc(16) u.rem-calc(12) u.rem-calc(22);
+  border-radius: u.rem-calc(7);
+  display: flex;
+  align-items: center;
+  gap: u.rem-calc(20);
+  font-family: sg.font-family(barlow);
+  max-width: calc(100% - u.rem-calc(32));
+
+  &__count {
+    font-size: u.rem-calc(14);
+    font-weight: 500;
+    color: #fff;
+    white-space: nowrap;
+  }
+
+  &__button {
+    background: transparent;
+    color: #fff;
+    border: none;
+    padding: 0;
+    font-family: Anton, Impact, sans-serif;
+    font-size: u.rem-calc(18);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-decoration-thickness: 3px;
+    text-underline-offset: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+
+    &:hover {
+      text-decoration-style: solid;
+      color: #ff6900;
+    }
+  }
+
+  &__clear {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: u.rem-calc(18);
+    line-height: 1;
+    cursor: pointer;
+    padding: u.rem-calc(4) u.rem-calc(8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.8;
+    transition: opacity 0.15s ease;
+
+    &:hover {
+      opacity: 1;
+      color: #ff6900;
+    }
+  }
+}
+
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(16, 16, 16, 0.6);
+  backdrop-filter: blur(3px);
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: u.rem-calc(16);
+  box-sizing: border-box;
+}
+
+.modal {
+  background: #fff;
+  color: #111;
+  width: min(680px, calc(100% - 24px));
+  max-height: 90dvh;
+  border-radius: 10px;
+  overflow-y: auto;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  font-family: sg.font-family(barlow);
+
+  &__head {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: u.rem-calc(20);
+    padding: u.rem-calc(20) u.rem-calc(24);
+    border-bottom: 1px solid #dededb;
+  }
+
+  &__title {
+    margin: 0;
+    font-family: Anton, Impact, sans-serif;
+    font-size: u.rem-calc(25);
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1.15;
+    color: #111;
+  }
+
+  &__close {
+    background: #f3f3f0;
+    border: none;
+    border-radius: 50%;
+    width: u.rem-calc(36);
+    height: u.rem-calc(36);
+    font-size: u.rem-calc(22);
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #111;
+    transition: background 0.15s ease;
+
+    &:hover {
+      background: #e5e5e0;
+    }
+  }
+
+  &__body {
+    padding: u.rem-calc(20) u.rem-calc(24);
+    overflow-x: auto;
+  }
+
+  &__tableWrapper {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  &__table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: u.rem-calc(420);
+
+    th,
+    td {
+      text-align: left;
+      padding: u.rem-calc(13) u.rem-calc(12);
+      border-bottom: 1px solid #dededb;
+      font-size: u.rem-calc(14);
+      color: #111;
+      vertical-align: middle;
+    }
+
+    th[scope='row'] {
+      font-weight: 700;
+      color: #111;
+      width: 30%;
+      white-space: nowrap;
+    }
+
+    th[scope='col'] {
+      font-weight: 700;
+      text-align: center;
+      vertical-align: top;
+      padding-bottom: u.rem-calc(16);
+    }
+  }
+
+  &__carHeader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: u.rem-calc(6);
+  }
+
+  &__carImage {
+    width: u.rem-calc(120);
+    height: u.rem-calc(65);
+    object-fit: contain;
+  }
+
+  &__carName {
+    font-size: u.rem-calc(14);
+    line-height: 1.25;
+    color: #111;
+    text-align: center;
+
+    span {
+      display: block;
+      font-size: u.rem-calc(12);
+      color: #666;
+      font-weight: 400;
+    }
+
+    strong {
+      font-weight: 700;
+    }
+  }
+
+  &__cell {
+    text-align: center;
+    font-weight: 400;
+    color: #333;
+  }
+
+  &__selectBtn {
+    width: 100%;
+    min-width: u.rem-calc(90);
+    background: #111;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: u.rem-calc(10) u.rem-calc(14);
+    font-family: inherit;
+    font-weight: 700;
+    font-size: u.rem-calc(13);
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.15s ease;
+
+    &:hover {
+      background: sg.color(orange);
+    }
+  }
+
+  &__footerNote {
+    margin: u.rem-calc(16) 0 0;
+    font-size: u.rem-calc(12);
+    line-height: 1.5;
+    color: #666;
+  }
+}

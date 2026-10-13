@@ -66,6 +66,21 @@ export const CartLineItem: FC<Props> = ({
       lineItem.name?.toLowerCase().includes('gift')
     const trackNickname = subtitle || ''
 
+    const referenceValue =
+      properties &&
+      typeof properties === 'object' &&
+      'referenceValue' in properties &&
+      typeof properties.referenceValue === 'number'
+        ? properties.referenceValue
+        : undefined
+    const savings =
+      properties &&
+      typeof properties === 'object' &&
+      'savings' in properties &&
+      typeof properties.savings === 'number'
+        ? properties.savings
+        : undefined
+
     const handleEdit = () => {
       if (typeof window === 'undefined') {
         return
@@ -81,7 +96,7 @@ export const CartLineItem: FC<Props> = ({
         return
       }
 
-      // Try scrolling to car card if on choose-date-and-car page
+      // Scroll to car card and trigger the select button to open inline schedules panel
       const seatId = lineItem.productId || lineItem.rateId
       const cardEl = seatId
         ? document.getElementById(`supercar-card-${seatId}`)
@@ -89,9 +104,14 @@ export const CartLineItem: FC<Props> = ({
 
       if (cardEl) {
         cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
-        // If not open, click the select button
-        const selectBtn = cardEl.querySelector('button')
-        if (selectBtn instanceof HTMLButtonElement && !cardEl.classList.contains('card--open')) {
+        const selectBtn = cardEl.querySelector(
+          'button[data-style="black"], [class*="card__actions"] button, button'
+        )
+        if (
+          selectBtn instanceof HTMLButtonElement &&
+          !cardEl.classList.contains('card--open') &&
+          !cardEl.className.includes('card--open')
+        ) {
           selectBtn.click()
         }
       }
@@ -115,6 +135,11 @@ export const CartLineItem: FC<Props> = ({
             </div>
 
             <div className={styles.CartLineItemCompact__priceWrapper}>
+              {referenceValue != null && referenceValue > price && (
+                <span className={styles.CartLineItemCompact__cutPrice}>
+                  ${Math.ceil(referenceValue)}
+                </span>
+              )}
               <CoreRocketRezPrice
                 data={{
                   id: `${id}-price`,
@@ -123,6 +148,11 @@ export const CartLineItem: FC<Props> = ({
                 className={styles.CartLineItemCompact__price}
                 valueInCents={false}
               />
+              {savings != null && savings > 0 && (
+                <span className={styles.CartLineItemCompact__saving}>
+                  Save ${savings}
+                </span>
+              )}
             </div>
           </div>
 

@@ -11,7 +11,13 @@ import {
   sortSupercarsByAvailability,
   sortSupercarsByPrice
 } from '../../../../utils/sort-supercars-by-availability'
+import { useBookingSupercarSchedule } from '../../../../features/booking'
+import { useToast } from '../../../../features/toast'
 import { useBookingWizardState } from '../../context'
+import {
+  CompareCarsModal,
+  type ComparedCarItem
+} from '../compare-cars-modal'
 import { GiftCardShop } from '../gift-card-shop'
 import { SupercarOptionsCard } from '../supercar-options-card'
 import styles from './style.module.scss'
@@ -24,8 +30,13 @@ const GIFTS_TAB_INDEX = -1
 
 export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
   const { state, setActiveTabIndex } = useBookingWizardState()
+  const { showToast } = useToast()
+  const { lowestAvailablePrice, getEffectivePrice } =
+    useBookingSupercarSchedule()
   const [selectedCarKey, setSelectedCarKey] = useState<string | null>(null)
   const [sortBy, setSortBy] = useState<'featured' | 'low' | 'high'>('featured')
+  const [comparedSeatTypeIds, setComparedSeatTypeIds] = useState<number[]>([])
+  const [isCompareModalOpen, setIsCompareModalOpen] = useState(false)
   const supercarGroups: BookingSupercarGroupFragment[] =
     state.configData?.supercars ?? []
   const contextActiveTabIndex = state?.activeTabIndex ?? 0
@@ -49,7 +60,7 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
   // Get schedules for the selected day to check sold-out status
   const selectedDaySchedules =
     state.eventData?.schedules?.find(
-      (schedule) => schedule.date === state.selectedDayDate
+      (schedule: { date?: string | null }) => schedule.date === state.selectedDayDate
     ) ?? null
   const schedules = useMemo(
     () => selectedDaySchedules?.schedules ?? [],
@@ -58,7 +69,9 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
   // Gather all schedules for all days of the event to check if a car is assigned to the event
   const allEventSchedules = useMemo(
     () =>
-      state.eventData?.schedules?.flatMap((day) => day.schedules ?? []) ?? [],
+      state.eventData?.schedules?.flatMap(
+        (day: { schedules?: any[] | null }) => day.schedules ?? []
+      ) ?? [],
     [state.eventData?.schedules]
   )
   // Filter & sort supercars: filter out unassigned cars, and sort sold-out ones to the bottom
@@ -138,6 +151,91 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
   const handleTabClick = (index: number) => {
     setActiveTabIndex(index)
   }
+
+  const handleToggleCompare = (seatTypeId: number) => {
+    setComparedSeatTypeIds((prev) => {
+      if (prev.includes(seatTypeId)) {
+        return prev.filter((id) => id !== seatTypeId)
+      }
+      if (prev.length >= 3) {
+        showToast({
+          message: 'Compare up to three cars. Uncheck one to add another.',
+          type: 'info'
+        })
+        return prev
+      }
+      return [...prev, seatTypeId]
+    })
+  }
+
+  const comparedCarsData = useMemo<ComparedCarItem[]>(() => {
+    const list: ComparedCarItem[] = []
+    for (const seatTypeId of comparedSeatTypeIds) {
+      const option = sortedSupercars.find((s) => {
+        const resolvedId = getSeatTypeIdWithOverride({
+          defaultSeatTypeId: s.rocketRezSeatTypeId,
+          overrides: s.rocketRezSeatTypeIdOverrides,
+          selectedEventId
+        })
+        return resolvedId === seatTypeId
+      })
+      if (!option) continue
+
+      const isMulticar = option.isMulticar ?? false
+      const lowestPrice = lowestAvailablePrice(schedules, seatTypeId, isMulticar)
+      const drivePrice = lowestPrice?.price != null ? Math.ceil(lowestPrice.price) : null
+
+      let highest = 0
+      if (!isMulticar) {
+        for (const schedule of allEventSchedules) {
+          const val = getEffectivePrice(schedule, seatTypeId)
+          if (val > highest) {
+            highest = val
+          }
+        }
+      }
+      const standardValue = highest > 0 ? highest : null
+      const referenceValue =
+        option.priceOverride?.compareAtPrice != null
+          ? option.priceOverride.compareAtPrice / 100
+          : standardValue ?? (lowestPrice?.compareAtPrice ?? 0)
+
+      const savings =
+        drivePrice != null && referenceValue > drivePrice
+          ? Math.floor(referenceValue - drivePrice)
+          : null
+
+      const model = option.supercar?.model
+      const power = model?.horsepower ? `${model.horsepower} HP` : '—'
+      const transmission = model?.transmission || 'Paddle shift'
+      const laps = isMulticar
+        ? option.multicarCount
+          ? option.multicarCount * 4
+          : 8
+        : 4
+
+      list.push({
+        supercar: option,
+        seatTypeId,
+        drivePrice,
+        standardValue,
+        savings,
+        coveragePrice: 39,
+        power,
+        laps,
+        transmission
+      })
+    }
+    return list
+  }, [
+    comparedSeatTypeIds,
+    sortedSupercars,
+    selectedEventId,
+    schedules,
+    allEventSchedules,
+    lowestAvailablePrice,
+    getEffectivePrice
+  ])
 
   return (
     <div className={styles.container}>
@@ -242,6 +340,7 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
               })
               const carKey = `${activeTabIndex}-${seatTypeId}-${index}`
               const isSelected = selectedCarKey === carKey
+              const isCompared = comparedSeatTypeIds.includes(seatTypeId)
 
               return (
                 <SupercarOptionsCard
@@ -250,8 +349,12 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
                   rocketRezSeatTypeId={seatTypeId}
                   supercar={option}
                   isSelected={isSelected}
+                  isCompared={isCompared}
                   onToggleSelect={() => {
                     setSelectedCarKey((prev) => (prev === carKey ? null : carKey))
+                  }}
+                  onToggleCompare={() => {
+                    handleToggleCompare(seatTypeId)
                   }}
                   onClose={() => {
                     setSelectedCarKey(null)
@@ -260,6 +363,53 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
               )
             })}
           </div>
+
+          {comparedSeatTypeIds.length > 0 && (
+            <div className={styles.compareBar}>
+              <span className={styles.compareBar__count}>
+                {comparedSeatTypeIds.length} of 3 selected
+              </span>
+              <button
+                type="button"
+                className={styles.compareBar__button}
+                onClick={() => setIsCompareModalOpen(true)}
+              >
+                Compare cars
+              </button>
+              <button
+                type="button"
+                className={styles.compareBar__clear}
+                aria-label="Clear comparison"
+                onClick={() => setComparedSeatTypeIds([])}
+              >
+                ✕
+              </button>
+            </div>
+          )}
+
+          <CompareCarsModal
+            isOpen={isCompareModalOpen}
+            comparedCars={comparedCarsData}
+            onClose={() => setIsCompareModalOpen(false)}
+            onSelectCar={(seatTypeId) => {
+              const match = sortedSupercars.findIndex((s) => {
+                const res = getSeatTypeIdWithOverride({
+                  defaultSeatTypeId: s.rocketRezSeatTypeId,
+                  overrides: s.rocketRezSeatTypeIdOverrides,
+                  selectedEventId
+                })
+                return res === seatTypeId
+              })
+              if (match >= 0) {
+                const targetKey = `${activeTabIndex}-${seatTypeId}-${match}`
+                setSelectedCarKey(targetKey)
+                const cardEl = document.getElementById(`supercar-card-${seatTypeId}`)
+                if (cardEl) {
+                  cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                }
+              }
+            }}
+          />
         </>
       )}
     </div>

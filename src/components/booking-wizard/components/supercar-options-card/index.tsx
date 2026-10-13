@@ -40,7 +40,9 @@ type Props = {
   supercar: BookingSupercarFragment
   cardIndex?: number
   isSelected?: boolean
+  isCompared?: boolean
   onToggleSelect?: () => void
+  onToggleCompare?: () => void
   onClose?: () => void
 }
 
@@ -49,7 +51,9 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
   rocketRezSeatTypeId,
   cardIndex = 0,
   isSelected: isSelectedProp,
+  isCompared = false,
   onToggleSelect,
+  onToggleCompare,
   onClose
 }) => {
   const t = useTranslations(
@@ -229,6 +233,26 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
       rateType: lineItemOriginal.rateType || 'Participant'
     }
 
+    // Compute currentPrice, referenceValue, and savings for this car
+    const quantity = cardState.selectedQuantity ?? 1
+    const currentPrice =
+      ((bookingSupercar.priceOverride?.price != null
+        ? bookingSupercar.priceOverride.price / 100
+        : cardState.selectedDaySchedule?.rateTypePrice?.price) ?? 0) * quantity
+    const cmsCompareAt =
+      ((bookingSupercar.priceOverride?.compareAtPrice != null
+        ? bookingSupercar.priceOverride.compareAtPrice / 100
+        : cardState.selectedDaySchedule?.rateTypePrice?.compareAtPrice) ?? 0) *
+      quantity
+    const refVal =
+      cmsCompareAt > currentPrice
+        ? cmsCompareAt
+        : standardValue !== null
+          ? standardValue * quantity
+          : 0
+    const carSavings =
+      refVal > currentPrice ? Math.floor(refVal - currentPrice) : 0
+
     const metadata = getAddToCartLineItemCarMetadata({
       supercar,
       lineItem,
@@ -244,7 +268,9 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
         titleOverride: bookingSupercar.titleOverride,
         thumbnailOverride: bookingSupercar.thumbnailOverride
       },
-      lapsPerSession
+      lapsPerSession,
+      referenceValue: refVal > 0 ? refVal : null,
+      savings: carSavings > 0 ? carSavings : null
     })
 
     // For packages, build one line item per rate in the package category,
@@ -627,7 +653,12 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
               What&apos;s included
             </button>
             <label className={styles.card__compare}>
-              <input type="checkbox" name="compare" />
+              <input
+                type="checkbox"
+                name="compare"
+                checked={isCompared}
+                onChange={() => onToggleCompare?.()}
+              />
               <span>Compare</span>
             </label>
           </div>
@@ -866,7 +897,9 @@ export const SupercarOptionsCard: React.FC<Props> = ({
   rocketRezSeatTypeId,
   cardIndex,
   isSelected,
+  isCompared,
   onToggleSelect,
+  onToggleCompare,
   onClose
 }) => {
   const initialLapQuantityOption = BOOKING_LAP_QUANTITY_OPTIONS.find(
@@ -888,7 +921,9 @@ export const SupercarOptionsCard: React.FC<Props> = ({
         rocketRezSeatTypeId={rocketRezSeatTypeId}
         cardIndex={cardIndex}
         isSelected={isSelected}
+        isCompared={isCompared}
         onToggleSelect={onToggleSelect}
+        onToggleCompare={onToggleCompare}
         onClose={onClose}
       />
     </SupercarOptionsCardProvider>

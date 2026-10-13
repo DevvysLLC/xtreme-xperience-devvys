@@ -337,7 +337,10 @@ export class CartService {
     )
 
     const lineItems = request.lineItems.map((lineItem) => {
-      if (lineItem.type === RocketRezProductType.EVENT) {
+      if (
+        lineItem.type === RocketRezProductType.EVENT ||
+        lineItem.type === RocketRezProductType.GIFTCARD
+      ) {
         return lineItem
       }
 
