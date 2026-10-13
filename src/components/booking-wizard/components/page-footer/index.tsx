@@ -1,7 +1,9 @@
 'use client'
 
+import { useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { ROUTES } from '../../../../config/routes'
+import { useCart } from '../../../../features/cart'
 import { CoreCta } from '../../../core-cta'
 import styles from './style.module.scss'
 
@@ -43,6 +45,29 @@ export const PageFooter: React.FC<Props> = ({
   onSubmit
 }) => {
   const router = useRouter()
+  const { data: cartData } = useCart()
+  const subtotal = cartData?.cartData?.subTotal ?? 0
+  const discountTotal = cartData?.cartData?.discountTotal ?? 0
+  const metadata = cartData?.metadata ?? []
+
+  const totalSavings = useMemo(() => {
+    let metadataSavings = 0
+    for (const item of metadata) {
+      const props = item.properties
+      const itemSavings =
+        props &&
+        typeof props === 'object' &&
+        'savings' in props &&
+        typeof props.savings === 'number'
+          ? props.savings
+          : 0
+      if (itemSavings > 0) {
+        metadataSavings += itemSavings
+      }
+    }
+    return Math.max(discountTotal, metadataSavings)
+  }, [metadata, discountTotal])
+
   const handleBack =
     onBack ??
     (() => {
@@ -51,15 +76,6 @@ export const PageFooter: React.FC<Props> = ({
 
   const renderActions = (canSubmit: boolean, isSubmitting: boolean) => (
     <div className={styles.footer__actions}>
-      <CoreCta
-        type="button"
-        onClick={handleBack}
-        layoutType="underline"
-        styleType="black"
-        sizeType="large"
-        text={backText}
-      />
-
       <CoreCta
         type={onSubmit ? 'button' : 'submit'}
         onClick={onSubmit}
@@ -76,6 +92,33 @@ export const PageFooter: React.FC<Props> = ({
 
   return (
     <div className={styles.footer}>
+      <div className={styles.footer__left}>
+        <div className={styles.footer__back}>
+          <CoreCta
+            type="button"
+            onClick={handleBack}
+            layoutType="underline"
+            styleType="black"
+            sizeType="large"
+            text={backText}
+          />
+        </div>
+
+        <div className={styles.footer__pricing}>
+          <span className={styles.footer__pricing_label}>
+            {subtotal > 0 ? 'Subtotal' : 'Your booking'}
+          </span>
+          <strong className={styles.footer__pricing_value}>
+            ${subtotal.toLocaleString()}
+          </strong>
+          {totalSavings > 0 && (
+            <span className={styles.footer__savings}>
+              You save ${totalSavings.toLocaleString()}
+            </span>
+          )}
+        </div>
+      </div>
+
       {(title || subtitle) && (
         <div className={styles.footer__content}>
           {title && <p className={styles.footer__title}>{title}</p>}

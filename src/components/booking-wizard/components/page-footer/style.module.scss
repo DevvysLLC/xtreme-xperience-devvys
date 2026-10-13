@@ -18,10 +18,48 @@
     padding: sg.spacing(small) sg.spacing(xlarge);
   }
 
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: sg.spacing(large);
+  }
+
+  &__back {
+    display: flex;
+    align-items: center;
+  }
+
+  &__pricing {
+    display: flex;
+    align-items: baseline;
+    gap: u.rem-calc(6);
+    font-family: sg.font-family(barlow);
+  }
+
+  &__pricing_label {
+    font-size: u.rem-calc(13);
+    color: #555;
+    font-weight: 500;
+  }
+
+  &__pricing_value {
+    font-size: u.rem-calc(22);
+    font-weight: 800;
+    color: #111;
+    font-family: sg.font-family(barlow);
+  }
+
+  &__savings {
+    font-size: u.rem-calc(12);
+    color: #ff6900;
+    font-weight: 700;
+    margin-left: u.rem-calc(4);
+  }
+
   &__content {
     display: none;
 
-    @include sg.min(tabletLandscape) {
+    @include sg.min(desktop) {
       display: block;
     }
   }
@@ -45,23 +83,15 @@
   &__actions {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: sg.spacing(medium);
-    width: 100%;
-
-    @include sg.min(tabletLandscape) {
-      justify-content: flex-end;
-      width: auto;
-    }
+    justify-content: flex-end;
   }
 
   &__submit {
     &[data-size='small'] {
-      flex-grow: 1;
-      min-width: auto;
+      min-width: u.rem-calc(200);
 
       @include sg.min(tabletLandscape) {
-        min-width: u.rem-calc(280);
+        min-width: u.rem-calc(260);
       }
     }
   }
