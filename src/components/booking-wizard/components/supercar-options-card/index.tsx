@@ -563,6 +563,7 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
   return (
     <>
       <article
+        id={`supercar-card-${rocketRezSeatTypeId}`}
         className={clsx(styles.card, isSelected && styles['card--open'])}
         style={cardStyle}
       >

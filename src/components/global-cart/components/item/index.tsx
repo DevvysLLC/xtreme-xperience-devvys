@@ -16,7 +16,6 @@ import type {
 } from '../../../../io/types'
 import { CoreBadge } from '../../../core-badge'
 import { CoreCta } from '../../../core-cta'
-import { CoreIcon } from '../../../core-icon'
 import { CoreLoadingSpinner } from '../../../core-loading-spinner'
 import { CoreRocketRezPrice } from '../../../core-rocketrez-price'
 import { CoreTextMarkdown } from '../../../core-text-markdown'
@@ -61,52 +60,117 @@ export const CartLineItem: FC<Props> = ({
   }
 
   if (compact) {
+    const isGiftCard =
+      lineItem.type === 'giftcard' ||
+      type === 'gift_card' ||
+      lineItem.name?.toLowerCase().includes('gift')
+    const trackNickname = subtitle || ''
+
+    const handleEdit = () => {
+      if (typeof window === 'undefined') {
+        return
+      }
+      if (isGiftCard) {
+        // Open gift card shop modal or scroll to gift tab
+        const giftBtn = document.querySelector(
+          'button[data-gift-shop-trigger]'
+        )
+        if (giftBtn instanceof HTMLButtonElement) {
+          giftBtn.click()
+        }
+        return
+      }
+
+      // Try scrolling to car card if on choose-date-and-car page
+      const seatId = lineItem.productId || lineItem.rateId
+      const cardEl = seatId
+        ? document.getElementById(`supercar-card-${seatId}`)
+        : null
+
+      if (cardEl) {
+        cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        // If not open, click the select button
+        const selectBtn = cardEl.querySelector('button')
+        if (selectBtn instanceof HTMLButtonElement && !cardEl.classList.contains('card--open')) {
+          selectBtn.click()
+        }
+      }
+    }
+
     return (
       <article className={styles.CartLineItemCompact}>
-        {!readOnly && type !== 'insurance' && (
-          <button
-            type="button"
-            onClick={handleRemove}
-            className={styles.CartLineItemCompact__remove}
-            aria-label={t('item.remove')}
-          >
-            <CoreIcon icon="close" />
-          </button>
-        )}
-
         <div className={styles.CartLineItemCompact__media}>
           <img
             src={image || '/images/fallback.png'}
             alt={displayTitle}
             className={styles.CartLineItemCompact__image}
+            loading="lazy"
           />
         </div>
 
         <div className={styles.CartLineItemCompact__content}>
           <div className={styles.CartLineItemCompact__header}>
-            <h3 className={styles.CartLineItemCompact__title}>
+            <div className={styles.CartLineItemCompact__title}>
               <CoreTextMarkdown>{displayTitle}</CoreTextMarkdown>
-            </h3>
-            {displaySubtitle && <p>{displaySubtitle}</p>}
+            </div>
+
+            <div className={styles.CartLineItemCompact__priceWrapper}>
+              <CoreRocketRezPrice
+                data={{
+                  id: `${id}-price`,
+                  price: price * (lineItem.quantity ?? 1)
+                }}
+                className={styles.CartLineItemCompact__price}
+                valueInCents={false}
+              />
+            </div>
           </div>
 
-          <hr className={styles.CartLineItemCompact__divider} />
+          <div className={styles.CartLineItemCompact__details}>
+            {isGiftCard ? (
+              <p>Digital gift card</p>
+            ) : (
+              <>
+                {date && (
+                  <p className={styles.CartLineItemCompact__meta}>
+                    {format(date, 'EEE, MMM d, yyyy · h:mm a')}
+                  </p>
+                )}
+                {trackNickname && (
+                  <p className={styles.CartLineItemCompact__meta}>
+                    {trackNickname}
+                  </p>
+                )}
+                {laps && (
+                  <p className={styles.CartLineItemCompact__meta}>
+                    {laps} {laps === 1 ? 'Lap' : 'Laps'}
+                  </p>
+                )}
+              </>
+            )}
+          </div>
 
-          {date && (
-            <p className={styles.CartLineItemCompact__date}>
-              {format(date, 'EEE M/d/yy - h:mm a')}
-            </p>
+          {!readOnly && (
+            <div className={styles.CartLineItemCompact__actions}>
+              <button
+                type="button"
+                className={styles.CartLineItemCompact__actionBtn}
+                onClick={handleEdit}
+              >
+                Edit
+              </button>
+              {type !== 'insurance' && (
+                <button
+                  type="button"
+                  className={styles.CartLineItemCompact__actionBtn}
+                  onClick={handleRemove}
+                  aria-label={t('item.remove')}
+                >
+                  {t('item.remove')}
+                </button>
+              )}
+            </div>
           )}
-
-          <CoreRocketRezPrice
-            data={{
-              id: `${id}-price`,
-              price: price * (lineItem.quantity ?? 1)
-            }}
-            className={styles.CartLineItemCompact__price}
-            priceClassName="u-color-orange"
-            valueInCents={false}
-          />
         </div>
       </article>
     )
