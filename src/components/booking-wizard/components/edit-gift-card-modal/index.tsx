@@ -4,8 +4,10 @@ import clsx from 'clsx'
 import Image from 'next/image'
 import { type FC, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { useBookingGiftCards } from '../../../../features/booking'
 import { useCartAddAddon, useCartRemoveLineItem } from '../../../../features/cart'
 import { useToast } from '../../../../features/toast'
+import type { AddonFragment } from '../../../../core/dato/fragments/addon.typegen'
 import type { RocketRezLineItem } from '../../../../io/types'
 import { RocketRezProductType } from '../../../../io/schemas'
 import { FALLBACK_GIFT_OPTIONS } from '../gift-card-shop'
@@ -20,6 +22,7 @@ type Props = {
 export const EditGiftCardModal: FC<Props> = ({ isOpen, lineItem, onClose }) => {
   const initialAmount = lineItem?.price ?? 100
   const [selectedAmount, setSelectedAmount] = useState<number>(initialAmount)
+  const { data: cmsGiftCards } = useBookingGiftCards()
   const { mutateAsync: removeLineItem } = useCartRemoveLineItem()
   const { mutateAsync: addAddon, isPending } = useCartAddAddon()
   const { showToast } = useToast()
@@ -65,54 +68,68 @@ export const EditGiftCardModal: FC<Props> = ({ isOpen, lineItem, onClose }) => {
       return
     }
 
-    try {
-      // 1. Remove old line item
-      await removeLineItem({ lineItem })
+    // Match real CMS gift card product by dollar amount
+    const matchedCmsCard = cmsGiftCards?.find((addon) => {
+      const rawPrice = addon.model?.price?.price ?? 0
+      const price = rawPrice >= 10000 ? Math.round(rawPrice / 100) : rawPrice
+      return price === selectedAmount
+    })
 
-      // 2. Add replacement gift card
-      const addonToSubmit = {
-        __typename: 'AddonRecord' as const,
+    const rocketRezId = matchedCmsCard?.model?.rocketRezId ?? selectedAmount.toString()
+    const lineItemId = matchedCmsCard?.model?.rocketRezId
+      ? parseInt(matchedCmsCard.model.rocketRezId, 10) || selectedAmount
+      : selectedAmount
+
+    const addonToSubmit: AddonFragment = matchedCmsCard ?? {
+      __typename: 'AddonRecord',
+      id: `gift-card-${selectedAmount}`,
+      model: {
+        __typename: 'AddonModelRecord',
         id: `gift-card-${selectedAmount}`,
-        model: {
-          title: `$${selectedAmount} Gift Card`,
-          name: `$${selectedAmount} Gift Card`,
-          handle: `gift-card-${selectedAmount}`,
-          price: {
-            price: selectedAmount,
-            compareAtPrice: selectedAmount
+        title: `$${selectedAmount.toLocaleString()} Gift Card`,
+        price: {
+          __typename: 'CorePriceRecord',
+          id: `price-${selectedAmount}`,
+          price: selectedAmount,
+          compareAtPrice: null
+        },
+        badge: null,
+        description: benefitCopy,
+        thumbnail: {
+          __typename: 'CoreImageRecord',
+          id: 'gift-card-thumbnail',
+          image: {
+            __typename: 'FileField',
+            id: 'gift-card-image',
+            url: '/images/gift-card-template.png',
+            width: 1200,
+            height: 720,
+            alt: `Xtreme Xperience $${selectedAmount} Gift Card`,
+            format: 'png',
+            title: null,
+            focalPoint: null,
+            responsiveImage: null
           },
-          badge: null,
-          description: benefitCopy,
-          thumbnail: {
-            __typename: 'CoreImageRecord' as const,
-            id: 'gift-card-thumbnail',
-            image: {
-              __typename: 'FileField' as const,
-              id: 'gift-card-image',
-              url: '/images/gift-card-template.png',
-              width: 1200,
-              height: 720,
-              alt: `Xtreme Xperience $${selectedAmount} Gift Card`,
-              format: 'png',
-              title: null,
-              focalPoint: null,
-              responsiveImage: null
-            },
-            desktopImage: null
-          },
-          rocketRezId: selectedAmount.toString(),
-          rocketRezType: RocketRezProductType.GIFTCARD
-        }
+          desktopImage: null
+        },
+        rocketRezId,
+        rocketRezType: RocketRezProductType.GIFTCARD
       }
+    }
 
+    try {
+      // 1. Add new gift card first so the user never loses their card on failure
       await addAddon({
         addon: addonToSubmit,
         lineItem: {
-          id: selectedAmount,
+          id: lineItemId,
           type: RocketRezProductType.GIFTCARD,
           quantity: 1
         }
       })
+
+      // 2. Remove the previous gift card line item now that the new one succeeded
+      await removeLineItem({ lineItem })
 
       showToast({
         message: `Updated to $${selectedAmount.toLocaleString()} Gift Card.`,

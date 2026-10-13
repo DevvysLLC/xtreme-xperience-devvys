@@ -22,6 +22,12 @@ import { CoreRocketRezPrice } from '../../../core-rocketrez-price'
 import { CoreTextMarkdown } from '../../../core-text-markdown'
 import styles from './style.module.scss'
 
+import { useRouter } from 'next/navigation'
+import { ROUTES } from '../../../../config/routes'
+import { DRAWER_REQUEST_CLOSE_MESSAGE_NAME } from '../../../../core/messaging/main/messages/close-drawer'
+import { useMainBus } from '../../../../core/messaging/main/react'
+import { CART_DRAWER_ID } from '../../layouts/drawer'
+
 type Props = {
   lineItem: RocketRezLineItem
   compact?: boolean
@@ -35,6 +41,8 @@ export const CartLineItem: FC<Props> = ({
   readOnly = false,
   metadata: externalMetadata
 }) => {
+  const router = useRouter()
+  const drawerBus = useMainBus(DRAWER_REQUEST_CLOSE_MESSAGE_NAME, () => {})
   const t = useTranslations('global_cart')
   const { mutateAsync } = useCartRemoveLineItem()
   const cartMetadata = useCartLineItemMetadata({ lineItem })
@@ -76,6 +84,7 @@ export const CartLineItem: FC<Props> = ({
       typeof properties.referenceValue === 'number'
         ? properties.referenceValue
         : undefined
+
     const savings =
       properties &&
       typeof properties === 'object' &&
@@ -102,7 +111,26 @@ export const CartLineItem: FC<Props> = ({
       const seatId = metaSeatId || lineItem.productId || lineItem.rateId
 
       if (seatId) {
-        // Dispatch custom event to notify SupercarOptions component to switch tabs & open schedules
+        // Close cart drawer so user sees the schedule panel
+        drawerBus.send({
+          name: DRAWER_REQUEST_CLOSE_MESSAGE_NAME,
+          details: { id: CART_DRAWER_ID }
+        })
+
+        // Save target in sessionStorage for page transitions
+        try {
+          sessionStorage.setItem('pendingEditSeatTypeId', seatId.toString())
+        } catch (error) {
+          logger.error({ error }, 'cart-line-item.handleEdit.sessionStorage.error')
+        }
+
+        // If not already on the choose-date-and-car page, navigate there
+        if (!window.location.pathname.includes('/booking/choose-date-and-car')) {
+          router.push(ROUTES.BOOKING.DATE_AND_CAR)
+          return
+        }
+
+        // Dispatch custom event to notify SupercarOptions component
         window.dispatchEvent(
           new CustomEvent('open-supercar-schedule', {
             detail: {
@@ -111,22 +139,6 @@ export const CartLineItem: FC<Props> = ({
             }
           })
         )
-
-        // Also check if card element is currently in the DOM
-        const cardEl = document.getElementById(`supercar-card-${seatId}`)
-        if (cardEl) {
-          cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
-          const selectBtn = cardEl.querySelector(
-            'button[data-style="black"], [class*="card__actions"] button, button'
-          )
-          if (
-            selectBtn instanceof HTMLButtonElement &&
-            !cardEl.classList.contains('card--open') &&
-            !cardEl.className.includes('card--open')
-          ) {
-            selectBtn.click()
-          }
-        }
       }
     }
 

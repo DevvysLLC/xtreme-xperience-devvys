@@ -113,21 +113,9 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
     )
   }, [activeGroup?.supercars, schedules, allEventSchedules, selectedEventId, sortBy])
 
-  // Listen for custom event to edit/open a specific car or package schedule
+  // Handle opening and scrolling to a specific car or package schedule
   useEffect(() => {
-    const handleOpenSchedule = (event: Event) => {
-      if (!(event instanceof CustomEvent)) {
-        return
-      }
-      const eventDetail = event.detail
-      const targetSeatTypeId =
-        'seatTypeId' in eventDetail && typeof eventDetail.seatTypeId === 'number'
-          ? eventDetail.seatTypeId
-          : undefined
-      if (!targetSeatTypeId) {
-        return
-      }
-
+    const openTarget = (targetSeatTypeId: number) => {
       let targetGroupIdx = -1
       let targetCarIndex = -1
 
@@ -187,7 +175,37 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
             selectBtn.click()
           }
         }
-      }, 150)
+      }, 250)
+    }
+
+    const handleOpenSchedule = (event: Event) => {
+      if (!(event instanceof CustomEvent)) {
+        return
+      }
+      const eventDetail = event.detail
+      const targetSeatTypeId =
+        'seatTypeId' in eventDetail && typeof eventDetail.seatTypeId === 'number'
+          ? eventDetail.seatTypeId
+          : undefined
+      if (targetSeatTypeId) {
+        openTarget(targetSeatTypeId)
+      }
+    }
+
+    // Check if there was a pending edit requested before page transition
+    try {
+      const pendingSeatStr = sessionStorage.getItem('pendingEditSeatTypeId')
+      if (pendingSeatStr) {
+        sessionStorage.removeItem('pendingEditSeatTypeId')
+        const pendingSeat = parseInt(pendingSeatStr, 10)
+        if (!isNaN(pendingSeat) && pendingSeat > 0) {
+          setTimeout(() => {
+            openTarget(pendingSeat)
+          }, 150)
+        }
+      }
+    } catch (error) {
+      logger.error({ error }, 'supercar-options.pendingEditSeatTypeId.error')
     }
 
     window.addEventListener('open-supercar-schedule', handleOpenSchedule)
