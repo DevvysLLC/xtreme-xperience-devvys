@@ -168,7 +168,7 @@ export const CartLineItem: FC<Props> = ({
             </div>
           ) : (
             <img
-              src={image || (isInsurance ? '/images/xx-logo.svg' : '/images/fallback.png')}
+              src={image || '/images/fallback.png'}
               alt={compactDisplayTitle}
               className={styles.CartLineItemCompact__image}
               loading="lazy"
@@ -313,7 +313,7 @@ export const CartLineItem: FC<Props> = ({
         <>
           <div className={styles.CartLineItem__media}>
             <img
-              src={image || (type === 'insurance' ? '/images/xx-logo.svg' : '/images/fallback.png')}
+              src={image || '/images/fallback.png'}
               alt={displayTitle}
               className={styles.CartLineItem__image}
               loading="lazy"
