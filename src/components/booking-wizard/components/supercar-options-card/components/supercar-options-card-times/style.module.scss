@@ -45,10 +45,11 @@
   &__options {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: u.rem-calc(6);
+    gap: u.rem-calc(10) u.rem-calc(6);
 
     @include sg.min(tabletLandscape) {
       grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: u.rem-calc(8);
     }
   }
 }
