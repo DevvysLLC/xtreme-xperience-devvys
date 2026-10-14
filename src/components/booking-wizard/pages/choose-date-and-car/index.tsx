@@ -1,7 +1,7 @@
 'use client'
 
 import { useForm } from '@tanstack/react-form'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { ROUTES } from '../../../../config/routes'
@@ -32,7 +32,15 @@ export const DateAndCarPage = () => {
   const t = useTranslations('booking_wizard.pages.date_and_car')
   const { booking, cart } = useBookingWithCart()
   const { cartData, metadata, contents } = cart ?? {}
-  const { hasCars, totalCars } = contents ?? {}
+  const {
+    hasCars,
+    totalCars,
+    hasOnlyGiftCards,
+    hasGiftCards,
+    totalGiftCards,
+    canSkipBooking
+  } = contents ?? {}
+  const router = useRouter()
   const { state, setSelectedDayDate } = useBookingWizardState()
   const { showDialog } = useDialog()
   const { showToast } = useToast()
@@ -108,13 +116,28 @@ export const DateAndCarPage = () => {
   formRef.current = form
   const lastAppliedDefaultValuesKeyRef = useRef(resolvedDefaultValuesKey)
 
+  const isGiftCardCheckout =
+    !hasCars && (hasOnlyGiftCards || hasGiftCards || canSkipBooking)
+
   const submitButtonText = hasCars
     ? t('button.continue')
-    : 'CHOOSE A CAR'
+    : isGiftCardCheckout
+      ? 'CONTINUE TO CHECKOUT'
+      : 'CHOOSE A CAR'
 
   const footerSubtitle = hasCars
     ? t('footer.subtitle.cars_added', { count: totalCars ?? 0 })
-    : t('footer.subtitle.select_car')
+    : isGiftCardCheckout
+      ? `${totalGiftCards ?? 1} Gift card${(totalGiftCards ?? 1) > 1 ? 's' : ''} added`
+      : t('footer.subtitle.select_car')
+
+  const handleFooterSubmit = () => {
+    if (isGiftCardCheckout) {
+      router.push(ROUTES.CHECKOUT.CONTACTS)
+      return
+    }
+    form.handleSubmit()
+  }
 
   const locationTitle = state.selectedEvent?.model?.track?.model?.nickname ?? ''
   const locationCity = state.selectedEvent?.model?.track?.model?.city ?? ''
@@ -393,12 +416,12 @@ export const DateAndCarPage = () => {
             <PageFooter
               title={t('footer.title')}
               subtitle={footerSubtitle}
-              disabled={!hasCars}
+              disabled={!hasCars && !isGiftCardCheckout}
               onBack={handleBack}
               backText={t('button.back')}
               submitText={submitButtonText}
               savingText={t('button.saving')}
-              onSubmit={form.handleSubmit}
+              onSubmit={handleFooterSubmit}
               isPending={false}
             />
           </form>

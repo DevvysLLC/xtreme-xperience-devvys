@@ -47,19 +47,24 @@ export const computeContents = (
     const normalizedLineItemType = String(
       lineItem.productType ?? lineItem.type ?? ''
     ).toLowerCase()
+    const isGiftCard =
+      normalizedLineItemType === 'giftcard' ||
+      normalizedLineItemType === 'gift_card' ||
+      normalizedLineItemType === 'gift card' ||
+      (metadata?.type != null && String(metadata.type).toLowerCase().includes('gift')) ||
+      (lineItem.name != null && lineItem.name.toLowerCase().includes('gift card')) ||
+      (metadata?.title != null && metadata.title.toLowerCase().includes('gift card'))
     const inferredType =
       normalizedLineItemType === 'event'
         ? 'car'
         : normalizedLineItemType === 'insurance'
           ? 'insurance'
-          : normalizedLineItemType === 'giftcard' ||
-              normalizedLineItemType === 'gift_card' ||
-              normalizedLineItemType === 'gift card'
+          : isGiftCard
             ? 'gift_card'
             : normalizedLineItemType === 'retail'
               ? 'addon'
               : null
-    const itemType = metadata?.type ?? inferredType
+    const itemType = isGiftCard ? 'gift_card' : (metadata?.type ?? inferredType)
     if (itemType === 'insurance') {
       insuranceCount += 1
       insuranceQuantity += lineItem.quantity

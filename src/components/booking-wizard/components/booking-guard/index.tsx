@@ -149,6 +149,14 @@ export const BookingWizardGuard: FC<Props> = ({ children }) => {
 
     // 2b: No event/track on non-location page
     if (!hasEventOrTrack && pathname !== ROUTES.BOOKING.LOCATION) {
+      if (cart.contents.canSkipBooking) {
+        logger.info(
+          { pathname },
+          `${LOG_PREFIX}: [hard-redirect] canSkipBooking → checkout contacts`
+        )
+        navigateTo(ROUTES.CHECKOUT.CONTACTS)
+        return
+      }
       logger.info(
         { pathname, hasEventOrTrack },
         `${LOG_PREFIX}: [hard-redirect] no event/track → location`
@@ -470,6 +478,7 @@ export const BookingWizardGuard: FC<Props> = ({ children }) => {
     cart.contents.hasCars,
     cart.contents.insuranceSessions,
     cart.contents.hasOnlyRideAlongs,
+    cart.contents.canSkipBooking,
     requestBackNavigation,
     setIntendedPage,
     bookingEnableLegacyBooking

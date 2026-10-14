@@ -92,38 +92,40 @@ export const CartPage: FC<Props> = ({
 
           <details className={styles.policySection__accordion}>
             <summary className={styles.policySection__summary}>
-              Cancellation Policy &amp; Terms and Conditions
+              Cancellation Policy
             </summary>
             <div className={styles.policySection__content}>
               <p>
-                <strong>Refunds are based on purchase date, not drive date.</strong>{' '}
-                Eligible bookings can be refunded within 7 calendar days of purchase,
-                less a 5% processing fee. Gift cards and vouchers are final sale.
+                All Xtreme Xperience Bookings are refundable within 7 calendar days from the purchase date. Note, this does not mean 7 days after your Xperience date. Gift vouchers are final sale and non-refundable.
               </p>
               <p>
-                The 7-day refund guarantee does not apply when your event is within 7 days
-                of purchase. Email refund requests to{' '}
-                <a href="mailto:info@xxspeed.com">info@xxspeed.com</a> within the eligible window.
+                ALL 7-Day refund requests MUST be submitted by email to info@xxspeed.com within 7 days of the original purchase, and are subject to a 5% bank processing fee.
               </p>
               <p>
-                After 7 days, experiences are non-refundable. Tickets can be transferred to another eligible participant; rescheduling is
-                limited to the original event weekend.
+                7-DAY REFUND GUARANTEE is not applicable if the reserved Event Day is within 7 days of the purchase date.
               </p>
               <p>
-                Drivers must be 18 or older with a valid driver&apos;s license. Participants must meet eligibility requirements and complete the liability waiver. Driver protection is required for drives.
+                TICKETS MAY NOT BE RESCHEDULED OUTSIDE OF THE EVENT WEEKEND. This ticket is fully transferable to another individual and may be gifted or sold.
               </p>
               <p>
-                No-shows forfeit their booking. Weather or vehicle availability may affect your reservation; see the full policies for applicable changes and restrictions.
+                See our FAQ page for all agreed upon Refund, Reschedule, and Weather policies and procedures.
+              </p>
+            </div>
+          </details>
+
+          <details className={styles.policySection__accordion}>
+            <summary className={styles.policySection__summary}>
+              Terms &amp; Conditions
+            </summary>
+            <div className={styles.policySection__content}>
+              <p>
+                Please refer to our policies page for full terms and conditions.
               </p>
               <p>
-                <a href="/policies" className={styles.policySection__link}>
-                  Read the full cancellation and rescheduling policies &nearr;
-                </a>
+                If you have any other questions, feel free to call (866) 273-7727 or email info@xxspeed.com.
               </p>
               <p>
-                <a href="/terms" className={styles.policySection__link}>
-                  Read full Terms &amp; Conditions &nearr;
-                </a>
+                See you on the track!
               </p>
             </div>
           </details>
