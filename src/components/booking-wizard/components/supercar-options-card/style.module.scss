@@ -38,8 +38,8 @@
       padding: u.rem-calc(10) u.rem-calc(28);
     }
 
-    @include sg.max(maxWidthFromDesignTeam) {
-      height: u.rem-calc(175);
+    @include sg.min(maxWidthFromDesignTeam) {
+      height: u.rem-calc(220);
       padding: u.rem-calc(10) u.rem-calc(28) 0;
     }
 
