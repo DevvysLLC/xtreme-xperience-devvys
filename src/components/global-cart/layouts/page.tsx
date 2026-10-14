@@ -111,7 +111,7 @@ export const CartPage: FC<Props> = ({
               </p>
               <p>
                 <a href="/policies" className={styles.policySection__link}>
-                  Read the full cancellation and rescheduling policies &nearr;
+                  Read the full cancellation and rescheduling policies ↗;
                 </a>
               </p>
             </div>
@@ -130,7 +130,7 @@ export const CartPage: FC<Props> = ({
               </p>
               <p>
                 <a href="/terms" className={styles.policySection__link}>
-                  Read full Terms &amp; Conditions &nearr;
+                  Read full Terms &amp; Conditions ↗;
                 </a>
               </p>
             </div>
