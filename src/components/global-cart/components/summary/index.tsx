@@ -29,6 +29,7 @@ export const CartSummary: FC = () => {
   const t = useTranslations('global_cart')
   const pathname = usePathname()
   const isReviewPage = pathname?.includes('/review')
+  const isReviewOrCheckoutPage = isReviewPage || pathname?.includes('/checkout')
   const { data: booking } = useBooking()
   const { data: cart } = useCart()
   const track = booking?.track
@@ -94,8 +95,18 @@ export const CartSummary: FC = () => {
     return lineItems.filter((item) => {
       const type = item.type?.toLowerCase()
       const name = item.name?.toLowerCase() || ''
-      if (type === 'insurance') return false
-      if (name.includes('pit pass') || name.includes('throttle') || name.includes('gift') || type === 'giftcard' || type === 'retail') return false
+      if (type === 'insurance') {
+        return false
+      }
+      if (
+        name.includes('pit pass') ||
+        name.includes('throttle') ||
+        name.includes('gift') ||
+        type === 'giftcard' ||
+        type === 'retail'
+      ) {
+        return false
+      }
       return true
     })
   }, [lineItems])
@@ -104,8 +115,18 @@ export const CartSummary: FC = () => {
     return lineItems.filter((item) => {
       const type = item.type?.toLowerCase()
       const name = item.name?.toLowerCase() || ''
-      if (type === 'insurance') return true
-      if (name.includes('pit pass') || name.includes('throttle') || name.includes('gift') || type === 'giftcard' || type === 'retail') return true
+      if (type === 'insurance') {
+        return true
+      }
+      if (
+        name.includes('pit pass') ||
+        name.includes('throttle') ||
+        name.includes('gift') ||
+        type === 'giftcard' ||
+        type === 'retail'
+      ) {
+        return true
+      }
       return false
     })
   }, [lineItems])
@@ -114,7 +135,7 @@ export const CartSummary: FC = () => {
     <div className={styles.summary}>
       <h2 className={styles.summary__title}>{t('summary.title')}</h2>
 
-      {track && !isReviewPage && (
+      {track && !isReviewOrCheckoutPage && (
         <>
           <hr className={styles.summary__divider} />
           <CartLocation track={track} />
@@ -122,7 +143,7 @@ export const CartSummary: FC = () => {
         </>
       )}
 
-      {track && isReviewPage && (
+      {track && isReviewOrCheckoutPage && (
         <>
           <CartExpiry />
         </>
@@ -140,14 +161,14 @@ export const CartSummary: FC = () => {
         </div>
       )}
 
-      {isReviewPage && driveItems.length > 0 && (
+      {isReviewOrCheckoutPage && driveItems.length > 0 && (
         <>
           <hr className={styles.summary__divider} />
           <CartLineItems lineItems={driveItems} compact={true} />
         </>
       )}
 
-      {isReviewPage && coverageAndAddonItems.length > 0 && (
+      {isReviewOrCheckoutPage && coverageAndAddonItems.length > 0 && (
         <>
           <hr className={styles.summary__divider} />
           <div className={styles.summary__sectionHeader}>

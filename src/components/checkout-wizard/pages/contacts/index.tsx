@@ -3,6 +3,7 @@
 import { useForm } from '@tanstack/react-form'
 import { useQueryClient } from '@tanstack/react-query'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'next/navigation'
 import { type FC, useEffect, useMemo, useRef, useState } from 'react'
 import { UNAVAILABLE_ANALYTICS_VALUE } from '../../../../config/analytics'
 import { ROUTES } from '../../../../config/routes'
@@ -53,6 +54,7 @@ type DetailsFormValues = ContactsFormValues & {
 const ContactBillingAddressSchema = RocketRezBillingAddressSchema
 
 export const ContactsPage: FC<Props> = () => {
+  const router = useRouter()
   const t = useTranslations('contacts_page')
   const tForm = useTranslations('contacts_form')
   const { persisted, save } = useCheckoutPageDetails()
@@ -336,6 +338,8 @@ export const ContactsPage: FC<Props> = () => {
             }
           )
         }
+
+        router.push(ROUTES.CHECKOUT.PAYMENT)
       } catch (error) {
         logger.error(
           { error, existingContactId: existingContact?.id },

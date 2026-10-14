@@ -1309,10 +1309,14 @@ export const UsStateSchema = z.object({
 
 // =============================================================================
 // Checkout Store Schemas
-// =============================================================================
-
 export const CheckoutStringEmailSchema = z.string().email()
-export const CheckoutStringUsPhoneNumberSchema = z.string().regex(/^\d{10}$/)
+export const CheckoutStringUsPhoneNumberSchema = z
+  .string()
+  .refine(
+    (val) => /^\d{10}$/.test(val.replace(/\D/g, '')),
+    'must match 10-digit phone number'
+  )
+  .transform((val) => val.replace(/\D/g, ''))
 
 export const CheckoutDetailsFormInputSchema = z.object({
   firstName: z.string(),
