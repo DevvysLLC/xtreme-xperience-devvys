@@ -171,10 +171,7 @@ export const CartLineItem: FC<Props> = ({
             </div>
           ) : isPitPass ? (
             <div className={styles.CartLineItemCompact__ticketIcon} aria-hidden="true">
-              <svg width="22" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="2" y="6" width="20" height="12" rx="2" />
-                <path d="M6 12h.01M18 12h.01M10 12h4" />
-              </svg>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18v4a2 2 0 0 0 0 4v4H3v-4a2 2 0 0 0 0-4V6Z"></path><path d="M15 6v3m0 2v2m0 2v3"></path></svg>
             </div>
           ) : (
             <img
