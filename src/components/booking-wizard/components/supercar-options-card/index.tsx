@@ -494,35 +494,6 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
       ? `${supercar.model.make} ${supercar.model.model}`
       : null
 
-  // Prototype tags shown when the CMS has no badge for this car
-  const fallbackTag = useMemo(() => {
-    const name = `${supercar.model?.make ?? ''} ${supercar.model?.model ?? ''} ${bookingSupercar.titleOverride ?? ''}`.toLowerCase()
-    if (name.includes('296')) {
-      return 'Hybrid supercar'
-    }
-    if (name.includes('temerario')) {
-      return 'New in 2027'
-    }
-    if (name.includes('hurac') || name.includes('evo')) {
-      return 'Italian icon'
-    }
-    if (name.includes('gt3') || name.includes('porsche')) {
-      return 'Track favorite'
-    }
-    if (name.includes('gt-r') || name.includes('gtr')) {
-      return 'Accessible adrenaline'
-    }
-    if (name.includes('corvette') || name.includes('z06')) {
-      return 'American muscle'
-    }
-    if (name.includes('mclaren')) {
-      return 'British precision'
-    }
-    if (name.includes('audi') || name.includes('r8')) {
-      return 'German engineering'
-    }
-    return isMulticar ? 'Multi-car package' : 'Track favorite'
-  }, [supercar.model, bookingSupercar.titleOverride, isMulticar])
   const cmsBadge = badge ?? supercar.model?.badges?.[0] ?? null
 
   const renderPrice = (selectedMode: boolean) => {
@@ -596,14 +567,10 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
       >
         <div className={styles.card__media}>
           {thumbnail && <CoreImage data={thumbnail} />}
-          {cmsBadge ? (
+          {cmsBadge && (
             <div className={styles.card__badge}>
               <CoreBadge data={cmsBadge} />
             </div>
-          ) : (
-            fallbackTag && (
-              <span className={styles.card__tag}>{fallbackTag}</span>
-            )
           )}
         </div>
         <div
