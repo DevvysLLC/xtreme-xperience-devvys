@@ -122,15 +122,31 @@
 }
 
 .dates {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-wrap: nowrap;
   gap: u.rem-calc(10);
   list-style: none;
-  padding: 0;
+  padding: 0 0 u.rem-calc(8);
   margin: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+
+  li {
+    flex: 0 0 u.rem-calc(100);
+    display: flex;
+  }
 
   @include sg.min(tabletLandscape) {
+    display: grid;
     grid-template-columns: repeat(4, 1fr);
+    overflow-x: visible;
+    padding-bottom: 0;
+
+    li {
+      flex: initial;
+    }
   }
 }
 

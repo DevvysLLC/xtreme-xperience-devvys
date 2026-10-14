@@ -5,59 +5,85 @@
   border: 1px solid #d5d5d2;
   border-radius: u.rem-calc(5);
   background: sg.color(white);
-  padding: u.rem-calc(12) u.rem-calc(5);
-  min-height: u.rem-calc(104);
+  padding: u.rem-calc(8) u.rem-calc(6);
+  min-height: u.rem-calc(84);
   position: relative;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
   width: 100%;
   cursor: pointer;
+
+  @include sg.min(tabletLandscape) {
+    min-height: u.rem-calc(96);
+    padding: u.rem-calc(10) u.rem-calc(6);
+  }
 
   span {
     display: block;
   }
 
   &__weekday {
-    font-size: u.rem-calc(14);
+    font-size: u.rem-calc(12);
     text-transform: none;
     letter-spacing: 0;
     color: inherit;
+    line-height: 1.2;
+
+    @include sg.min(tabletLandscape) {
+      font-size: u.rem-calc(13);
+    }
   }
 
   &__day {
-    font-size: u.rem-calc(30);
-    font-weight: 600;
-    margin: u.rem-calc(4) 0 u.rem-calc(2);
+    font-size: u.rem-calc(22);
+    font-weight: 700;
+    margin: u.rem-calc(2) 0;
     line-height: 1.1;
     color: inherit;
+
+    @include sg.min(tabletLandscape) {
+      font-size: u.rem-calc(26);
+    }
   }
 
   &__month {
-    font-size: u.rem-calc(12);
+    font-size: u.rem-calc(11);
     line-height: 1.2;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    margin-bottom: u.rem-calc(8);
+    margin-bottom: u.rem-calc(4);
     color: inherit;
+
+    @include sg.min(tabletLandscape) {
+      font-size: u.rem-calc(12);
+    }
   }
 
   &__price {
-    font-size: u.rem-calc(13);
+    font-size: u.rem-calc(12);
+    font-weight: 500;
     color: inherit;
+    line-height: 1.2;
+
+    @include sg.min(tabletLandscape) {
+      font-size: u.rem-calc(13);
+    }
   }
 
   &.active {
     border: 1px solid sg.color(black);
     background: sg.color(black);
     color: sg.color(white);
-    padding: u.rem-calc(12) u.rem-calc(5);
 
     &::after {
       content: '✓';
       position: absolute;
-      right: u.rem-calc(7);
-      top: u.rem-calc(6);
-      font-size: u.rem-calc(12);
+      right: u.rem-calc(6);
+      top: u.rem-calc(5);
+      font-size: u.rem-calc(11);
       font-weight: 700;
       color: sg.color(white);
     }
