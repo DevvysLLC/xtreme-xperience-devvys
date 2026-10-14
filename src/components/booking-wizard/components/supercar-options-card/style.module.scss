@@ -24,8 +24,8 @@
 
   &__media {
     width: 100%;
-    height: u.rem-calc(130);
-    padding: u.rem-calc(10);
+    height: u.rem-calc(125);
+    padding: u.rem-calc(8) u.rem-calc(16);
     box-sizing: border-box;
     background: #fff;
     position: relative;
@@ -35,11 +35,11 @@
     overflow: hidden;
 
     @include sg.min(tabletLandscape) {
-      height: u.rem-calc(150);
-      padding: u.rem-calc(12) u.rem-calc(16);
+      height: u.rem-calc(135);
+      padding: u.rem-calc(10) u.rem-calc(20);
     }
 
-    & > div,
+    & > div:not(.card__badge),
     & > picture,
     & > span:not(.card__tag) {
       width: 100% !important;
@@ -51,7 +51,8 @@
     }
 
     img {
-      width: 100%;
+      width: auto;
+      max-width: 100%;
       height: 100%;
       max-height: 100%;
       object-fit: contain;
