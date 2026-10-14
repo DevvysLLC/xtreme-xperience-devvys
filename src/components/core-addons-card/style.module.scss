@@ -35,9 +35,8 @@
 
   &__badge {
     position: absolute;
-    top: u.rem-calc(14);
-    left: u.rem-calc(14);
-    z-index: 2;
+    top: 0;
+    left: 0;
   }
 
   &__media {
@@ -96,34 +95,10 @@
   &__header {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
-    padding-bottom: 0;
-    border-bottom: none;
+    padding-bottom: sg.spacing(regular);
+    border-bottom: u.rem-calc(1) dashed sg.color(border-dark);
     flex-wrap: wrap;
     gap: u.rem-calc(12);
-  }
-
-  &__price {
-    font-size: u.rem-calc(15);
-
-    [data-price-prefix] {
-      font-size: u.rem-calc(13);
-      color: #777;
-      margin-right: u.rem-calc(4);
-    }
-
-    s, [data-compare-at-price] {
-      font-size: u.rem-calc(14);
-      color: #888;
-      text-decoration: line-through;
-      margin-right: u.rem-calc(4);
-    }
-
-    [data-price] {
-      font-size: u.rem-calc(20);
-      font-weight: 800;
-      color: #111;
-    }
   }
 
   &__title {
@@ -143,18 +118,9 @@
   &__actions {
     flex-shrink: 0;
     margin-top: auto;
-    display: flex;
-    align-items: flex-start;
-
-    form {
-      display: inline-flex;
-      width: auto;
-      padding: 0;
-    }
   }
 
   &__cta {
-    width: auto !important;
-    display: inline-flex !important;
+    width: 100%;
   }
 }

@@ -49,37 +49,13 @@ export const CoreAddonsCard: FC<CoreAddonsCardProps> = (props) => {
     }
   }
 
-  const isMostPopular = badge?.label?.toUpperCase().includes('MOST POPULAR')
-  const fallbackBadge =
-    layout === 'featured' && !badge
-      ? {
-          label: 'MOST POPULAR',
-          backgroundColor: '#ff6900',
-          color: '#000000'
-        }
-      : null
-
   return (
     <article className={clsx(styles.card, layout && styles[`card--${layout}`])}>
       <div className={styles.card__media}>
-        {badge ? (
+        {badge && (
           <div className={styles.card__badge}>
-            <CoreBadge
-              data={badge}
-              backgroundColor={isMostPopular ? '#ff6900' : undefined}
-              color={isMostPopular ? '#000000' : undefined}
-            />
+            <CoreBadge data={badge} />
           </div>
-        ) : (
-          fallbackBadge && (
-            <div className={styles.card__badge}>
-              <CoreBadge
-                label={fallbackBadge.label}
-                backgroundColor={fallbackBadge.backgroundColor}
-                color={fallbackBadge.color}
-              />
-            </div>
-          )
         )}
 
         <CoreImage
@@ -110,11 +86,7 @@ export const CoreAddonsCard: FC<CoreAddonsCardProps> = (props) => {
           <div className={styles.card__header}>
             <h2 className={styles.card__title}>{title}</h2>
 
-            <CorePrice
-              data={price}
-              showPrefix={true}
-              className={styles.card__price}
-            />
+            <CorePrice data={price} showPrefix={true} />
           </div>
 
           {description && (

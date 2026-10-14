@@ -90,9 +90,9 @@ export const CartPage: FC<Props> = ({
         <div className={styles.policySection}>
           <h2 className={styles.policySection__title}>BEFORE YOU FINISH</h2>
 
-          <details className={styles.policySection__accordion} open>
+          <details className={styles.policySection__accordion}>
             <summary className={styles.policySection__summary}>
-              Cancellation Policy
+              Cancellation Policy &amp; Terms and Conditions
             </summary>
             <div className={styles.policySection__content}>
               <p>
@@ -110,27 +110,19 @@ export const CartPage: FC<Props> = ({
                 limited to the original event weekend.
               </p>
               <p>
-                <a href="/policies" className={styles.policySection__link}>
-                  Read the full cancellation and rescheduling policies ↗;
-                </a>
-              </p>
-            </div>
-          </details>
-
-          <details className={styles.policySection__accordion} open>
-            <summary className={styles.policySection__summary}>
-              Terms &amp; Conditions
-            </summary>
-            <div className={styles.policySection__content}>
-              <p>
                 Drivers must be 18 or older with a valid driver&apos;s license. Participants must meet eligibility requirements and complete the liability waiver. Driver protection is required for drives.
               </p>
               <p>
                 No-shows forfeit their booking. Weather or vehicle availability may affect your reservation; see the full policies for applicable changes and restrictions.
               </p>
               <p>
+                <a href="/policies" className={styles.policySection__link}>
+                  Read the full cancellation and rescheduling policies &nearr;
+                </a>
+              </p>
+              <p>
                 <a href="/terms" className={styles.policySection__link}>
-                  Read full Terms &amp; Conditions ↗;
+                  Read full Terms &amp; Conditions &nearr;
                 </a>
               </p>
             </div>
