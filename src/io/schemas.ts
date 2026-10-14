@@ -1313,10 +1313,16 @@ export const CheckoutStringEmailSchema = z.string().email()
 export const CheckoutStringUsPhoneNumberSchema = z
   .string()
   .refine(
-    (val) => /^\d{10}$/.test(val.replace(/\D/g, '')),
+    (val) => {
+      const digits = val.replace(/\D/g, '')
+      return digits.length === 10 || (digits.length === 11 && digits.startsWith('1'))
+    },
     'must match 10-digit phone number'
   )
-  .transform((val) => val.replace(/\D/g, ''))
+  .transform((val) => {
+    const digits = val.replace(/\D/g, '')
+    return digits.length === 11 && digits.startsWith('1') ? digits.slice(1) : digits
+  })
 
 export const CheckoutDetailsFormInputSchema = z.object({
   firstName: z.string(),
@@ -1662,10 +1668,15 @@ export const ContactEmailSchema = z.string().min(1, 'required').email('invalid')
 
 export const ContactPhoneSchema = z
   .string()
-  .refine(
-    (val) => val.trim() === '' || /^\d{10}$/.test(val.replace(/\D/g, '')),
-    'invalid'
-  )
+  .refine((val) => {
+    if (val.trim() === '') {
+      return true
+    }
+    const digits = val.replace(/\D/g, '')
+    return (
+      digits.length === 10 || (digits.length === 11 && digits.startsWith('1'))
+    )
+  }, 'invalid')
 
 export const ContactPostalCodeSchema = z
   .string()
