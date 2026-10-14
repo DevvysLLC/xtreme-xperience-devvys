@@ -46,6 +46,8 @@
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: u.rem-calc(10) u.rem-calc(6);
+    width: 100%;
+    box-sizing: border-box;
 
     @include sg.min(tabletLandscape) {
       grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -60,6 +62,8 @@
 
 .time {
   position: relative;
+  width: 100%;
+  box-sizing: border-box;
   min-height: u.rem-calc(48);
   padding: u.rem-calc(8) u.rem-calc(4) u.rem-calc(6);
   margin-top: u.rem-calc(5);

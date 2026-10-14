@@ -38,6 +38,11 @@
       padding: u.rem-calc(10) u.rem-calc(28);
     }
 
+    @include sg.max(maxWidthFromDesignTeam) {
+      height: u.rem-calc(175);
+      padding: u.rem-calc(10) u.rem-calc(28) 0;
+    }
+
     div[class*='wrapper'] {
       width: 100% !important;
       height: 100% !important;
@@ -57,7 +62,7 @@
     }
 
     img {
-      position: relative !important;
+      // position: relative !important;
       width: auto !important;
       max-width: 100% !important;
       height: 100% !important;
@@ -147,7 +152,10 @@
     margin-top: auto;
 
     & > * {
-      width: 100%;
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      box-sizing: border-box !important;
     }
   }
 
