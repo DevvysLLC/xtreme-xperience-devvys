@@ -24,8 +24,8 @@
 
   &__media {
     width: 100%;
-    height: u.rem-calc(135);
-    padding: u.rem-calc(8) u.rem-calc(20);
+    height: u.rem-calc(155);
+    padding: u.rem-calc(26) u.rem-calc(20) u.rem-calc(8);
     box-sizing: border-box;
     background: #fff;
     position: relative;
@@ -34,13 +34,13 @@
     justify-content: center;
 
     @include sg.min(tabletLandscape) {
-      height: u.rem-calc(145);
-      padding: u.rem-calc(10) u.rem-calc(28);
+      height: u.rem-calc(170);
+      padding: u.rem-calc(30) u.rem-calc(28) u.rem-calc(10);
     }
 
     @include sg.min(maxWidthFromDesignTeam) {
       height: u.rem-calc(220);
-      padding: u.rem-calc(10) u.rem-calc(28) 0;
+      padding: u.rem-calc(30) u.rem-calc(28) 0;
     }
 
     div[class*='wrapper'] {
