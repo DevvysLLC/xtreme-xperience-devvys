@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import type { SiteFragment } from '../../core/dato/fragments/site.typegen'
 import { initDatoSdk } from '../../core/dato/sdk'
+import { rethrowPageError } from '../../core/errors/rethrow-page-error'
 import { logger } from '../../core/logger/logger'
 import { extractPageSeo, mergeSeoData, seoToMetadata } from '../../utils/seo'
 
@@ -34,19 +35,7 @@ export const generateSeoMetadata = async (
 
     return seoToMetadata(mergedSeo, globalSeo, faviconTags)
   } catch (err) {
-    logger.error({ error: err }, 'Failed to generate SEO metadata')
-    const extractedSeo = extractPageSeo(pageSeo)
-    return seoToMetadata(
-      extractedSeo ?? {
-        title: null,
-        description: null,
-        image: null,
-        noIndex: null,
-        twitterCard: null
-      },
-      null,
-      null
-    )
+    return rethrowPageError(err, 'Failed to generate SEO metadata')
   }
 }
 

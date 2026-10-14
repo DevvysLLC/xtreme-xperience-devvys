@@ -1,7 +1,7 @@
 import { cache } from 'react'
-import { ErrorMessage } from '../../../components/error-message'
 import { TemplateBlogListingPage } from '../../../components/template-blog-listing-page'
 import { initDatoSdk } from '../../../core/dato/sdk'
+import { rethrowPageError } from '../../../core/errors/rethrow-page-error'
 import { logger } from '../../../core/logger/logger'
 
 // Revalidate page data every 60 seconds for faster server responses
@@ -41,9 +41,6 @@ export default async function BlogListingPage() {
       />
     )
   } catch (err) {
-    logger.error({ error: err }, 'Blog listing request failed')
-    const errorMessage =
-      err instanceof Error ? err.message : 'Failed to load blog listing'
-    return <ErrorMessage message={errorMessage} />
+    rethrowPageError(err, 'Blog listing request failed')
   }
 }

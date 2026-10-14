@@ -13,10 +13,10 @@ type Props = {
 
 export const GlobalHeader = async ({ isTransparent }: Props = {}) => {
   const sdk = initDatoSdk()
-  const [{ globalConfig }, { header }, { allSupercars }] = await Promise.all([
+  // The header renders on every page, so keep its queries small.
+  const [{ globalConfig }, { header }] = await Promise.all([
     sdk.getGlobalConfig(),
-    sdk.getHeader(),
-    sdk.getSupercars()
+    sdk.getHeader()
   ])
   const { contactPhoneNumber, workingHours } = globalConfig ?? {}
   const { config, content } = header ?? {}

@@ -1,7 +1,7 @@
 import process from 'node:process'
 
 const datoToken = process.env.NEXT_PUBLIC_DATOCMS_READONLY_TOKEN || 'INVALID'
-const datoEnvironment = process.env.NEXT_PUBLIC_DATOCMS_ENVIRONMENT || null
+const datoEnvironment = process.env.DATOCMS_ENVIRONMENT || null
 
 const baseSchemaHeaders = {
   Authorization: datoToken,
