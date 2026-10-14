@@ -149,12 +149,13 @@
     form {
       display: inline-flex;
       width: auto;
+      padding: 0;
     }
   }
 
   &__cta {
     width: auto !important;
     display: inline-flex !important;
-    padding-inline: u.rem-calc(36);
+    padding: 0 !important;
   }
 }

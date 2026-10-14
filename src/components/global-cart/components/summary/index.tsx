@@ -90,12 +90,24 @@ export const CartSummary: FC = () => {
     return Math.round(Math.max(discountTotal, metadataSavings))
   }, [cartState?.metadata, discountTotal])
 
-  const experienceItems = useMemo(() => {
-    return lineItems.filter((item) => item.type !== 'insurance')
+  const driveItems = useMemo(() => {
+    return lineItems.filter((item) => {
+      const type = item.type?.toLowerCase()
+      const name = item.name?.toLowerCase() || ''
+      if (type === 'insurance') return false
+      if (name.includes('pit pass') || name.includes('throttle') || name.includes('gift') || type === 'giftcard' || type === 'retail') return false
+      return true
+    })
   }, [lineItems])
 
-  const insuranceItems = useMemo(() => {
-    return lineItems.filter((item) => item.type === 'insurance')
+  const coverageAndAddonItems = useMemo(() => {
+    return lineItems.filter((item) => {
+      const type = item.type?.toLowerCase()
+      const name = item.name?.toLowerCase() || ''
+      if (type === 'insurance') return true
+      if (name.includes('pit pass') || name.includes('throttle') || name.includes('gift') || type === 'giftcard' || type === 'retail') return true
+      return false
+    })
   }, [lineItems])
 
   return (
@@ -128,20 +140,20 @@ export const CartSummary: FC = () => {
         </div>
       )}
 
-      {isReviewPage && experienceItems.length > 0 && (
+      {isReviewPage && driveItems.length > 0 && (
         <>
           <hr className={styles.summary__divider} />
-          <CartLineItems lineItems={experienceItems} compact={true} />
+          <CartLineItems lineItems={driveItems} compact={true} />
         </>
       )}
 
-      {isReviewPage && insuranceItems.length > 0 && (
+      {isReviewPage && coverageAndAddonItems.length > 0 && (
         <>
           <hr className={styles.summary__divider} />
           <div className={styles.summary__sectionHeader}>
             COVERAGE &amp; ADD-ONS
           </div>
-          <CartLineItems lineItems={insuranceItems} compact={true} />
+          <CartLineItems lineItems={coverageAndAddonItems} compact={true} />
         </>
       )}
 

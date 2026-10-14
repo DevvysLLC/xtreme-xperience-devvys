@@ -90,7 +90,7 @@ export const Upsell: React.FC = () => {
   return (
     <div className={styles.grid}>
       {/* 1. ADD A PIT PASS */}
-      <article className={styles.upsellCard}>
+      <article className={`${styles.upsellCard} ${styles['upsellCard--grey']}`}>
         <div className={styles.upsellCard__header}>
           <h3 className={styles.upsellCard__title}>ADD A PIT PASS</h3>
           <div className={styles.upsellCard__priceGroup}>
@@ -146,7 +146,12 @@ export const Upsell: React.FC = () => {
       <article className={`${styles.upsellCard} ${styles['upsellCard--withMedia']}`}>
         <div className={styles.upsellCard__media}>
           <img
-            src="/images/fallback.png"
+            src={
+              mediaAddon?.model?.thumbnail?.image?.url ||
+              mediaAddon?.model?.thumbnail?.image?.responsiveImage?.src ||
+              config?.addons?.[0]?.model?.thumbnail?.image?.url ||
+              '/images/booking-experience-1.jpg'
+            }
             alt="Full Throttle Gift Package"
             loading="lazy"
           />

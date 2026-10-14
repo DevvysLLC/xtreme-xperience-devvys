@@ -22,7 +22,7 @@ import { CoreRocketRezPrice } from '../../../core-rocketrez-price'
 import { CoreTextMarkdown } from '../../../core-text-markdown'
 import styles from './style.module.scss'
 
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { ROUTES } from '../../../../config/routes'
 import { DRAWER_REQUEST_CLOSE_MESSAGE_NAME } from '../../../../core/messaging/main/messages/close-drawer'
 import { useMainBus } from '../../../../core/messaging/main/react'
@@ -42,6 +42,8 @@ export const CartLineItem: FC<Props> = ({
   metadata: externalMetadata
 }) => {
   const router = useRouter()
+  const pathname = usePathname()
+  const isReviewPage = pathname?.includes('/review')
   const drawerBus = useMainBus(DRAWER_REQUEST_CLOSE_MESSAGE_NAME, () => {})
   const t = useTranslations('global_cart')
   const { mutateAsync } = useCartRemoveLineItem()
@@ -143,9 +145,19 @@ export const CartLineItem: FC<Props> = ({
     }
 
     const isInsurance = type === 'insurance'
+    const isPitPass =
+      (lineItem.name != null && lineItem.name.toLowerCase().includes('pit pass')) ||
+      (displayTitle != null && displayTitle.toLowerCase().includes('pit pass'))
+    const isFullThrottleOrMedia =
+      (lineItem.name != null && (lineItem.name.toLowerCase().includes('throttle') || lineItem.name.toLowerCase().includes('media'))) ||
+      (displayTitle != null && (displayTitle.toLowerCase().includes('throttle') || displayTitle.toLowerCase().includes('media')))
+    const shouldHideEdit = isPitPass || isFullThrottleOrMedia
+
     const compactDisplayTitle = isInsurance
       ? 'Base Driver protection'
-      : displayTitle
+      : isPitPass
+        ? `Pit Pass × ${lineItem.quantity ?? 1}`
+        : displayTitle
 
     return (
       <article className={clsx(styles.CartLineItemCompact, isInsurance && styles['CartLineItemCompact--insurance'])}>
@@ -155,6 +167,13 @@ export const CartLineItem: FC<Props> = ({
               <svg width="20" height="22" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                 <path d="m9 12 2 2 4-4" />
+              </svg>
+            </div>
+          ) : isPitPass ? (
+            <div className={styles.CartLineItemCompact__ticketIcon} aria-hidden="true">
+              <svg width="22" height="18" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="6" width="20" height="12" rx="2" />
+                <path d="M6 12h.01M18 12h.01M10 12h4" />
               </svg>
             </div>
           ) : (
@@ -200,6 +219,24 @@ export const CartLineItem: FC<Props> = ({
               <p className={styles.CartLineItemCompact__meta}>
                 {lineItem.quantity ?? 1} session &times; ${price}
               </p>
+            ) : isPitPass ? (
+              <>
+                {date && (
+                  <p className={styles.CartLineItemCompact__meta}>
+                    {format(date, 'EEE, MMM d, yyyy')}
+                  </p>
+                )}
+                {trackNickname && (
+                  <p className={styles.CartLineItemCompact__meta}>
+                    {trackNickname}
+                  </p>
+                )}
+                <p className={styles.CartLineItemCompact__meta}>
+                  {lineItem.quantity ?? 1} guest &times; ${price}
+                </p>
+              </>
+            ) : isFullThrottleOrMedia ? (
+              <p className={styles.CartLineItemCompact__meta}>Media package</p>
             ) : isGiftCard ? (
               <p>Digital gift card</p>
             ) : (
@@ -226,12 +263,23 @@ export const CartLineItem: FC<Props> = ({
           {!readOnly && (
             <div className={styles.CartLineItemCompact__actions}>
               {isInsurance ? (
+                isReviewPage && (
+                  <button
+                    type="button"
+                    className={styles.CartLineItemCompact__actionBtn}
+                    onClick={() => router.push(ROUTES.BOOKING.COVERAGE_OPTIONS)}
+                  >
+                    Edit coverage
+                  </button>
+                )
+              ) : shouldHideEdit ? (
                 <button
                   type="button"
                   className={styles.CartLineItemCompact__actionBtn}
-                  onClick={() => router.push(ROUTES.BOOKING.COVERAGE_OPTIONS)}
+                  onClick={handleRemove}
+                  aria-label={t('item.remove')}
                 >
-                  Edit coverage
+                  {t('item.remove')}
                 </button>
               ) : (
                 <>

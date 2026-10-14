@@ -153,7 +153,8 @@
     }
   }
 
-  &__shieldIcon {
+  &__shieldIcon,
+  &__ticketIcon {
     display: flex;
     align-items: center;
     justify-content: center;

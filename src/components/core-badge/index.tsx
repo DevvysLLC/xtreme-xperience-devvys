@@ -22,15 +22,15 @@ export const CoreBadge: FC<Props> = ({
     <span
       className={clsx(styles.root, className)}
       style={{
-        backgroundColor: data?.backgroundColor?.hex || backgroundColor,
-        color: data?.color?.hex || color
+        backgroundColor: backgroundColor || data?.backgroundColor?.hex,
+        color: color || data?.color?.hex
       }}
     >
       <span
         className={styles.label}
-        style={{ color: data?.color?.hex || color }}
+        style={{ color: color || data?.color?.hex }}
       >
-        {data?.label || label}
+        {label || data?.label}
       </span>
     </span>
   )

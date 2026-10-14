@@ -17,6 +17,11 @@
   flex-direction: column;
   gap: u.rem-calc(16);
 
+  &--grey {
+    background: #f6f5f4;
+    border-color: #f6f5f4;
+  }
+
   &--withMedia {
     display: flex;
     flex-direction: column;
@@ -137,9 +142,9 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: u.rem-calc(12);
-    padding-top: u.rem-calc(12);
-    border-top: 1px solid #f0edeb;
+    margin-top: u.rem-calc(8);
+    padding-top: 0;
+    border-top: none;
     gap: u.rem-calc(16);
     flex-wrap: wrap;
   }
@@ -150,6 +155,8 @@
     border: 1px solid #ccc;
     background: #fff;
     height: u.rem-calc(36);
+    border-radius: u.rem-calc(3);
+    overflow: hidden;
   }
 
   &__qtyBtn {
@@ -190,9 +197,9 @@
     font-weight: 700;
     color: #111;
     background: #ffffff;
-    border: 1px solid #111;
-    border-radius: u.rem-calc(4);
-    padding: u.rem-calc(8) u.rem-calc(20);
+    border: 1.5px solid #111;
+    border-radius: u.rem-calc(8);
+    padding: u.rem-calc(8) u.rem-calc(22);
     cursor: pointer;
     transition: all 0.15s ease;
     white-space: nowrap;
