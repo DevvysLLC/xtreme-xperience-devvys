@@ -154,7 +154,7 @@ export const CartLineItem: FC<Props> = ({
     const shouldHideEdit = isPitPass || isFullThrottleOrMedia
 
     const compactDisplayTitle = isInsurance
-      ? 'Base Driver protection'
+      ? 'Base Driver Protection'
       : isPitPass
         ? `Pit Pass × ${lineItem.quantity ?? 1}`
         : displayTitle
@@ -162,20 +162,13 @@ export const CartLineItem: FC<Props> = ({
     return (
       <article className={clsx(styles.CartLineItemCompact, isInsurance && styles['CartLineItemCompact--insurance'])}>
         <div className={styles.CartLineItemCompact__media}>
-          {isInsurance ? (
-            <div className={styles.CartLineItemCompact__shieldIcon} aria-hidden="true">
-              <svg width="20" height="22" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                <path d="m9 12 2 2 4-4" />
-              </svg>
-            </div>
-          ) : isPitPass ? (
+          {isPitPass ? (
             <div className={styles.CartLineItemCompact__ticketIcon} aria-hidden="true">
               <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18v4a2 2 0 0 0 0 4v4H3v-4a2 2 0 0 0 0-4V6Z"></path><path d="M15 6v3m0 2v2m0 2v3"></path></svg>
             </div>
           ) : (
             <img
-              src={image || '/images/fallback.png'}
+              src={image || (isInsurance ? '/images/xx-logo.svg' : '/images/fallback.png')}
               alt={compactDisplayTitle}
               className={styles.CartLineItemCompact__image}
               loading="lazy"
@@ -320,7 +313,7 @@ export const CartLineItem: FC<Props> = ({
         <>
           <div className={styles.CartLineItem__media}>
             <img
-              src={image || '/images/fallback.png'}
+              src={image || (type === 'insurance' ? '/images/xx-logo.svg' : '/images/fallback.png')}
               alt={displayTitle}
               className={styles.CartLineItem__image}
               loading="lazy"

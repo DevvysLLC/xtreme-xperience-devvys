@@ -13,8 +13,11 @@ export type CartContents = {
   insuranceSessions: number
   hasAddons: boolean
   totalAddons: number
+  hasGiftCards: boolean
+  totalGiftCards: number
   totalItems: number
   hasOnlyAddons: boolean
+  hasOnlyGiftCards: boolean
   cartHasValidInsurance: boolean
   canSkipBooking: boolean
   insuranceQuantityMatchesInsuranceSessions: boolean
@@ -31,6 +34,7 @@ export const computeContents = (
   let insuranceQuantity = 0
   let carCount = 0
   let addonCount = 0
+  let giftCardCount = 0
   let totalLaps = 0
   let totalSessions = 0
   let insuranceSessions = 0
@@ -40,19 +44,27 @@ export const computeContents = (
   for (const lineItem of lineItems) {
     const key = getCartLineItemReadMetadataKey({ lineItem })
     const metadata = metadataList.find((m) => m.key === key)
-    const normalizedLineItemType = String(lineItem.type ?? '').toLowerCase()
+    const normalizedLineItemType = String(
+      lineItem.productType ?? lineItem.type ?? ''
+    ).toLowerCase()
     const inferredType =
       normalizedLineItemType === 'event'
         ? 'car'
         : normalizedLineItemType === 'insurance'
           ? 'insurance'
-          : normalizedLineItemType === 'retail'
-            ? 'addon'
-            : null
+          : normalizedLineItemType === 'giftcard' ||
+              normalizedLineItemType === 'gift_card' ||
+              normalizedLineItemType === 'gift card'
+            ? 'gift_card'
+            : normalizedLineItemType === 'retail'
+              ? 'addon'
+              : null
     const itemType = metadata?.type ?? inferredType
     if (itemType === 'insurance') {
       insuranceCount += 1
       insuranceQuantity += lineItem.quantity
+    } else if (itemType === 'gift_card') {
+      giftCardCount += lineItem.quantity
     } else if (itemType === 'car') {
       carCount += 1
       const sessionsForItem =
@@ -94,7 +106,13 @@ export const computeContents = (
     carCount === 0 &&
     insuranceCount === 0
 
-  const canSkipBooking = hasOnlyAddons
+  const hasOnlyGiftCards =
+    lineItems.length > 0 &&
+    giftCardCount > 0 &&
+    carCount === 0 &&
+    insuranceCount === 0
+
+  const canSkipBooking = hasOnlyAddons || hasOnlyGiftCards
 
   return {
     hasInsurance: insuranceCount > 0,
@@ -107,8 +125,11 @@ export const computeContents = (
     insuranceSessions,
     hasAddons: addonCount > 0,
     totalAddons: addonCount,
+    hasGiftCards: giftCardCount > 0,
+    totalGiftCards: giftCardCount,
     totalItems: lineItems.length,
     hasOnlyAddons,
+    hasOnlyGiftCards,
     insuranceQuantityMatchesInsuranceSessions,
     cartHasValidInsurance,
     hasOnlyRideAlongs,

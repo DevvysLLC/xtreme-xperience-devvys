@@ -27,7 +27,7 @@ type Props = {
   initialTabIndex?: number
 }
 
-const GIFTS_TAB_INDEX = -1
+export const GIFTS_TAB_INDEX = -1
 
 export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
   const { state, setActiveTabIndex } = useBookingWizardState()
