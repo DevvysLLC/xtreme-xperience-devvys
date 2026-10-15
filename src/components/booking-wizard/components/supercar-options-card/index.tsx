@@ -89,6 +89,19 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
   }, [onClose])
 
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
+  const inlineRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    if (isSelected && inlineRef.current) {
+      const timer = setTimeout(() => {
+        inlineRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        })
+      }, 100)
+      return () => clearTimeout(timer)
+    }
+  }, [isSelected])
 
   const { data } = useCart()
   const clearCart = useCartClear()
@@ -715,6 +728,13 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
                     setIsDetailsOpen(false)
                     if (!isSelected) {
                       toggleSelected()
+                    } else {
+                      setTimeout(() => {
+                        inlineRef.current?.scrollIntoView({
+                          behavior: 'smooth',
+                          block: 'start'
+                        })
+                      }, 100)
                     }
                   }}
                 >
@@ -728,6 +748,8 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
 
       {!soldOut && isSelected && (
         <section
+          ref={inlineRef}
+          id={`supercar-time-panel-${rocketRezSeatTypeId}`}
           className={styles.inline}
           aria-label={`${t('label.quantity')} / ${t('label.schedules')}`}
           style={inlineStyle}

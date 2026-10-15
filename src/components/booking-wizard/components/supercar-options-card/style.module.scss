@@ -260,6 +260,7 @@
 
 /* Inline "choose laps and time" panel — spans the full grid row below the card row */
 .inline {
+  scroll-margin-top: u.rem-calc(24);
   grid-column: 1 / -1;
   min-width: 0;
   border: 1px solid #111;

@@ -15,7 +15,9 @@
   justify-content: space-between;
   text-align: center;
   cursor: pointer;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
 
   span {
     display: block;
@@ -44,7 +46,7 @@
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 0 !important;
+    gap: 4px !important;
     color: inherit;
 
     [data-price-prefix] {
