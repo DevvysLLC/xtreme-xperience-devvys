@@ -920,7 +920,8 @@
     "close": "Close notification"
   },
   "booking_header": {
-    "cart": "Cart"
+    "cart": "Cart",
+    "need_help": "Need help?"
   },
   "global_cart": {
     "upsells": {

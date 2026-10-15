@@ -26,21 +26,27 @@ export const BookingHeader: FC<Props> = ({ showCart = true }) => {
         </Link>
       </div>
 
-      {backLink && (
-        <CoreCta
-          data={backLink}
-          className={styles.backLink}
-          layoutType="underline"
-          styleType="black"
-          sizeType="large"
-        />
-      )}
+      <div className={styles.right}>
+        {backLink && (
+          <CoreCta
+            data={backLink}
+            className={styles.backLink}
+            layoutType="underline"
+            styleType="black"
+            sizeType="large"
+          />
+        )}
 
-      {showCart && (
-        <button type="button" className={styles.cart} aria-label={t('cart')}>
-          <CoreIcon icon="cart" />
-        </button>
-      )}
+        <a href="tel:8662737727" className={styles.helpLink}>
+          {t('need_help')}
+        </a>
+
+        {showCart && (
+          <button type="button" className={styles.cart} aria-label={t('cart')}>
+            <CoreIcon icon="cart" />
+          </button>
+        )}
+      </div>
     </header>
   )
 }

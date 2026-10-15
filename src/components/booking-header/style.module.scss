@@ -29,8 +29,38 @@
   }
 }
 
+.right {
+  display: flex;
+  align-items: center;
+  gap: sg.spacing(regular);
+
+  @include sg.min(tabletLandscape) {
+    gap: sg.spacing(medium);
+  }
+}
+
 .backLink {
   white-space: nowrap;
+}
+
+.helpLink {
+  display: inline-flex;
+  align-items: center;
+  font-family: sg.font-family(barlow);
+  font-size: sg.font-size(regular);
+  font-weight: sg.font-weight(bold);
+  line-height: sg.line-height('100%');
+  color: sg.color(black);
+  text-decoration: none;
+  border-bottom: u.rem-calc(1.5) solid currentColor;
+  padding-bottom: sg.spacing(xxsmall);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.7;
+  }
 }
 
 .cart {
