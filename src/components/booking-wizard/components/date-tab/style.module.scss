@@ -3,96 +3,81 @@
 
 .date {
   border: 1px solid #d5d5d2;
-  border-radius: u.rem-calc(5);
+  border-radius: u.rem-calc(4);
   background: sg.color(white);
-  padding: u.rem-calc(8) u.rem-calc(6);
-  min-height: u.rem-calc(84);
+  padding: u.rem-calc(14) u.rem-calc(8);
+  width: u.rem-calc(96);
+  min-height: u.rem-calc(126);
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   text-align: center;
-  width: 100%;
   cursor: pointer;
-
-  @include sg.min(tabletLandscape) {
-    min-height: u.rem-calc(96);
-    padding: u.rem-calc(10) u.rem-calc(6);
-  }
+  transition: border-color 0.15s ease, background-color 0.15s ease;
 
   span {
     display: block;
   }
 
   &__weekday {
-    font-size: u.rem-calc(12);
-    text-transform: none;
-    letter-spacing: 0;
-    color: inherit;
+    font-family: sg.font-family(barlow);
+    font-size: u.rem-calc(14);
+    font-weight: 400;
     line-height: 1.2;
-
-    @include sg.min(tabletLandscape) {
-      font-size: u.rem-calc(13);
-    }
+    color: inherit;
+    text-transform: capitalize;
   }
 
   &__day {
-    font-size: u.rem-calc(22);
+    font-family: sg.font-family('barlow-semi-condensed');
+    font-size: u.rem-calc(30);
     font-weight: 700;
-    margin: u.rem-calc(2) 0;
     line-height: 1.1;
     color: inherit;
-
-    @include sg.min(tabletLandscape) {
-      font-size: u.rem-calc(26);
-    }
-  }
-
-  &__month {
-    font-size: u.rem-calc(11);
-    line-height: 1.2;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: u.rem-calc(4);
-    color: inherit;
-
-    @include sg.min(tabletLandscape) {
-      font-size: u.rem-calc(12);
-    }
+    margin: u.rem-calc(4) 0 u.rem-calc(8);
   }
 
   &__price {
-    font-size: u.rem-calc(12);
-    font-weight: 500;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0 !important;
     color: inherit;
-    line-height: 1.2;
 
-    @include sg.min(tabletLandscape) {
-      font-size: u.rem-calc(13);
+    [data-price-prefix] {
+      font-family: sg.font-family(barlow);
+      font-size: u.rem-calc(11);
+      font-weight: 400;
+      color: inherit;
+      opacity: 0.75;
+      line-height: 1.2;
+    }
+
+    [data-price] {
+      font-family: sg.font-family('barlow-semi-condensed');
+      font-size: u.rem-calc(18);
+      font-weight: 700;
+      color: inherit;
+      line-height: 1.2;
     }
   }
 
   &.active {
-    border: 1px solid sg.color(black);
+    border-color: sg.color(black);
     background: sg.color(black);
     color: sg.color(white);
-
-    &::after {
-      content: '✓';
-      position: absolute;
-      right: u.rem-calc(6);
-      top: u.rem-calc(5);
-      font-size: u.rem-calc(11);
-      font-weight: 700;
-      color: sg.color(white);
-    }
   }
 
   &__sold_out {
-    font-size: u.rem-calc(13);
-    color: #555;
-    margin-top: u.rem-calc(4);
+    font-family: sg.font-family(barlow);
+    font-size: u.rem-calc(12);
+    font-weight: 400;
+    color: inherit;
+    opacity: 0.75;
+    line-height: 1.2;
   }
 
   &.active &__sold_out {

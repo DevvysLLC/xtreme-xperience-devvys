@@ -11,6 +11,7 @@ import type {
 } from '../../../../io/types'
 import { parseLocalDate } from '../../../../utils/date-time'
 import { CoreBadge } from '../../../core-badge'
+import { CoreRocketRezPrice } from '../../../core-rocketrez-price'
 import styles from './style.module.scss'
 
 type Props = {
@@ -34,9 +35,8 @@ export const DayTab: React.FC<Props> = ({
 }) => {
   const t = useTranslations('booking_wizard.pages.date_and_car.date_tab')
   const date = parseLocalDate(day.date)
-  const weekday = format(date, 'EEE')
+  const weekday = format(date, 'EEEE')
   const dayNumber = format(date, 'd')
-  const month = format(date, 'MMM').toUpperCase()
   const { lowestAvailablePriceFromRates } = useBookingSupercarSchedule()
   const lowestPrice = useMemo(() => {
     return lowestAvailablePriceFromRates(schedules, rateIds ?? [], isMulticar)
@@ -58,9 +58,15 @@ export const DayTab: React.FC<Props> = ({
       )}
       <span className={styles.date__weekday}>{weekday}</span>
       <span className={styles.date__day}>{dayNumber}</span>
-      <span className={styles.date__month}>{month}</span>
       {lowestPrice ? (
-        <span className={styles.date__price}>${lowestPrice.price}+</span>
+        <CoreRocketRezPrice
+          className={styles.date__price}
+          showPrefix={true}
+          data={{
+            id: `${day.date}-lowest-price`,
+            price: lowestPrice.price
+          }}
+        />
       ) : (
         <span className={styles.date__sold_out}>{t('sold_out')}</span>
       )}
