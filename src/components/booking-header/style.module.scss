@@ -9,7 +9,7 @@
   border-bottom: u.rem-calc(1) dashed sg.color(border-dark);
 
   @include sg.min(tabletLandscape) {
-    padding: sg.spacing(small) sg.spacing(xlarge);
+    padding: sg.spacing(regular) sg.spacing(xlarge);
   }
 }
 
