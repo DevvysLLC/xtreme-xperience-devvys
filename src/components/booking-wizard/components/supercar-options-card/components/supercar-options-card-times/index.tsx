@@ -153,8 +153,13 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
             rules: discountRules
           })
 
-          const displayPrice = discountResult.price
-          const displayCompareAtPrice = discountResult.compareAtPrice
+          const quantity = cardState.selectedQuantity ?? 1
+          const unitPrice = discountResult.price
+          const unitCompareAtPrice = discountResult.compareAtPrice
+          const displayPrice =
+            unitPrice != null ? unitPrice * quantity : null
+          const displayCompareAtPrice =
+            unitCompareAtPrice != null ? unitCompareAtPrice * quantity : null
           const hasPrice = rateTypePrice?.hasPrice ?? false
           const isSoldOut = isScheduleSoldOut(
             schedule,
@@ -192,12 +197,12 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
                       rateType: rateType.type,
                       startTime: schedule.startTime,
                       available: matchingSeatTypeAvailable,
-                      price: displayPrice,
+                      price: unitPrice,
                       rateTypePrice: rateTypePrice
                         ? {
                             ...rateTypePrice,
-                            price: displayPrice,
-                            compareAtPrice: displayCompareAtPrice
+                            price: unitPrice,
+                            compareAtPrice: unitCompareAtPrice
                           }
                         : null
                     }
