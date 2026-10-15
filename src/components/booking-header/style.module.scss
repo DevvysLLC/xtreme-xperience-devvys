@@ -11,6 +11,10 @@
   @include sg.min(tabletLandscape) {
     padding: sg.spacing(regular) sg.spacing(xlarge);
   }
+
+  @include sg.min(maxWidthFromDesignTeam) {
+    padding: sg.spacing(xlarge) sg.spacing(xxlarge);
+  }
 }
 
 .left {
