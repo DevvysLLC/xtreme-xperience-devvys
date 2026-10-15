@@ -256,3 +256,7 @@ export const useBookingWizardState = () => {
   }
   return context
 }
+
+export const useOptionalBookingWizardState = () => {
+  return useContext(BookingWizardContext)
+}

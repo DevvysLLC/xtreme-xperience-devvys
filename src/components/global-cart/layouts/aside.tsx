@@ -2,9 +2,12 @@
 
 import clsx from 'clsx'
 import { type FC, useMemo } from 'react'
+import { useBooking } from '../../../features/booking'
 import { useCart, useCartState } from '../../../features/cart'
+import { useOptionalBookingWizardState } from '../../booking-wizard/context'
 import { CartExpiry } from '../components/expiry'
 import { CartLineItems } from '../components/items'
+import { CartLocation } from '../components/location'
 import styles from './aside.module.scss'
 
 type Props = {
@@ -14,6 +17,10 @@ type Props = {
 export const CartAside: FC<Props> = ({ className }) => {
   const { data, isLoading, isRefreshing } = useCart()
   const { data: cartState } = useCartState()
+  const { data: booking } = useBooking()
+  const wizardContext = useOptionalBookingWizardState()
+  const wizardTrack = wizardContext?.state?.selectedEvent?.model?.track
+  const track = booking?.track ?? wizardTrack ?? null
   const rawLineItems = data?.cartData?.lineItems
   const lineItems = rawLineItems ?? []
   const isEmpty = lineItems.length === 0
@@ -84,6 +91,8 @@ export const CartAside: FC<Props> = ({ className }) => {
             {lineItems.length} {lineItems.length === 1 ? 'item' : 'items'}
           </span>
         </div>
+
+        {track && <CartLocation track={track} />}
 
         <div
           className={clsx(
