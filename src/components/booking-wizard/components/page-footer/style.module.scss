@@ -9,123 +9,19 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: u.rem-calc(10);
   width: 100%;
-  box-sizing: border-box;
-  padding: sg.spacing(xsmall) u.rem-calc(12) calc(sg.spacing(xsmall) + env(safe-area-inset-bottom, 0px));
+  padding: sg.spacing(xsmall) sg.spacing(medium) calc(sg.spacing(xsmall) + env(safe-area-inset-bottom, 0px));
   border-top: u.rem-calc(1) solid sg.color(border-dark);
   background-color: sg.color(white);
 
   @include sg.min(laptopSmall) {
     padding: sg.spacing(small) sg.spacing(xlarge);
-    gap: sg.spacing(medium);
-  }
-
-  &__left {
-    display: flex;
-    align-items: center;
-    gap: u.rem-calc(8);
-    min-width: 0;
-    flex: 1 1 auto;
-
-    @include sg.min(tabletLandscape) {
-      gap: sg.spacing(large);
-    }
-  }
-
-  &__back {
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-
-    &_button {
-      display: inline-flex;
-      align-items: center;
-      gap: u.rem-calc(4);
-      background: none;
-      border: none;
-      padding: 0;
-      cursor: pointer;
-      font-family: sg.font-family(barlow);
-      font-size: u.rem-calc(13);
-      font-weight: 700;
-      color: #111;
-      text-transform: none;
-
-      @include sg.min(tabletLandscape) {
-        font-size: u.rem-calc(14);
-        gap: u.rem-calc(6);
-      }
-
-      &:hover {
-        opacity: 0.8;
-      }
-    }
-
-    &_arrow {
-      font-size: u.rem-calc(15);
-      line-height: 1;
-    }
-
-    &_text {
-      text-decoration: underline;
-      text-underline-offset: u.rem-calc(3);
-    }
-  }
-
-  &__pricing {
-    display: flex;
-    align-items: baseline;
-    gap: u.rem-calc(4);
-    font-family: sg.font-family(barlow);
-    min-width: 0;
-    white-space: nowrap;
-
-    @include sg.min(tabletLandscape) {
-      gap: u.rem-calc(6);
-    }
-  }
-
-  &__pricing_label {
-    font-size: u.rem-calc(11);
-    color: #555;
-    font-weight: 500;
-
-    @include sg.min(tabletLandscape) {
-      font-size: u.rem-calc(13);
-    }
-  }
-
-  &__pricing_value {
-    font-size: u.rem-calc(16);
-    font-weight: 800;
-    color: #111;
-    font-family: sg.font-family(barlow);
-
-    @include sg.min(tabletLandscape) {
-      font-size: u.rem-calc(22);
-    }
-  }
-
-  &__savings {
-    font-size: u.rem-calc(11);
-    color: #ff6900;
-    font-weight: 700;
-    margin-left: u.rem-calc(2);
-    white-space: normal;
-    display: inline-block;
-
-    @include sg.min(tabletLandscape) {
-      font-size: u.rem-calc(12);
-      margin-left: u.rem-calc(4);
-      white-space: nowrap;
-    }
   }
 
   &__content {
     display: none;
 
-    @include sg.min(desktop) {
+    @include sg.min(tabletLandscape) {
       display: block;
     }
   }
@@ -149,18 +45,23 @@
   &__actions {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    flex-shrink: 0;
+    justify-content: space-between;
+    gap: sg.spacing(medium);
+    width: 100%;
+
+    @include sg.min(tabletLandscape) {
+      justify-content: flex-end;
+      width: auto;
+    }
   }
 
   &__submit {
     &[data-size='small'] {
-      min-width: u.rem-calc(110);
-      padding-inline: u.rem-calc(12);
+      flex-grow: 1;
+      min-width: auto;
 
       @include sg.min(tabletLandscape) {
-        min-width: u.rem-calc(220);
-        padding-inline: u.rem-calc(28);
+        min-width: u.rem-calc(280);
       }
     }
   }
