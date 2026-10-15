@@ -252,7 +252,7 @@ export const DateAndCarPage = () => {
   return (
     <BookingLayout>
       <section className={styles.section}>
-        <PageHeader title={title} description={description} />
+        <PageHeader title={title} description={description} centeredDesktop={true} />
         <div>
           <div className={styles.panel}>
             <div className={styles.location}>

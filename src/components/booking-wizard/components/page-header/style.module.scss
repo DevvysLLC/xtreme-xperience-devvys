@@ -20,6 +20,12 @@
   &--centered-desktop {
     text-align: center;
     margin-inline: auto;
+    align-items: center;
+
+    @include sg.min(tabletLandscape) {
+      text-align: center;
+      align-items: center;
+    }
   }
 }
 
@@ -29,6 +35,7 @@
   font-weight: sg.font-weight(400);
   line-height: sg.line-height('100%');
   text-transform: uppercase;
+  text-align: inherit;
 
   @include sg.min(tabletLandscape) {
     font-size: sg.font-size(xlarge);
@@ -39,4 +46,10 @@
   font-size: sg.font-size(regular);
   font-weight: sg.font-weight(400);
   line-height: sg.line-height('140%');
+  text-align: inherit;
+
+  p {
+    text-align: inherit;
+    margin: 0;
+  }
 }
