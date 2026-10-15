@@ -99,31 +99,8 @@
   }
 
   &__content {
-    max-height: u.rem-calc(360);
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding-right: u.rem-calc(6);
-
-    &::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    &::-webkit-scrollbar-track {
-      background: #f1f1f1;
-      border-radius: 4px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background: #c1c1c1;
-      border-radius: 4px;
-
-      &:hover {
-        background: #999;
-      }
-    }
-
-    scrollbar-width: thin;
-    scrollbar-color: #c1c1c1 #f1f1f1;
+    display: flex;
+    flex-direction: column;
   }
 
   &__savings {

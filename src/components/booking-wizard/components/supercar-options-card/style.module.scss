@@ -204,16 +204,19 @@
   }
 
   &__foot {
-    padding: 0 u.rem-calc(8) u.rem-calc(4);
+    padding: u.rem-calc(4) u.rem-calc(8);
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: u.rem-calc(4);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: u.rem-calc(2);
     border-top: 1px dashed #bfbcb9;
     margin-top: u.rem-calc(6);
 
     @include sg.min(tabletLandscape) {
       padding: 0 u.rem-calc(18) u.rem-calc(4);
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
       gap: u.rem-calc(10);
       margin-top: u.rem-calc(8);
     }
@@ -225,8 +228,8 @@
     background: none;
     border: none;
     padding: 0;
-    min-height: u.rem-calc(32);
-    font-size: u.rem-calc(10);
+    min-height: u.rem-calc(22);
+    font-size: u.rem-calc(11);
     font-weight: 600;
     font-family: inherit;
     color: #111;
@@ -246,8 +249,8 @@
     display: inline-flex;
     align-items: center;
     gap: u.rem-calc(4);
-    min-height: u.rem-calc(32);
-    font-size: u.rem-calc(10);
+    min-height: u.rem-calc(22);
+    font-size: u.rem-calc(11);
     cursor: pointer;
     white-space: nowrap;
 
@@ -452,7 +455,23 @@
   }
 
   &__add {
-    min-width: u.rem-calc(155);
+    width: 100%;
+    min-width: 0 !important;
+    font-size: u.rem-calc(14) !important;
+    line-height: 1.15 !important;
+    padding: u.rem-calc(10) u.rem-calc(16) !important;
+    min-height: u.rem-calc(40) !important;
+    border-bottom-right-radius: u.rem-calc(20) !important;
+
+    @include sg.min(tabletLandscape) {
+      width: auto;
+      min-width: u.rem-calc(155) !important;
+      font-size: inherit !important;
+      line-height: inherit !important;
+      padding: u.rem-calc(10) sg.spacing(medium) !important;
+      min-height: auto !important;
+      border-bottom-right-radius: u.rem-calc(30) !important;
+    }
   }
 }
 

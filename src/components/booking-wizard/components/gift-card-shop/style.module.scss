@@ -144,7 +144,7 @@
 }
 
 .add_button {
-  background: #111;
+  background: sg.color(orange);
   color: #fff;
   border: 1px solid transparent;
   border-radius: 0 0 u.rem-calc(30) 0;
@@ -157,10 +157,10 @@
   cursor: pointer;
   width: 100%;
   font-family: sg.font-family(barlow);
-  transition: background 0.15s ease;
+  transition: background 0.15s ease, opacity 0.15s ease;
 
   &:hover:not(:disabled) {
-    background: #333;
+    background: #e04e00;
   }
 
   &:disabled {
