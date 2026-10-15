@@ -199,7 +199,7 @@ export const CartLineItem: FC<Props> = ({
               />
               {savings != null && savings > 0 && (
                 <span className={styles.CartLineItemCompact__saving}>
-                  Save ${Math.round(savings)}
+                  Saving ${Math.round(savings)}
                 </span>
               )}
             </div>
