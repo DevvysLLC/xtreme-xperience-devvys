@@ -225,6 +225,7 @@ export type BookingConfigRecord = RecordInterface & {
   bookingAnnouncement: Maybe<SectionAnnouncementBarRecord>;
   cancellationPolicy: Maybe<Scalars['String']['output']>;
   decorators: Array<BookingDecoratorRecord>;
+  discountRules: Array<BookingDiscountRuleRecord>;
   eventOverrides: Array<BookingEventOverrideRecord>;
   id: Scalars['ItemId']['output'];
   insurance: Array<InsuranceRecord>;
@@ -290,6 +291,37 @@ export type BookingDecoratorRecord = RecordInterface & {
 
 
 export type BookingDecoratorRecordSeoMetaTagsArgs = {
+  locale?: InputMaybe<SiteLocale>;
+};
+
+export type BookingDiscountRuleRecord = RecordInterface & {
+  __typename: 'BookingDiscountRuleRecord';
+  _createdAt: Scalars['DateTime']['output'];
+  _editingUrl: Maybe<Scalars['String']['output']>;
+  _firstPublishedAt: Scalars['DateTime']['output'];
+  _isValid: Scalars['BooleanType']['output'];
+  _modelApiKey: Scalars['String']['output'];
+  _publicationScheduledAt: Maybe<Scalars['DateTime']['output']>;
+  _publishedAt: Scalars['DateTime']['output'];
+  _seoMetaTags: Array<Tag>;
+  _status: ItemStatus;
+  _unpublishingScheduledAt: Maybe<Scalars['DateTime']['output']>;
+  _updatedAt: Scalars['DateTime']['output'];
+  applyToAllEvents: Scalars['BooleanType']['output'];
+  badgeLabel: Maybe<Scalars['String']['output']>;
+  discountType: Scalars['String']['output'];
+  discountValue: Scalars['FloatType']['output'];
+  endTime: Maybe<Scalars['String']['output']>;
+  events: Array<EventRecord>;
+  id: Scalars['ItemId']['output'];
+  startTime: Maybe<Scalars['String']['output']>;
+  supercars: Array<SupercarRecord>;
+  timeWindow: Scalars['String']['output'];
+  title: Scalars['String']['output'];
+};
+
+
+export type BookingDiscountRuleRecordSeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 

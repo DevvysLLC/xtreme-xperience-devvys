@@ -55,6 +55,24 @@ fragment EventOverride on BookingEventOverrideRecord {
   quantityLabelNineLaps
 }
 
+fragment BookingDiscountRule on BookingDiscountRuleRecord {
+  id
+  title
+  discountType
+  discountValue
+  timeWindow
+  startTime
+  endTime
+  applyToAllEvents
+  badgeLabel
+  events {
+    id
+  }
+  supercars {
+    id
+  }
+}
+
 fragment BookingConfig on BookingConfigRecord {
   id
   showBackLink
@@ -97,5 +115,8 @@ fragment BookingConfig on BookingConfigRecord {
   orderCompleteNotice
   eventOverrides {
     ...EventOverride
+  }
+  discountRules {
+    ...BookingDiscountRule
   }
 }

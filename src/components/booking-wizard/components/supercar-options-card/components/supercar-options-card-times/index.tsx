@@ -11,7 +11,9 @@ import { getRateTypePrice } from '../../../../../../utils/get-rate-type-price'
 import { isScheduleSoldOut } from '../../../../../../utils/is-schedule-sold-out'
 import { CoreRocketRezPrice } from '../../../../../core-rocketrez-price'
 import { formatStartTimeForUsLocale } from '../../../../config'
+import { useBookingWizardState } from '../../../../context'
 import { useSupercarOptionsCard } from '../../context'
+import { getScheduleDiscount } from '../../../../../../utils/get-schedule-discount'
 import styles from './style.module.scss'
 
 type Props = {
@@ -42,7 +44,8 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
   form,
   priceOverride
 }) => {
-  const { state, setSelectedDaySchedule } = useSupercarOptionsCard()
+  const { state: cardState, setSelectedDaySchedule } = useSupercarOptionsCard()
+  const { state: wizardState } = useBookingWizardState()
   const t = useTranslations(
     'booking_wizard.pages.date_and_car.supercar_options_card'
   )
@@ -68,7 +71,7 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
           const isAvailable =
             schedule.scheduleStatus === RocketRezScheduleStatus.AVAILABLE
           const isSelected =
-            state.selectedDaySchedule?.scheduleId === scheduleId
+            cardState.selectedDaySchedule?.scheduleId === scheduleId
           let matchingRate: RocketRezEventRateTypeWithId | null = null
           let matchingSeatTypeAvailable: number | null = null
 
@@ -126,20 +129,32 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
 
           const rateType = matchingRate?.rateTypes?.[0]
           const rateTypePrice = getRateTypePrice(rateType)
-          
-          let displayPrice = rateTypePrice?.price ?? null
-          let displayCompareAtPrice: number | null = null
-          
-          if (priceOverride) {
-            if (priceOverride.price != null) {
-              displayPrice = priceOverride.price / 100
-            }
-            if (priceOverride.compareAtPrice != null) {
-              displayCompareAtPrice = priceOverride.compareAtPrice / 100
-            }
-          }
 
-          const price = rateTypePrice?.price ?? null
+          // Preserve dynamic day/time schedule price from RocketRez; fallback to priceOverride.price if missing
+          const rawSchedulePrice =
+            rateTypePrice?.price ??
+            (priceOverride?.price != null ? priceOverride.price / 100 : null)
+
+          const rawCompareAtPrice =
+            (priceOverride?.compareAtPrice != null
+              ? priceOverride.compareAtPrice / 100
+              : null) ??
+            rateTypePrice?.compareAtPrice ??
+            null
+
+          // Apply discount rules (morning 8-10 AM vs afternoon 10:30-5:30 PM, event & car scopes)
+          const discountRules = wizardState.configData?.discountRules
+          const discountResult = getScheduleDiscount({
+            scheduleStartTime: schedule.startTime,
+            basePrice: rawSchedulePrice,
+            existingCompareAtPrice: rawCompareAtPrice,
+            eventId: wizardState.selectedEvent?.id,
+            supercarId: String(supercarId),
+            rules: discountRules
+          })
+
+          const displayPrice = discountResult.price
+          const displayCompareAtPrice = discountResult.compareAtPrice
           const hasPrice = rateTypePrice?.hasPrice ?? false
           const isSoldOut = isScheduleSoldOut(
             schedule,
@@ -177,8 +192,14 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
                       rateType: rateType.type,
                       startTime: schedule.startTime,
                       available: matchingSeatTypeAvailable,
-                      price,
-                      rateTypePrice
+                      price: displayPrice,
+                      rateTypePrice: rateTypePrice
+                        ? {
+                            ...rateTypePrice,
+                            price: displayPrice,
+                            compareAtPrice: displayCompareAtPrice
+                          }
+                        : null
                     }
                     setSelectedDaySchedule(newSelectedDaySchedule)
                     field.handleChange(scheduleId)

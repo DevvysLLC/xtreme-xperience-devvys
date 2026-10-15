@@ -235,15 +235,21 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
 
     // Compute currentPrice, referenceValue, and savings for this car
     const quantity = cardState.selectedQuantity ?? 1
+    const selectedSlotPrice =
+      cardState.selectedDaySchedule?.rateTypePrice?.price
     const currentPrice =
-      ((bookingSupercar.priceOverride?.price != null
-        ? bookingSupercar.priceOverride.price / 100
-        : cardState.selectedDaySchedule?.rateTypePrice?.price) ?? 0) * quantity
-    const cmsCompareAt =
-      ((bookingSupercar.priceOverride?.compareAtPrice != null
+      ((selectedSlotPrice ??
+        (bookingSupercar.priceOverride?.price != null
+          ? bookingSupercar.priceOverride.price / 100
+          : null)) ??
+        0) * quantity
+    const selectedCompareAt =
+      (bookingSupercar.priceOverride?.compareAtPrice != null
         ? bookingSupercar.priceOverride.compareAtPrice / 100
-        : cardState.selectedDaySchedule?.rateTypePrice?.compareAtPrice) ?? 0) *
-      quantity
+        : null) ??
+      cardState.selectedDaySchedule?.rateTypePrice?.compareAtPrice ??
+      null
+    const cmsCompareAt = (selectedCompareAt ?? 0) * quantity
     const refVal =
       cmsCompareAt > currentPrice
         ? cmsCompareAt
@@ -500,22 +506,28 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
     const showSelected =
       selectedMode && !!cardState.selectedDaySchedule?.price
     const quantity = showSelected ? (cardState.selectedQuantity ?? 1) : 1
+    const selectedSlotPrice =
+      cardState.selectedDaySchedule?.rateTypePrice?.price
     const currentPrice = showSelected
-      ? ((bookingSupercar.priceOverride?.price != null
-          ? bookingSupercar.priceOverride.price / 100
-          : cardState.selectedDaySchedule?.rateTypePrice?.price) ?? 0) *
-        quantity
+      ? ((selectedSlotPrice ??
+          (bookingSupercar.priceOverride?.price != null
+            ? bookingSupercar.priceOverride.price / 100
+            : null)) ??
+          0) * quantity
       : bookingSupercar.priceOverride?.price != null
         ? bookingSupercar.priceOverride.price / 100
         : (lowestPrice?.price ?? null)
     if (currentPrice === null || currentPrice === 0) {
       return null
     }
+    const selectedCompareAt =
+      (bookingSupercar.priceOverride?.compareAtPrice != null
+        ? bookingSupercar.priceOverride.compareAtPrice / 100
+        : null) ??
+      cardState.selectedDaySchedule?.rateTypePrice?.compareAtPrice ??
+      null
     const cmsCompareAt = showSelected
-      ? ((bookingSupercar.priceOverride?.compareAtPrice != null
-          ? bookingSupercar.priceOverride.compareAtPrice / 100
-          : cardState.selectedDaySchedule?.rateTypePrice?.compareAtPrice) ??
-          0) * quantity
+      ? (selectedCompareAt ?? 0) * quantity
       : bookingSupercar.priceOverride?.compareAtPrice != null
         ? bookingSupercar.priceOverride.compareAtPrice / 100
         : (lowestPrice?.compareAtPrice ?? 0)
