@@ -44,13 +44,13 @@
 
   &__options {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(u.rem-calc(78), u.rem-calc(96)));
     gap: u.rem-calc(10) u.rem-calc(6);
     width: 100%;
     box-sizing: border-box;
 
     @include sg.min(tabletLandscape) {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(u.rem-calc(82), u.rem-calc(96)));
       gap: u.rem-calc(8);
     }
   }

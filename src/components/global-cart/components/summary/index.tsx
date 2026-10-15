@@ -91,8 +91,6 @@ export const CartSummary: FC = () => {
     return Math.round(Math.max(discountTotal, metadataSavings))
   }, [cartState?.metadata, discountTotal])
 
-  const displayedSubtotal = Math.max(0, subtotal - totalSavings)
-
   const driveItems = useMemo(() => {
     return lineItems.filter((item) => {
       const type = item.type?.toLowerCase()
@@ -191,7 +189,7 @@ export const CartSummary: FC = () => {
           className={styles.summary__value}
           data={{
             id: 'summary-subtotal',
-            price: displayedSubtotal
+            price: subtotal
           }}
         />
       </div>

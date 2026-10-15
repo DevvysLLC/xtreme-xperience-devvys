@@ -40,9 +40,9 @@
   }
 
   &__options {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: u.rem-calc(6);
+    display: flex;
+    flex-wrap: wrap;
+    gap: u.rem-calc(8);
   }
 }
 
@@ -57,7 +57,9 @@
   justify-content: center;
   gap: u.rem-calc(3);
   min-height: u.rem-calc(66);
-  padding: u.rem-calc(8) u.rem-calc(4);
+  padding: u.rem-calc(8) u.rem-calc(18);
+  width: auto;
+  flex: 0 0 auto;
   border: 1px solid #ccc;
   border-radius: u.rem-calc(3);
   background-color: sg.color(white);

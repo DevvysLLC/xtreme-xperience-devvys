@@ -76,9 +76,7 @@ export const PageFooter: React.FC<Props> = ({
     return Math.round(Math.max(discountTotal, metadataSavings))
   }, [cartData?.metadata, discountTotal])
 
-  const subtotal = useMemo(() => {
-    return Math.max(0, rawSubtotal - totalSavings)
-  }, [rawSubtotal, totalSavings])
+  const subtotal = rawSubtotal
 
   const handleBack =
     onBack ??
