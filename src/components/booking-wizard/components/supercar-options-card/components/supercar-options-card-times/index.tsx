@@ -161,10 +161,13 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
           const displayCompareAtPrice =
             unitCompareAtPrice != null ? unitCompareAtPrice * quantity : null
           const hasPrice = rateTypePrice?.hasPrice ?? false
-          const isSoldOut = isScheduleSoldOut(
-            schedule,
-            isMulticar && packageRateIds ? packageRateIds : rocketRezSeatTypeId
-          )
+          const isSoldOut =
+            isScheduleSoldOut(
+              schedule,
+              isMulticar && packageRateIds ? packageRateIds : rocketRezSeatTypeId
+            ) ||
+            (matchingSeatTypeAvailable !== null &&
+              matchingSeatTypeAvailable < quantity)
           const displayStartTime = formatStartTimeForUsLocale(
             schedule.startTime
           )
@@ -178,7 +181,7 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
               key={scheduleId}
               className={clsx(
                 styles.time,
-                isSelected && styles['time--selected'],
+                isSelected && !isSoldOut && styles['time--selected'],
                 isSoldOut && styles['time--sold-out']
               )}
             >
@@ -186,7 +189,7 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
                 type="radio"
                 name={`schedule-${supercarId}`}
                 value={scheduleId}
-                checked={isSelected}
+                checked={isSelected && !isSoldOut}
                 disabled={isSoldOut}
                 className={styles.time__input}
                 onChange={() => {
