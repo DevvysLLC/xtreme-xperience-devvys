@@ -153,6 +153,11 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
             rules: discountRules
           })
 
+          const discountAmount =
+            discountResult.isDiscounted && rawSchedulePrice != null
+              ? Math.max(0, rawSchedulePrice - discountResult.price)
+              : 0
+
           const quantity = cardState.selectedQuantity ?? 1
           const unitPrice = discountResult.price
           const unitCompareAtPrice = discountResult.compareAtPrice
@@ -201,6 +206,10 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
                       startTime: schedule.startTime,
                       available: matchingSeatTypeAvailable,
                       price: unitPrice,
+                      rawPrice: rawSchedulePrice,
+                      discountAmount,
+                      discountLabel:
+                        discountResult.badgeLabel || 'Early sessions',
                       rateTypePrice: rateTypePrice
                         ? {
                             ...rateTypePrice,

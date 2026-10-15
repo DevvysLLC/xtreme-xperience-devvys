@@ -272,6 +272,19 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
     const carSavings =
       refVal > currentPrice ? Math.floor(refVal - currentPrice) : 0
 
+    const earlyPerUnit = cardState.selectedDaySchedule?.discountAmount ?? 0
+    const earlySavings = earlyPerUnit * quantity
+    const daySavings = Math.max(0, carSavings - earlySavings)
+    const savingsBreakdown: Array<{ category: string; amount: number }> = []
+    if (daySavings > 0) {
+      savingsBreakdown.push({ category: 'Day pricing', amount: daySavings })
+    }
+    if (earlySavings > 0) {
+      const label =
+        cardState.selectedDaySchedule?.discountLabel || 'Early sessions'
+      savingsBreakdown.push({ category: label, amount: earlySavings })
+    }
+
     const metadata = getAddToCartLineItemCarMetadata({
       supercar,
       lineItem,
@@ -290,6 +303,7 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
       lapsPerSession,
       referenceValue: refVal > 0 ? refVal : null,
       savings: carSavings > 0 ? carSavings : null,
+      savingsBreakdown: savingsBreakdown.length > 0 ? savingsBreakdown : null,
       seatTypeId: rocketRezSeatTypeId
     })
 

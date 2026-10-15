@@ -23,6 +23,7 @@ type GetAddToCartCarLineItemMetadataProps = {
   lapsPerSession?: number | null
   referenceValue?: number | null
   savings?: number | null
+  savingsBreakdown?: Array<{ category: string; amount: number }> | null
   seatTypeId?: number | null
 }
 
@@ -34,6 +35,7 @@ export const getAddToCartLineItemCarMetadata = ({
   lapsPerSession,
   referenceValue,
   savings,
+  savingsBreakdown,
   seatTypeId
 }: GetAddToCartCarLineItemMetadataProps): CartLineItemMetadata => {
   const key = getAddToCartLineItemWriteMetadataKey({ lineItem })
@@ -75,7 +77,8 @@ export const getAddToCartLineItemCarMetadata = ({
       lapsPerSession: resolvedLapsPerSession,
       laps: (lineItem.quantity ?? 0) * resolvedLapsPerSession,
       referenceValue: referenceValue ?? null,
-      savings: savings ?? null
+      savings: savings ?? null,
+      savingsBreakdown: savingsBreakdown ?? null
     }
   }
   return metadata

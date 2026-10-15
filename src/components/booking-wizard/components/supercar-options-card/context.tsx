@@ -20,6 +20,9 @@ type SelectedDaySchedule = {
   available: number | null
   price: number | null
   rateTypePrice: RateTypePrice | null
+  rawPrice?: number | null
+  discountAmount?: number | null
+  discountLabel?: string | null
 }
 
 type SupercarOptionsCardState = {

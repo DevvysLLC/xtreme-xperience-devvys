@@ -120,6 +120,53 @@
     padding-left: u.rem-calc(12);
   }
 
+  &__savingsList {
+    margin-top: u.rem-calc(8);
+    display: flex;
+    flex-direction: column;
+    gap: u.rem-calc(10);
+    padding-left: u.rem-calc(4);
+  }
+
+  &__savingsGroup {
+    display: flex;
+    flex-direction: column;
+    gap: u.rem-calc(2);
+  }
+
+  &__savingsGroupHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: u.rem-calc(13);
+    font-weight: 700;
+    color: #111;
+  }
+
+  &__savingsGroupTitle {
+    font-weight: 700;
+  }
+
+  &__savingsGroupTotal {
+    font-weight: 700;
+  }
+
+  &__savingsItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: u.rem-calc(12);
+    color: #777;
+  }
+
+  &__savingsItemName {
+    color: #777;
+  }
+
+  &__savingsItemAmount {
+    color: #777;
+  }
+
   &__total {
     display: flex;
     justify-content: space-between;
