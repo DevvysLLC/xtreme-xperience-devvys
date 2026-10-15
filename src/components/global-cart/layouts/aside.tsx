@@ -17,8 +17,11 @@ export const CartAside: FC<Props> = ({ className }) => {
   const rawLineItems = data?.cartData?.lineItems
   const lineItems = rawLineItems ?? []
   const isEmpty = lineItems.length === 0
-  const subtotal = useMemo(() => {
-    return (rawLineItems ?? []).reduce((acc, item) => acc + item.price * (item.quantity ?? 1), 0)
+  const rawSubtotal = useMemo(() => {
+    return (rawLineItems ?? []).reduce(
+      (acc, item) => acc + item.price * (item.quantity ?? 1),
+      0
+    )
   }, [rawLineItems])
   const discountTotal = data?.cartData?.discountTotal ?? 0
 
@@ -42,6 +45,10 @@ export const CartAside: FC<Props> = ({ className }) => {
     }
     return Math.round(Math.max(discountTotal, metadataSavings))
   }, [cartState?.metadata, discountTotal])
+
+  const subtotal = useMemo(() => {
+    return Math.max(0, rawSubtotal - totalSavings)
+  }, [rawSubtotal, totalSavings])
 
   if (isEmpty) {
     return (

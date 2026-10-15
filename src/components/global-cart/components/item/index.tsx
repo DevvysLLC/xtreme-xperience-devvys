@@ -183,24 +183,45 @@ export const CartLineItem: FC<Props> = ({
             </div>
 
             <div className={styles.CartLineItemCompact__priceWrapper}>
-              {referenceValue != null && referenceValue > price && (
-                <span className={styles.CartLineItemCompact__cutPrice}>
-                  ${Math.ceil(referenceValue)}
-                </span>
-              )}
-              <CoreRocketRezPrice
-                data={{
-                  id: `${id}-price`,
-                  price: price * (lineItem.quantity ?? 1)
-                }}
-                className={styles.CartLineItemCompact__price}
-                valueInCents={false}
-              />
-              {savings != null && savings > 0 && (
-                <span className={styles.CartLineItemCompact__saving}>
-                  Save ${Math.round(savings)}
-                </span>
-              )}
+              {(() => {
+                const itemQty = lineItem.quantity ?? 1
+                const itemTotal = price * itemQty
+                const itemSavings =
+                  savings != null && savings > 0 ? Math.round(savings) : 0
+                const hasItemSavings = itemSavings > 0
+                const displayItemPrice = hasItemSavings
+                  ? Math.max(0, (referenceValue ?? itemTotal) - itemSavings)
+                  : itemTotal
+                const cutPrice =
+                  referenceValue != null && referenceValue > displayItemPrice
+                    ? Math.ceil(referenceValue)
+                    : hasItemSavings && itemTotal > displayItemPrice
+                      ? Math.ceil(itemTotal)
+                      : null
+
+                return (
+                  <>
+                    {cutPrice != null && (
+                      <span className={styles.CartLineItemCompact__cutPrice}>
+                        ${cutPrice}
+                      </span>
+                    )}
+                    <CoreRocketRezPrice
+                      data={{
+                        id: `${id}-price`,
+                        price: displayItemPrice
+                      }}
+                      className={styles.CartLineItemCompact__price}
+                      valueInCents={false}
+                    />
+                    {hasItemSavings && (
+                      <span className={styles.CartLineItemCompact__saving}>
+                        Save ${itemSavings}
+                      </span>
+                    )}
+                  </>
+                )
+              })()}
             </div>
           </div>
 
