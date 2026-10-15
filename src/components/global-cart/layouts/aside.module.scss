@@ -150,6 +150,25 @@
     }
   }
 
+  &__discount_row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: u.rem-calc(16);
+    padding-top: u.rem-calc(6);
+    font-family: sg.font-family(barlow);
+
+    span {
+      font-weight: 400;
+      color: #555;
+    }
+
+    strong {
+      font-weight: 700;
+      color: #ff6900;
+    }
+  }
+
   &__note {
     font-size: u.rem-calc(12);
     color: #666;

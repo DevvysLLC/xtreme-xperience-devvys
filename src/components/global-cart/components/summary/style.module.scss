@@ -43,6 +43,16 @@
     }
   }
 
+  &__discountValue {
+    color: #ff6900;
+    font-weight: 700;
+
+    [data-price] {
+      color: #ff6900;
+      font-weight: 700;
+    }
+  }
+
   &__taxNote {
     font-size: u.rem-calc(12);
     color: #666;

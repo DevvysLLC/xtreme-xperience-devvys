@@ -39,6 +39,12 @@ export const CartSummary: FC = () => {
   const ticketingFee = cart?.cartData?.variableFeeTotal ?? 0
   const total = cart?.cartData?.total ?? 0
   const discountTotal = cart?.cartData?.discountTotal ?? 0
+  const couponCodes = useMemo(() => {
+    return (cart?.cartData?.coupons ?? [])
+      .map((c) => c.code || c.serial)
+      .filter(Boolean)
+      .join(', ')
+  }, [cart?.cartData?.coupons])
   const cartTaxFromBreakdown = (cart?.cartData?.taxes ?? []).reduce(
     (sum, tax) => sum + getTaxAmount(tax),
     0
@@ -267,12 +273,14 @@ export const CartSummary: FC = () => {
         </div>
       )}
 
-      {discountTotal > 0 && totalSavings === 0 && (
+      {discountTotal > 0 && (
         <div className={styles.summary__data}>
-          <span className={styles.summary__label}>{t('summary.discount')}</span>
+          <span className={styles.summary__label}>
+            {couponCodes ? `Discount (${couponCodes})` : t('summary.discount')}
+          </span>
 
           <CoreRocketRezPrice
-            className={styles.summary__value}
+            className={`${styles.summary__value} ${styles.summary__discountValue}`}
             prefix="-"
             data={{
               id: 'summary-discount',

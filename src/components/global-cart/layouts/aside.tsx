@@ -116,6 +116,12 @@ export const CartAside: FC<Props> = ({ className }) => {
             <span>Subtotal</span>
             <strong>${subtotal.toLocaleString()}</strong>
           </div>
+          {discountTotal > 0 && (
+            <div className={styles.cart__discount_row}>
+              <span>Discount</span>
+              <strong>-${discountTotal.toLocaleString()}</strong>
+            </div>
+          )}
           <p className={styles.cart__note}>Before fees and taxes.</p>
         </div>
 
