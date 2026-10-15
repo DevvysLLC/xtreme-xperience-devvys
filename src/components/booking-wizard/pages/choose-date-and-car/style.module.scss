@@ -134,19 +134,9 @@
   scrollbar-width: thin;
 
   li {
-    flex: 0 0 u.rem-calc(100);
+    flex: 0 0 auto;
+    min-width: u.rem-calc(100);
     display: flex;
-  }
-
-  @include sg.min(tabletLandscape) {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    overflow-x: visible;
-    padding-bottom: 0;
-
-    li {
-      flex: initial;
-    }
   }
 }
 

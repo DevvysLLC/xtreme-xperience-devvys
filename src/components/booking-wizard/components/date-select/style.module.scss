@@ -2,13 +2,21 @@
 @use '../../../../styles/core/unit' as u;
 
 .event-ranges {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: nowrap;
   gap: u.rem-calc(12);
   margin-bottom: u.rem-calc(14);
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  padding-bottom: u.rem-calc(4);
 }
 
 .event-range-button {
+  flex: 0 0 auto;
+  width: auto;
+  white-space: nowrap;
   display: flex;
   align-items: center;
   justify-content: space-between;
