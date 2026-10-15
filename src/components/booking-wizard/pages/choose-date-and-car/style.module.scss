@@ -16,8 +16,12 @@
   background: sg.color(white);
   border: 1px solid #d5d5d2;
   border-radius: u.rem-calc(8);
-  padding: u.rem-calc(24);
+  padding: u.rem-calc(14) u.rem-calc(10);
   margin-bottom: u.rem-calc(24);
+
+  @include sg.min(tabletLandscape) {
+    padding: u.rem-calc(24);
+  }
 }
 
 .location {

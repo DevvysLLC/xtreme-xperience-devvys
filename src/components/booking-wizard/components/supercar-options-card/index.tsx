@@ -495,8 +495,8 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
   const r = Math.floor(cardIndex / 2)
   const cardOrderDesktop = r * 3 + (cardIndex % 2)
   const inlineOrderDesktop = r * 3 + 2
-  const cardOrderMobile = cardIndex * 2
-  const inlineOrderMobile = cardIndex * 2 + 1
+  const cardOrderMobile = cardOrderDesktop
+  const inlineOrderMobile = inlineOrderDesktop
 
   const cardStyle: React.CSSProperties & Record<string, number> = {
     '--card-order-desktop': cardOrderDesktop,

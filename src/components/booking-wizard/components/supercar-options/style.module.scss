@@ -168,11 +168,11 @@
 
 .supercars {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: u.rem-calc(20);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: u.rem-calc(8);
 
   @include sg.min(tabletLandscape) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: u.rem-calc(20);
   }
 }
 
