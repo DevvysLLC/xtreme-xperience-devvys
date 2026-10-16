@@ -146,6 +146,7 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
           const discountRules = wizardState.configData?.discountRules
           const discountResult = getScheduleDiscount({
             scheduleStartTime: schedule.startTime,
+            scheduleDate: wizardState.selectedDayDate,
             basePrice: rawSchedulePrice,
             existingCompareAtPrice: rawCompareAtPrice,
             eventId: wizardState.selectedEvent?.id,

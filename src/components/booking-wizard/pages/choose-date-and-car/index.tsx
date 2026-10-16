@@ -18,6 +18,7 @@ import { useToast } from '../../../../features/toast'
 import type { BookingCarLineItem } from '../../../../io/types'
 import { getCartLineItemReadMetadataKey } from '../../../../utils/get-cart-line-item-metadata-key'
 import { getSeatTypeIdWithOverride } from '../../../../utils/get-seat-type-id-with-override'
+import { getDateDiscountRule } from '../../../../utils/get-schedule-discount'
 import { CoreLoadingSpinner } from '../../../core-loading-spinner'
 import { BookingLayout } from '../../components/booking-layout'
 import { DateSelect } from '../../components/date-select'
@@ -292,6 +293,12 @@ export const DateAndCarPage = () => {
             
             <ul className={styles.dates}>
               {state.eventData?.schedules?.map((day) => {
+                const dateDiscount = getDateDiscountRule({
+                  date: day.date,
+                  eventId: state.selectedEvent?.id,
+                  rules: state.configData?.discountRules
+                })
+
                 return (
                   <li key={day.date} style={{ display: 'flex' }}>
                     <DayTab
@@ -299,6 +306,7 @@ export const DateAndCarPage = () => {
                       schedules={day.schedules}
                       rateIds={resolvedRateIds}
                       isActive={state.selectedDayDate === day.date}
+                      badgeLabel={dateDiscount?.badgeLabel ?? undefined}
                       isMulticar={isMulticarGroup}
                       onClick={() => {
                         handleDateSelect(day.date)

@@ -42,19 +42,35 @@ export const DayTab: React.FC<Props> = ({
     return lowestAvailablePriceFromRates(schedules, rateIds ?? [], isMulticar)
   }, [schedules, rateIds, lowestAvailablePriceFromRates, isMulticar])
 
+  const displayBadge = useMemo(() => {
+    if (badgeLabel) {
+      return badgeLabel
+    }
+    if (
+      lowestPrice &&
+      lowestPrice.compareAtPrice &&
+      lowestPrice.compareAtPrice > lowestPrice.price
+    ) {
+      const percent = Math.round(
+        ((lowestPrice.compareAtPrice - lowestPrice.price) /
+          lowestPrice.compareAtPrice) *
+          100
+      )
+      if (percent > 0) {
+        return `${percent}% OFF`
+      }
+    }
+    return undefined
+  }, [badgeLabel, lowestPrice])
+
   return (
     <button
       type="button"
       className={clsx(styles.date, isActive && styles.active)}
       onClick={() => onClick?.(day.date)}
     >
-      {badgeLabel && (
-        <CoreBadge
-          label={badgeLabel}
-          backgroundColor="#EB642C"
-          color="#fff"
-          className={styles.date__badge}
-        />
+      {displayBadge && (
+        <span className={styles.date__badge}>{displayBadge}</span>
       )}
       <span className={styles.date__weekday}>{weekday}</span>
       <span className={styles.date__day}>{dayNumber}</span>

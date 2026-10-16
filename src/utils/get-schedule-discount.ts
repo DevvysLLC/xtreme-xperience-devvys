@@ -37,6 +37,90 @@ export type ScheduleDiscountResult = {
   isDiscounted: boolean
 }
 
+export const getDateDiscountRule = ({
+  date,
+  eventId,
+  rules
+}: {
+  date: string
+  eventId?: string | null
+  rules?: BookingDiscountRule[] | null
+}): { badgeLabel: string; discountPercent?: number; rule: BookingDiscountRule } | null => {
+  if (!rules || rules.length === 0) {
+    return null
+  }
+
+  const dateObj = new Date(date.includes('T') ? date : `${date}T00:00:00`)
+  const weekdayNames = [
+    'sunday',
+    'monday',
+    'tuesday',
+    'wednesday',
+    'thursday',
+    'friday',
+    'saturday'
+  ]
+  const weekday = weekdayNames[dateObj.getDay()] ?? ''
+
+  for (const rule of rules) {
+    // 1. Event filter
+    if (rule.applyToAllEvents === false) {
+      if (!eventId || !rule.events || !rule.events.some((e) => e.id === eventId)) {
+        continue
+      }
+    }
+
+    const titleLower = rule.title?.toLowerCase() ?? ''
+    const timeWindowLower = rule.timeWindow?.toLowerCase() ?? ''
+
+    // 2. Day of week match
+    const ruleTargetsWeekday = weekdayNames.some(
+      (d) => titleLower.includes(d) || timeWindowLower === d
+    )
+    if (ruleTargetsWeekday) {
+      const matchesDay =
+        titleLower.includes(weekday) || timeWindowLower === weekday
+      if (!matchesDay) {
+        continue
+      }
+    } else {
+      // 3. Explicit date match
+      const hasDatePattern =
+        titleLower.match(/\d{4}-\d{2}-\d{2}/) ||
+        titleLower.match(/\d{1,2}\/\d{1,2}/)
+      if (hasDatePattern) {
+        const matchesDate =
+          titleLower.includes(date.toLowerCase()) ||
+          Boolean(rule.startTime?.includes(date)) ||
+          Boolean(rule.endTime?.includes(date))
+        if (!matchesDate) {
+          continue
+        }
+      }
+    }
+
+    // Determine badge label
+    let badge = rule.badgeLabel ?? undefined
+    let percent: number | undefined
+    if (rule.discountValue && rule.discountValue > 0) {
+      if (rule.discountType === 'percentage') {
+        percent = Math.round(rule.discountValue)
+        if (!badge) {
+          badge = `${percent}% OFF`
+        }
+      } else if (!badge) {
+        badge = `$${Math.round(rule.discountValue)} OFF`
+      }
+    }
+
+    if (badge) {
+      return { badgeLabel: badge, discountPercent: percent, rule }
+    }
+  }
+
+  return null
+}
+
 /**
  * Evaluates whether any active Booking Discount Rules apply to a given schedule,
  * car, and event, and returns the calculated price, before/after compare-at price,
@@ -44,6 +128,7 @@ export type ScheduleDiscountResult = {
  */
 export const getScheduleDiscount = ({
   scheduleStartTime,
+  scheduleDate,
   basePrice,
   existingCompareAtPrice,
   eventId,
@@ -51,6 +136,7 @@ export const getScheduleDiscount = ({
   rules
 }: {
   scheduleStartTime?: string | null
+  scheduleDate?: string | null
   basePrice: number | null
   existingCompareAtPrice?: number | null
   eventId?: string | null
@@ -66,6 +152,22 @@ export const getScheduleDiscount = ({
   }
 
   const scheduleMinutes = parseTimeToMinutes(scheduleStartTime)
+  const weekdayNames = [
+    'sunday',
+    'monday',
+    'tuesday',
+    'wednesday',
+    'thursday',
+    'friday',
+    'saturday'
+  ]
+  const weekday = scheduleDate
+    ? weekdayNames[
+        new Date(
+          scheduleDate.includes('T') ? scheduleDate : `${scheduleDate}T00:00:00`
+        ).getDay()
+      ] ?? ''
+    : ''
 
   for (const rule of rules) {
     // 1. Event filter
@@ -82,7 +184,37 @@ export const getScheduleDiscount = ({
       }
     }
 
-    // 3. Time filter
+    // 3. Date / day-of-week filter
+    if (scheduleDate) {
+      const titleLower = rule.title?.toLowerCase() ?? ''
+      const timeWindowLower = rule.timeWindow?.toLowerCase() ?? ''
+
+      const ruleTargetsWeekday = weekdayNames.some(
+        (d) => titleLower.includes(d) || timeWindowLower === d
+      )
+      if (ruleTargetsWeekday) {
+        const matchesDay =
+          titleLower.includes(weekday) || timeWindowLower === weekday
+        if (!matchesDay) {
+          continue
+        }
+      } else {
+        const hasDatePattern =
+          titleLower.match(/\d{4}-\d{2}-\d{2}/) ||
+          titleLower.match(/\d{1,2}\/\d{1,2}/)
+        if (hasDatePattern) {
+          const matchesDate =
+            titleLower.includes(scheduleDate.toLowerCase()) ||
+            Boolean(rule.startTime?.includes(scheduleDate)) ||
+            Boolean(rule.endTime?.includes(scheduleDate))
+          if (!matchesDate) {
+            continue
+          }
+        }
+      }
+    }
+
+    // 4. Time filter
     if (scheduleMinutes !== null) {
       if (rule.timeWindow === 'morning') {
         // Morning: 8:00 AM (480) - 10:00 AM (600)
@@ -94,7 +226,10 @@ export const getScheduleDiscount = ({
         if (scheduleMinutes < 630 || scheduleMinutes > 1050) {
           continue
         }
-      } else if (rule.timeWindow !== 'all_day') {
+      } else if (
+        rule.timeWindow !== 'all_day' &&
+        !weekdayNames.includes(rule.timeWindow?.toLowerCase() ?? '')
+      ) {
         const ruleStart = parseTimeToMinutes(rule.startTime)
         const ruleEnd = parseTimeToMinutes(rule.endTime)
         if (ruleStart !== null && scheduleMinutes < ruleStart) {
@@ -106,7 +241,7 @@ export const getScheduleDiscount = ({
       }
     }
 
-    // 4. Calculate discount
+    // 5. Calculate discount
     const discountVal = rule.discountValue ?? 0
     if (discountVal <= 0) {
       continue

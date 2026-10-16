@@ -5,8 +5,8 @@
   border: 1px solid #d5d5d2;
   border-radius: u.rem-calc(4);
   background: sg.color(white);
-  padding: u.rem-calc(14) u.rem-calc(8);
-  width: u.rem-calc(96);
+  padding: u.rem-calc(18) u.rem-calc(8) u.rem-calc(14);
+  width: u.rem-calc(100);
   min-height: u.rem-calc(126);
   position: relative;
   display: flex;
@@ -15,12 +15,30 @@
   justify-content: space-between;
   text-align: center;
   cursor: pointer;
+  overflow: hidden;
   transition:
     border-color 0.15s ease,
     background-color 0.15s ease;
 
   span {
     display: block;
+  }
+
+  &__badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #00ff00;
+    color: #000000;
+    font-family: sg.font-family('barlow-semi-condensed');
+    font-size: u.rem-calc(11);
+    font-weight: 700;
+    line-height: 1;
+    padding: u.rem-calc(3) u.rem-calc(6);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    z-index: 2;
+    border-bottom-right-radius: u.rem-calc(3);
   }
 
   &__weekday {
