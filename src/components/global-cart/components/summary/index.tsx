@@ -389,22 +389,19 @@ export const CartSummary: FC = () => {
         </>
       )}
 
-      <div className={styles.summary__data}>
-        <span className={styles.summary__label}>{t('summary.tax')}</span>
-        <span className={styles.summary__taxNote}>
-          {taxTotal > 0 ? (
-            <CoreRocketRezPrice
-              className={styles.summary__value}
-              data={{
-                id: 'summary-tax',
-                price: taxTotal
-              }}
-            />
-          ) : (
-            'Calculated at checkout'
-          )}
-        </span>
-      </div>
+      {taxTotal > 0 && (
+        <div className={styles.summary__data}>
+          <span className={styles.summary__label}>{t('summary.tax')}</span>
+
+          <CoreRocketRezPrice
+            className={styles.summary__value}
+            data={{
+              id: 'summary-tax',
+              price: taxTotal
+            }}
+          />
+        </div>
+      )}
 
       {ticketingFee > 0 && (
         <div className={styles.summary__data}>
