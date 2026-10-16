@@ -198,6 +198,8 @@ export const SupercarOptionsCardLaps: React.FC<Props> = ({
               ? eventOverride[titleConfigField]
               : ''
 
+          const displayBadgeLabel = optionLabelFromCms || option.badge?.label
+
           return (
             <label
               key={option.quantity}
@@ -229,14 +231,10 @@ export const SupercarOptionsCardLaps: React.FC<Props> = ({
                 {option.quantity} session{option.quantity === 1 ? '' : 's'}
               </span>
 
-              {option.badge && !isSoldOut && (
+              {displayBadgeLabel && !isSoldOut && (
                 <span className={styles.lap__saving}>
-                  {option.badge.label}
+                  {displayBadgeLabel}
                 </span>
-              )}
-
-              {optionLabelFromCms && !option.badge && !isSoldOut && (
-                <span className={styles.lap__label}>{optionLabelFromCms}</span>
               )}
 
               {isSoldOut && option.soldOutBadge && (

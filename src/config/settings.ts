@@ -26,9 +26,6 @@ export const BOOKING_LAP_QUANTITY_OPTIONS: BookingLapQuantityConfig[] = [
     laps: 6,
     description: '6 laps = 2 sessions',
     booking_config_label_key: 'quantity_label_six_laps',
-    badge: {
-      label: 'Save %10'
-    },
     soldOutBadge: {
       label: 'Sold Out'
     }
