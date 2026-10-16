@@ -240,6 +240,7 @@ export type BookingConfigRecord = RecordInterface & {
   rideAlong: Array<AddonRecord>;
   selectCarButtonLabel: Maybe<Scalars['String']['output']>;
   showBackLink: Scalars['BooleanType']['output'];
+  showGiftCards?: Maybe<Scalars['BooleanType']['output']>;
   supercars: Array<BookingSupercarGroupRecord>;
   upsell: Array<AddonRecord>;
   upsellsDescription: Maybe<Scalars['String']['output']>;

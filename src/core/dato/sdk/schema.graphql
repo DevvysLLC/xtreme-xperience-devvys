@@ -245,6 +245,7 @@ type BookingConfigRecord implements RecordInterface {
   rideAlong: [AddonRecord!]!
   selectCarButtonLabel: String
   showBackLink: BooleanType!
+  showGiftCards: BooleanType
   supercars: [BookingSupercarGroupRecord!]!
   upsell: [AddonRecord!]!
   upsellsDescription(

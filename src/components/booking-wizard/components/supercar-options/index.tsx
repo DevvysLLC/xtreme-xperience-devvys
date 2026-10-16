@@ -42,16 +42,17 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
     () => state.configData?.supercars ?? [],
     [state.configData?.supercars]
   )
+  const showGiftCards = state.configData?.showGiftCards ?? true
   const contextActiveTabIndex = state?.activeTabIndex ?? 0
   const activeTabIndex =
-    contextActiveTabIndex === GIFTS_TAB_INDEX
+    showGiftCards && contextActiveTabIndex === GIFTS_TAB_INDEX
       ? GIFTS_TAB_INDEX
-      : contextActiveTabIndex !== 0
+      : contextActiveTabIndex !== 0 && contextActiveTabIndex !== GIFTS_TAB_INDEX
         ? contextActiveTabIndex
         : initialTabIndex >= 0 && initialTabIndex < supercarGroups.length
           ? initialTabIndex
           : 0
-  const isGiftsTab = activeTabIndex === GIFTS_TAB_INDEX
+  const isGiftsTab = showGiftCards && activeTabIndex === GIFTS_TAB_INDEX
   const activeGroup = isGiftsTab ? null : supercarGroups[activeTabIndex]
   const selectedEventId = state.selectedEvent?.model?.rocketRezId ?? null
 
@@ -372,23 +373,25 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
               </li>
             )
           })}
-          <li>
-            <button
-              type="button"
-              className={clsx(
-                styles.tabs__button,
-                isGiftsTab && styles.active
-              )}
-              onClick={() => {
-                handleTabClick(GIFTS_TAB_INDEX)
-              }}
-              aria-pressed={isGiftsTab}
-              data-tab="gifts"
-            >
-              <span className={styles.tabs__tab_title}>Gift cards</span>
-              <span className={styles.tabs__tab_description}>Let them choose</span>
-            </button>
-          </li>
+          {showGiftCards && (
+            <li>
+              <button
+                type="button"
+                className={clsx(
+                  styles.tabs__button,
+                  isGiftsTab && styles.active
+                )}
+                onClick={() => {
+                  handleTabClick(GIFTS_TAB_INDEX)
+                }}
+                aria-pressed={isGiftsTab}
+                data-tab="gifts"
+              >
+                <span className={styles.tabs__tab_title}>Gift cards</span>
+                <span className={styles.tabs__tab_description}>Let them choose</span>
+              </button>
+            </li>
+          )}
         </ul>
       </div>
 

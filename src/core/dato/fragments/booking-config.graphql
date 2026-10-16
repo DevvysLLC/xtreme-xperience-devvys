@@ -76,6 +76,7 @@ fragment BookingDiscountRule on BookingDiscountRuleRecord {
 fragment BookingConfig on BookingConfigRecord {
   id
   showBackLink
+  showGiftCards
   selectCarButtonLabel
   removeCarButtonLabel
   addToCartErrorMessage

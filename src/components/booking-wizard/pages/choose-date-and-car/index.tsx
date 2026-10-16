@@ -53,6 +53,8 @@ export const DateAndCarPage = () => {
     pages: state.configData?.pages ?? null
   })
 
+  const showGiftCards = state.configData?.showGiftCards ?? true
+
   const resolvedDefaultValues = useMemo(
     () =>
       pageHook.getDefaultFormValues({
@@ -141,15 +143,10 @@ export const DateAndCarPage = () => {
   }
 
   const locationTitle = state.selectedEvent?.model?.track?.model?.nickname ?? ''
-  const locationCity = state.selectedEvent?.model?.track?.model?.city ?? ''
-  const locationState = state.selectedEvent?.model?.track?.model?.state ?? ''
-  const locationSubtitle = [locationCity, locationState].filter(Boolean).join(', ')
   const locationHandle = state.selectedEvent?.model?.track?.config?.handle ?? ''
   const trackHref = locationHandle
     ? `${ROUTES.FRONTEND.TRACKS.LISTING}/${locationHandle}`
     : null
-
-  const description = t('description')
 
   const title = pageMetadata?.title ?? t('title')
   const activeGroup =
@@ -323,22 +320,24 @@ export const DateAndCarPage = () => {
               })}
             </ul>
 
-            <div className={styles.giftline}>
-              <span>Not ready to pick a date?</span>
-              <button 
-                type="button" 
-                className={styles['gift-shop-cta']} 
-                onClick={() => {
-                  const giftsTabBtn =
-                    document.querySelector('[data-tab="gifts"]')
-                  if (giftsTabBtn instanceof HTMLElement) {
-                    giftsTabBtn.click()
-                  }
-                }}
-              >
-                Shop gift cards
-              </button>
-            </div>
+            {showGiftCards && (
+              <div className={styles.giftline}>
+                <span>Not ready to pick a date?</span>
+                <button 
+                  type="button" 
+                  className={styles['gift-shop-cta']} 
+                  onClick={() => {
+                    const giftsTabBtn =
+                      document.querySelector('[data-tab="gifts"]')
+                    if (giftsTabBtn instanceof HTMLElement) {
+                      giftsTabBtn.click()
+                    }
+                  }}
+                >
+                  Shop gift cards
+                </button>
+              </div>
+            )}
 
             <div className={styles.sectionhead}>
               <h2>
