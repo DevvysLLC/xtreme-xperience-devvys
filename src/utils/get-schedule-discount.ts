@@ -37,6 +37,85 @@ export type ScheduleDiscountResult = {
   isDiscounted: boolean
 }
 
+const checkRuleMatchesDate = (
+  rule: BookingDiscountRule,
+  dateStr: string,
+  weekday: string
+): boolean => {
+  const titleLower = rule.title?.toLowerCase() ?? ''
+  const timeWindowLower = rule.timeWindow?.toLowerCase() ?? ''
+
+  // 1. Weekend check
+  if (titleLower.includes('weekend') || timeWindowLower === 'weekend') {
+    return weekday === 'saturday' || weekday === 'sunday'
+  }
+
+  // 2. Weekday check
+  if (titleLower.includes('weekday') || timeWindowLower === 'weekday') {
+    return (
+      weekday === 'monday' ||
+      weekday === 'tuesday' ||
+      weekday === 'wednesday' ||
+      weekday === 'thursday' ||
+      weekday === 'friday'
+    )
+  }
+
+  // 3. Day of week check (full names and common abbreviations)
+  const dayPatterns: Array<{ name: string; regex: RegExp }> = [
+    { name: 'sunday', regex: /\b(sunday|sun)\b/i },
+    { name: 'monday', regex: /\b(monday|mon)\b/i },
+    { name: 'tuesday', regex: /\b(tuesday|tue|tues)\b/i },
+    { name: 'wednesday', regex: /\b(wednesday|wed)\b/i },
+    { name: 'thursday', regex: /\b(thursday|thu|thur|thurs)\b/i },
+    { name: 'friday', regex: /\b(friday|fri)\b/i },
+    { name: 'saturday', regex: /\b(saturday|sat)\b/i }
+  ]
+
+  const ruleMentionsAnyDay = dayPatterns.some(
+    (p) => p.regex.test(titleLower) || timeWindowLower === p.name
+  )
+  if (ruleMentionsAnyDay) {
+    const patternForToday = dayPatterns.find((p) => p.name === weekday)
+    const matchesToday = Boolean(
+      (patternForToday && patternForToday.regex.test(titleLower)) ||
+        timeWindowLower === weekday
+    )
+    return matchesToday
+  }
+
+  // 4. Explicit date check
+  const hasDatePattern =
+    titleLower.match(/\d{4}-\d{2}-\d{2}/) ||
+    titleLower.match(/\d{1,2}\/\d{1,2}/) ||
+    titleLower.match(/\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\b/i)
+
+  if (hasDatePattern) {
+    if (
+      titleLower.includes(dateStr.toLowerCase()) ||
+      Boolean(rule.startTime?.includes(dateStr)) ||
+      Boolean(rule.endTime?.includes(dateStr))
+    ) {
+      return true
+    }
+
+    const d = new Date(dateStr.includes('T') ? dateStr : `${dateStr}T00:00:00`)
+    const monthNames = [
+      'jan', 'feb', 'mar', 'apr', 'may', 'jun',
+      'jul', 'aug', 'sep', 'oct', 'nov', 'dec'
+    ]
+    const mName = monthNames[d.getMonth()]
+    const dayNum = d.getDate()
+    if (mName && new RegExp(`\\b${mName}[a-z]*\\s*${dayNum}\\b`, 'i').test(titleLower)) {
+      return true
+    }
+
+    return false
+  }
+
+  return true
+}
+
 export const getDateDiscountRule = ({
   date,
   eventId,
@@ -70,33 +149,9 @@ export const getDateDiscountRule = ({
       }
     }
 
-    const titleLower = rule.title?.toLowerCase() ?? ''
-    const timeWindowLower = rule.timeWindow?.toLowerCase() ?? ''
-
-    // 2. Day of week match
-    const ruleTargetsWeekday = weekdayNames.some(
-      (d) => titleLower.includes(d) || timeWindowLower === d
-    )
-    if (ruleTargetsWeekday) {
-      const matchesDay =
-        titleLower.includes(weekday) || timeWindowLower === weekday
-      if (!matchesDay) {
-        continue
-      }
-    } else {
-      // 3. Explicit date match
-      const hasDatePattern =
-        titleLower.match(/\d{4}-\d{2}-\d{2}/) ||
-        titleLower.match(/\d{1,2}\/\d{1,2}/)
-      if (hasDatePattern) {
-        const matchesDate =
-          titleLower.includes(date.toLowerCase()) ||
-          Boolean(rule.startTime?.includes(date)) ||
-          Boolean(rule.endTime?.includes(date))
-        if (!matchesDate) {
-          continue
-        }
-      }
+    // 2. Date / day-of-week match
+    if (!checkRuleMatchesDate(rule, date, weekday)) {
+      continue
     }
 
     // Determine badge label
@@ -185,33 +240,8 @@ export const getScheduleDiscount = ({
     }
 
     // 3. Date / day-of-week filter
-    if (scheduleDate) {
-      const titleLower = rule.title?.toLowerCase() ?? ''
-      const timeWindowLower = rule.timeWindow?.toLowerCase() ?? ''
-
-      const ruleTargetsWeekday = weekdayNames.some(
-        (d) => titleLower.includes(d) || timeWindowLower === d
-      )
-      if (ruleTargetsWeekday) {
-        const matchesDay =
-          titleLower.includes(weekday) || timeWindowLower === weekday
-        if (!matchesDay) {
-          continue
-        }
-      } else {
-        const hasDatePattern =
-          titleLower.match(/\d{4}-\d{2}-\d{2}/) ||
-          titleLower.match(/\d{1,2}\/\d{1,2}/)
-        if (hasDatePattern) {
-          const matchesDate =
-            titleLower.includes(scheduleDate.toLowerCase()) ||
-            Boolean(rule.startTime?.includes(scheduleDate)) ||
-            Boolean(rule.endTime?.includes(scheduleDate))
-          if (!matchesDate) {
-            continue
-          }
-        }
-      }
+    if (scheduleDate && !checkRuleMatchesDate(rule, scheduleDate, weekday)) {
+      continue
     }
 
     // 4. Time filter
