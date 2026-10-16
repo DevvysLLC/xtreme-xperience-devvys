@@ -12,6 +12,7 @@ import {
 import { CoreRocketRezPrice } from '../../../core-rocketrez-price'
 import { CouponForm } from '../coupon-form'
 import { CouponRemove } from '../coupon-remove'
+import { useOptionalBookingWizardState } from '../../../booking-wizard/context'
 import { CartExpiry } from '../expiry'
 import { CartLocation } from '../location'
 import { CartLineItems } from '../items'
@@ -32,7 +33,9 @@ export const CartSummary: FC = () => {
   const isReviewOrCheckoutPage = isReviewPage || pathname?.includes('/checkout')
   const { data: booking } = useBooking()
   const { data: cart } = useCart()
-  const track = booking?.track
+  const wizardContext = useOptionalBookingWizardState()
+  const wizardTrack = wizardContext?.state?.selectedEvent?.model?.track
+  const track = booking?.track ?? wizardTrack ?? null
   const rawLineItems = cart?.cartData?.lineItems
   const lineItems = useMemo(() => rawLineItems ?? [], [rawLineItems])
   const subtotal = useCartLineItemsTotal(cart?.cartData?.lineItems)
@@ -269,21 +272,9 @@ export const CartSummary: FC = () => {
     <div className={styles.summary}>
       <h2 className={styles.summary__title}>{t('summary.title')}</h2>
 
-      {track && !isReviewOrCheckoutPage && (
-        <>
-          <hr className={styles.summary__divider} />
-          <CartLocation track={track} />
-          <CartExpiry />
-        </>
-      )}
+      {track && <CartLocation track={track} />}
 
-      {track && isReviewOrCheckoutPage && (
-        <>
-          <CartExpiry />
-        </>
-      )}
-
-      <hr className={styles.summary__divider} />
+      <CartExpiry />
 
       <CouponForm />
 

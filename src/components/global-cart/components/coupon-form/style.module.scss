@@ -22,16 +22,18 @@
   &__row {
     display: flex;
     gap: sg.spacing(xsmall);
-    align-items: flex-start;
+    align-items: stretch;
   }
 
   &__input {
-    padding: u.rem-calc(12);
+    height: u.rem-calc(42);
+    padding: 0 u.rem-calc(12);
     border: 1px solid #aaa;
     border-radius: 0;
     font-family: sg.font-family(barlow);
     font-size: sg.font-size(regular);
     flex: 1;
+    box-sizing: border-box;
 
     &:focus {
       outline: 2px solid sg.color(black);
@@ -45,7 +47,8 @@
   }
 
   &__button {
-    padding: sg.spacing(xsmall) sg.spacing(regular);
+    height: u.rem-calc(42);
+    padding: 0 sg.spacing(regular);
     background-color: sg.color(black);
     color: sg.color(white);
     border: none;
@@ -56,6 +59,10 @@
     text-transform: uppercase;
     transition: background-color 0.2s;
     white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
 
     &:hover:not(:disabled) {
       background-color: sg.color(black-80);

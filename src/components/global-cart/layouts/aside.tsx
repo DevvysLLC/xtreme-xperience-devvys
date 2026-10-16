@@ -83,8 +83,6 @@ export const CartAside: FC<Props> = ({ className }) => {
   return (
     <aside className={clsx(styles.cart, className)}>
       <div className={styles.cart__container}>
-        <CartExpiry />
-
         <div className={styles.cart__header}>
           <h2 className={styles.cart__title}>Cart summary</h2>
           <span className={styles.cart__count}>
@@ -93,6 +91,8 @@ export const CartAside: FC<Props> = ({ className }) => {
         </div>
 
         {track && <CartLocation track={track} />}
+
+        <CartExpiry />
 
         <div
           className={clsx(
