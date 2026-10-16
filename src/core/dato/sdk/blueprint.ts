@@ -247,6 +247,9 @@ export type BookingConfigRecord = RecordInterface & {
   upsell: Array<AddonRecord>;
   upsellsDescription: Maybe<Scalars['String']['output']>;
   upsellsTitle: Maybe<Scalars['String']['output']>;
+  whatsIncludedDescription?: Maybe<Scalars['String']['output']>;
+  whatsIncludedLead?: Maybe<Scalars['String']['output']>;
+  whatsIncludedNotice?: Maybe<Scalars['String']['output']>;
 };
 
 
@@ -493,6 +496,9 @@ export type BookingSupercarRecord = RecordInterface & {
   supercar: SupercarRecord;
   thumbnailOverride: Maybe<CoreImageRecord>;
   titleOverride: Maybe<Scalars['String']['output']>;
+  whatsIncludedDescriptionOverride?: Maybe<Scalars['String']['output']>;
+  whatsIncludedLeadOverride?: Maybe<Scalars['String']['output']>;
+  whatsIncludedNoticeOverride?: Maybe<Scalars['String']['output']>;
 };
 
 
@@ -6279,6 +6285,9 @@ export const BookingSupercarFragmentDoc = /*#__PURE__*/ gql`
   supercar {
     ...SupercarBase
   }
+  whatsIncludedLeadOverride
+  whatsIncludedDescriptionOverride
+  whatsIncludedNoticeOverride
 }
     ${CoreImageFragmentDoc}
 ${CoreBadgeFragmentDoc}
@@ -6483,6 +6492,10 @@ export const BookingConfigFragmentDoc = /*#__PURE__*/ gql`
   discountRules {
     ...BookingDiscountRule
   }
+  showGiftCards
+  whatsIncludedLead
+  whatsIncludedDescription
+  whatsIncludedNotice
 }
     ${CoreCtaFragmentDoc}
 ${BookingPageFragmentDoc}

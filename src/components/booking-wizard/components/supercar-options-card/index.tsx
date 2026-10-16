@@ -708,18 +708,22 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
                 </div>
                 <p className={styles.modal__lead}>
                   <strong>
-                    {bookingSupercar.isRideAlong
-                      ? 'Ride with a professional driver.'
-                      : isMulticar
-                        ? 'Experience more than one dream car.'
-                        : 'You drive. A professional instructor rides with you.'}
+                    {bookingSupercar.whatsIncludedLeadOverride ||
+                      (bookingSupercar.isRideAlong
+                        ? 'Ride with a professional driver.'
+                        : isMulticar
+                          ? 'Experience more than one dream car.'
+                          : (state.configData?.whatsIncludedLead ||
+                            'You drive. A professional instructor rides with you.'))}
                   </strong>
                 </p>
                 <p className={styles.modal__desc}>
                   {lapsText}
-                  {bookingSupercar.isRideAlong
-                    ? 'A passenger experience.'
-                    : 'No prior track experience needed. Instruction included.'}
+                  {bookingSupercar.whatsIncludedDescriptionOverride ||
+                    (bookingSupercar.isRideAlong
+                      ? 'A passenger experience.'
+                      : (state.configData?.whatsIncludedDescription ||
+                        'No prior track experience needed. Instruction included.'))}
                 </p>
 
                 <div className={styles.modal__price}>
@@ -727,11 +731,15 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
                 </div>
 
                 <div className={styles.modal__notice}>
-                  {isMulticar && (bookingSupercar.titleOverride?.toLowerCase().includes('fleet') || bookingSupercar.multicarCount === 8)
-                    ? 'Includes all 8 cars, track insurance, a lead-car ride, Full-Throttle and skip-the-line access.'
-                    : bookingSupercar.isRideAlong
-                      ? 'Confirm passenger eligibility in the live booking flow.'
-                      : 'Required coverage is additional and shown before you continue. Photos, video, and ride-alongs are optional.'}
+                  {bookingSupercar.whatsIncludedNoticeOverride ||
+                    (isMulticar &&
+                    (bookingSupercar.titleOverride?.toLowerCase().includes('fleet') ||
+                      bookingSupercar.multicarCount === 8)
+                      ? 'Includes all 8 cars, track insurance, a lead-car ride, Full-Throttle and skip-the-line access.'
+                      : bookingSupercar.isRideAlong
+                        ? 'Confirm passenger eligibility in the live booking flow.'
+                        : (state.configData?.whatsIncludedNotice ||
+                          'Required coverage is additional and shown before you continue. Photos, video, and ride-alongs are optional.'))}
                 </div>
 
                 <button

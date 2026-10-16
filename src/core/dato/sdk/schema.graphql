@@ -253,6 +253,9 @@ type BookingConfigRecord implements RecordInterface {
     markdown: Boolean
   ): String
   upsellsTitle: String
+  whatsIncludedDescription: String
+  whatsIncludedLead: String
+  whatsIncludedNotice: String
 }
 
 """Block of type 📅 Booking - Decorator (booking_decorator)"""
@@ -493,6 +496,9 @@ type BookingSupercarRecord implements RecordInterface {
   supercar: SupercarRecord!
   thumbnailOverride: CoreImageRecord
   titleOverride: String
+  whatsIncludedDescriptionOverride: String
+  whatsIncludedLeadOverride: String
+  whatsIncludedNoticeOverride: String
 }
 
 """Specifies how to filter Boolean fields"""
