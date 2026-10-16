@@ -253,33 +253,39 @@ export const DateAndCarPage = () => {
   return (
     <BookingLayout>
       <section className={styles.section}>
-        <PageHeader title={title} description={description} centeredDesktop={true} />
+        <PageHeader
+          title={title}
+          description={
+            locationTitle ? (
+              <span className={styles.headerLocation}>
+                {trackHref ? (
+                  <a
+                    href={trackHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.headerLocationTitle}
+                  >
+                    {locationTitle.toUpperCase()}
+                  </a>
+                ) : (
+                  <span className={styles.headerLocationTitle}>
+                    {locationTitle.toUpperCase()}
+                  </span>
+                )}
+                <button
+                  type="button"
+                  className={styles.headerLocationChange}
+                  onClick={handleBack}
+                >
+                  Change
+                </button>
+              </span>
+            ) : null
+          }
+          centeredDesktop={true}
+        />
         <div>
           <div className={styles.panel}>
-            <div className={styles.location}>
-              <div className={styles.flex}>
-                <div>
-                  <strong>
-                    {trackHref ? (
-                      <a href={trackHref} target="_blank" rel="noopener noreferrer">
-                        {locationTitle}
-                      </a>
-                    ) : (
-                      locationTitle
-                    )}
-                  </strong>
-                  {locationSubtitle && (
-                    <div className={styles.muted}>
-                      {locationSubtitle}
-                    </div>
-                  )}
-                </div>
-              </div>
-              <button type="button" className={styles.textbutton} onClick={handleBack}>
-                Change
-              </button>
-            </div>
-
             <div className={styles.datehead}>
               <h2 id="date-selector-title">
                 <span className={styles.stepnum}>1</span>
