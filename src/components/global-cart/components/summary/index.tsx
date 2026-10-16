@@ -29,8 +29,7 @@ const getTaxAmount = (tax: unknown): number => {
 export const CartSummary: FC = () => {
   const t = useTranslations('global_cart')
   const pathname = usePathname()
-  const isReviewPage = pathname?.includes('/review')
-  const isReviewOrCheckoutPage = isReviewPage || pathname?.includes('/checkout')
+  const isCheckoutPage = pathname?.includes('/checkout')
   const { data: booking } = useBooking()
   const { data: cart } = useCart()
   const wizardContext = useOptionalBookingWizardState()
@@ -286,14 +285,14 @@ export const CartSummary: FC = () => {
         </div>
       )}
 
-      {isReviewOrCheckoutPage && driveItems.length > 0 && (
+      {isCheckoutPage && driveItems.length > 0 && (
         <>
           <hr className={styles.summary__divider} />
           <CartLineItems lineItems={driveItems} compact={true} />
         </>
       )}
 
-      {isReviewOrCheckoutPage && coverageAndAddonItems.length > 0 && (
+      {isCheckoutPage && coverageAndAddonItems.length > 0 && (
         <>
           <hr className={styles.summary__divider} />
           <div className={styles.summary__sectionHeader}>

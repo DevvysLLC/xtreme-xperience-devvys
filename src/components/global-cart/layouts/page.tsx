@@ -5,8 +5,9 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import type { FC, ReactNode } from 'react'
 import { ROUTES } from '../../../config/routes'
-import { useBookingPageReview } from '../../../features/booking'
+import { useBookingConfig, useBookingPageReview } from '../../../features/booking'
 import { useCart } from '../../../features/cart'
+import { CoreTextMarkdown } from '../../core-text-markdown'
 import { CartActions } from '../components/actions'
 import { CartLineItems } from '../components/items'
 import { CartSummary } from '../components/summary'
@@ -30,6 +31,10 @@ export const CartPage: FC<Props> = ({
   const { data, isLoading, isRefreshing } = useCart()
   const lineItems = data?.cartData?.lineItems ?? []
   const pageHook = useBookingPageReview()
+  const { data: config } = useBookingConfig()
+  const upsellsTitle = config?.upsellsTitle || 'ADD A PIT PASS'
+  const upsellsDescription =
+    config?.upsellsDescription || 'Perfect for spectators.'
   const router = useRouter()
 
   const handleCheckout = async () => {
@@ -69,18 +74,20 @@ export const CartPage: FC<Props> = ({
           isRefreshing && styles['is-refreshing']
         )}
       >
-        {showActions && (
-          <CartLineItems lineItems={lineItems} readOnly={readOnly} />
-        )}
+        <CartLineItems lineItems={lineItems} readOnly={readOnly} />
 
         {!readOnly && (
           <div className={styles.upsells}>
             <div className={styles.upsells__header}>
-              <h2 className={styles.upsells__title}>MAKE IT A DAY TO REMEMBER.</h2>
+              <h2 className={styles.upsells__title}>{upsellsTitle}</h2>
 
-              <div className={styles.upsells__description}>
-                <p>A few optional extras for you and your crew.</p>
-              </div>
+              {upsellsDescription && (
+                <div className={styles.upsells__description}>
+                  <CoreTextMarkdown type="rte">
+                    {upsellsDescription}
+                  </CoreTextMarkdown>
+                </div>
+              )}
             </div>
 
             <Upsell />
