@@ -1,11 +1,11 @@
 'use client'
 
 import clsx from 'clsx'
-import { format } from 'date-fns'
+// import { format } from 'date-fns'
 import { useEffect, useMemo, useState } from 'react'
 import { logger } from '../../../../core/logger/logger'
 import type { BookingSupercarGroupFragment } from '../../../../core/dato/fragments/booking-config.typegen'
-import { parseLocalDate } from '../../../../utils/date-time'
+// import { parseLocalDate } from '../../../../utils/date-time'
 import { getSeatTypeIdWithOverride } from '../../../../utils/get-seat-type-id-with-override'
 import {
   filterSupercarsByEventAssignment,
@@ -213,28 +213,28 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
     setActiveTabIndex
   ])
 
-  const formattedDate = useMemo(() => {
-    if (!state.selectedDayDate) {
-      return null
-    }
-    try {
-      const parsed = parseLocalDate(state.selectedDayDate)
-      return format(parsed, 'EEE, MMM d')
-    } catch {
-      return state.selectedDayDate
-    }
-  }, [state.selectedDayDate])
+  // const formattedDate = useMemo(() => {
+  //   if (!state.selectedDayDate) {
+  //     return null
+  //   }
+  //   try {
+  //     const parsed = parseLocalDate(state.selectedDayDate)
+  //     return format(parsed, 'EEE, MMM d')
+  //   } catch {
+  //     return state.selectedDayDate
+  //   }
+  // }, [state.selectedDayDate])
 
-  const resultTypeLabel = useMemo(() => {
-    const title = activeGroup?.title?.toLowerCase() ?? ''
-    if (title.includes('package')) {
-      return 'packages'
-    }
-    if (title.includes('ride')) {
-      return 'ride-alongs'
-    }
-    return 'supercars'
-  }, [activeGroup?.title])
+  // const resultTypeLabel = useMemo(() => {
+  //   const title = activeGroup?.title?.toLowerCase() ?? ''
+  //   if (title.includes('package')) {
+  //     return 'packages'
+  //   }
+  //   if (title.includes('ride')) {
+  //     return 'ride-alongs'
+  //   }
+  //   return 'supercars'
+  // }, [activeGroup?.title])
 
   useEffect(() => {
     if (
@@ -397,9 +397,9 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
       ) : (
         <>
           <div className={styles.filterbar}>
-            <span className={styles.filterbar__count}>
+            {/* <span className={styles.filterbar__count}>
               {sortedSupercars.length} {resultTypeLabel}{formattedDate ? ` · ${formattedDate}` : ''}
-            </span>
+            </span> */}
             <div className={styles.filterbar__sort}>
               <label htmlFor="supercar-sort-select">Sort: </label>
               <select
@@ -420,7 +420,7 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
             </div>
           </div>
 
-          <div className={styles.guide}>
+          {/* <div className={styles.guide}>
             <p className={styles.guide__intro}>
               Early sessions cost less. Choose a time for your exact price.
             </p>
@@ -430,7 +430,7 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
                 Savings compare your selected price with the highest Thursday–Sunday standard price. For packages, the reference is the highest full value, including the listed inclusions. Starting prices use 9:00 or 9:30 AM sessions. Coverage is additional except where included in Full Fleet.
               </p>
             </details>
-          </div>
+          </div> */}
 
           <div className={styles.supercars}>
             {sortedSupercars.map((option, index) => {
