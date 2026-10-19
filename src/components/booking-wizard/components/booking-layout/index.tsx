@@ -46,6 +46,9 @@ export const BookingLayout: FC<Props> = ({ children, className }) => {
       ? trackAnnouncement
       : null
 
+  const isReview = currentPage?.id === 'review'
+  const showMobileCartAside = showCartAside || isReview
+
   return (
     <div className={clsx(styles.wizard, className)}>
       <ProgressBar />
@@ -61,56 +64,56 @@ export const BookingLayout: FC<Props> = ({ children, className }) => {
           {children}
         </div>
 
-        {showCartAside && (
-          <>
-            <div className={styles.mobile}>
-              <div
-                className={clsx(
-                  styles.popup,
-                  isCartOpen && styles['popup--open']
-                )}
+        {showMobileCartAside && (
+          <div className={styles.mobile}>
+            <div
+              className={clsx(
+                styles.popup,
+                isCartOpen && styles['popup--open']
+              )}
+            >
+              <button
+                type="button"
+                className={styles.popup__title}
+                onClick={() => {
+                  setIsCartOpen(!isCartOpen)
+                }}
               >
-                <button
-                  type="button"
-                  className={styles.popup__title}
+                {t('title', {
+                  count: cart.contents.totalItems.toString()
+                })}
+
+                <CoreIcon icon={isCartOpen ? 'close' : 'chevron-down'} />
+              </button>
+
+              <div
+                className={styles.popup__content}
+                aria-hidden={!isCartOpen}
+              >
+                <CartAside />
+              </div>
+
+              <div className={styles.popup__actions}>
+                <CoreCta
+                  text={t('continue')}
+                  className={styles.popup__button}
+                  href={null}
+                  layoutType="button"
+                  sizeType="small"
+                  styleType="black"
                   onClick={() => {
                     setIsCartOpen(!isCartOpen)
                   }}
-                >
-                  {t('title', {
-                    count: cart.contents.totalItems.toString()
-                  })}
-
-                  <CoreIcon icon={isCartOpen ? 'close' : 'chevron-down'} />
-                </button>
-
-                <div
-                  className={styles.popup__content}
-                  aria-hidden={!isCartOpen}
-                >
-                  <CartAside />
-                </div>
-
-                <div className={styles.popup__actions}>
-                  <CoreCta
-                    text={t('continue')}
-                    className={styles.popup__button}
-                    href={null}
-                    layoutType="button"
-                    sizeType="small"
-                    styleType="black"
-                    onClick={() => {
-                      setIsCartOpen(!isCartOpen)
-                    }}
-                  />
-                </div>
+                />
               </div>
             </div>
+          </div>
+        )}
 
-            <div className={clsx(styles.wizard__aside, styles.desktop)}>
-              <CartAside />
-            </div>
-          </>
+        {showCartAside && (
+          <div className={clsx(styles.wizard__aside, styles.desktop)}>
+            <CartAside />
+          </div>
         )}
       </div>
     </div>
