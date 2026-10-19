@@ -45,8 +45,7 @@ export const ReviewPage = () => {
       <section>
         <CartPage
           showActions={false}
-          title="REVIEW YOUR TRACK DAY"
-          description="Check every item, charge and saving before continuing."
+          title="MY CART"
         />
         <PageFooter
           title={t('footer.title')}
