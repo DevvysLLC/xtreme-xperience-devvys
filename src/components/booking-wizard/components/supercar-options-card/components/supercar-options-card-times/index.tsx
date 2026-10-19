@@ -30,6 +30,7 @@ type Props = {
     price?: number | null
     compareAtPrice?: number | null
   } | null
+  onTimeSelect?: () => void
 }
 
 const SHOW_AVAILABLE_THRESHOLD = 9
@@ -42,7 +43,8 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
   schedules,
   field,
   form,
-  priceOverride
+  priceOverride,
+  onTimeSelect
 }) => {
   const { state: cardState, setSelectedDaySchedule } = useSupercarOptionsCard()
   const { state: wizardState } = useBookingWizardState()
@@ -190,6 +192,11 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
                 isSelected && !isSoldOut && styles['time--selected'],
                 isSoldOut && styles['time--sold-out']
               )}
+              onClick={() => {
+                if (isSelected && !isSoldOut) {
+                  onTimeSelect?.()
+                }
+              }}
             >
               <input
                 type="radio"
@@ -223,6 +230,7 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
                     field.handleChange(scheduleId)
                     form.setFieldValue('rateId', matchingRate.id)
                     form.setFieldValue('rateType', rateType.type)
+                    onTimeSelect?.()
                   }
                 }}
               />

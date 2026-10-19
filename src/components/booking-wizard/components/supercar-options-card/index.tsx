@@ -90,6 +90,18 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
 
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
   const inlineRef = useRef<HTMLElement>(null)
+  const bottomRef = useRef<HTMLDivElement>(null)
+
+  const handleTimeSelect = useCallback(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+      setTimeout(() => {
+        bottomRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        })
+      }, 100)
+    }
+  }, [])
 
   useEffect(() => {
     if (isSelected && inlineRef.current) {
@@ -881,6 +893,7 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
                         field={field}
                         form={form}
                         priceOverride={bookingSupercar.priceOverride}
+                        onTimeSelect={handleTimeSelect}
                       />
                     )
                   }}
@@ -888,7 +901,7 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
               </div>
             </div>
 
-            <div className={styles.inline__bottom}>
+            <div ref={bottomRef} className={styles.inline__bottom}>
               <div className={styles.inline__total}>
                 {renderPrice(true)}
                 {!cardState.selectedDaySchedule && (

@@ -138,7 +138,7 @@
 
   &__total {
     order: 5;
-    justify-self: flex-end;
+    justify-self: center;
 
     @include sg.min(laptopSmall) {
       order: 4;
