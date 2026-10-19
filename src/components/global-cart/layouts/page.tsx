@@ -6,8 +6,7 @@ import { useTranslations } from 'next-intl'
 import type { FC, ReactNode } from 'react'
 import { ROUTES } from '../../../config/routes'
 import { useBookingConfig, useBookingPageReview } from '../../../features/booking'
-import { useCart, useCartLineItemsTotal } from '../../../features/cart'
-import { CoreRocketRezPrice } from '../../core-rocketrez-price'
+import { useCart } from '../../../features/cart'
 import { CoreTextMarkdown } from '../../core-text-markdown'
 import { CartActions } from '../components/actions'
 import { CartLineItems } from '../components/items'
@@ -31,7 +30,6 @@ export const CartPage: FC<Props> = ({
   const t = useTranslations('global_cart')
   const { data, isLoading, isRefreshing } = useCart()
   const lineItems = data?.cartData?.lineItems ?? []
-  const subtotal = useCartLineItemsTotal(lineItems)
   const pageHook = useBookingPageReview()
   const { data: config } = useBookingConfig()
   const upsellsTitle = config?.upsellsTitle || 'ADD A PIT PASS'
@@ -77,21 +75,6 @@ export const CartPage: FC<Props> = ({
         )}
       >
         <CartLineItems lineItems={lineItems} readOnly={readOnly} />
-
-        {lineItems.length > 0 && (
-          <div className={styles.cart__subtotal}>
-            <span className={styles.cart__subtotalLabel}>Subtotal:</span>
-            <CoreRocketRezPrice
-              className={styles.cart__subtotalPrice}
-              priceClassName="u-color-orange"
-              data={{
-                id: 'cart-page-subtotal',
-                price: subtotal
-              }}
-              valueInCents={false}
-            />
-          </div>
-        )}
 
         {!readOnly && (
           <div className={styles.upsells}>

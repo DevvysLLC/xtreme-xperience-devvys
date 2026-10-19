@@ -47,7 +47,7 @@ export const BookingLayout: FC<Props> = ({ children, className }) => {
       : null
 
   const isReview = currentPage?.id === 'review'
-  const showMobileCartAside = showCartAside || isReview
+  const showMobileCartAside = showCartAside && !isReview
 
   return (
     <div className={clsx(styles.wizard, className)}>

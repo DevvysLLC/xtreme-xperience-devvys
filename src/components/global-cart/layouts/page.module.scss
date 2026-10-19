@@ -2,8 +2,8 @@
 @use '../../../styles/core/unit' as u;
 
 .cart {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
   row-gap: sg.spacing(xlarge);
   padding-block: sg.spacing(xlarge) u.rem-calc(140);
   padding-inline: sg.spacing(regular);
@@ -13,6 +13,7 @@
   }
 
   @include sg.min(laptopSmall) {
+    display: grid;
     grid-template-columns: 1fr u.rem-calc(392);
     grid-template-rows: auto 1fr;
     padding: 0;
@@ -22,8 +23,12 @@
     display: flex;
     flex-direction: column;
     gap: sg.spacing(regular);
+    order: 2;
 
     @include sg.min(laptopSmall) {
+      order: 1;
+      grid-column: 1;
+      grid-row: 1;
       padding-top: sg.spacing(xxlarge);
       padding-inline: sg.spacing(xlarge);
     }
@@ -50,18 +55,23 @@
   }
 
   &__summary {
-    display: none;
+    display: flex;
+    flex-direction: column;
+    gap: sg.spacing(medium);
+    order: 1;
+    padding-bottom: sg.spacing(xlarge);
+    border-bottom: u.rem-calc(1) solid sg.color(border-light);
 
     @include sg.min(laptopSmall) {
-      display: flex;
-      flex-direction: column;
-      gap: sg.spacing(medium);
+      order: 2;
+      grid-column: 2;
       grid-row: span 2;
       position: sticky;
       top: 0;
       align-self: start;
       padding-block: sg.spacing(xlarge) sg.spacing(medium);
       padding-inline: sg.spacing(medium);
+      border-bottom: none;
       border-left: u.rem-calc(1) solid sg.color(border-light);
     }
   }
@@ -70,6 +80,7 @@
     display: flex;
     flex-direction: column;
     gap: sg.spacing(xlarge);
+    order: 3;
 
     &.is-loading,
     &.is-refreshing {
@@ -78,37 +89,11 @@
     }
 
     @include sg.min(laptopSmall) {
+      order: 3;
+      grid-column: 1;
+      grid-row: 2;
       padding-bottom: sg.spacing(xxlarge);
       padding-inline: sg.spacing(xlarge);
-    }
-  }
-
-  &__subtotal {
-    display: flex;
-    justify-content: flex-end;
-    align-items: baseline;
-    gap: sg.spacing(medium);
-    margin-top: u.rem-calc(-12);
-    margin-bottom: sg.spacing(small);
-  }
-
-  &__subtotalLabel {
-    font-size: sg.font-size(mediuml);
-    font-weight: 700;
-    color: #111;
-  }
-
-  &__subtotalPrice {
-    // min-width: u.rem-calc(110);
-    font-size: sg.font-size(mediuml);
-    font-weight: 700;
-    line-height: sg.line-height('100%');
-    color: sg.color(orange);
-    text-align: right;
-
-    [data-price] {
-      color: sg.color(orange);
-      font-weight: 700;
     }
   }
 }

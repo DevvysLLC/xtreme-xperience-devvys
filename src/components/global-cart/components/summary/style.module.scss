@@ -215,4 +215,41 @@
     flex-direction: column;
     gap: sg.spacing(xsmall);
   }
+
+  &__secure {
+    display: flex;
+    align-items: center;
+    gap: u.rem-calc(12);
+    margin-top: u.rem-calc(14);
+    padding-top: u.rem-calc(14);
+    border-top: u.rem-calc(1) solid sg.color(border-light);
+  }
+
+  &__secureIcon {
+    flex-shrink: 0;
+    width: u.rem-calc(22);
+    height: u.rem-calc(22);
+    color: #111;
+  }
+
+  &__secureText {
+    display: flex;
+    flex-direction: column;
+    gap: u.rem-calc(2);
+  }
+
+  &__secureTitle {
+    font-size: u.rem-calc(13);
+    font-weight: 700;
+    color: #111;
+    line-height: 1.2;
+    font-family: sg.font-family(barlow);
+  }
+
+  &__secureSubtitle {
+    font-size: u.rem-calc(11);
+    color: #888;
+    line-height: 1.3;
+    font-family: sg.font-family(barlow);
+  }
 }
