@@ -118,11 +118,11 @@
   &__header {
     display: flex;
     flex-direction: column;
-    padding: u.rem-calc(8) u.rem-calc(8) u.rem-calc(6);
+    padding: u.rem-calc(8) u.rem-calc(8) u.rem-calc(10);
     flex: 1;
 
     @include sg.min(tabletLandscape) {
-      padding: u.rem-calc(16) u.rem-calc(18) u.rem-calc(8);
+      padding: u.rem-calc(16) u.rem-calc(18) u.rem-calc(16);
     }
   }
 

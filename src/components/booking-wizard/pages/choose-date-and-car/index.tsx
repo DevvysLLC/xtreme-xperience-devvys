@@ -296,9 +296,12 @@ export const DateAndCarPage = () => {
             
             <ul className={styles.dates}>
               {state.eventData?.schedules?.map((day) => {
+                const trackId =
+                  state.selectedEvent?.model?.track?.config?.id ?? null
                 const dateDiscount = getDateDiscountRule({
                   date: day.date,
                   eventId: state.selectedEvent?.id,
+                  trackId,
                   rules: state.configData?.discountRules
                 })
 

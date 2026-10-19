@@ -3,12 +3,16 @@ export type BookingDiscountRule = {
   title?: string | null
   discountType?: 'percentage' | 'fixed_amount' | string | null
   discountValue?: number | null
-  timeWindow?: 'morning' | 'afternoon' | 'all_day' | string | null
+  timeWindow?: 'morning' | 'afternoon' | 'all_day' | 'custom' | string | null
   startTime?: string | null
   endTime?: string | null
   applyToAllEvents?: boolean | null
   events?: Array<{ id: string }> | null
   supercars?: Array<{ id: string }> | null
+  excludedTracks?: Array<{ id: string; [key: string]: any }> | null
+  daysOfWeek?: 'all' | 'weekdays' | 'monday_thursday' | 'weekends' | 'friday' | 'saturday' | 'sunday' | string | null
+  targetType?: 'all' | 'supercars' | 'ride_along' | string | null
+  compareAtOverride?: number | null
   badgeLabel?: string | null
 }
 
@@ -42,15 +46,43 @@ const checkRuleMatchesDate = (
   dateStr: string,
   weekday: string
 ): boolean => {
+  // 1. Explicit daysOfWeek field if configured
+  if (rule.daysOfWeek && rule.daysOfWeek !== 'all') {
+    if (rule.daysOfWeek === 'weekdays') {
+      return (
+        weekday === 'monday' ||
+        weekday === 'tuesday' ||
+        weekday === 'wednesday' ||
+        weekday === 'thursday' ||
+        weekday === 'friday'
+      )
+    }
+    if (rule.daysOfWeek === 'monday_thursday') {
+      return (
+        weekday === 'monday' ||
+        weekday === 'tuesday' ||
+        weekday === 'wednesday' ||
+        weekday === 'thursday'
+      )
+    }
+    if (rule.daysOfWeek === 'weekends') {
+      return weekday === 'saturday' || weekday === 'sunday'
+    }
+    if (rule.daysOfWeek.toLowerCase() === weekday) {
+      return true
+    }
+    return false
+  }
+
   const titleLower = rule.title?.toLowerCase() ?? ''
   const timeWindowLower = rule.timeWindow?.toLowerCase() ?? ''
 
-  // 1. Weekend check
+  // 2. Weekend check in title
   if (titleLower.includes('weekend') || timeWindowLower === 'weekend') {
     return weekday === 'saturday' || weekday === 'sunday'
   }
 
-  // 2. Weekday check
+  // 3. Weekday check in title
   if (titleLower.includes('weekday') || timeWindowLower === 'weekday') {
     return (
       weekday === 'monday' ||
@@ -61,7 +93,7 @@ const checkRuleMatchesDate = (
     )
   }
 
-  // 3. Day of week check (full names and common abbreviations)
+  // 4. Day of week check (full names and common abbreviations)
   const dayPatterns: Array<{ name: string; regex: RegExp }> = [
     { name: 'sunday', regex: /\b(sunday|sun)\b/i },
     { name: 'monday', regex: /\b(monday|mon)\b/i },
@@ -84,7 +116,7 @@ const checkRuleMatchesDate = (
     return matchesToday
   }
 
-  // 4. Explicit date check
+  // 5. Explicit date check
   const hasDatePattern =
     titleLower.match(/\d{4}-\d{2}-\d{2}/) ||
     titleLower.match(/\d{1,2}\/\d{1,2}/) ||
@@ -119,10 +151,16 @@ const checkRuleMatchesDate = (
 export const getDateDiscountRule = ({
   date,
   eventId,
+  trackId,
+  supercarId,
+  isRideAlong,
   rules
 }: {
   date: string
   eventId?: string | null
+  trackId?: string | null
+  supercarId?: string | null
+  isRideAlong?: boolean | null
   rules?: BookingDiscountRule[] | null
 }): { badgeLabel: string; discountPercent?: number; rule: BookingDiscountRule } | null => {
   if (!rules || rules.length === 0) {
@@ -142,14 +180,36 @@ export const getDateDiscountRule = ({
   const weekday = weekdayNames[dateObj.getDay()] ?? ''
 
   for (const rule of rules) {
-    // 1. Event filter
+    // 1. Excluded Tracks check (e.g. COTA, Sonoma)
+    if (trackId && rule.excludedTracks && rule.excludedTracks.length > 0) {
+      if (rule.excludedTracks.some((t) => t.id === trackId)) {
+        continue
+      }
+    }
+
+    // 2. Product targeting type
+    if (rule.targetType === 'ride_along' && !isRideAlong) {
+      continue
+    }
+    if (rule.targetType === 'supercars' && isRideAlong) {
+      continue
+    }
+
+    // 3. Event filter
     if (rule.applyToAllEvents === false) {
       if (!eventId || !rule.events || !rule.events.some((e) => e.id === eventId)) {
         continue
       }
     }
 
-    // 2. Date / day-of-week match
+    // 4. Car filter
+    if (supercarId && rule.supercars && rule.supercars.length > 0) {
+      if (!rule.supercars.some((s) => s.id === supercarId)) {
+        continue
+      }
+    }
+
+    // 5. Date / day-of-week match
     if (!checkRuleMatchesDate(rule, date, weekday)) {
       continue
     }
@@ -178,7 +238,7 @@ export const getDateDiscountRule = ({
 
 /**
  * Evaluates whether any active Booking Discount Rules apply to a given schedule,
- * car, and event, and returns the calculated price, before/after compare-at price,
+ * car, track, and event, and returns the calculated price, before/after compare-at price,
  * and optional badge.
  */
 export const getScheduleDiscount = ({
@@ -187,7 +247,9 @@ export const getScheduleDiscount = ({
   basePrice,
   existingCompareAtPrice,
   eventId,
+  trackId,
   supercarId,
+  isRideAlong,
   rules
 }: {
   scheduleStartTime?: string | null
@@ -195,7 +257,9 @@ export const getScheduleDiscount = ({
   basePrice: number | null
   existingCompareAtPrice?: number | null
   eventId?: string | null
+  trackId?: string | null
   supercarId?: string | null
+  isRideAlong?: boolean | null
   rules?: BookingDiscountRule[] | null
 }): ScheduleDiscountResult => {
   if (basePrice === null || !rules || rules.length === 0) {
@@ -225,35 +289,50 @@ export const getScheduleDiscount = ({
     : ''
 
   for (const rule of rules) {
-    // 1. Event filter
+    // 1. Excluded Tracks filter (e.g. COTA, Sonoma)
+    if (trackId && rule.excludedTracks && rule.excludedTracks.length > 0) {
+      if (rule.excludedTracks.some((t) => t.id === trackId)) {
+        continue
+      }
+    }
+
+    // 2. Product targeting type
+    if (rule.targetType === 'ride_along' && !isRideAlong) {
+      continue
+    }
+    if (rule.targetType === 'supercars' && isRideAlong) {
+      continue
+    }
+
+    // 3. Event filter
     if (rule.applyToAllEvents === false) {
       if (!eventId || !rule.events || !rule.events.some((e) => e.id === eventId)) {
         continue
       }
     }
 
-    // 2. Car filter
+    // 4. Car filter
     if (rule.supercars && rule.supercars.length > 0) {
       if (!supercarId || !rule.supercars.some((s) => s.id === supercarId)) {
         continue
       }
     }
 
-    // 3. Date / day-of-week filter
+    // 5. Date / day-of-week filter
     if (scheduleDate && !checkRuleMatchesDate(rule, scheduleDate, weekday)) {
       continue
     }
 
-    // 4. Time filter
+    // 6. Time filter
     if (scheduleMinutes !== null) {
       if (rule.timeWindow === 'morning') {
-        // Morning: 8:00 AM (480) - 10:00 AM (600)
+        // Morning: 8:00 AM (480) - 9:30 AM / 10:00 AM (600)
         if (scheduleMinutes < 480 || scheduleMinutes > 600) {
           continue
         }
       } else if (rule.timeWindow === 'afternoon') {
-        // Afternoon: 10:30 AM (630) - 5:30 PM (1050)
-        if (scheduleMinutes < 630 || scheduleMinutes > 1050) {
+        // Afternoon: 10:00 AM (600) - 5:30 PM (1050)
+        if (scheduleMinutes < 600 || scheduleMinutes > 1050) {
           continue
         }
       } else if (
@@ -271,27 +350,31 @@ export const getScheduleDiscount = ({
       }
     }
 
-    // 5. Calculate discount
+    // 7. Calculate discount
     const discountVal = rule.discountValue ?? 0
-    if (discountVal <= 0) {
+    if (discountVal <= 0 && !rule.compareAtOverride) {
       continue
     }
 
     let calculatedPrice = basePathPrice(basePrice)
-    if (rule.discountType === 'percentage') {
+    if (rule.discountType === 'percentage' && discountVal > 0) {
       const discountAmount = (calculatedPrice * discountVal) / 100
       calculatedPrice = Math.max(0, Math.round(calculatedPrice - discountAmount))
-    } else {
+    } else if (discountVal > 0) {
       // Fixed dollar discount (handle value in cents or dollars)
       const dollarDiscount = discountVal > 1000 ? discountVal / 100 : discountVal
       calculatedPrice = Math.max(0, Math.round(calculatedPrice - dollarDiscount))
     }
 
-    if (calculatedPrice < basePathPrice(basePrice)) {
-      const compareAt = Math.max(
-        basePathPrice(basePrice),
-        existingCompareAtPrice ?? 0
-      )
+    const hasPriceDiscount = calculatedPrice < basePathPrice(basePrice)
+    const hasCompareAtOverride = rule.compareAtOverride != null && rule.compareAtOverride > calculatedPrice
+
+    if (hasPriceDiscount || hasCompareAtOverride) {
+      const compareAt =
+        rule.compareAtOverride != null
+          ? rule.compareAtOverride
+          : Math.max(basePathPrice(basePrice), existingCompareAtPrice ?? 0)
+
       return {
         price: calculatedPrice,
         compareAtPrice: compareAt,
@@ -307,3 +390,4 @@ export const getScheduleDiscount = ({
     isDiscounted: false
   }
 }
+

@@ -28,6 +28,8 @@ import type {
 } from '../../../../io/types'
 import { getAddToCartLineItemCarMetadata } from '../../../../utils/get-add-to-cart-line-item-car-metadata'
 import { getBookingLapsPerSession } from '../../../../utils/get-booking-laps-per-session'
+import { getRateTypePrice } from '../../../../utils/get-rate-type-price'
+import { getScheduleDiscount } from '../../../../utils/get-schedule-discount'
 import { getSeatTypeIdWithOverride } from '../../../../utils/get-seat-type-id-with-override'
 import { isScheduleSoldOut } from '../../../../utils/is-schedule-sold-out'
 import { CoreBadge } from '../../../core-badge'
@@ -58,11 +60,11 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
   rocketRezSeatTypeId,
   cardIndex = 0,
   isSelected: isSelectedProp,
-  isCompared = false,
+  // isCompared = false,
   editingLineItemId = null,
   onClearEditing,
   onToggleSelect,
-  onToggleCompare,
+  // onToggleCompare,
   onClose
 }) => {
   const t = useTranslations(
@@ -186,6 +188,76 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
     () => lowestAvailablePrice(schedules, rocketRezSeatTypeId, isMulticar),
     [schedules, rocketRezSeatTypeId, lowestAvailablePrice, isMulticar]
   )
+
+  const discountRules = state.configData?.discountRules
+  const trackId = state.selectedEvent?.model?.track?.config?.id ?? null
+
+  const lowestDiscountedPrice = useMemo(() => {
+    if (!schedules || schedules.length === 0 || !lowestPrice) {
+      return lowestPrice
+    }
+    let minPrice = lowestPrice.price
+    let minCompareAt = lowestPrice.compareAtPrice
+    let matchedBadge: string | null = null
+
+    for (const schedule of schedules) {
+      if (schedule.scheduleStatus !== RocketRezScheduleStatus.AVAILABLE) {
+        continue
+      }
+      const matchedSeatType = (schedule.seatTypes ?? []).find(
+        (seatType) =>
+          seatType?.available != null &&
+          seatType.available > 0 &&
+          (seatType.rates ?? []).some((rate) => rate.id === rocketRezSeatTypeId)
+      )
+      if (!matchedSeatType) {
+        continue
+      }
+      const matchedRate = (matchedSeatType.rates ?? []).find(
+        (rate) => rate.id === rocketRezSeatTypeId
+      )
+      const rtp = getRateTypePrice(matchedRate?.rateTypes?.[0])
+      if (!rtp?.hasPrice || rtp.price === null) {
+        continue
+      }
+
+      const disc = getScheduleDiscount({
+        scheduleStartTime: schedule.startTime,
+        scheduleDate: state.selectedDayDate,
+        basePrice: rtp.price,
+        existingCompareAtPrice: rtp.compareAtPrice,
+        eventId: state.selectedEvent?.id,
+        trackId,
+        supercarId: String(supercar.id),
+        isRideAlong: bookingSupercar.isRideAlong,
+        rules: discountRules
+      })
+
+      if (disc.price < minPrice) {
+        minPrice = disc.price
+        minCompareAt = disc.compareAtPrice ?? rtp.price
+        if (disc.badgeLabel) {
+          matchedBadge = disc.badgeLabel
+        }
+      }
+    }
+
+    return {
+      price: minPrice,
+      compareAtPrice: minCompareAt,
+      promoBadge: matchedBadge
+    }
+  }, [
+    schedules,
+    lowestPrice,
+    rocketRezSeatTypeId,
+    state.selectedDayDate,
+    state.selectedEvent?.id,
+    trackId,
+    supercar.id,
+    bookingSupercar.isRideAlong,
+    discountRules
+  ])
 
   // Highest standard price for this car across every event day (prototype's "Standard value")
   const standardValue = useMemo(() => {
@@ -579,7 +651,26 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
       ? `${supercar.model.make} ${supercar.model.model}`
       : null
 
-  const cmsBadge = badge ?? supercar.model?.badges?.[0] ?? null
+  const promoBadge =
+    lowestDiscountedPrice &&
+    'promoBadge' in lowestDiscountedPrice &&
+    lowestDiscountedPrice.promoBadge
+      ? {
+          __typename: 'CoreBadgeRecord' as const,
+          id: 'promo-badge',
+          label: lowestDiscountedPrice.promoBadge,
+          backgroundColor: {
+            __typename: 'ColorField' as const,
+            hex: '#D32F2F'
+          },
+          color: {
+            __typename: 'ColorField' as const,
+            hex: '#FFFFFF'
+          }
+        }
+      : null
+
+  const cmsBadge = badge ?? promoBadge ?? supercar.model?.badges?.[0] ?? null
 
   const renderPrice = (selectedMode: boolean) => {
     const showSelected =
@@ -587,6 +678,7 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
     const quantity = showSelected ? (cardState.selectedQuantity ?? 1) : 1
     const selectedSlotPrice =
       cardState.selectedDaySchedule?.rateTypePrice?.price
+    const activeLowest = lowestDiscountedPrice ?? lowestPrice
     const currentPrice = showSelected
       ? ((selectedSlotPrice ??
           (bookingSupercar.priceOverride?.price != null
@@ -595,7 +687,7 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
           0) * quantity
       : bookingSupercar.priceOverride?.price != null
         ? bookingSupercar.priceOverride.price / 100
-        : (lowestPrice?.price ?? null)
+        : (activeLowest?.price ?? null)
     if (currentPrice === null || currentPrice === 0) {
       return null
     }
@@ -609,7 +701,7 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
       ? (selectedCompareAt ?? 0) * quantity
       : bookingSupercar.priceOverride?.compareAtPrice != null
         ? bookingSupercar.priceOverride.compareAtPrice / 100
-        : (lowestPrice?.compareAtPrice ?? 0)
+        : (activeLowest?.compareAtPrice ?? 0)
     const referenceValue =
       cmsCompareAt > currentPrice
         ? cmsCompareAt
@@ -701,27 +793,6 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
             </div>
           )}
         </div>
-
-        {!soldOut && (
-          <div className={styles.card__foot}>
-            <button
-              type="button"
-              className={styles.card__foot_link}
-              onClick={() => setIsDetailsOpen(true)}
-            >
-              What&apos;s included
-            </button>
-            <label className={styles.card__compare}>
-              <input
-                type="checkbox"
-                name="compare"
-                checked={isCompared}
-                onChange={() => onToggleCompare?.()}
-              />
-              <span>Compare</span>
-            </label>
-          </div>
-        )}
       </article>
 
       {isDetailsOpen &&
@@ -929,6 +1000,7 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
                         rocketRezSeatTypeId={rocketRezSeatTypeId}
                         packageRateIds={packageRateIds}
                         isMulticar={isMulticar}
+                        isRideAlong={bookingSupercar.isRideAlong}
                         schedules={schedules}
                         field={field}
                         form={form}

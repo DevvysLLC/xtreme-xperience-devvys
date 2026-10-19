@@ -21,6 +21,7 @@ type Props = {
   rocketRezSeatTypeId: number
   packageRateIds?: number[]
   isMulticar?: boolean
+  isRideAlong?: boolean
   schedules: RocketRezEventScheduleItem[]
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   field: any
@@ -40,6 +41,7 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
   rocketRezSeatTypeId,
   packageRateIds,
   isMulticar,
+  isRideAlong,
   schedules,
   field,
   form,
@@ -144,15 +146,19 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
             rateTypePrice?.compareAtPrice ??
             null
 
-          // Apply discount rules (morning 8-10 AM vs afternoon 10:30-5:30 PM, event & car scopes)
+          // Apply discount rules (morning 8-10 AM vs afternoon 10:30-5:30 PM, event, track & car scopes)
           const discountRules = wizardState.configData?.discountRules
+          const trackId =
+            wizardState.selectedEvent?.model?.track?.config?.id ?? null
           const discountResult = getScheduleDiscount({
             scheduleStartTime: schedule.startTime,
             scheduleDate: wizardState.selectedDayDate,
             basePrice: rawSchedulePrice,
             existingCompareAtPrice: rawCompareAtPrice,
             eventId: wizardState.selectedEvent?.id,
+            trackId,
             supercarId: String(supercarId),
+            isRideAlong,
             rules: discountRules
           })
 
