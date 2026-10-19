@@ -80,7 +80,7 @@ export const CartPage: FC<Props> = ({
 
         {lineItems.length > 0 && (
           <div className={styles.cart__subtotal}>
-            <span className={styles.cart__subtotalLabel}>Subtotal</span>
+            <span className={styles.cart__subtotalLabel}>Subtotal:</span>
             <CoreRocketRezPrice
               className={styles.cart__subtotalPrice}
               priceClassName="u-color-orange"

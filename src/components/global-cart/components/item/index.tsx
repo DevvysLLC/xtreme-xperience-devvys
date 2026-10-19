@@ -11,6 +11,7 @@ import {
   useCartLineItemMetadata,
   useCartRemoveLineItem
 } from '../../../../features/cart'
+import { useBookingSetIntendedPage } from '../../../../features/booking'
 import type {
   CartLineItemMetadata,
   RocketRezLineItem
@@ -47,6 +48,7 @@ export const CartLineItem: FC<Props> = ({
   const drawerBus = useMainBus(DRAWER_REQUEST_CLOSE_MESSAGE_NAME, () => {})
   const t = useTranslations('global_cart')
   const { mutateAsync } = useCartRemoveLineItem()
+  const { mutateAsync: setIntendedPage } = useBookingSetIntendedPage()
   const cartMetadata = useCartLineItemMetadata({ lineItem })
   const metadata =
     externalMetadata !== undefined ? externalMetadata : cartMetadata.metadata
@@ -95,7 +97,7 @@ export const CartLineItem: FC<Props> = ({
         ? properties.savings
         : undefined
 
-    const handleEdit = () => {
+    const handleEdit = async () => {
       if (typeof window === 'undefined') {
         return
       }
@@ -124,6 +126,13 @@ export const CartLineItem: FC<Props> = ({
           sessionStorage.setItem('pendingEditSeatTypeId', seatId.toString())
         } catch (error) {
           logger.error({ error }, 'cart-line-item.handleEdit.sessionStorage.error')
+        }
+
+        // Set intended wizard page so BookingWizardGuard allows navigation
+        try {
+          await setIntendedPage('date_and_car')
+        } catch (error) {
+          logger.error({ error }, 'cart-line-item.handleEdit.setIntendedPage.error')
         }
 
         // If not already on the choose-date-and-car page, navigate there
@@ -258,7 +267,14 @@ export const CartLineItem: FC<Props> = ({
                   <button
                     type="button"
                     className={styles.CartLineItemCompact__actionBtn}
-                    onClick={() => router.push(ROUTES.BOOKING.COVERAGE_OPTIONS)}
+                    onClick={async () => {
+                      try {
+                        await setIntendedPage('coverage_options')
+                      } catch (error) {
+                        logger.error({ error }, 'cart-line-item.editCoverage.error')
+                      }
+                      router.push(ROUTES.BOOKING.COVERAGE_OPTIONS)
+                    }}
                   >
                     Edit coverage
                   </button>
