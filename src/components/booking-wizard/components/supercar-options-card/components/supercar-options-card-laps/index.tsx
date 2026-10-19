@@ -199,6 +199,10 @@ export const SupercarOptionsCardLaps: React.FC<Props> = ({
               : ''
 
           const displayBadgeLabel = optionLabelFromCms || option.badge?.label
+          const isMostPopular = Boolean(
+            displayBadgeLabel?.toLowerCase().includes('popular') ||
+              option.badge?.label?.toLowerCase().includes('popular')
+          )
 
           return (
             <label
@@ -232,7 +236,12 @@ export const SupercarOptionsCardLaps: React.FC<Props> = ({
               </span>
 
               {displayBadgeLabel && !isSoldOut && (
-                <span className={styles.lap__saving}>
+                <span
+                  className={clsx(
+                    styles.lap__saving,
+                    isMostPopular && styles['lap__saving--mobile-hidden']
+                  )}
+                >
                   {displayBadgeLabel}
                 </span>
               )}

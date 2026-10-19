@@ -45,11 +45,20 @@
     aspect-ratio: 420 / 240;
     
     #{$card}--featured & {
-      aspect-ratio: auto;
-      height: 100%;
+      aspect-ratio: 420 / 240;
+      width: 100%;
+
+      @include sg.min(laptopSmall) {
+        aspect-ratio: auto;
+        height: 100%;
+      }
+
       img {
-        min-height: u.rem-calc(270);
         object-fit: cover;
+
+        @include sg.min(laptopSmall) {
+          min-height: u.rem-calc(270);
+        }
       }
     }
 

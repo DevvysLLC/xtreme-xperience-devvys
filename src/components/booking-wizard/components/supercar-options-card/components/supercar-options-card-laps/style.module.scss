@@ -134,5 +134,13 @@
     font-weight: 700;
     line-height: 1.2;
     color: #9d3d00;
+
+    &--mobile-hidden {
+      display: none;
+
+      @include sg.min(tabletLandscape) {
+        display: block;
+      }
+    }
   }
 }
