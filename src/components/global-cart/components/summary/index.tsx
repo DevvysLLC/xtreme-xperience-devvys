@@ -1,22 +1,78 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
+// import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { type FC, useMemo } from 'react'
 import { useBooking } from '../../../../features/booking'
 import {
   useCart,
+  useCartLineItemMetadata,
   useCartLineItemsTotal,
   useCartState
 } from '../../../../features/cart'
+import type { RocketRezLineItem } from '../../../../io/types'
 import { CoreRocketRezPrice } from '../../../core-rocketrez-price'
 import { CouponForm } from '../coupon-form'
 import { CouponRemove } from '../coupon-remove'
 import { useOptionalBookingWizardState } from '../../../booking-wizard/context'
 import { CartExpiry } from '../expiry'
 import { CartLocation } from '../location'
-import { CartLineItems } from '../items'
 import styles from './style.module.scss'
+
+const SummaryLineItem: FC<{ lineItem: RocketRezLineItem }> = ({ lineItem }) => {
+  const { metadata } = useCartLineItemMetadata({ lineItem })
+  const { price, quantity = 1 } = lineItem
+  const type = (lineItem.type || '').toLowerCase()
+  const metaType = (metadata?.type || '').toLowerCase()
+  const rawName = (lineItem.name || '').trim()
+  const metaTitle = (metadata?.title || '').trim()
+
+  const isInsurance = type === 'insurance' || metaType === 'insurance'
+  const isPitPass =
+    rawName.toLowerCase().includes('pit pass') ||
+    metaTitle.toLowerCase().includes('pit pass')
+  const isRideAlong =
+    metadata?.isRideAlong === true ||
+    rawName.toLowerCase().includes('ride along') ||
+    rawName.toLowerCase().includes('ride-along') ||
+    rawName.toLowerCase().includes('hellcat')
+
+  let displayName = metaTitle || rawName || `${lineItem.type} #${lineItem.productId}`
+
+  if (isInsurance) {
+    displayName = metaTitle || 'Damage Protection – Base'
+  } else if (isPitPass) {
+    displayName = quantity > 1 ? `Pit Pass × ${quantity}` : 'Pit Pass'
+  } else if (isRideAlong) {
+    if (
+      !displayName.toLowerCase().includes('ride along') &&
+      !displayName.toLowerCase().includes('ride-along')
+    ) {
+      displayName = `${displayName} (Ride Along)`
+    }
+  } else if (
+    metadata?.properties &&
+    typeof metadata.properties === 'object' &&
+    'laps' in metadata.properties &&
+    metadata.properties.laps
+  ) {
+    const laps = metadata.properties.laps
+    if (!displayName.toLowerCase().includes('lap')) {
+      displayName = `${displayName} – ${laps} Laps`
+    }
+  }
+
+  const totalPrice = price * quantity
+
+  return (
+    <div className={styles.summary__itemRow}>
+      <span className={styles.summary__itemName}>{displayName}</span>
+      <span className={styles.summary__itemPrice}>
+        ${totalPrice.toLocaleString()}
+      </span>
+    </div>
+  )
+}
 
 const getTaxAmount = (tax: unknown): number => {
   if (!tax || typeof tax !== 'object' || !('amount' in tax)) {
@@ -28,9 +84,9 @@ const getTaxAmount = (tax: unknown): number => {
 
 export const CartSummary: FC = () => {
   const t = useTranslations('global_cart')
-  const pathname = usePathname()
+  // const pathname = usePathname()
   // const isReviewPage = pathname?.includes('/review')
-  const isCheckoutPage = pathname?.includes('/checkout')
+  // const isCheckoutPage = pathname?.includes('/checkout')
   const { data: booking } = useBooking()
   const { data: cart } = useCart()
   const wizardContext = useOptionalBookingWizardState()
@@ -228,46 +284,6 @@ export const CartSummary: FC = () => {
     return groups
   }, [cartState?.metadata])
 
-  const driveItems = useMemo(() => {
-    return lineItems.filter((item) => {
-      const type = item.type?.toLowerCase()
-      const name = item.name?.toLowerCase() || ''
-      if (type === 'insurance') {
-        return false
-      }
-      if (
-        name.includes('pit pass') ||
-        name.includes('throttle') ||
-        name.includes('gift') ||
-        type === 'giftcard' ||
-        type === 'retail'
-      ) {
-        return false
-      }
-      return true
-    })
-  }, [lineItems])
-
-  const coverageAndAddonItems = useMemo(() => {
-    return lineItems.filter((item) => {
-      const type = item.type?.toLowerCase()
-      const name = item.name?.toLowerCase() || ''
-      if (type === 'insurance') {
-        return true
-      }
-      if (
-        name.includes('pit pass') ||
-        name.includes('throttle') ||
-        name.includes('gift') ||
-        type === 'giftcard' ||
-        type === 'retail'
-      ) {
-        return true
-      }
-      return false
-    })
-  }, [lineItems])
-
   return (
     <div className={styles.summary}>
       <h2 className={styles.summary__title}>{t('summary.title')}</h2>
@@ -284,45 +300,6 @@ export const CartSummary: FC = () => {
             <CouponRemove key={coupon.id} coupon={coupon} />
           ))}
         </div>
-      )}
-
-      {isCheckoutPage && driveItems.length > 0 && (
-        <>
-          <hr className={styles.summary__divider} />
-          <CartLineItems lineItems={driveItems} compact={true} />
-        </>
-      )}
-
-      {isCheckoutPage && coverageAndAddonItems.length > 0 && (
-        <>
-          <hr className={styles.summary__divider} />
-          <div className={styles.summary__sectionHeader}>
-            COVERAGE &amp; ADD-ONS
-          </div>
-          <CartLineItems lineItems={coverageAndAddonItems} compact={true} />
-        </>
-      )}
-
-      {subtotal > 0 && (
-        <>
-          <hr className={styles.summary__divider} />
-
-          <div
-            className={`${styles.summary__data} ${styles['summary__data--subtotal']}`}
-          >
-            <strong className={styles.summary__label}>
-              {t('summary.subtotal')}
-            </strong>
-
-            <CoreRocketRezPrice
-              className={styles.summary__value}
-              data={{
-                id: 'summary-subtotal',
-                price: subtotal
-              }}
-            />
-          </div>
-        </>
       )}
 
       {totalSavings > 0 && (
@@ -374,6 +351,36 @@ export const CartSummary: FC = () => {
             )}
           </details>
         </div>
+      )}
+
+      {lineItems.length > 0 && (
+        <div className={styles.summary__itemsList}>
+          {lineItems.map((item) => (
+            <SummaryLineItem key={item.id} lineItem={item} />
+          ))}
+        </div>
+      )}
+
+      {subtotal > 0 && (
+        <>
+          <hr className={styles.summary__divider} />
+
+          <div
+            className={`${styles.summary__data} ${styles['summary__data--subtotal']}`}
+          >
+            <strong className={styles.summary__label}>
+              {t('summary.subtotal')}
+            </strong>
+
+            <CoreRocketRezPrice
+              className={styles.summary__value}
+              data={{
+                id: 'summary-subtotal',
+                price: subtotal
+              }}
+            />
+          </div>
+        </>
       )}
 
       {houseServiceChargeTotal > 0 && (

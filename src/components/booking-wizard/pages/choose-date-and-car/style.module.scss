@@ -24,43 +24,7 @@
   }
 }
 
-.headerLocation {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: u.rem-calc(8);
-}
 
-.headerLocationTitle {
-  font-family: sg.font-family(barlow);
-  font-weight: 700;
-  font-size: u.rem-calc(15);
-  text-transform: uppercase;
-  letter-spacing: u.rem-calc(0.5);
-  color: #111;
-  text-decoration: none;
-
-  &:hover {
-    color: #ff6900;
-  }
-}
-
-.headerLocationChange {
-  background: none;
-  border: none;
-  padding: 0;
-  font-size: u.rem-calc(13);
-  font-weight: 600;
-  color: #111;
-  text-decoration: underline;
-  text-underline-offset: u.rem-calc(3);
-  cursor: pointer;
-  transition: color 0.15s ease;
-
-  &:hover {
-    color: #ff6900;
-  }
-}
 
 .datehead {
   margin-bottom: u.rem-calc(16);

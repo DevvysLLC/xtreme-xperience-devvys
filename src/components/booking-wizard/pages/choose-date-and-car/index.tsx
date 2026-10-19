@@ -16,9 +16,11 @@ import {
 import { useDialog } from '../../../../features/dialog'
 import { useToast } from '../../../../features/toast'
 import type { BookingCarLineItem } from '../../../../io/types'
+import { formatEventDateRangeLong } from '../../../../utils/date-time'
 import { getCartLineItemReadMetadataKey } from '../../../../utils/get-cart-line-item-metadata-key'
 import { getSeatTypeIdWithOverride } from '../../../../utils/get-seat-type-id-with-override'
 import { getDateDiscountRule } from '../../../../utils/get-schedule-discount'
+import { CoreCta } from '../../../core-cta'
 import { CoreLoadingSpinner } from '../../../core-loading-spinner'
 import { BookingLayout } from '../../components/booking-layout'
 import { DateSelect } from '../../components/date-select'
@@ -144,9 +146,31 @@ export const DateAndCarPage = () => {
 
   const locationTitle = state.selectedEvent?.model?.track?.model?.nickname ?? ''
   const locationHandle = state.selectedEvent?.model?.track?.config?.handle ?? ''
+  const eventDateRange = formatEventDateRangeLong(
+    state.selectedEvent?.model?.startDate,
+    state.selectedEvent?.model?.endDate
+  )
   const trackHref = locationHandle
     ? `${ROUTES.FRONTEND.TRACKS.LISTING}/${locationHandle}`
     : null
+
+  const description = t.rich('description_dynamic', {
+    link: (chunks) =>
+      trackHref ? (
+        <CoreCta
+          href={trackHref}
+          layoutType="underline"
+          styleType="black"
+          sizeType="small"
+        >
+          {chunks}
+        </CoreCta>
+      ) : (
+        <>{chunks}</>
+      ),
+    location: locationTitle,
+    date: eventDateRange
+  })
 
   const title = pageMetadata?.title ?? t('title')
   const activeGroup =
@@ -250,37 +274,7 @@ export const DateAndCarPage = () => {
   return (
     <BookingLayout>
       <section className={styles.section}>
-        <PageHeader
-          title={title}
-          description={
-            locationTitle ? (
-              <span className={styles.headerLocation}>
-                {trackHref ? (
-                  <a
-                    href={trackHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.headerLocationTitle}
-                  >
-                    {locationTitle.toUpperCase()}
-                  </a>
-                ) : (
-                  <span className={styles.headerLocationTitle}>
-                    {locationTitle.toUpperCase()}
-                  </span>
-                )}
-                <button
-                  type="button"
-                  className={styles.headerLocationChange}
-                  onClick={handleBack}
-                >
-                  Change
-                </button>
-              </span>
-            ) : null
-          }
-          centeredDesktop={true}
-        />
+        <PageHeader title={title} description={description} centeredDesktop={true} />
         <div>
           <div className={styles.panel}>
             <div className={styles.datehead}>

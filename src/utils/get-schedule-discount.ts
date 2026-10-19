@@ -9,7 +9,7 @@ export type BookingDiscountRule = {
   applyToAllEvents?: boolean | null
   events?: Array<{ id: string }> | null
   supercars?: Array<{ id: string }> | null
-  excludedTracks?: Array<{ id: string; [key: string]: any }> | null
+  excludedTracks?: Array<{ id: string; [key: string]: unknown }> | null
   daysOfWeek?: 'all' | 'weekdays' | 'monday_thursday' | 'weekends' | 'friday' | 'saturday' | 'sunday' | string | null
   targetType?: 'all' | 'supercars' | 'ride_along' | string | null
   compareAtOverride?: number | null

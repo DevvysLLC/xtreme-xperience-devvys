@@ -15,43 +15,8 @@
   @include sg.min(laptopSmall) {
     display: grid;
     grid-template-columns: 1fr u.rem-calc(392);
-    grid-template-rows: auto 1fr;
+    grid-template-rows: auto;
     padding: 0;
-  }
-
-  &__header {
-    display: flex;
-    flex-direction: column;
-    gap: sg.spacing(regular);
-    order: 2;
-
-    @include sg.min(laptopSmall) {
-      order: 1;
-      grid-column: 1;
-      grid-row: 1;
-      padding-top: sg.spacing(xxlarge);
-      padding-inline: sg.spacing(xlarge);
-    }
-  }
-
-  &__title {
-    font-family: sg.font-family(anton);
-    font-size: sg.font-size(large);
-    font-weight: sg.font-weight(400);
-    line-height: sg.line-height('100%');
-    text-transform: uppercase;
-    letter-spacing: u.rem-calc(0.5);
-
-    @include sg.min(tabletLandscape) {
-      font-size: u.rem-calc(36);
-    }
-  }
-
-  &__description {
-    font-size: u.rem-calc(14);
-    color: #666;
-    text-transform: none;
-    margin: 0;
   }
 
   &__summary {
@@ -65,11 +30,11 @@
     @include sg.min(laptopSmall) {
       order: 2;
       grid-column: 2;
-      grid-row: span 2;
+      grid-row: 1;
       position: sticky;
       top: 0;
       align-self: start;
-      padding-block: sg.spacing(xlarge) sg.spacing(medium);
+      padding-block: sg.spacing(xxlarge) sg.spacing(medium);
       padding-inline: sg.spacing(medium);
       border-bottom: none;
       border-left: u.rem-calc(1) solid sg.color(border-light);
@@ -80,7 +45,7 @@
     display: flex;
     flex-direction: column;
     gap: sg.spacing(xlarge);
-    order: 3;
+    order: 2;
 
     &.is-loading,
     &.is-refreshing {
@@ -89,9 +54,10 @@
     }
 
     @include sg.min(laptopSmall) {
-      order: 3;
+      order: 1;
       grid-column: 1;
-      grid-row: 2;
+      grid-row: 1;
+      padding-top: sg.spacing(xxlarge);
       padding-bottom: sg.spacing(xxlarge);
       padding-inline: sg.spacing(xlarge);
     }
