@@ -65,9 +65,19 @@
 
   &__content {
     position: relative;
-    overflow-y: auto;
+    min-height: 0;
     max-height: 85dvh;
-    padding: sg.spacing(medium) sg.spacing(regular);
+    overflow: hidden;
+    padding-inline: sg.spacing(regular);
+    padding-block: 0;
+    pointer-events: none;
+    transition: padding-block 0.3s ease;
+  }
+
+  &--open &__content {
+    overflow-y: auto;
+    padding-block: sg.spacing(medium);
+    pointer-events: auto;
   }
 
   &__actions {
