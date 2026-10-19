@@ -37,9 +37,9 @@ export const BookingHeader: FC<Props> = ({ showCart = true }) => {
           />
         )}
 
-        <a href="tel:8662737727" className={styles.helpLink}>
+        {/* <a href="tel:8662737727" className={styles.helpLink}>
           {t('need_help')}
-        </a>
+        </a> */}
 
         {showCart && (
           <button type="button" className={styles.cart} aria-label={t('cart')}>
