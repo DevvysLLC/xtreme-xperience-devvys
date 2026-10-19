@@ -81,6 +81,35 @@
       padding-inline: sg.spacing(xlarge);
     }
   }
+
+  &__subtotal {
+    display: flex;
+    justify-content: flex-end;
+    align-items: baseline;
+    gap: sg.spacing(medium);
+    margin-top: u.rem-calc(-12);
+    margin-bottom: sg.spacing(small);
+  }
+
+  &__subtotalLabel {
+    font-size: sg.font-size(mediuml);
+    font-weight: 700;
+    color: #111;
+  }
+
+  &__subtotalPrice {
+    min-width: u.rem-calc(110);
+    font-size: sg.font-size(mediuml);
+    font-weight: 700;
+    line-height: sg.line-height('100%');
+    color: sg.color(orange);
+    text-align: right;
+
+    [data-price] {
+      color: sg.color(orange);
+      font-weight: 700;
+    }
+  }
 }
 
 /* ===================================================== */
