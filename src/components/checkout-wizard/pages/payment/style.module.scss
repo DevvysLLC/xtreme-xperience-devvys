@@ -5,7 +5,7 @@
   display: grid;
   grid-template-columns: 1fr;
   row-gap: sg.spacing(xlarge);
-  padding-block: sg.spacing(medium);
+  padding-block: sg.spacing(medium) u.rem-calc(140);
   padding-inline: sg.spacing(regular);
 
   @include sg.min(tabletLandscape) {
@@ -58,12 +58,13 @@
   }
 
   &__summary {
-    order: 2;
-    display: flex;
-    flex-direction: column;
-    gap: sg.spacing(medium);
+    display: none;
 
     @include sg.min(laptopSmall) {
+      order: 2;
+      display: flex;
+      flex-direction: column;
+      gap: sg.spacing(medium);
       grid-row: span 2;
       position: sticky;
       top: 0;

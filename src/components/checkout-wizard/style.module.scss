@@ -1,4 +1,5 @@
 @use '../../styles/styleguide' as sg;
+@use '../../styles/core/unit' as u;
 
 .wizard {
   width: 100%;
@@ -13,4 +14,68 @@
 .wizard__content {
   width: 100%;
   padding-bottom: sg.spacing(xxlarge);
+}
+
+.mobile {
+  @include sg.min(laptopSmall) {
+    display: none;
+  }
+}
+
+/* ===================================================== */
+/* Popup */
+/* ===================================================== */
+
+.popup {
+  $page-footer-height: u.rem-calc(61);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 9;
+  width: 100%;
+  display: grid;
+  grid-template-rows: auto 0fr $page-footer-height;
+  background-color: sg.color(white);
+  transition: grid-template-rows 0.3s ease;
+
+  &--open {
+    z-index: 10;
+    grid-template-rows: auto 1fr $page-footer-height;
+  }
+
+  &__title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: sg.spacing(xsmall) sg.spacing(regular);
+    border-top: u.rem-calc(1) solid sg.color(border-dark);
+    background-color: sg.color(carrara);
+    font-family: sg.font-family(barlow);
+    font-size: sg.font-size(regular);
+    line-height: sg.line-height('140%');
+    font-weight: sg.font-weight(700);
+    width: 100%;
+    cursor: pointer;
+
+    svg {
+      width: u.rem-calc(12);
+      height: u.rem-calc(12);
+    }
+  }
+
+  &__content {
+    position: relative;
+    overflow-y: auto;
+    max-height: 85dvh;
+    padding: sg.spacing(medium) sg.spacing(regular);
+  }
+
+  &__actions {
+    padding: sg.spacing(xsmall) sg.spacing(medium);
+    border-top: u.rem-calc(1) solid sg.color(border-dark);
+  }
+
+  &__button {
+    width: 100%;
+  }
 }
