@@ -97,12 +97,37 @@ export const CartLineItem: FC<Props> = ({
         ? properties.savings
         : undefined
 
+    const isInsurance = type === 'insurance'
+    const isPitPass =
+      (lineItem.name != null && lineItem.name.toLowerCase().includes('pit pass')) ||
+      (displayTitle != null && displayTitle.toLowerCase().includes('pit pass'))
+    const isFullThrottleOrMedia =
+      (lineItem.name != null && (lineItem.name.toLowerCase().includes('throttle') || lineItem.name.toLowerCase().includes('media'))) ||
+      (displayTitle != null && (displayTitle.toLowerCase().includes('throttle') || displayTitle.toLowerCase().includes('media')))
+    const isRideAlong =
+      metadata?.isRideAlong === true ||
+      (lineItem.name != null && (lineItem.name.toLowerCase().includes('ride along') || lineItem.name.toLowerCase().includes('ride-along') || lineItem.name.toLowerCase().includes('hellcat'))) ||
+      (displayTitle != null && (displayTitle.toLowerCase().includes('ride along') || displayTitle.toLowerCase().includes('ride-along') || displayTitle.toLowerCase().includes('hellcat')))
+    const shouldHideEdit = isPitPass || isFullThrottleOrMedia
+
     const handleEdit = async () => {
       if (typeof window === 'undefined') {
         return
       }
       if (isGiftCard) {
         setIsGiftModalOpen(true)
+        return
+      }
+
+      if (isRideAlong) {
+        if (!window.location.pathname.includes('/booking/ride-along')) {
+          try {
+            await setIntendedPage('ride_along')
+          } catch (error) {
+            logger.error({ error }, 'cart-line-item.handleEdit.setIntendedPage.error')
+          }
+          router.push(ROUTES.BOOKING.RIDE_ALONG)
+        }
         return
       }
 
@@ -154,15 +179,6 @@ export const CartLineItem: FC<Props> = ({
         )
       }
     }
-
-    const isInsurance = type === 'insurance'
-    const isPitPass =
-      (lineItem.name != null && lineItem.name.toLowerCase().includes('pit pass')) ||
-      (displayTitle != null && displayTitle.toLowerCase().includes('pit pass'))
-    const isFullThrottleOrMedia =
-      (lineItem.name != null && (lineItem.name.toLowerCase().includes('throttle') || lineItem.name.toLowerCase().includes('media'))) ||
-      (displayTitle != null && (displayTitle.toLowerCase().includes('throttle') || displayTitle.toLowerCase().includes('media')))
-    const shouldHideEdit = isPitPass || isFullThrottleOrMedia
 
     const compactDisplayTitle = isInsurance
       ? 'Base Driver Protection'
@@ -279,6 +295,42 @@ export const CartLineItem: FC<Props> = ({
                     }}
                   >
                     Edit coverage
+                  </button>
+                )
+              ) : isRideAlong ? (
+                isReviewPage ? (
+                  <>
+                    <button
+                      type="button"
+                      className={styles.CartLineItemCompact__actionBtn}
+                      onClick={async () => {
+                        try {
+                          await setIntendedPage('ride_along')
+                        } catch (error) {
+                          logger.error({ error }, 'cart-line-item.editRideAlong.error')
+                        }
+                        router.push(ROUTES.BOOKING.RIDE_ALONG)
+                      }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.CartLineItemCompact__actionBtn}
+                      onClick={handleRemove}
+                      aria-label={t('item.remove')}
+                    >
+                      {t('item.remove')}
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    className={styles.CartLineItemCompact__actionBtn}
+                    onClick={handleRemove}
+                    aria-label={t('item.remove')}
+                  >
+                    {t('item.remove')}
                   </button>
                 )
               ) : shouldHideEdit ? (
