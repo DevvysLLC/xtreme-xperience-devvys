@@ -35,6 +35,7 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
   const { lowestAvailablePrice, getEffectivePrice } =
     useBookingSupercarSchedule()
   const [selectedCarKey, setSelectedCarKey] = useState<string | null>(null)
+  const [editingLineItemId, setEditingLineItemId] = useState<string | null>(null)
   const [sortBy, setSortBy] = useState<'featured' | 'low' | 'high'>('featured')
   const [comparedSeatTypeIds, setComparedSeatTypeIds] = useState<number[]>([])
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false)
@@ -117,7 +118,10 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
 
   // Handle opening and scrolling to a specific car or package schedule
   useEffect(() => {
-    const openTarget = (targetSeatTypeId: number) => {
+    const openTarget = (targetSeatTypeId: number, targetLineItemId?: string) => {
+      if (targetLineItemId) {
+        setEditingLineItemId(targetLineItemId)
+      }
       let targetGroupIdx = -1
       let targetCarIndex = -1
 
@@ -182,20 +186,28 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
         'seatTypeId' in eventDetail && typeof eventDetail.seatTypeId === 'number'
           ? eventDetail.seatTypeId
           : undefined
+      const targetLineItemId =
+        'lineItemId' in eventDetail && typeof eventDetail.lineItemId === 'string'
+          ? eventDetail.lineItemId
+          : undefined
       if (targetSeatTypeId) {
-        openTarget(targetSeatTypeId)
+        openTarget(targetSeatTypeId, targetLineItemId)
       }
     }
 
     // Check if there was a pending edit requested before page transition
     try {
       const pendingSeatStr = sessionStorage.getItem('pendingEditSeatTypeId')
+      const pendingLineId = sessionStorage.getItem('pendingEditLineItemId')
       if (pendingSeatStr) {
         sessionStorage.removeItem('pendingEditSeatTypeId')
+        if (pendingLineId) {
+          sessionStorage.removeItem('pendingEditLineItemId')
+        }
         const pendingSeat = parseInt(pendingSeatStr, 10)
         if (!isNaN(pendingSeat) && pendingSeat > 0) {
           setTimeout(() => {
-            openTarget(pendingSeat)
+            openTarget(pendingSeat, pendingLineId ?? undefined)
           }, 200)
         }
       }
@@ -454,14 +466,24 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
                   supercar={option}
                   isSelected={isSelected}
                   isCompared={isCompared}
+                  editingLineItemId={isSelected ? editingLineItemId : null}
+                  onClearEditing={() => setEditingLineItemId(null)}
                   onToggleSelect={() => {
-                    setSelectedCarKey((prev) => (prev === carKey ? null : carKey))
+                    setSelectedCarKey((prev) => {
+                      if (prev !== carKey) {
+                        setEditingLineItemId(null)
+                        return carKey
+                      }
+                      setEditingLineItemId(null)
+                      return null
+                    })
                   }}
                   onToggleCompare={() => {
                     handleToggleCompare(seatTypeId)
                   }}
                   onClose={() => {
                     setSelectedCarKey(null)
+                    setEditingLineItemId(null)
                   }}
                 />
               )

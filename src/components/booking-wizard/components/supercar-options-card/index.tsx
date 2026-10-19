@@ -10,7 +10,12 @@ import type { BookingSupercarFragment } from '../../../../core/dato/fragments/bo
 import { logger } from '../../../../core/logger/logger'
 import { useBookingSupercarSchedule } from '../../../../features/booking'
 import { getRequiredRateIdsForSupercar } from '../../../../features/booking/use-booking-supercar-schedule'
-import { useCart, useCartAdd, useCartClear } from '../../../../features/cart'
+import {
+  useCart,
+  useCartAdd,
+  useCartClear,
+  useCartRemoveLineItem
+} from '../../../../features/cart'
 import { useDialog } from '../../../../features/dialog'
 import { useToast } from '../../../../features/toast'
 import {
@@ -41,6 +46,8 @@ type Props = {
   cardIndex?: number
   isSelected?: boolean
   isCompared?: boolean
+  editingLineItemId?: string | null
+  onClearEditing?: () => void
   onToggleSelect?: () => void
   onToggleCompare?: () => void
   onClose?: () => void
@@ -52,6 +59,8 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
   cardIndex = 0,
   isSelected: isSelectedProp,
   isCompared = false,
+  editingLineItemId = null,
+  onClearEditing,
   onToggleSelect,
   onToggleCompare,
   onClose
@@ -68,6 +77,9 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
   const { lowestAvailablePrice, getEffectivePrice } =
     useBookingSupercarSchedule()
   const { mutateAsync, isPending } = useCartAdd()
+  const { mutateAsync: removeLineItemAsync, isPending: isRemoving } =
+    useCartRemoveLineItem()
+  const { data: cartResponse } = useCart()
   const [internalSelected, setInternalSelected] = useState(false)
   const isSelected =
     isSelectedProp !== undefined ? isSelectedProp : internalSelected
@@ -489,6 +501,28 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
         return
       }
 
+      if (editingLineItemId) {
+        const itemToRemove = cartResponse?.cartData?.lineItems?.find(
+          (item) => String(item.id) === String(editingLineItemId)
+        )
+        if (itemToRemove) {
+          try {
+            await removeLineItemAsync({ lineItem: itemToRemove })
+          } catch (err) {
+            logger.error(
+              { err, itemToRemove },
+              'supercar-options-card.removeOldLineItem.error'
+            )
+          }
+        }
+        onClearEditing?.()
+        try {
+          sessionStorage.removeItem('pendingEditLineItemId')
+        } catch (error) {
+          logger.debug({ error }, 'supercar-options-card.sessionStorage.remove.error')
+        }
+      }
+
       await addToCart(lineItem, isoDate)
     }
   })
@@ -516,6 +550,12 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
     setSelectedDaySchedule(null)
     setSelectedQuantity(1)
     form.reset()
+    onClearEditing?.()
+    try {
+      sessionStorage.removeItem('pendingEditLineItemId')
+    } catch (error) {
+      logger.debug({ error }, 'supercar-options-card.handleRemove.sessionStorage.error')
+    }
   }
 
   const r = Math.floor(cardIndex / 2)
@@ -911,8 +951,12 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
                 )}
               </div>
               <CoreCta
-                text={t('button.add_to_cart')}
-                disabled={!cardState.selectedDaySchedule || isPending}
+                text={
+                  editingLineItemId
+                    ? t('button.update_cart')
+                    : t('button.add_to_cart')
+                }
+                disabled={!cardState.selectedDaySchedule || isPending || isRemoving}
                 onClick={() => {
                   form.handleSubmit()
                 }}
@@ -935,6 +979,8 @@ export const SupercarOptionsCard: React.FC<Props> = ({
   cardIndex,
   isSelected,
   isCompared,
+  editingLineItemId,
+  onClearEditing,
   onToggleSelect,
   onToggleCompare,
   onClose
@@ -959,6 +1005,8 @@ export const SupercarOptionsCard: React.FC<Props> = ({
         cardIndex={cardIndex}
         isSelected={isSelected}
         isCompared={isCompared}
+        editingLineItemId={editingLineItemId}
+        onClearEditing={onClearEditing}
         onToggleSelect={onToggleSelect}
         onToggleCompare={onToggleCompare}
         onClose={onClose}

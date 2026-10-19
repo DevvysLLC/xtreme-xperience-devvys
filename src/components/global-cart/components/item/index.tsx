@@ -124,6 +124,7 @@ export const CartLineItem: FC<Props> = ({
         // Save target in sessionStorage for page transitions
         try {
           sessionStorage.setItem('pendingEditSeatTypeId', seatId.toString())
+          sessionStorage.setItem('pendingEditLineItemId', lineItem.id.toString())
         } catch (error) {
           logger.error({ error }, 'cart-line-item.handleEdit.sessionStorage.error')
         }
@@ -146,6 +147,7 @@ export const CartLineItem: FC<Props> = ({
           new CustomEvent('open-supercar-schedule', {
             detail: {
               seatTypeId: seatId,
+              lineItemId: lineItem.id,
               isPackage: metadata?.isMulticar ?? false
             }
           })

@@ -247,7 +247,8 @@
           "button": {
             "select": "CHOOSE A TIME",
             "remove": "Close Selection",
-            "add_to_cart": "Add to Cart"
+            "add_to_cart": "Add to Cart",
+            "update_cart": "Update Cart"
           },
           "badge": {
             "sold_out": "Sold Out",
