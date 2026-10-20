@@ -2,4 +2,16 @@ query getBookingConfig {
   bookingConfig {
     ...BookingConfig
   }
+  allPromotions(filter: { active: { eq: true } }) {
+    id
+    name
+    active
+    startDate
+    endDate
+    badgeLabel
+    headline
+    rules {
+      ...BookingDiscountRule
+    }
+  }
 }

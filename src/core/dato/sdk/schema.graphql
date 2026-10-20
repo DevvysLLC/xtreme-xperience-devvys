@@ -245,7 +245,7 @@ type BookingConfigRecord implements RecordInterface {
   rideAlong: [AddonRecord!]!
   selectCarButtonLabel: String
   showBackLink: BooleanType!
-  showGiftCards: BooleanType
+  showGiftCards: BooleanType!
   supercars: [BookingSupercarGroupRecord!]!
   upsell: [AddonRecord!]!
   upsellsDescription(
@@ -253,9 +253,15 @@ type BookingConfigRecord implements RecordInterface {
     markdown: Boolean
   ): String
   upsellsTitle: String
-  whatsIncludedDescription: String
+  whatsIncludedDescription(
+    """Process content as markdown"""
+    markdown: Boolean
+  ): String
   whatsIncludedLead: String
-  whatsIncludedNotice: String
+  whatsIncludedNotice(
+    """Process content as markdown"""
+    markdown: Boolean
+  ): String
 }
 
 """Block of type 📅 Booking - Decorator (booking_decorator)"""
@@ -305,13 +311,17 @@ type BookingDiscountRuleRecord implements RecordInterface {
   _updatedAt: DateTime!
   applyToAllEvents: BooleanType!
   badgeLabel: String
+  compareAtOverride: FloatType
+  daysOfWeek: String
   discountType: String!
   discountValue: FloatType!
   endTime: String
   events: [EventRecord!]!
+  excludedTracks: [TrackRecord!]!
   id: ItemId!
   startTime: String
   supercars: [SupercarRecord!]!
+  targetType: String
   timeWindow: String!
   title: String!
 }
@@ -496,9 +506,15 @@ type BookingSupercarRecord implements RecordInterface {
   supercar: SupercarRecord!
   thumbnailOverride: CoreImageRecord
   titleOverride: String
-  whatsIncludedDescriptionOverride: String
+  whatsIncludedDescriptionOverride(
+    """Process content as markdown"""
+    markdown: Boolean
+  ): String
   whatsIncludedLeadOverride: String
-  whatsIncludedNoticeOverride: String
+  whatsIncludedNoticeOverride(
+    """Process content as markdown"""
+    markdown: Boolean
+  ): String
 }
 
 """Specifies how to filter Boolean fields"""
@@ -5054,6 +5070,96 @@ type PostRecord implements RecordInterface {
   titleInternal: String
 }
 
+input PromotionModelFilter {
+  AND: [PromotionModelFilter]
+  OR: [PromotionModelFilter]
+  _createdAt: CreatedAtFilter
+  _firstPublishedAt: PublishedAtFilter
+  _isValid: BooleanFilter
+  _publicationScheduledAt: PublishedAtFilter
+  _publishedAt: PublishedAtFilter
+  _status: StatusFilter
+  _unpublishingScheduledAt: PublishedAtFilter
+  _updatedAt: UpdatedAtFilter
+  active: BooleanFilter
+  badgeLabel: StringFilter
+  description: TextFilter
+  endDate: DateTimeFilter
+  headline: StringFilter
+  id: ItemIdFilter
+  name: StringFilter
+  slug: SlugFilter
+  startDate: DateTimeFilter
+}
+
+enum PromotionModelOrderBy {
+  _createdAt_ASC
+  _createdAt_DESC
+  _firstPublishedAt_ASC
+  _firstPublishedAt_DESC
+  _isValid_ASC
+  _isValid_DESC
+  _publicationScheduledAt_ASC
+  _publicationScheduledAt_DESC
+  _publishedAt_ASC
+  _publishedAt_DESC
+  _status_ASC
+  _status_DESC
+  _unpublishingScheduledAt_ASC
+  _unpublishingScheduledAt_DESC
+  _updatedAt_ASC
+  _updatedAt_DESC
+  active_ASC
+  active_DESC
+  badgeLabel_ASC
+  badgeLabel_DESC
+  endDate_ASC
+  endDate_DESC
+  headline_ASC
+  headline_DESC
+  id_ASC
+  id_DESC
+  name_ASC
+  name_DESC
+  startDate_ASC
+  startDate_DESC
+}
+
+"""Record of type Promotions Manager (promotion)"""
+type PromotionRecord implements RecordInterface {
+  _createdAt: DateTime!
+
+  """Editing URL"""
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+
+  """Generates SEO and Social card meta tags to be used in your frontend"""
+  _seoMetaTags(
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  active: BooleanType!
+  badgeLabel: String
+  description(
+    """Process content as markdown"""
+    markdown: Boolean
+  ): String
+  endDate: DateTime
+  headline: String
+  id: ItemId!
+  name: String!
+  rules: [BookingDiscountRuleRecord!]!
+  slug: String!
+  startDate: DateTime
+}
+
 """Specifies how to filter by publication datetime"""
 input PublishedAtFilter {
   """
@@ -5177,6 +5283,14 @@ type Query {
   """Returns meta information regarding a record collection"""
   _allPostsMeta(
     filter: PostModelFilter
+
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): CollectionMetadata!
+
+  """Returns meta information regarding a record collection"""
+  _allPromotionsMeta(
+    filter: PromotionModelFilter
 
     """The locale to use to fetch the field's content"""
     locale: SiteLocale
@@ -5454,6 +5568,25 @@ type Query {
     """Skip the first results"""
     skip: IntType
   ): [PostRecord!]!
+
+  """Returns a collection of records"""
+  allPromotions(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    filter: PromotionModelFilter
+
+    """Limit the number of results"""
+    first: IntType = 20
+
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+    orderBy: [PromotionModelOrderBy] = [_updatedAt_DESC]
+
+    """Skip the first results"""
+    skip: IntType
+  ): [PromotionRecord!]!
 
   """Returns a collection of records"""
   allReviews(
@@ -5734,6 +5867,19 @@ type Query {
     locale: SiteLocale
     orderBy: [PostModelOrderBy] = [_updatedAt_DESC]
   ): PostRecord
+
+  """Returns a specific record"""
+  promotion(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    filter: PromotionModelFilter
+
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+    orderBy: [PromotionModelOrderBy] = [_updatedAt_DESC]
+  ): PromotionRecord
 
   """Returns a specific record"""
   review(

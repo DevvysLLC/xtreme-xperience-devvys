@@ -68,6 +68,12 @@ fragment BookingDiscountRule on BookingDiscountRuleRecord {
   endTime
   applyToAllEvents
   badgeLabel
+  compareAtOverride
+  daysOfWeek
+  targetType
+  excludedTracks {
+    id
+  }
   events {
     id
   }

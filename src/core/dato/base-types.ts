@@ -240,14 +240,14 @@ export type BookingConfigRecord = RecordInterface & {
   rideAlong: Array<AddonRecord>;
   selectCarButtonLabel: Maybe<Scalars['String']['output']>;
   showBackLink: Scalars['BooleanType']['output'];
-  showGiftCards?: Maybe<Scalars['BooleanType']['output']>;
+  showGiftCards: Scalars['BooleanType']['output'];
   supercars: Array<BookingSupercarGroupRecord>;
   upsell: Array<AddonRecord>;
   upsellsDescription: Maybe<Scalars['String']['output']>;
   upsellsTitle: Maybe<Scalars['String']['output']>;
-  whatsIncludedDescription?: Maybe<Scalars['String']['output']>;
-  whatsIncludedLead?: Maybe<Scalars['String']['output']>;
-  whatsIncludedNotice?: Maybe<Scalars['String']['output']>;
+  whatsIncludedDescription: Maybe<Scalars['String']['output']>;
+  whatsIncludedLead: Maybe<Scalars['String']['output']>;
+  whatsIncludedNotice: Maybe<Scalars['String']['output']>;
 };
 
 
@@ -272,6 +272,16 @@ export type BookingConfigRecordOrderCompleteNoticeArgs = {
 
 
 export type BookingConfigRecordUpsellsDescriptionArgs = {
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type BookingConfigRecordWhatsIncludedDescriptionArgs = {
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type BookingConfigRecordWhatsIncludedNoticeArgs = {
   markdown?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
@@ -313,13 +323,17 @@ export type BookingDiscountRuleRecord = RecordInterface & {
   _updatedAt: Scalars['DateTime']['output'];
   applyToAllEvents: Scalars['BooleanType']['output'];
   badgeLabel: Maybe<Scalars['String']['output']>;
+  compareAtOverride: Maybe<Scalars['FloatType']['output']>;
+  daysOfWeek: Maybe<Scalars['String']['output']>;
   discountType: Scalars['String']['output'];
   discountValue: Scalars['FloatType']['output'];
   endTime: Maybe<Scalars['String']['output']>;
   events: Array<EventRecord>;
+  excludedTracks: Array<TrackRecord>;
   id: Scalars['ItemId']['output'];
   startTime: Maybe<Scalars['String']['output']>;
   supercars: Array<SupercarRecord>;
+  targetType: Maybe<Scalars['String']['output']>;
   timeWindow: Scalars['String']['output'];
   title: Scalars['String']['output'];
 };
@@ -494,14 +508,24 @@ export type BookingSupercarRecord = RecordInterface & {
   supercar: SupercarRecord;
   thumbnailOverride: Maybe<CoreImageRecord>;
   titleOverride: Maybe<Scalars['String']['output']>;
-  whatsIncludedDescriptionOverride?: Maybe<Scalars['String']['output']>;
-  whatsIncludedLeadOverride?: Maybe<Scalars['String']['output']>;
-  whatsIncludedNoticeOverride?: Maybe<Scalars['String']['output']>;
+  whatsIncludedDescriptionOverride: Maybe<Scalars['String']['output']>;
+  whatsIncludedLeadOverride: Maybe<Scalars['String']['output']>;
+  whatsIncludedNoticeOverride: Maybe<Scalars['String']['output']>;
 };
 
 
 export type BookingSupercarRecordSeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
+};
+
+
+export type BookingSupercarRecordWhatsIncludedDescriptionOverrideArgs = {
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type BookingSupercarRecordWhatsIncludedNoticeOverrideArgs = {
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type BooleanFilter = {
@@ -3147,6 +3171,97 @@ export type PostRecordSeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
+export type PromotionModelFilter = {
+  AND?: InputMaybe<Array<InputMaybe<PromotionModelFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<PromotionModelFilter>>>;
+  _createdAt?: InputMaybe<CreatedAtFilter>;
+  _firstPublishedAt?: InputMaybe<PublishedAtFilter>;
+  _isValid?: InputMaybe<BooleanFilter>;
+  _publicationScheduledAt?: InputMaybe<PublishedAtFilter>;
+  _publishedAt?: InputMaybe<PublishedAtFilter>;
+  _status?: InputMaybe<StatusFilter>;
+  _unpublishingScheduledAt?: InputMaybe<PublishedAtFilter>;
+  _updatedAt?: InputMaybe<UpdatedAtFilter>;
+  active?: InputMaybe<BooleanFilter>;
+  badgeLabel?: InputMaybe<StringFilter>;
+  description?: InputMaybe<TextFilter>;
+  endDate?: InputMaybe<DateTimeFilter>;
+  headline?: InputMaybe<StringFilter>;
+  id?: InputMaybe<ItemIdFilter>;
+  name?: InputMaybe<StringFilter>;
+  slug?: InputMaybe<SlugFilter>;
+  startDate?: InputMaybe<DateTimeFilter>;
+};
+
+export const PromotionModelOrderBy = {
+  _createdAt_ASC: '_createdAt_ASC',
+  _createdAt_DESC: '_createdAt_DESC',
+  _firstPublishedAt_ASC: '_firstPublishedAt_ASC',
+  _firstPublishedAt_DESC: '_firstPublishedAt_DESC',
+  _isValid_ASC: '_isValid_ASC',
+  _isValid_DESC: '_isValid_DESC',
+  _publicationScheduledAt_ASC: '_publicationScheduledAt_ASC',
+  _publicationScheduledAt_DESC: '_publicationScheduledAt_DESC',
+  _publishedAt_ASC: '_publishedAt_ASC',
+  _publishedAt_DESC: '_publishedAt_DESC',
+  _status_ASC: '_status_ASC',
+  _status_DESC: '_status_DESC',
+  _unpublishingScheduledAt_ASC: '_unpublishingScheduledAt_ASC',
+  _unpublishingScheduledAt_DESC: '_unpublishingScheduledAt_DESC',
+  _updatedAt_ASC: '_updatedAt_ASC',
+  _updatedAt_DESC: '_updatedAt_DESC',
+  active_ASC: 'active_ASC',
+  active_DESC: 'active_DESC',
+  badgeLabel_ASC: 'badgeLabel_ASC',
+  badgeLabel_DESC: 'badgeLabel_DESC',
+  endDate_ASC: 'endDate_ASC',
+  endDate_DESC: 'endDate_DESC',
+  headline_ASC: 'headline_ASC',
+  headline_DESC: 'headline_DESC',
+  id_ASC: 'id_ASC',
+  id_DESC: 'id_DESC',
+  name_ASC: 'name_ASC',
+  name_DESC: 'name_DESC',
+  startDate_ASC: 'startDate_ASC',
+  startDate_DESC: 'startDate_DESC'
+} as const;
+
+export type PromotionModelOrderBy = typeof PromotionModelOrderBy[keyof typeof PromotionModelOrderBy];
+export type PromotionRecord = RecordInterface & {
+  __typename: 'PromotionRecord';
+  _createdAt: Scalars['DateTime']['output'];
+  _editingUrl: Maybe<Scalars['String']['output']>;
+  _firstPublishedAt: Scalars['DateTime']['output'];
+  _isValid: Scalars['BooleanType']['output'];
+  _modelApiKey: Scalars['String']['output'];
+  _publicationScheduledAt: Maybe<Scalars['DateTime']['output']>;
+  _publishedAt: Scalars['DateTime']['output'];
+  _seoMetaTags: Array<Tag>;
+  _status: ItemStatus;
+  _unpublishingScheduledAt: Maybe<Scalars['DateTime']['output']>;
+  _updatedAt: Scalars['DateTime']['output'];
+  active: Scalars['BooleanType']['output'];
+  badgeLabel: Maybe<Scalars['String']['output']>;
+  description: Maybe<Scalars['String']['output']>;
+  endDate: Maybe<Scalars['DateTime']['output']>;
+  headline: Maybe<Scalars['String']['output']>;
+  id: Scalars['ItemId']['output'];
+  name: Scalars['String']['output'];
+  rules: Array<BookingDiscountRuleRecord>;
+  slug: Scalars['String']['output'];
+  startDate: Maybe<Scalars['DateTime']['output']>;
+};
+
+
+export type PromotionRecordSeoMetaTagsArgs = {
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+export type PromotionRecordDescriptionArgs = {
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 export type PublishedAtFilter = {
   eq?: InputMaybe<Scalars['DateTime']['input']>;
   exists?: InputMaybe<Scalars['BooleanType']['input']>;
@@ -3170,6 +3285,7 @@ export type Query = {
   _allPagesMeta: CollectionMetadata;
   _allPoliciesMeta: CollectionMetadata;
   _allPostsMeta: CollectionMetadata;
+  _allPromotionsMeta: CollectionMetadata;
   _allReviewsMeta: CollectionMetadata;
   _allSchemaMigrationsMeta: CollectionMetadata;
   _allSupercarsMeta: CollectionMetadata;
@@ -3188,6 +3304,7 @@ export type Query = {
   allPages: Array<PageRecord>;
   allPolicies: Array<PolicyRecord>;
   allPosts: Array<PostRecord>;
+  allPromotions: Array<PromotionRecord>;
   allReviews: Array<ReviewRecord>;
   allSchemaMigrations: Array<SchemaMigrationRecord>;
   allSupercars: Array<SupercarRecord>;
@@ -3208,6 +3325,7 @@ export type Query = {
   page: Maybe<PageRecord>;
   policy: Maybe<PolicyRecord>;
   post: Maybe<PostRecord>;
+  promotion: Maybe<PromotionRecord>;
   review: Maybe<ReviewRecord>;
   schemaMigration: Maybe<SchemaMigrationRecord>;
   supercar: Maybe<SupercarRecord>;
@@ -3278,6 +3396,12 @@ export type QueryAllPoliciesMetaArgs = {
 
 export type QueryAllPostsMetaArgs = {
   filter?: InputMaybe<PostModelFilter>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+export type QueryAllPromotionsMetaArgs = {
+  filter?: InputMaybe<PromotionModelFilter>;
   locale?: InputMaybe<SiteLocale>;
 };
 
@@ -3432,6 +3556,16 @@ export type QueryAllPostsArgs = {
   first?: InputMaybe<Scalars['IntType']['input']>;
   locale?: InputMaybe<SiteLocale>;
   orderBy?: InputMaybe<Array<InputMaybe<PostModelOrderBy>>>;
+  skip?: InputMaybe<Scalars['IntType']['input']>;
+};
+
+
+export type QueryAllPromotionsArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  filter?: InputMaybe<PromotionModelFilter>;
+  first?: InputMaybe<Scalars['IntType']['input']>;
+  locale?: InputMaybe<SiteLocale>;
+  orderBy?: InputMaybe<Array<InputMaybe<PromotionModelOrderBy>>>;
   skip?: InputMaybe<Scalars['IntType']['input']>;
 };
 
@@ -3593,6 +3727,14 @@ export type QueryPostArgs = {
   filter?: InputMaybe<PostModelFilter>;
   locale?: InputMaybe<SiteLocale>;
   orderBy?: InputMaybe<Array<InputMaybe<PostModelOrderBy>>>;
+};
+
+
+export type QueryPromotionArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  filter?: InputMaybe<PromotionModelFilter>;
+  locale?: InputMaybe<SiteLocale>;
+  orderBy?: InputMaybe<Array<InputMaybe<PromotionModelOrderBy>>>;
 };
 
 
