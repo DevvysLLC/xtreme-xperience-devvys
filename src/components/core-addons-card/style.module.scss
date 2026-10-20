@@ -14,13 +14,14 @@
   justify-content: flex-end;
   gap: sg.spacing(regular);
   width: 100%;
-  background-color: #f6f5f4;
+  padding: sg.spacing(medium);
+  background-color: sg.color(gray-50);
 
   &--featured {
     @include sg.min(laptopSmall) {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0;
+      flex-direction: row;
+      align-items: center;
+      gap: sg.spacing(medium);
     }
   }
 
@@ -43,24 +44,6 @@
     position: relative;
     width: 100%;
     aspect-ratio: 420 / 240;
-    
-    #{$card}--featured & {
-      aspect-ratio: 420 / 240;
-      width: 100%;
-
-      @include sg.min(laptopSmall) {
-        aspect-ratio: auto;
-        height: 100%;
-      }
-
-      img {
-        object-fit: cover;
-
-        @include sg.min(laptopSmall) {
-          min-height: u.rem-calc(270);
-        }
-      }
-    }
 
     #{$card}--upsell & {
       @include sg.min(laptopSmall) {
@@ -76,11 +59,11 @@
     gap: sg.spacing(regular);
     height: 100%;
     width: 100%;
-    padding: u.rem-calc(24);
 
     #{$card}--featured & {
       @include sg.min(laptopSmall) {
-        /* No max-width restriction like before, keep padding */
+        max-width: calc(u.rem-calc(320) + (sg.spacing(xlarge) * 2));
+        padding-inline: sg.spacing(xlarge);
       }
     }
 
@@ -104,24 +87,20 @@
   &__header {
     display: flex;
     justify-content: space-between;
-    padding-bottom: sg.spacing(regular);
+    padding: sg.spacing(xsmall) 0 sg.spacing(regular);
     border-bottom: u.rem-calc(1) dashed sg.color(border-dark);
-    flex-wrap: wrap;
-    gap: u.rem-calc(12);
   }
 
   &__title {
-    font-family: sg.font-family(barlow);
-    text-transform: none;
-    font-size: u.rem-calc(22);
-    font-weight: 800;
-    line-height: 1.2;
-    margin: 0;
+    font-size: sg.font-size(regular);
+    font-weight: sg.font-weight(700);
+    line-height: sg.line-height('140%');
   }
 
   &__description {
-    line-height: 1.6;
-    font-size: u.rem-calc(15);
+    font-size: sg.font-size(regular);
+    font-weight: sg.font-weight(400);
+    line-height: sg.line-height('140%');
   }
 
   &__actions {
