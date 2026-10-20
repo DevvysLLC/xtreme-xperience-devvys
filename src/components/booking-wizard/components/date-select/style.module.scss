@@ -4,6 +4,7 @@
 .event-ranges {
   display: flex;
   flex-wrap: nowrap;
+  justify-content: center;
   gap: u.rem-calc(12);
   margin-bottom: u.rem-calc(14);
   overflow-x: auto;
