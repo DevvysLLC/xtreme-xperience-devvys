@@ -2,13 +2,14 @@
 
 import clsx from 'clsx'
 import { useRouter } from 'next/navigation'
-// import { useTranslations } from 'next-intl'
+import { useTranslations } from 'next-intl'
 import type { FC, ReactNode } from 'react'
 import { ROUTES } from '../../../config/routes'
 import { useBookingConfig, useBookingPageReview } from '../../../features/booking'
 import { useCart } from '../../../features/cart'
 import { CoreTextMarkdown } from '../../core-text-markdown'
 import { CartActions } from '../components/actions'
+import { CartLineItems } from '../components/items'
 import { CartSummary } from '../components/summary'
 import { Upsell } from '../components/upsell'
 import styles from './page.module.scss'
@@ -22,12 +23,13 @@ type Props = {
 
 export const CartPage: FC<Props> = ({
   readOnly = false,
-  // title,
-  // description,
+  title,
+  description,
   showActions = true
 }) => {
-  // const t = useTranslations('global_cart')
-  const { isLoading, isRefreshing } = useCart()
+  const t = useTranslations('global_cart')
+  const { data, isLoading, isRefreshing } = useCart()
+  const lineItems = data?.cartData?.lineItems ?? []
   const pageHook = useBookingPageReview()
   const { data: config } = useBookingConfig()
   const upsellsTitle = config?.upsellsTitle || 'ADD A PIT PASS'
@@ -50,6 +52,13 @@ export const CartPage: FC<Props> = ({
 
   return (
     <section className={clsx(styles.cart)}>
+      <header className={styles.cart__header}>
+        <h1 className={styles.cart__title}>{title ?? t('header.title')}</h1>
+        {description && (
+          <p className={styles.cart__description}>{description}</p>
+        )}
+      </header>
+
       <div className={styles.cart__summary}>
         <CartSummary />
 
@@ -65,6 +74,9 @@ export const CartPage: FC<Props> = ({
           isRefreshing && styles['is-refreshing']
         )}
       >
+        <div className={styles.cart__desktopLineItems}>
+          <CartLineItems lineItems={lineItems} readOnly={readOnly} />
+        </div>
         {!readOnly && (
           <div className={styles.upsells}>
             <div className={styles.upsells__header}>

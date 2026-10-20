@@ -273,6 +273,16 @@
     color: #222;
     font-weight: 500;
     line-height: 1.35;
+
+    p, span {
+      margin: 0;
+      display: inline;
+    }
+
+    strong {
+      font-weight: 700;
+      color: inherit;
+    }
   }
 
   &__itemPrice {

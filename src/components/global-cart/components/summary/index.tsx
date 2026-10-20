@@ -19,6 +19,8 @@ import { CartExpiry } from '../expiry'
 import { CartLocation } from '../location'
 import styles from './style.module.scss'
 
+import { CoreTextMarkdown } from '../../../core-text-markdown'
+
 const SummaryLineItem: FC<{ lineItem: RocketRezLineItem }> = ({ lineItem }) => {
   const { metadata } = useCartLineItemMetadata({ lineItem })
   const { price, quantity = 1 } = lineItem
@@ -66,7 +68,9 @@ const SummaryLineItem: FC<{ lineItem: RocketRezLineItem }> = ({ lineItem }) => {
 
   return (
     <div className={styles.summary__itemRow}>
-      <span className={styles.summary__itemName}>{displayName}</span>
+      <CoreTextMarkdown className={styles.summary__itemName}>
+        {displayName}
+      </CoreTextMarkdown>
       <span className={styles.summary__itemPrice}>
         ${totalPrice.toLocaleString()}
       </span>
