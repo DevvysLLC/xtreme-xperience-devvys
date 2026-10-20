@@ -4,9 +4,11 @@
 .event-ranges {
   display: flex;
   flex-wrap: nowrap;
-  justify-content: center;
+  justify-content: safe center;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto u.rem-calc(14);
   gap: u.rem-calc(12);
-  margin-bottom: u.rem-calc(14);
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;

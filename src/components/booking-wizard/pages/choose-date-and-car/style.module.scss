@@ -67,11 +67,13 @@
 .dates {
   display: flex;
   flex-wrap: nowrap;
-  justify-content: center;
+  justify-content: safe center;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
   gap: u.rem-calc(10);
   list-style: none;
   padding: 0 0 u.rem-calc(8);
-  margin: 0;
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
