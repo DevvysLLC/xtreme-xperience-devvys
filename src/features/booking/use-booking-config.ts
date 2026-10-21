@@ -3,6 +3,7 @@
 import { type UseQueryResult, useQuery } from '@tanstack/react-query'
 import { ROUTES } from '../../config/routes'
 import type { BookingConfigFragment } from '../../core/dato/fragments/booking-config.typegen'
+import type { BookingDiscountRule } from '../../utils/get-schedule-discount'
 import { ApiBookingConfigGetBookingConfigResponseSchema } from '../../io'
 import {
   BOOKING_ERRORS,
@@ -11,13 +12,17 @@ import {
   hasBookingConfig
 } from './config'
 
+export type BookingConfigWithPromotions = BookingConfigFragment & {
+  discountRules?: BookingDiscountRule[]
+}
+
 export type UseBookingConfigOptions = {
   enabled?: boolean
 }
 
 export const useBookingConfig = (
   options: UseBookingConfigOptions = {}
-): UseQueryResult<BookingConfigFragment | null> => {
+): UseQueryResult<BookingConfigWithPromotions | null> => {
   const { enabled = true } = options
 
   return useQuery({
@@ -50,7 +55,7 @@ export const useBookingConfig = (
       const configData = 'config' in data && data.config ? data.config : data
 
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      return configData as BookingConfigFragment | null
+      return configData as BookingConfigWithPromotions | null
     },
     enabled,
     staleTime: 5 * 60 * 1000,

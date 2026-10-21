@@ -225,7 +225,6 @@ export type BookingConfigRecord = RecordInterface & {
   bookingAnnouncement: Maybe<SectionAnnouncementBarRecord>;
   cancellationPolicy: Maybe<Scalars['String']['output']>;
   decorators: Array<BookingDecoratorRecord>;
-  discountRules: Array<BookingDiscountRuleRecord>;
   eventOverrides: Array<BookingEventOverrideRecord>;
   id: Scalars['ItemId']['output'];
   insurance: Array<InsuranceRecord>;

@@ -60,16 +60,11 @@ export class BookingConfigService {
       }))
     })
 
-    const mergedDiscountRules = [
-      ...promotionRules,
-      ...(response.bookingConfig?.discountRules ?? [])
-    ]
-
     const data = {
       config: {
         ...(response.bookingConfig ?? {}),
         pages: response.bookingConfig?.pages ?? [],
-        discountRules: mergedDiscountRules,
+        discountRules: promotionRules,
         promotions: response.allPromotions ?? []
       }
     }

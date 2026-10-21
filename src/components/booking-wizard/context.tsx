@@ -10,9 +10,9 @@ import {
   useRef,
   useState
 } from 'react'
-import type { BookingConfigFragment } from '../../core/dato/fragments/booking-config.typegen'
 import type { EventDataFragment } from '../../core/dato/fragments/event-data.typegen'
 import {
+  type BookingConfigWithPromotions,
   useBookingConfig,
   useBookingEvent,
   useBookingWithCart
@@ -27,7 +27,7 @@ type BookingWizardState = {
   selectedEvent: EventDataFragment | null
   eventData: RocketRezEventWithSchedules | null
   isLoadingEventData: boolean
-  configData: BookingConfigFragment | null
+  configData: BookingConfigWithPromotions | null
   isLoadingConfigData: boolean
   selectedDay: RocketRezEventScheduleDate | null
   selectedDayDate: string | null
@@ -49,9 +49,9 @@ type Props = {
 }
 
 const getBookingConfigWithEventOverrides = (
-  configData: BookingConfigFragment | null,
+  configData: BookingConfigWithPromotions | null,
   selectedEvent: EventDataFragment | null
-): BookingConfigFragment | null => {
+): BookingConfigWithPromotions | null => {
   if (!configData || !selectedEvent?.id) {
     return configData
   }

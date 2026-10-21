@@ -126,9 +126,6 @@ fragment BookingConfig on BookingConfigRecord {
   eventOverrides {
     ...EventOverride
   }
-  discountRules {
-    ...BookingDiscountRule
-  }
   whatsIncludedLead
   whatsIncludedDescription
   whatsIncludedNotice

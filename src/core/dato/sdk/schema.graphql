@@ -224,7 +224,6 @@ type BookingConfigRecord implements RecordInterface {
     markdown: Boolean
   ): String
   decorators: [BookingDecoratorRecord!]!
-  discountRules: [BookingDiscountRuleRecord!]!
   eventOverrides: [BookingEventOverrideRecord!]!
   id: ItemId!
   insurance: [InsuranceRecord!]!
