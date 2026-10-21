@@ -104,7 +104,8 @@ export const PaymentV2 = ({
     data: csData,
     isPending: csIsPending,
     isError: csIsError,
-    mutate: csMutate
+    mutate: csMutate,
+    reset: csReset
   } = clientSecretMutation
   const isIframeEnvMissing = !IFRAME_URL
   const returnUrl = useMemo(() => {
@@ -430,13 +431,43 @@ export const PaymentV2 = ({
       onPaymentSuccess: handlePaymentSuccess,
       onPaymentError: handlePaymentError
     })
-  const isIframeLoading = status === 'idle' || status === 'loading_iframe'
+  const isIframeLoading =
+    status === 'idle' || status === 'loading_iframe' || csIsPending
   const hasPaymentError = status === 'error'
 
   const handleRetryPayment = useCallback(() => {
     resetPaymentFlow()
     setIframeKey((prev) => prev + 1)
   }, [resetPaymentFlow])
+
+  const cartTotal = cartData?.total ?? null
+  const prevCartTotalRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    if (cartTotal === null || resumePayment) {
+      return
+    }
+
+    if (prevCartTotalRef.current === null) {
+      prevCartTotalRef.current = cartTotal
+      return
+    }
+
+    if (prevCartTotalRef.current !== cartTotal) {
+      logger.info(
+        { prevTotal: prevCartTotalRef.current, newTotal: cartTotal },
+        'Payment: Cart total changed, refreshing payment gateway client secret and iframe'
+      )
+      prevCartTotalRef.current = cartTotal
+      resetPaymentFlow()
+      csReset()
+      csMutate(undefined, {
+        onSuccess: () => {
+          setIframeKey((prev) => prev + 1)
+        }
+      })
+    }
+  }, [cartTotal, csMutate, csReset, resetPaymentFlow, resumePayment])
 
   // Bail out immediately when the iframe env var is misconfigured.
   // No retry button: the env var won't appear at runtime.
