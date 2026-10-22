@@ -750,7 +750,7 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
       >
         <div className={styles.card__media}>
           {thumbnail && <CoreImage data={thumbnail} />}
-          {cmsBadge && (
+          {cmsBadge && cmsBadge.label?.trim() && (
             <div className={styles.card__badge}>
               <CoreBadge data={cmsBadge} />
             </div>

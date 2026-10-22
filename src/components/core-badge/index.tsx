@@ -18,6 +18,11 @@ export const CoreBadge: FC<Props> = ({
   color,
   className
 }) => {
+  const badgeLabel = (label || data?.label)?.trim()
+  if (!badgeLabel) {
+    return null
+  }
+
   return (
     <span
       className={clsx(styles.root, className)}
@@ -30,7 +35,7 @@ export const CoreBadge: FC<Props> = ({
         className={styles.label}
         style={{ color: color || data?.color?.hex }}
       >
-        {label || data?.label}
+        {badgeLabel}
       </span>
     </span>
   )
