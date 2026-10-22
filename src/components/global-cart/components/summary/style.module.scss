@@ -59,112 +59,125 @@
   }
 
   &__savingsBlock {
-    margin: u.rem-calc(4) 0 u.rem-calc(8);
+    margin: u.rem-calc(10) 0 u.rem-calc(6);
+    background: #f8f8f9;
+    border-radius: u.rem-calc(4);
+    padding: u.rem-calc(12) u.rem-calc(14);
     display: flex;
     flex-direction: column;
-    gap: u.rem-calc(4);
-    border-bottom: u.rem-calc(1) solid sg.color(border-light);
-    padding-bottom: u.rem-calc(12);
-  }
-
-  &__savingsHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-  }
-
-  &__savingsTitle {
-    color: #ff6900;
-    font-weight: 700;
-    font-size: u.rem-calc(14);
-  }
-
-  &__savingsSubtitle {
-    color: #666;
-    font-size: u.rem-calc(12);
+    gap: u.rem-calc(8);
   }
 
   &__savingsDetails {
-    margin-top: u.rem-calc(2);
-
     summary {
       font-size: u.rem-calc(12);
+      font-weight: 600;
       color: #333;
       cursor: pointer;
       list-style: none;
       display: inline-flex;
       align-items: center;
-      gap: u.rem-calc(4);
+      gap: u.rem-calc(6);
+      margin-bottom: u.rem-calc(8);
+      user-select: none;
 
       &::-webkit-details-marker {
         display: none;
       }
 
       &::before {
-        content: '▶';
+        content: '▼';
         font-size: u.rem-calc(9);
         display: inline-block;
         transition: transform 0.2s ease;
       }
     }
 
-    &[open] summary::before {
-      transform: rotate(90deg);
+    &:not([open]) summary::before {
+      transform: rotate(-90deg);
     }
   }
 
-  &__savingsContent {
-    font-size: u.rem-calc(12);
-    color: #666;
-    margin-top: u.rem-calc(4);
-    padding-left: u.rem-calc(12);
+  &__savingsHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: u.rem-calc(8);
+    padding-bottom: u.rem-calc(6);
+  }
+
+  &__savingsTitle {
+    color: #ff6900;
+    font-weight: 700;
+    font-size: u.rem-calc(15);
+    font-family: sg.font-family(barlow);
+  }
+
+  &__savingsSubtitle {
+    color: #777;
+    font-size: u.rem-calc(11);
+    text-align: right;
   }
 
   &__savingsList {
-    margin-top: u.rem-calc(8);
+    margin-top: u.rem-calc(6);
     display: flex;
     flex-direction: column;
-    gap: u.rem-calc(10);
-    padding-left: u.rem-calc(4);
+    gap: u.rem-calc(8);
   }
 
-  &__savingsGroup {
-    display: flex;
-    flex-direction: column;
-    gap: u.rem-calc(2);
+  &__savingsRow {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.1fr) auto;
+    align-items: baseline;
+    gap: u.rem-calc(8);
+    font-size: u.rem-calc(12);
+    font-family: sg.font-family(barlow);
   }
 
-  &__savingsGroupHeader {
+  &__savingsRowName {
+    color: #222;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__savingsRowType {
+    color: #888;
+    font-size: u.rem-calc(11);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__savingsRowAmount {
+    color: #111;
+    font-weight: 700;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  &__savingsTotalDivider {
+    border: none;
+    border-top: u.rem-calc(1) solid #e6e6e8;
+    margin: u.rem-calc(6) 0 u.rem-calc(2);
+  }
+
+  &__savingsTotalRow {
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-size: u.rem-calc(13);
     font-weight: 700;
+    font-family: sg.font-family(barlow);
     color: #111;
   }
 
-  &__savingsGroupTitle {
+  &__savingsTotalAmount {
+    color: #ff6900;
     font-weight: 700;
-  }
-
-  &__savingsGroupTotal {
-    font-weight: 700;
-  }
-
-  &__savingsItem {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: u.rem-calc(12);
-    color: #777;
-  }
-
-  &__savingsItemName {
-    color: #777;
-  }
-
-  &__savingsItemAmount {
-    color: #777;
+    font-size: u.rem-calc(14);
   }
 
   &__total {

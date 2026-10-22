@@ -11,6 +11,7 @@ import {
   useCartState
 } from '../../../../features/cart'
 import type { RocketRezLineItem } from '../../../../io/types'
+import { getCartLineItemReadMetadataKey } from '../../../../utils/get-cart-line-item-metadata-key'
 import { CoreRocketRezPrice } from '../../../core-rocketrez-price'
 import { CouponForm } from '../coupon-form'
 import { CouponRemove } from '../coupon-remove'
@@ -86,6 +87,29 @@ const getTaxAmount = (tax: unknown): number => {
   return typeof value === 'number' && Number.isFinite(value) ? value : 0
 }
 
+const getLineItemDiscount = (
+  entry: unknown
+): { lineItemId: number; discountAmount: number } | null => {
+  if (
+    !entry ||
+    typeof entry !== 'object' ||
+    !('lineItemId' in entry) ||
+    !('discountAmount' in entry)
+  ) {
+    return null
+  }
+  const lineItemId = entry.lineItemId
+  const discountAmount = entry.discountAmount
+  if (
+    typeof lineItemId === 'number' &&
+    typeof discountAmount === 'number' &&
+    discountAmount > 0
+  ) {
+    return { lineItemId, discountAmount }
+  }
+  return null
+}
+
 export const CartSummary: FC = () => {
   const t = useTranslations('global_cart')
   // const pathname = usePathname()
@@ -140,44 +164,116 @@ export const CartSummary: FC = () => {
   )
 
   const { data: cartState } = useCartState()
-  const totalSavings = useMemo(() => {
-    let metadataSavings = 0
-    if (cartState?.metadata) {
-      for (const item of cartState.metadata) {
-        const props = item.properties
-        const itemSavings =
-          props &&
-          typeof props === 'object' &&
-          'savings' in props &&
-          typeof props.savings === 'number'
-            ? props.savings
-            : 0
-        if (itemSavings > 0) {
-          metadataSavings += itemSavings
-        }
-      }
-    }
-    return Math.round(Math.max(discountTotal, metadataSavings))
-  }, [cartState?.metadata, discountTotal])
 
-  const savingsGroups = useMemo(() => {
-    type GroupItem = { name: string; amount: number }
-    type Group = { category: string; total: number; items: GroupItem[] }
-    const groups: Group[] = []
+  const savingsBreakdownItems = useMemo(() => {
+    type SavingsItem = { name: string; category: string; amount: number }
+    const items: SavingsItem[] = []
 
     const getCleanName = (title?: string | null) => {
       if (!title) {
-        return 'Vehicle'
+        return 'Product'
       }
-      const strongMatch = title.match(/<strong>(.*?)<\/strong>/i)
-      if (strongMatch && strongMatch[1]) {
-        return strongMatch[1].trim()
-      }
-      return title.replace(/<[^>]+>/g, '').trim()
+      return title
+        .replace(/<[^>]+>/g, '')
+        .replace(/[-–—]\s*\d+\s*Laps?/gi, '')
+        .replace(/\(\s*Ride Along\s*\)/gi, '')
+        .trim()
     }
 
+    // 1. Process RocketRez line-item discounts (coupons and promo rules)
+    const processedLineItemIds = new Set<number>()
+    const processedMetadataKeys = new Set<string>()
+    let accountedRRDiscounts = 0
+
+    if (cart?.cartData?.coupons && cart?.cartData?.lineItems) {
+      for (const coupon of cart.cartData.coupons) {
+        const couponCode = coupon.code || coupon.serial
+        const couponLabel = couponCode
+          ? `Coupon (${couponCode})`
+          : 'Discount applied'
+        const rawLineDiscounts = coupon.lineItemDiscounts
+        if (Array.isArray(rawLineDiscounts)) {
+          for (const rawEntry of rawLineDiscounts) {
+            const ld = getLineItemDiscount(rawEntry)
+            if (!ld) {
+              continue
+            }
+            const { lineItemId, discountAmount: amount } = ld
+            const matchedLineItem = cart.cartData.lineItems.find(
+              (li) => li.id === lineItemId
+            )
+              const lineItemKey = matchedLineItem
+                ? getCartLineItemReadMetadataKey({ lineItem: matchedLineItem })
+                : null
+              const matchedMeta = lineItemKey
+                ? cartState?.metadata?.find((m) => m.key === lineItemKey)
+                : null
+              const name = matchedMeta?.title
+                ? getCleanName(matchedMeta.title)
+                : matchedLineItem?.name || matchedLineItem?.type || 'Product'
+
+              items.push({
+                name,
+                category: couponLabel,
+                amount
+              })
+              accountedRRDiscounts += amount
+              processedLineItemIds.add(lineItemId)
+              if (lineItemKey) {
+                processedMetadataKeys.add(lineItemKey)
+              }
+            }
+          }
+        }
+      }
+
+    if (cart?.cartData?.lineItems) {
+      for (const lineItem of cart.cartData.lineItems) {
+        if (processedLineItemIds.has(lineItem.id)) {
+          continue
+        }
+        const itemDiscount = lineItem.discountAmount ?? 0
+        if (itemDiscount > 0) {
+          const lineItemKey = getCartLineItemReadMetadataKey({ lineItem })
+          const matchedMeta = lineItemKey
+            ? cartState?.metadata?.find((m) => m.key === lineItemKey)
+            : null
+          const name = matchedMeta?.title
+            ? getCleanName(matchedMeta.title)
+            : lineItem.name || lineItem.type || 'Product'
+
+          items.push({
+            name,
+            category: 'Discount applied',
+            amount: itemDiscount
+          })
+          accountedRRDiscounts += itemDiscount
+          processedLineItemIds.add(lineItem.id)
+          if (lineItemKey) {
+            processedMetadataKeys.add(lineItemKey)
+          }
+        }
+      }
+    }
+
+    // Remaining cart-level discount from RocketRez (if any whole-cart discount unassigned to line items)
+    const remainingRRDiscount =
+      Math.round((discountTotal - accountedRRDiscounts) * 100) / 100
+    if (remainingRRDiscount > 0) {
+      items.push({
+        name: couponCodes ? `Coupon (${couponCodes})` : 'Order discount',
+        category: 'Discount applied',
+        amount: remainingRRDiscount
+      })
+    }
+
+    // 2. Process metadata Day pricing savings ONLY for items without RR discounts (prevents double counting)
     if (cartState?.metadata) {
       for (const item of cartState.metadata) {
+        if (item.key && processedMetadataKeys.has(item.key)) {
+          continue
+        }
+
         const props = item.properties
         if (!props || typeof props !== 'object') {
           continue
@@ -196,7 +292,6 @@ export const CartSummary: FC = () => {
 
         const carName = getCleanName(item.title)
 
-        const breakdown: Array<{ category: string; amount: number }> = []
         if (
           'savingsBreakdown' in props &&
           Array.isArray(props.savingsBreakdown) &&
@@ -212,81 +307,37 @@ export const CartSummary: FC = () => {
               typeof b.amount === 'number' &&
               b.amount > 0
             ) {
-              breakdown.push({ category: b.category, amount: b.amount })
+              items.push({
+                name: carName,
+                category: b.category,
+                amount: b.amount
+              })
             }
-          }
-        }
-
-        if (breakdown.length > 0) {
-          for (const b of breakdown) {
-            let group = groups.find(
-              (g) => g.category.toLowerCase() === b.category.toLowerCase()
-            )
-            if (!group) {
-              group = { category: b.category, total: 0, items: [] }
-              groups.push(group)
-            }
-            group.total += b.amount
-            group.items.push({ name: carName, amount: b.amount })
           }
         } else {
-          let isEarly = false
-          if ('date' in props && typeof props.date === 'string') {
-            const parts = props.date.split('T')
-            const timePart = parts[1]
-            if (timePart) {
-              const timePieces = timePart.split(':')
-              const hStr = timePieces[0]
-              const mStr = timePieces[1]
-              if (hStr) {
-                const h = Number(hStr)
-                const m = mStr ? Number(mStr) : 0
-                if (!Number.isNaN(h) && !Number.isNaN(m)) {
-                  const totalMins = h * 60 + m
-                  if (totalMins >= 480 && totalMins <= 600) {
-                    isEarly = true
-                  }
-                }
-              }
-            }
-          }
-
-          if (isEarly && itemSavings >= 60) {
-            const earlyAmount = 60
-            const dayAmount = itemSavings - 60
-
-            if (dayAmount > 0) {
-              let dayGroup = groups.find((g) => g.category === 'Day pricing')
-              if (!dayGroup) {
-                dayGroup = { category: 'Day pricing', total: 0, items: [] }
-                groups.push(dayGroup)
-              }
-              dayGroup.total += dayAmount
-              dayGroup.items.push({ name: carName, amount: dayAmount })
-            }
-
-            let earlyGroup = groups.find((g) => g.category === 'Early sessions')
-            if (!earlyGroup) {
-              earlyGroup = { category: 'Early sessions', total: 0, items: [] }
-              groups.push(earlyGroup)
-            }
-            earlyGroup.total += earlyAmount
-            earlyGroup.items.push({ name: carName, amount: earlyAmount })
-          } else {
-            let dayGroup = groups.find((g) => g.category === 'Day pricing')
-            if (!dayGroup) {
-              dayGroup = { category: 'Day pricing', total: 0, items: [] }
-              groups.push(dayGroup)
-            }
-            dayGroup.total += itemSavings
-            dayGroup.items.push({ name: carName, amount: itemSavings })
-          }
+          items.push({
+            name: carName,
+            category: 'Day pricing',
+            amount: itemSavings
+          })
         }
       }
     }
 
-    return groups
-  }, [cartState?.metadata])
+    return items
+  }, [
+    cart?.cartData?.coupons,
+    cart?.cartData?.lineItems,
+    cartState?.metadata,
+    couponCodes,
+    discountTotal
+  ])
+
+  const totalSavings = useMemo(() => {
+    return Math.round(
+      savingsBreakdownItems.reduce((acc, item) => acc + item.amount, 0)
+    )
+  }, [savingsBreakdownItems])
 
   return (
     <div className={styles.summary}>
@@ -306,56 +357,6 @@ export const CartSummary: FC = () => {
         </div>
       )}
 
-      {totalSavings > 0 && (
-        <div className={styles.summary__savingsBlock}>
-          <div className={styles.summary__savingsHeader}>
-            <span className={styles.summary__savingsTitle}>
-              You saved ${totalSavings.toLocaleString()}
-            </span>
-            <span className={styles.summary__savingsSubtitle}>
-              Included in your prices
-            </span>
-          </div>
-          <details className={styles.summary__savingsDetails}>
-            <summary className={styles.summary__savingsSummary}>
-              See savings details
-            </summary>
-            {savingsGroups.length > 0 ? (
-              <div className={styles.summary__savingsList}>
-                {savingsGroups.map((group) => (
-                  <div
-                    key={group.category}
-                    className={styles.summary__savingsGroup}
-                  >
-                    <div className={styles.summary__savingsGroupHeader}>
-                      <span className={styles.summary__savingsGroupTitle}>
-                        {group.category}
-                      </span>
-                      <span className={styles.summary__savingsGroupTotal}>
-                        -${group.total}
-                      </span>
-                    </div>
-                    {group.items.map((item, idx) => (
-                      <div key={idx} className={styles.summary__savingsItem}>
-                        <span className={styles.summary__savingsItemName}>
-                          {item.name}
-                        </span>
-                        <span className={styles.summary__savingsItemAmount}>
-                          -${item.amount}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className={styles.summary__savingsContent}>
-                Discounts applied automatically to selected packages and vehicles.
-              </div>
-            )}
-          </details>
-        </div>
-      )}
 
       {lineItems.length > 0 && (
         <div className={styles.summary__itemsList}>
@@ -389,7 +390,7 @@ export const CartSummary: FC = () => {
 
       {houseServiceChargeTotal > 0 && (
         <>
-          {totalSavings === 0 && <hr className={styles.summary__divider} />}
+          {subtotal === 0 && <hr className={styles.summary__divider} />}
           <div className={styles.summary__data}>
             <span className={styles.summary__label}>
               {t('summary.house_service_charge')}
@@ -436,20 +437,45 @@ export const CartSummary: FC = () => {
         </div>
       )}
 
-      {discountTotal > 0 && (
-        <div className={styles.summary__data}>
-          <span className={styles.summary__label}>
-            {couponCodes ? `Discount (${couponCodes})` : t('summary.discount')}
-          </span>
-
-          <CoreRocketRezPrice
-            className={`${styles.summary__value} ${styles.summary__discountValue}`}
-            prefix="-"
-            data={{
-              id: 'summary-discount',
-              price: discountTotal
-            }}
-          />
+      {totalSavings > 0 && (
+        <div className={styles.summary__savingsBlock}>
+          <details className={styles.summary__savingsDetails} open>
+            <summary className={styles.summary__savingsSummary}>
+              See savings details
+            </summary>
+            <div className={styles.summary__savingsHeader}>
+              <span className={styles.summary__savingsTitle}>
+                You saved ${totalSavings.toLocaleString()}
+              </span>
+              <span className={styles.summary__savingsSubtitle}>
+                Included in your prices + applied discounts
+              </span>
+            </div>
+            {savingsBreakdownItems.length > 0 && (
+              <div className={styles.summary__savingsList}>
+                {savingsBreakdownItems.map((item, idx) => (
+                  <div key={idx} className={styles.summary__savingsRow}>
+                    <span className={styles.summary__savingsRowName}>
+                      {item.name}
+                    </span>
+                    <span className={styles.summary__savingsRowType}>
+                      | {item.category}
+                    </span>
+                    <span className={styles.summary__savingsRowAmount}>
+                      - ${item.amount.toLocaleString()}
+                    </span>
+                  </div>
+                ))}
+                <hr className={styles.summary__savingsTotalDivider} />
+                <div className={styles.summary__savingsTotalRow}>
+                  <span>Total savings</span>
+                  <span className={styles.summary__savingsTotalAmount}>
+                    - ${totalSavings.toLocaleString()}
+                  </span>
+                </div>
+              </div>
+            )}
+          </details>
         </div>
       )}
 
