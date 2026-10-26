@@ -344,6 +344,7 @@
     font-size: u.rem-calc(10);
     font-weight: 500;
     letter-spacing: 0;
+    margin-right: ;
 
     @include sg.min(tabletLandscape) {
       font-size: u.rem-calc(12);
