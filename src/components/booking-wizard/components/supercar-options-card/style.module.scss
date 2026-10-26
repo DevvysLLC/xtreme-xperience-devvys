@@ -141,9 +141,18 @@
   &__title {
     font-size: u.rem-calc(14);
     font-family: sg.font-family(barlow);
-    font-weight: 700;
+    font-weight: 800;
     line-height: 1.2;
     min-height: u.rem-calc(34);
+
+    strong {
+      font-weight: 900;
+    }
+
+    p {
+      margin: 0;
+      font-weight: inherit;
+    }
 
     @include sg.min(tabletLandscape) {
       font-size: u.rem-calc(21);
@@ -321,12 +330,13 @@
   }
 
   &__money {
-    font-size: u.rem-calc(17);
-    font-weight: 700;
+    font-size: u.rem-calc(19);
+    font-weight: 800;
     letter-spacing: -0.5px;
 
     @include sg.min(tabletLandscape) {
-      font-size: u.rem-calc(23);
+      font-size: u.rem-calc(26);
+      font-weight: 800;
     }
   }
 
@@ -337,6 +347,18 @@
 
     @include sg.min(tabletLandscape) {
       font-size: u.rem-calc(12);
+    }
+  }
+
+  &__separator {
+    color: #999;
+    font-size: u.rem-calc(12);
+    font-weight: 400;
+    margin: 0 u.rem-calc(2);
+
+    @include sg.min(tabletLandscape) {
+      font-size: u.rem-calc(15);
+      margin: 0 u.rem-calc(4);
     }
   }
 

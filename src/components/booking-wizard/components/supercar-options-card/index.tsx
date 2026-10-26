@@ -732,9 +732,17 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
             ${Math.ceil(currentPrice)}
           </span>
           {savings > 0 && (
-            <span className={styles.price_display__saving}>
-              Save {!showSelected && 'up to '}${savings}
-            </span>
+            <>
+              <span
+                className={styles.price_display__separator}
+                aria-hidden="true"
+              >
+                |
+              </span>
+              <span className={styles.price_display__saving}>
+                Save {!showSelected && 'up to '}${savings}
+              </span>
+            </>
           )}
         </div>
       </div>

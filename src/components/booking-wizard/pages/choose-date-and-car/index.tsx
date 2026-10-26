@@ -16,7 +16,6 @@ import {
 import { useDialog } from '../../../../features/dialog'
 import { useToast } from '../../../../features/toast'
 import type { BookingCarLineItem } from '../../../../io/types'
-import { formatEventDateRangeLong } from '../../../../utils/date-time'
 import { getCartLineItemReadMetadataKey } from '../../../../utils/get-cart-line-item-metadata-key'
 import { getSeatTypeIdWithOverride } from '../../../../utils/get-seat-type-id-with-override'
 import { getDateDiscountRule } from '../../../../utils/get-schedule-discount'
@@ -146,31 +145,22 @@ export const DateAndCarPage = () => {
 
   const locationTitle = state.selectedEvent?.model?.track?.model?.nickname ?? ''
   const locationHandle = state.selectedEvent?.model?.track?.config?.handle ?? ''
-  const eventDateRange = formatEventDateRangeLong(
-    state.selectedEvent?.model?.startDate,
-    state.selectedEvent?.model?.endDate
-  )
   const trackHref = locationHandle
     ? `${ROUTES.FRONTEND.TRACKS.LISTING}/${locationHandle}`
     : null
 
-  const description = t.rich('description_dynamic', {
-    link: (chunks) =>
-      trackHref ? (
-        <CoreCta
-          href={trackHref}
-          layoutType="underline"
-          styleType="black"
-          sizeType="small"
-        >
-          {chunks}
-        </CoreCta>
-      ) : (
-        <>{chunks}</>
-      ),
-    location: locationTitle,
-    date: eventDateRange
-  })
+  const description = trackHref ? (
+    <CoreCta
+      href={trackHref}
+      layoutType="underline"
+      styleType="black"
+      sizeType="small"
+    >
+      {locationTitle}
+    </CoreCta>
+  ) : (
+    locationTitle
+  )
 
   const title = pageMetadata?.title ?? t('title')
   const activeGroup =

@@ -92,10 +92,12 @@
   border-radius: 0;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
+  text-align: center;
   gap: u.rem-calc(10);
   font-size: u.rem-calc(14);
   color: #555;
+  width: 100%;
 }
 
 .gift-shop-cta {
