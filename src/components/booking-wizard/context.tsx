@@ -142,38 +142,6 @@ export const BookingWizardProvider = ({ children }: Props) => {
   const resolvedIsLoadingEventData =
     isLoadingEventData || (eventId > 0 && resolvedEventData === null)
 
-  // Auto-select first available day when event data loads and no day is selected
-  useEffect(() => {
-    const schedules = resolvedEventData?.schedules
-    if (!schedules || schedules.length === 0) {
-      return
-    }
-
-    const firstAvailableDay = schedules.find((day) =>
-      day.schedules?.some((schedule) => {
-        if (schedule.scheduleStatus !== RocketRezScheduleStatus.AVAILABLE) {
-          return false
-        }
-        return (schedule.seatTypes ?? []).some(
-          (seat) => seat != null && (seat.available ?? 0) > 0
-        )
-      })
-    )
-
-    const firstDate = firstAvailableDay?.date ?? schedules[0]?.date
-    if (
-      firstDate &&
-      selectedDayDateOverride === null &&
-      persistedSelectedDayDate === null
-    ) {
-      setSelectedDayDateOverride(firstDate)
-    }
-  }, [
-    resolvedEventData?.schedules,
-    selectedDayDateOverride,
-    persistedSelectedDayDate,
-    setSelectedDayDateOverride
-  ])
 
   const firstScheduleDate = useMemo(() => {
     const schedules = resolvedEventData?.schedules

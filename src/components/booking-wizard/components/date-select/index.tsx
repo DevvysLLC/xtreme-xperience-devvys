@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { type FC, useEffect, useRef } from 'react'
+import type { FC } from 'react'
 import type { EventDataFragment } from '../../../../core/dato/fragments/event-data.typegen'
 import { logger } from '../../../../core/logger/logger'
 import {
@@ -33,19 +33,12 @@ export const DateSelect: FC<Props> = ({ label }) => {
   const { setSelectedDayDate } = useBookingWizardState()
   const events = booking?.track?.model?.events ?? []
   const selectedEventId = booking?.event?.model?.id ?? ''
-  const previousEventIdRef = useRef<string | undefined>(selectedEventId)
-
-  // Reset selected day on event change so choose-date-and-car can select the next available day
-  useEffect(() => {
-    const eventChanged = previousEventIdRef.current !== selectedEventId
-    if (eventChanged) {
-      previousEventIdRef.current = selectedEventId
-      setSelectedDayDate(null)
-    }
-  }, [selectedEventId, setSelectedDayDate])
 
   const handleChange = async (newEventId: string) => {
     const isNewEvent = newEventId !== selectedEventId
+    if (isNewEvent) {
+      setSelectedDayDate(null)
+    }
     const newEvent = events.find((event) => event.model?.id === newEventId)
     if (!newEvent?.model || !booking?.track) {
       return
