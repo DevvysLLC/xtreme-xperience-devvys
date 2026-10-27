@@ -196,6 +196,9 @@ export const DateAndCarPage = () => {
 
   const isDayAvailable = useCallback(
     (day: RocketRezEventScheduleDate) => {
+      if (resolvedRateIds.length === 0) {
+        return false
+      }
       const price = lowestAvailablePriceFromRates(
         day.schedules,
         resolvedRateIds,

@@ -15,6 +15,7 @@ import {
   type BookingConfigWithPromotions,
   useBookingConfig,
   useBookingEvent,
+  useBookingSupercarSchedule,
   useBookingWithCart
 } from '../../features/booking'
 import { RocketRezScheduleStatus } from '../../io/schemas'
@@ -22,6 +23,7 @@ import type {
   RocketRezEventScheduleDate,
   RocketRezEventWithSchedules
 } from '../../io/types'
+import { getSeatTypeIdWithOverride } from '../../utils/get-seat-type-id-with-override'
 
 type BookingWizardState = {
   bookingEvent: EventDataFragment | null
@@ -143,23 +145,46 @@ export const BookingWizardProvider = ({ children }: Props) => {
     isLoadingEventData || (eventId > 0 && resolvedEventData === null)
 
 
-  const firstScheduleDate = useMemo(() => {
-    const schedules = resolvedEventData?.schedules
-    if (!schedules || schedules.length === 0) {
-      return null
+  const { lowestAvailablePriceFromRates } = useBookingSupercarSchedule()
+
+  const activeTabIndex = useMemo(() => {
+    if (activeTabIndexOverride !== null) {
+      return activeTabIndexOverride
     }
-    const firstAvailableDay = schedules.find((day) =>
-      day.schedules?.some((schedule) => {
-        if (schedule.scheduleStatus !== RocketRezScheduleStatus.AVAILABLE) {
-          return false
-        }
-        return (schedule.seatTypes ?? []).some(
-          (seat) => seat != null && (seat.available ?? 0) > 0
+    return persistedActiveTabIndex
+  }, [activeTabIndexOverride, persistedActiveTabIndex])
+
+  const resolvedConfigData = useMemo(
+    () => getBookingConfigWithEventOverrides(configData ?? null, bookingEvent),
+    [configData, bookingEvent]
+  )
+
+  const activeGroup =
+    resolvedConfigData?.supercars?.[activeTabIndex ?? 0] ?? null
+  const selectedEventRocketRezId = bookingEvent?.model?.rocketRezId ?? null
+  const isMulticarGroup =
+    activeGroup?.supercars?.some((supercar) => supercar.isMulticar) ?? false
+
+  const resolvedRateIds = useMemo(() => {
+    const mappedRateIds =
+      activeGroup?.supercars?.map((supercar) =>
+        getSeatTypeIdWithOverride({
+          defaultSeatTypeId: supercar.rocketRezSeatTypeId,
+          overrides: supercar.rocketRezSeatTypeIdOverrides,
+          selectedEventId: selectedEventRocketRezId
+        })
+      ) ?? []
+
+    return Array.from(
+      new Set(
+        mappedRateIds.filter(
+          (rateId): rateId is number =>
+            Number.isFinite(rateId) && !Number.isNaN(rateId) && rateId > 0
         )
-      })
+      )
     )
-    return firstAvailableDay?.date ?? schedules[0]?.date ?? null
-  }, [resolvedEventData?.schedules])
+  }, [activeGroup?.supercars, selectedEventRocketRezId])
+
   const availableScheduleDates = useMemo(
     () => new Set((resolvedEventData?.schedules ?? []).map((day) => day.date)),
     [resolvedEventData?.schedules]
@@ -170,24 +195,50 @@ export const BookingWizardProvider = ({ children }: Props) => {
       const dayObj = resolvedEventData?.schedules?.find(
         (day) => day.date === date
       )
-      return (
-        dayObj?.schedules?.some((schedule) => {
-          if (schedule.scheduleStatus !== RocketRezScheduleStatus.AVAILABLE) {
-            return false
-          }
-          return (schedule.seatTypes ?? []).some(
-            (seat) => seat != null && (seat.available ?? 0) > 0
-          )
-        }) ?? false
-      )
+      if (!dayObj?.schedules || dayObj.schedules.length === 0) {
+        return false
+      }
+      if (resolvedRateIds.length > 0) {
+        const price = lowestAvailablePriceFromRates(
+          dayObj.schedules,
+          resolvedRateIds,
+          isMulticarGroup
+        )
+        return price !== null
+      }
+      return dayObj.schedules.some((schedule) => {
+        if (schedule.scheduleStatus !== RocketRezScheduleStatus.AVAILABLE) {
+          return false
+        }
+        return (schedule.seatTypes ?? []).some(
+          (seat) => seat != null && (seat.available ?? 0) > 0
+        )
+      })
     },
-    [resolvedEventData?.schedules]
+    [
+      resolvedEventData?.schedules,
+      resolvedRateIds,
+      lowestAvailablePriceFromRates,
+      isMulticarGroup
+    ]
   )
+
+  const firstScheduleDate = useMemo(() => {
+    const schedules = resolvedEventData?.schedules
+    if (!schedules || schedules.length === 0) {
+      return null
+    }
+    const firstAvailableDay = schedules.find((day) =>
+      isScheduleDayAvailable(day.date)
+    )
+    return firstAvailableDay?.date ?? schedules[0]?.date ?? null
+  }, [resolvedEventData?.schedules, isScheduleDayAvailable])
 
   const selectedDayDate = useMemo(() => {
     if (
       selectedDayDateOverride !== null &&
-      availableScheduleDates.has(selectedDayDateOverride)
+      availableScheduleDates.has(selectedDayDateOverride) &&
+      isScheduleDayAvailable(selectedDayDateOverride)
     ) {
       return selectedDayDateOverride
     }
@@ -213,17 +264,6 @@ export const BookingWizardProvider = ({ children }: Props) => {
         (day) => day.date === selectedDayDate
       ) ?? null,
     [resolvedEventData?.schedules, selectedDayDate]
-  )
-
-  const activeTabIndex = useMemo(() => {
-    if (activeTabIndexOverride !== null) {
-      return activeTabIndexOverride
-    }
-    return persistedActiveTabIndex
-  }, [activeTabIndexOverride, persistedActiveTabIndex])
-  const resolvedConfigData = useMemo(
-    () => getBookingConfigWithEventOverrides(configData ?? null, bookingEvent),
-    [configData, bookingEvent]
   )
 
   const state = useMemo<BookingWizardState>(
