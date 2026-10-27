@@ -102,11 +102,11 @@ export const getRequiredRateIdsForSupercar = (
             continue
           }
 
-          // EXCEPTION: The Apex package has been reduced from 5 to 4 cars, and Drive the Fleet has also been reduced, removing the Ferrari 488.
-          // We must explicitly exclude it so that availability isn't blocked by the Ferrari 488.
+          // EXCEPTION: The Apex package has been reduced from 5 to 4 cars, removing the Ferrari 488.
+          // We must explicitly exclude it so that Apex availability isn't blocked by the Ferrari 488.
+          // Note: Drive the Fleet retains the Ferrari 488.
           if (
-            (selectedPackages.includes('apex') ||
-              selectedPackages.includes('drive the fleet')) &&
+            selectedPackages.includes('apex') &&
             rateNameLower.includes('ferrari 488')
           ) {
             continue
