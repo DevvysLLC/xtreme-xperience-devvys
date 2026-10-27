@@ -17,6 +17,7 @@ import {
   useBookingEvent,
   useBookingWithCart
 } from '../../features/booking'
+import { RocketRezScheduleStatus } from '../../io/schemas'
 import type {
   RocketRezEventScheduleDate,
   RocketRezEventWithSchedules
@@ -143,7 +144,23 @@ export const BookingWizardProvider = ({ children }: Props) => {
 
   // Auto-select first available day when event data loads and no day is selected
   useEffect(() => {
-    const firstDate = resolvedEventData?.schedules?.[0]?.date
+    const schedules = resolvedEventData?.schedules
+    if (!schedules || schedules.length === 0) {
+      return
+    }
+
+    const firstAvailableDay = schedules.find((day) =>
+      day.schedules?.some((schedule) => {
+        if (schedule.scheduleStatus !== RocketRezScheduleStatus.AVAILABLE) {
+          return false
+        }
+        return (schedule.seatTypes ?? []).some(
+          (seat) => seat != null && (seat.available ?? 0) > 0
+        )
+      })
+    )
+
+    const firstDate = firstAvailableDay?.date ?? schedules[0]?.date
     if (
       firstDate &&
       selectedDayDateOverride === null &&
@@ -158,7 +175,23 @@ export const BookingWizardProvider = ({ children }: Props) => {
     setSelectedDayDateOverride
   ])
 
-  const firstScheduleDate = resolvedEventData?.schedules?.[0]?.date ?? null
+  const firstScheduleDate = useMemo(() => {
+    const schedules = resolvedEventData?.schedules
+    if (!schedules || schedules.length === 0) {
+      return null
+    }
+    const firstAvailableDay = schedules.find((day) =>
+      day.schedules?.some((schedule) => {
+        if (schedule.scheduleStatus !== RocketRezScheduleStatus.AVAILABLE) {
+          return false
+        }
+        return (schedule.seatTypes ?? []).some(
+          (seat) => seat != null && (seat.available ?? 0) > 0
+        )
+      })
+    )
+    return firstAvailableDay?.date ?? schedules[0]?.date ?? null
+  }, [resolvedEventData?.schedules])
   const availableScheduleDates = useMemo(
     () => new Set((resolvedEventData?.schedules ?? []).map((day) => day.date)),
     [resolvedEventData?.schedules]

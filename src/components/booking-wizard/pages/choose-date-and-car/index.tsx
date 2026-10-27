@@ -11,11 +11,12 @@ import {
   useBookingPageMetadata,
   useBookingRequestBackNavigation,
   useBookingResetAfter,
+  useBookingSupercarSchedule,
   useBookingWithCart
 } from '../../../../features/booking'
 import { useDialog } from '../../../../features/dialog'
 import { useToast } from '../../../../features/toast'
-import type { BookingCarLineItem } from '../../../../io/types'
+import type { BookingCarLineItem, RocketRezEventScheduleDate } from '../../../../io/types'
 import { getCartLineItemReadMetadataKey } from '../../../../utils/get-cart-line-item-metadata-key'
 import { getSeatTypeIdWithOverride } from '../../../../utils/get-seat-type-id-with-override'
 import { getDateDiscountRule } from '../../../../utils/get-schedule-discount'
@@ -50,6 +51,7 @@ export const DateAndCarPage = () => {
   const { mutate: requestBackNavigation } = useBookingRequestBackNavigation()
   const resetAfter = useBookingResetAfter()
   const pageHook = useBookingPageChooseDateAndCar()
+  const { lowestAvailablePriceFromRates } = useBookingSupercarSchedule()
   const pageMetadata = useBookingPageMetadata({
     pages: state.configData?.pages ?? null
   })
@@ -191,6 +193,56 @@ export const DateAndCarPage = () => {
       activeGroup?.supercars?.some((supercar) => supercar.isMulticar) ?? false,
     [activeGroup]
   )
+
+  const isDayAvailable = useCallback(
+    (day: RocketRezEventScheduleDate) => {
+      const price = lowestAvailablePriceFromRates(
+        day.schedules,
+        resolvedRateIds,
+        isMulticarGroup
+      )
+      return price !== null
+    },
+    [lowestAvailablePriceFromRates, resolvedRateIds, isMulticarGroup]
+  )
+
+  // If a day is completely sold out, select the next available day by default
+  useEffect(() => {
+    if (hasCars) {
+      return
+    }
+
+    const schedules = state.eventData?.schedules
+    if (!schedules || schedules.length === 0) {
+      return
+    }
+
+    const currentIndex = schedules.findIndex(
+      (day) => day.date === state.selectedDayDate
+    )
+
+    const currentDay =
+      currentIndex >= 0 ? schedules[currentIndex] : schedules[0]
+    if (!currentDay) {
+      return
+    }
+
+    if (!isDayAvailable(currentDay)) {
+      const nextAvailableDay =
+        schedules.slice(currentIndex + 1).find(isDayAvailable) ??
+        schedules.find(isDayAvailable)
+
+      if (nextAvailableDay && nextAvailableDay.date !== state.selectedDayDate) {
+        setSelectedDayDate(nextAvailableDay.date)
+      }
+    }
+  }, [
+    hasCars,
+    state.eventData?.schedules,
+    state.selectedDayDate,
+    isDayAvailable,
+    setSelectedDayDate
+  ])
 
   const handleBack = useCallback(() => {
     requestBackNavigation({ fromPath: pathname })
