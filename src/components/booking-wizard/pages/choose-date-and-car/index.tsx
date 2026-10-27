@@ -217,20 +217,18 @@ export const DateAndCarPage = () => {
       return
     }
 
-    const currentIndex = schedules.findIndex(
+    const currentDay = schedules.find(
       (day) => day.date === state.selectedDayDate
     )
 
-    const currentDay =
-      currentIndex >= 0 ? schedules[currentIndex] : schedules[0]
-    if (!currentDay) {
-      return
-    }
-
-    if (!isDayAvailable(currentDay)) {
+    if (!currentDay || !isDayAvailable(currentDay)) {
+      const currentIndex = schedules.findIndex(
+        (day) => day.date === state.selectedDayDate
+      )
       const nextAvailableDay =
-        schedules.slice(currentIndex + 1).find(isDayAvailable) ??
-        schedules.find(isDayAvailable)
+        (currentIndex >= 0
+          ? schedules.slice(currentIndex + 1).find(isDayAvailable)
+          : null) ?? schedules.find(isDayAvailable)
 
       if (nextAvailableDay && nextAvailableDay.date !== state.selectedDayDate) {
         setSelectedDayDate(nextAvailableDay.date)
@@ -252,7 +250,7 @@ export const DateAndCarPage = () => {
     const matchingDay = state.eventData?.schedules?.find(
       (day) => day.date === date
     )
-    if (!matchingDay) {
+    if (!matchingDay || !isDayAvailable(matchingDay)) {
       return
     }
 

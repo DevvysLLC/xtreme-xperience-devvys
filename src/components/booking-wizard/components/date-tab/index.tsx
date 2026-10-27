@@ -10,7 +10,6 @@ import type {
   RocketRezEventScheduleItem
 } from '../../../../io/types'
 import { parseLocalDate } from '../../../../utils/date-time'
-import { CoreBadge } from '../../../core-badge'
 import { CoreRocketRezPrice } from '../../../core-rocketrez-price'
 import styles from './style.module.scss'
 
@@ -63,11 +62,19 @@ export const DayTab: React.FC<Props> = ({
     return undefined
   }, [badgeLabel, lowestPrice])
 
+  const isSoldOut = !lowestPrice
+
   return (
     <button
       type="button"
-      className={clsx(styles.date, isActive && styles.active)}
-      onClick={() => onClick?.(day.date)}
+      className={clsx(styles.date, isActive && !isSoldOut && styles.active)}
+      disabled={isSoldOut}
+      aria-disabled={isSoldOut}
+      onClick={() => {
+        if (!isSoldOut) {
+          onClick?.(day.date)
+        }
+      }}
     >
       {displayBadge && (
         <span className={styles.date__badge}>{displayBadge}</span>

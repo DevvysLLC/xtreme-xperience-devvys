@@ -56,11 +56,28 @@ export const DateSelect: FC<Props> = ({ label }) => {
       state.selectedDayDate !== null &&
       !schedules.some((day) => day.date === state.selectedDayDate)
 
-    // Prefer the event's start date; fall back to first available day
+    // Prefer the event's start date if available; otherwise pick the next available day
+    const isScheduleAvailable = (day: (typeof schedules)[number]) =>
+      day.schedules?.some((schedule) => {
+        if (schedule.scheduleStatus !== 'Available') {
+          return false
+        }
+        return (schedule.seatTypes ?? []).some(
+          (seat) => seat != null && (seat.available ?? 0) > 0
+        )
+      })
+
     const startDateMatch = currentEventStartDate
       ? schedules.find((day) => day.date === currentEventStartDate)
       : null
-    const matchingDay = startDateMatch ?? schedules[0]
+
+    const matchingDay =
+      (startDateMatch && isScheduleAvailable(startDateMatch)
+        ? startDateMatch
+        : null) ??
+      schedules.find(isScheduleAvailable) ??
+      startDateMatch ??
+      schedules[0]
 
     // Set selectedDay if:
     // 1. Event changed (reset to new event's first available day)

@@ -105,10 +105,12 @@
   }
 
   &:disabled {
-    opacity: 1;
-    background: sg.color(white);
-    color: #777;
-    cursor: default;
+    opacity: 0.7;
+    background: #fafafa;
+    border-color: #e5e5e5;
+    color: #999;
+    cursor: not-allowed;
+    pointer-events: none;
 
     .date__price {
       color: inherit;
