@@ -125,10 +125,10 @@
 
 .sectionhead {
   margin: u.rem-calc(32) 0 u.rem-calc(20);
-  scroll-margin-top: 10.25rem;
+  scroll-margin-top: -10.25rem;
 
   @include sg.max(tabletLandscape) {
-    scroll-margin-top: 11rem;
+    scroll-margin-top: -11rem;
   }
 
   h2 {

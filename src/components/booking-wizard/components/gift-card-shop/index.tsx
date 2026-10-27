@@ -2,7 +2,7 @@
 
 import clsx from 'clsx'
 import Image from 'next/image'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useBookingGiftCards } from '../../../../features/booking'
 import { useCartAddAddon } from '../../../../features/cart'
 import { useToast } from '../../../../features/toast'
@@ -42,6 +42,7 @@ export const GiftCardShop: React.FC<Props> = ({ className }) => {
   const { mutateAsync, isPending } = useCartAddAddon()
   const { showToast } = useToast()
   const bus = useMainBus(DRAWER_REQUEST_OPEN_MESSAGE_NAME, () => {})
+  const addButtonRef = useRef<HTMLButtonElement>(null)
 
   // Combine DatoCMS addon records with prototype fallback descriptions
   const giftItems = useMemo<ResolvedGiftItem[]>(() => {
@@ -75,6 +76,16 @@ export const GiftCardShop: React.FC<Props> = ({ className }) => {
   const [selectedAmount, setSelectedAmount] = useState<number>(() => {
     return giftItems[0]?.amount ?? 100
   })
+
+  const handleSelectAmount = (amount: number) => {
+    setSelectedAmount(amount)
+    setTimeout(() => {
+      addButtonRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      })
+    }, 50)
+  }
 
   // Keep selected amount valid if gift items change
   useEffect(() => {
@@ -202,7 +213,7 @@ export const GiftCardShop: React.FC<Props> = ({ className }) => {
                 selectedAmount === item.amount && styles.amount_button__active
               )}
               aria-pressed={selectedAmount === item.amount}
-              onClick={() => setSelectedAmount(item.amount)}
+              onClick={() => handleSelectAmount(item.amount)}
             >
               ${item.amount.toLocaleString()}
             </button>
@@ -222,6 +233,7 @@ export const GiftCardShop: React.FC<Props> = ({ className }) => {
         </p>
 
         <button
+          ref={addButtonRef}
           type="button"
           className={styles.add_button}
           onClick={handleAddToCart}
