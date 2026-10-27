@@ -127,11 +127,11 @@ export const GiftCardShop: React.FC<Props> = ({ className }) => {
           image: {
             __typename: 'FileField',
             id: 'gift-card-image',
-            url: '/images/gift-card-template.png',
+            url: '/images/gift-card-template.webp',
             width: 1200,
             height: 720,
             alt: `Xtreme Xperience $${selectedAmount} Gift Card`,
-            format: 'png',
+            format: 'webp',
             title: null,
             focalPoint: null,
             responsiveImage: null
@@ -176,7 +176,7 @@ export const GiftCardShop: React.FC<Props> = ({ className }) => {
     <section className={clsx(styles.giftshop, className)}>
       <div className={styles.giftcard_image}>
         <Image
-          src="/images/gift-card-template.png"
+          src="/images/gift-card-template.webp"
           alt="Xtreme Xperience gift card — A special gift for you, featuring cars on a racetrack"
           width={1200}
           height={720}

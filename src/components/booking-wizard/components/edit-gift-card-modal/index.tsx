@@ -1,6 +1,5 @@
 'use client'
 
-import clsx from 'clsx'
 import Image from 'next/image'
 import { type FC, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
@@ -101,11 +100,11 @@ export const EditGiftCardModal: FC<Props> = ({ isOpen, lineItem, onClose }) => {
           image: {
             __typename: 'FileField',
             id: 'gift-card-image',
-            url: '/images/gift-card-template.png',
+            url: '/images/gift-card-template.webp',
             width: 1200,
             height: 720,
             alt: `Xtreme Xperience $${selectedAmount} Gift Card`,
-            format: 'png',
+            format: 'webp',
             title: null,
             focalPoint: null,
             responsiveImage: null
@@ -170,7 +169,7 @@ export const EditGiftCardModal: FC<Props> = ({ isOpen, lineItem, onClose }) => {
         <div className={styles.modal__body}>
           <div className={styles.cardPreview}>
             <Image
-              src="/images/gift-card-template.png"
+              src="/images/gift-card-template.webp"
               alt={`Xtreme Xperience $${selectedAmount} Gift Card`}
               width={600}
               height={360}
