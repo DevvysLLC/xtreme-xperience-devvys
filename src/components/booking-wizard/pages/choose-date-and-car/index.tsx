@@ -26,7 +26,7 @@ import { DateSelect } from '../../components/date-select'
 import { DayTab } from '../../components/date-tab'
 import { PageFooter } from '../../components/page-footer'
 import { PageHeader } from '../../components/page-header'
-import { SupercarOptions } from '../../components/supercar-options'
+import { SupercarOptions, GIFTS_TAB_INDEX } from '../../components/supercar-options'
 import { useBookingWizardState } from '../../context'
 import styles from './style.module.scss'
 
@@ -43,7 +43,7 @@ export const DateAndCarPage = () => {
     canSkipBooking
   } = contents ?? {}
   const router = useRouter()
-  const { state, setSelectedDayDate } = useBookingWizardState()
+  const { state, setSelectedDayDate, setActiveTabIndex } = useBookingWizardState()
   const { showDialog } = useDialog()
   const { showToast } = useToast()
   const pathname = usePathname()
@@ -314,10 +314,16 @@ export const DateAndCarPage = () => {
                   type="button" 
                   className={styles['gift-shop-cta']} 
                   onClick={() => {
+                    setActiveTabIndex(GIFTS_TAB_INDEX)
                     const giftsTabBtn =
                       document.querySelector('[data-tab="gifts"]')
                     if (giftsTabBtn instanceof HTMLElement) {
                       giftsTabBtn.click()
+                    }
+                    const target =
+                      document.getElementById('experience-section') ?? giftsTabBtn
+                    if (target instanceof HTMLElement) {
+                      target.scrollIntoView({ behavior: 'smooth', block: 'start' })
                     }
                   }}
                 >
@@ -326,7 +332,7 @@ export const DateAndCarPage = () => {
               </div>
             )}
 
-            <div className={styles.sectionhead}>
+            <div id="experience-section" className={styles.sectionhead}>
               <h2>
                 <span className={styles.stepnum}>2</span>
                 Choose your experience

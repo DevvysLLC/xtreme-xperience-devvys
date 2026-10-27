@@ -125,6 +125,12 @@
 
 .sectionhead {
   margin: u.rem-calc(32) 0 u.rem-calc(20);
+  scroll-margin-top: u.rem-calc(100);
+
+  @include sg.max(tabletLandscape) {
+    scroll-margin-top: u.rem-calc(80);
+  }
+
   h2 {
     font-size: u.rem-calc(22);
     display: flex;
