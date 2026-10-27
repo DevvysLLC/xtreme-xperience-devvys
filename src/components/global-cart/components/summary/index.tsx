@@ -182,7 +182,6 @@ export const CartSummary: FC = () => {
 
     // 1. Process RocketRez line-item discounts (coupons and promo rules)
     const processedLineItemIds = new Set<number>()
-    const processedMetadataKeys = new Set<string>()
     let accountedRRDiscounts = 0
 
     if (cart?.cartData?.coupons && cart?.cartData?.lineItems) {
@@ -219,9 +218,6 @@ export const CartSummary: FC = () => {
               })
               accountedRRDiscounts += amount
               processedLineItemIds.add(lineItemId)
-              if (lineItemKey) {
-                processedMetadataKeys.add(lineItemKey)
-              }
             }
           }
         }
@@ -249,9 +245,6 @@ export const CartSummary: FC = () => {
           })
           accountedRRDiscounts += itemDiscount
           processedLineItemIds.add(lineItem.id)
-          if (lineItemKey) {
-            processedMetadataKeys.add(lineItemKey)
-          }
         }
       }
     }
@@ -265,63 +258,6 @@ export const CartSummary: FC = () => {
         category: 'Discount applied',
         amount: remainingRRDiscount
       })
-    }
-
-    // 2. Process metadata Day pricing savings ONLY for items without RR discounts (prevents double counting)
-    if (cartState?.metadata) {
-      for (const item of cartState.metadata) {
-        if (item.key && processedMetadataKeys.has(item.key)) {
-          continue
-        }
-
-        const props = item.properties
-        if (!props || typeof props !== 'object') {
-          continue
-        }
-
-        const itemSavings =
-          'savings' in props &&
-          typeof props.savings === 'number' &&
-          props.savings > 0
-            ? props.savings
-            : 0
-
-        if (itemSavings <= 0) {
-          continue
-        }
-
-        const carName = getCleanName(item.title)
-
-        if (
-          'savingsBreakdown' in props &&
-          Array.isArray(props.savingsBreakdown) &&
-          props.savingsBreakdown.length > 0
-        ) {
-          for (const b of props.savingsBreakdown) {
-            if (
-              typeof b === 'object' &&
-              b !== null &&
-              'category' in b &&
-              typeof b.category === 'string' &&
-              'amount' in b &&
-              typeof b.amount === 'number' &&
-              b.amount > 0
-            ) {
-              items.push({
-                name: carName,
-                category: b.category,
-                amount: b.amount
-              })
-            }
-          }
-        } else {
-          items.push({
-            name: carName,
-            category: 'Day pricing',
-            amount: itemSavings
-          })
-        }
-      }
     }
 
     return items
@@ -448,7 +384,7 @@ export const CartSummary: FC = () => {
                 You saved ${totalSavings.toLocaleString()}
               </span>
               <span className={styles.summary__savingsSubtitle}>
-                Included in your prices + applied discounts
+                Applied discounts
               </span>
             </div>
             {savingsBreakdownItems.length > 0 && (

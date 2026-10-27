@@ -370,11 +370,7 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
 
     const earlyPerUnit = cardState.selectedDaySchedule?.discountAmount ?? 0
     const earlySavings = earlyPerUnit * quantity
-    const daySavings = Math.max(0, carSavings - earlySavings)
     const savingsBreakdown: Array<{ category: string; amount: number }> = []
-    if (daySavings > 0) {
-      savingsBreakdown.push({ category: 'Day pricing', amount: daySavings })
-    }
     if (earlySavings > 0) {
       const label =
         cardState.selectedDaySchedule?.discountLabel || 'Early sessions'
