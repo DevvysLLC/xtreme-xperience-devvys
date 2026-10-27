@@ -30,72 +30,19 @@ export const DateSelect: FC<Props> = ({ label }) => {
   const { contents } = data ?? {}
   const hasCartItems = (contents?.totalItems ?? 0) > 0
   const { showDialog } = useDialog()
-  const { state, setSelectedDayDate } = useBookingWizardState()
+  const { setSelectedDayDate } = useBookingWizardState()
   const events = booking?.track?.model?.events ?? []
   const selectedEventId = booking?.event?.model?.id ?? ''
-  const currentEventStartDate = booking?.event?.model?.startDate
   const previousEventIdRef = useRef<string | undefined>(selectedEventId)
 
-  // Initialize selectedDay when event changes or when eventData is first loaded
-  // Reset to first available day when switching events, but don't override user selections within the same event
+  // Reset selected day on event change so choose-date-and-car can select the next available day
   useEffect(() => {
     const eventChanged = previousEventIdRef.current !== selectedEventId
-    const schedules = state.eventData?.schedules
-
-    if (!schedules || schedules.length === 0) {
-      // Don't consume eventChanged flag until schedules are available
-      return
+    if (eventChanged) {
+      previousEventIdRef.current = selectedEventId
+      setSelectedDayDate(null)
     }
-
-    // Update ref only after schedules are available so we don't lose the
-    // eventChanged flag while waiting for new event data to load
-    previousEventIdRef.current = selectedEventId
-
-    // Check if current selectedDay is stale (not present in current schedules)
-    const selectedDayIsStale =
-      state.selectedDayDate !== null &&
-      !schedules.some((day) => day.date === state.selectedDayDate)
-
-    // Prefer the event's start date if available; otherwise pick the next available day
-    const isScheduleAvailable = (day: (typeof schedules)[number]) =>
-      day.schedules?.some((schedule) => {
-        if (schedule.scheduleStatus !== 'Available') {
-          return false
-        }
-        return (schedule.seatTypes ?? []).some(
-          (seat) => seat != null && (seat.available ?? 0) > 0
-        )
-      })
-
-    const startDateMatch = currentEventStartDate
-      ? schedules.find((day) => day.date === currentEventStartDate)
-      : null
-
-    const matchingDay =
-      (startDateMatch && isScheduleAvailable(startDateMatch)
-        ? startDateMatch
-        : null) ??
-      schedules.find(isScheduleAvailable) ??
-      startDateMatch ??
-      schedules[0]
-
-    // Set selectedDay if:
-    // 1. Event changed (reset to new event's first available day)
-    // 2. No selectedDay is set yet (initial load)
-    // 3. Current selectedDay is stale (not in current schedules)
-    if (
-      matchingDay &&
-      (eventChanged || !state.selectedDayDate || selectedDayIsStale)
-    ) {
-      setSelectedDayDate(matchingDay.date)
-    }
-  }, [
-    selectedEventId,
-    currentEventStartDate,
-    state.eventData?.schedules,
-    state.selectedDayDate,
-    setSelectedDayDate
-  ])
+  }, [selectedEventId, setSelectedDayDate])
 
   const handleChange = async (newEventId: string) => {
     const isNewEvent = newEventId !== selectedEventId

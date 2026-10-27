@@ -196,6 +196,26 @@ export const BookingWizardProvider = ({ children }: Props) => {
     () => new Set((resolvedEventData?.schedules ?? []).map((day) => day.date)),
     [resolvedEventData?.schedules]
   )
+
+  const isScheduleDayAvailable = useCallback(
+    (date: string) => {
+      const dayObj = resolvedEventData?.schedules?.find(
+        (day) => day.date === date
+      )
+      return (
+        dayObj?.schedules?.some((schedule) => {
+          if (schedule.scheduleStatus !== RocketRezScheduleStatus.AVAILABLE) {
+            return false
+          }
+          return (schedule.seatTypes ?? []).some(
+            (seat) => seat != null && (seat.available ?? 0) > 0
+          )
+        }) ?? false
+      )
+    },
+    [resolvedEventData?.schedules]
+  )
+
   const selectedDayDate = useMemo(() => {
     if (
       selectedDayDateOverride !== null &&
@@ -205,7 +225,8 @@ export const BookingWizardProvider = ({ children }: Props) => {
     }
     if (
       persistedSelectedDayDate !== null &&
-      availableScheduleDates.has(persistedSelectedDayDate)
+      availableScheduleDates.has(persistedSelectedDayDate) &&
+      isScheduleDayAvailable(persistedSelectedDayDate)
     ) {
       return persistedSelectedDayDate
     }
@@ -214,7 +235,8 @@ export const BookingWizardProvider = ({ children }: Props) => {
     selectedDayDateOverride,
     persistedSelectedDayDate,
     firstScheduleDate,
-    availableScheduleDates
+    availableScheduleDates,
+    isScheduleDayAvailable
   ])
 
   const selectedDay = useMemo(
