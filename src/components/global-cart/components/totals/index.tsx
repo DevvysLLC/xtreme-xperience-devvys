@@ -40,9 +40,11 @@ export const CartTotals: FC = () => {
   const discountTotal = cart?.cartData?.discountTotal ?? 0
   const variableFeeTotal = cart?.cartData?.variableFeeTotal ?? 0
   const total = cart?.cartData?.total ?? 0
-  const houseServiceChargeTotal = cart?.cartData?.houseServiceChargeTotal ?? 0
-  const feeTotal = variableFeeTotal + houseServiceChargeTotal
-  const roundedFeeTotal = Math.ceil(feeTotal)
+  const houseServiceChargeTotal = (cart?.cartData?.lineItems ?? []).reduce(
+    (acc, lineItem) => acc + (lineItem.houseServiceChargeTotal ?? 0),
+    0
+  )
+  const roundedVariableFeeTotal = Math.ceil(variableFeeTotal)
 
   return (
     <div className={styles.cartTotals}>
@@ -77,14 +79,31 @@ export const CartTotals: FC = () => {
         </div>
       )}
 
-      {roundedFeeTotal > 0 && (
+      {houseServiceChargeTotal > 0 && (
+        <div className={styles.cartTotals__row}>
+          <span className={styles.cartTotals__label}>
+            {t('summary.house_service_charge')}
+          </span>
+          <span className={styles.cartTotals__value}>
+            <CoreRocketRezPrice
+              data={{
+                id: 'house-service-charge-price',
+                price: houseServiceChargeTotal
+              }}
+              valueInCents={false}
+            />
+          </span>
+        </div>
+      )}
+
+      {roundedVariableFeeTotal > 0 && (
         <div className={styles.cartTotals__row}>
           <span className={styles.cartTotals__label}>{t('totals.fees')}</span>
           <span className={styles.cartTotals__value}>
             <CoreRocketRezPrice
               data={{
                 id: 'fees-price',
-                price: roundedFeeTotal
+                price: roundedVariableFeeTotal
               }}
               valueInCents={false}
             />
