@@ -98,7 +98,7 @@ export const CartTotals: FC = () => {
 
       {roundedVariableFeeTotal > 0 && (
         <div className={styles.cartTotals__row}>
-          <span className={styles.cartTotals__label}>{t('totals.fees')}</span>
+          <span className={styles.cartTotals__label}>{t('summary.ticketing_fee')}</span>
           <span className={styles.cartTotals__value}>
             <CoreRocketRezPrice
               data={{
