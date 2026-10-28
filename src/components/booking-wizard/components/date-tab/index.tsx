@@ -42,25 +42,11 @@ export const DayTab: React.FC<Props> = ({
   }, [schedules, rateIds, lowestAvailablePriceFromRates, isMulticar])
 
   const displayBadge = useMemo(() => {
-    if (badgeLabel) {
-      return badgeLabel
-    }
-    if (
-      lowestPrice &&
-      lowestPrice.compareAtPrice &&
-      lowestPrice.compareAtPrice > lowestPrice.price
-    ) {
-      const percent = Math.round(
-        ((lowestPrice.compareAtPrice - lowestPrice.price) /
-          lowestPrice.compareAtPrice) *
-          100
-      )
-      if (percent > 0) {
-        return `${percent}% OFF`
-      }
+    if (badgeLabel && badgeLabel.trim()) {
+      return badgeLabel.trim()
     }
     return undefined
-  }, [badgeLabel, lowestPrice])
+  }, [badgeLabel])
 
   const isSoldOut = !lowestPrice
 

@@ -9,9 +9,11 @@ export type BookingDiscountRule = {
   applyToAllEvents?: boolean | null
   events?: Array<{ id: string }> | null
   supercars?: Array<{ id: string }> | null
+  packages?: Array<{ id: string }> | null
+  addons?: Array<{ id: string }> | null
   excludedTracks?: Array<{ id: string; [key: string]: unknown }> | null
   daysOfWeek?: 'all' | 'weekdays' | 'monday_thursday' | 'weekends' | 'friday' | 'saturday' | 'sunday' | string | null
-  targetType?: 'all' | 'supercars' | 'ride_along' | string | null
+  targetType?: 'all' | 'supercars' | 'ride_along' | 'packages' | 'addons' | 'gift_cards' | string | null
   compareAtOverride?: number | null
   badgeLabel?: string | null
 }
@@ -154,6 +156,7 @@ export const getDateDiscountRule = ({
   trackId,
   supercarId,
   isRideAlong,
+  isMulticar,
   rules
 }: {
   date: string
@@ -161,6 +164,7 @@ export const getDateDiscountRule = ({
   trackId?: string | null
   supercarId?: string | null
   isRideAlong?: boolean | null
+  isMulticar?: boolean | null
   rules?: BookingDiscountRule[] | null
 }): { badgeLabel: string; discountPercent?: number; rule: BookingDiscountRule } | null => {
   if (!rules || rules.length === 0) {
@@ -191,7 +195,13 @@ export const getDateDiscountRule = ({
     if (rule.targetType === 'ride_along' && !isRideAlong) {
       continue
     }
-    if (rule.targetType === 'supercars' && isRideAlong) {
+    if (rule.targetType === 'supercars' && (isRideAlong || isMulticar)) {
+      continue
+    }
+    if (rule.targetType === 'packages' && !isMulticar) {
+      continue
+    }
+    if (rule.targetType === 'addons' || rule.targetType === 'gift_cards') {
       continue
     }
 
@@ -202,10 +212,21 @@ export const getDateDiscountRule = ({
       }
     }
 
-    // 4. Car filter
-    if (supercarId && rule.supercars && rule.supercars.length > 0) {
-      if (!rule.supercars.some((s) => s.id === supercarId)) {
-        continue
+    // 4. Car / Package filter
+    if (isMulticar) {
+      const packageList = (rule.packages && rule.packages.length > 0)
+        ? rule.packages
+        : (rule.targetType === 'packages' ? rule.supercars : null)
+      if (packageList && packageList.length > 0) {
+        if (!supercarId || !packageList.some((p) => p.id === supercarId)) {
+          continue
+        }
+      }
+    } else {
+      if (supercarId && rule.supercars && rule.supercars.length > 0) {
+        if (!rule.supercars.some((s) => s.id === supercarId)) {
+          continue
+        }
       }
     }
 
@@ -214,18 +235,11 @@ export const getDateDiscountRule = ({
       continue
     }
 
-    // Determine badge label
-    let badge = rule.badgeLabel ?? undefined
+    // Determine badge label - only show if explicit non-empty badgeLabel is provided
+    const badge = rule.badgeLabel && rule.badgeLabel.trim() ? rule.badgeLabel.trim() : undefined
     let percent: number | undefined
-    if (rule.discountValue && rule.discountValue > 0) {
-      if (rule.discountType === 'percentage') {
-        percent = Math.round(rule.discountValue)
-        if (!badge) {
-          badge = `${percent}% OFF`
-        }
-      } else if (!badge) {
-        badge = `$${Math.round(rule.discountValue)} OFF`
-      }
+    if (rule.discountValue && rule.discountValue > 0 && rule.discountType === 'percentage') {
+      percent = Math.round(rule.discountValue)
     }
 
     if (badge) {
@@ -250,6 +264,7 @@ export const getScheduleDiscount = ({
   trackId,
   supercarId,
   isRideAlong,
+  isMulticar,
   rules
 }: {
   scheduleStartTime?: string | null
@@ -260,6 +275,7 @@ export const getScheduleDiscount = ({
   trackId?: string | null
   supercarId?: string | null
   isRideAlong?: boolean | null
+  isMulticar?: boolean | null
   rules?: BookingDiscountRule[] | null
 }): ScheduleDiscountResult => {
   if (basePrice === null || !rules || rules.length === 0) {
@@ -300,7 +316,13 @@ export const getScheduleDiscount = ({
     if (rule.targetType === 'ride_along' && !isRideAlong) {
       continue
     }
-    if (rule.targetType === 'supercars' && isRideAlong) {
+    if (rule.targetType === 'supercars' && (isRideAlong || isMulticar)) {
+      continue
+    }
+    if (rule.targetType === 'packages' && !isMulticar) {
+      continue
+    }
+    if (rule.targetType === 'addons' || rule.targetType === 'gift_cards') {
       continue
     }
 
@@ -311,10 +333,21 @@ export const getScheduleDiscount = ({
       }
     }
 
-    // 4. Car filter
-    if (rule.supercars && rule.supercars.length > 0) {
-      if (!supercarId || !rule.supercars.some((s) => s.id === supercarId)) {
-        continue
+    // 4. Car / Package filter
+    if (isMulticar) {
+      const packageList = (rule.packages && rule.packages.length > 0)
+        ? rule.packages
+        : (rule.targetType === 'packages' ? rule.supercars : null)
+      if (packageList && packageList.length > 0) {
+        if (!supercarId || !packageList.some((p) => p.id === supercarId)) {
+          continue
+        }
+      }
+    } else {
+      if (rule.supercars && rule.supercars.length > 0) {
+        if (!supercarId || !rule.supercars.some((s) => s.id === supercarId)) {
+          continue
+        }
       }
     }
 
@@ -378,7 +411,7 @@ export const getScheduleDiscount = ({
       return {
         price: calculatedPrice,
         compareAtPrice: compareAt,
-        badgeLabel: rule.badgeLabel ?? null,
+        badgeLabel: rule.badgeLabel && rule.badgeLabel.trim() ? rule.badgeLabel.trim() : null,
         isDiscounted: true
       }
     }
@@ -391,3 +424,74 @@ export const getScheduleDiscount = ({
   }
 }
 
+
+export type AddonDiscountResult = {
+  price: number
+  compareAtPrice: number | null
+  badgeLabel?: string | null
+  isDiscounted: boolean
+}
+
+export const getAddonDiscount = ({
+  addonId,
+  basePrice,
+  rules
+}: {
+  addonId?: string | null
+  basePrice: number | null
+  rules?: BookingDiscountRule[] | null
+}): AddonDiscountResult => {
+  if (basePrice === null || !rules || rules.length === 0) {
+    return {
+      price: basePrice ?? 0,
+      compareAtPrice: null,
+      badgeLabel: null,
+      isDiscounted: false
+    }
+  }
+
+  for (const rule of rules) {
+    if (rule.targetType && rule.targetType !== 'all' && rule.targetType !== 'addons') {
+      continue
+    }
+
+    if (rule.addons && rule.addons.length > 0) {
+      if (!addonId || !rule.addons.some((a) => a.id === addonId)) {
+        continue
+      }
+    }
+
+    const discountVal = rule.discountValue ?? 0
+    if (discountVal <= 0 && !rule.compareAtOverride) {
+      continue
+    }
+
+    let calculatedPrice = basePrice
+    if (rule.discountType === 'percentage' && discountVal > 0) {
+      const discountAmount = (calculatedPrice * discountVal) / 100
+      calculatedPrice = Math.max(0, Math.round(calculatedPrice - discountAmount))
+    } else if (discountVal > 0) {
+      const dollarDiscount = discountVal > 1000 ? discountVal / 100 : discountVal
+      calculatedPrice = Math.max(0, Math.round(calculatedPrice - dollarDiscount))
+    }
+
+    const hasDiscount = calculatedPrice < basePrice
+    const hasOverride = rule.compareAtOverride != null && rule.compareAtOverride > calculatedPrice
+
+    if (hasDiscount || hasOverride) {
+      return {
+        price: calculatedPrice,
+        compareAtPrice: rule.compareAtOverride != null ? rule.compareAtOverride : basePrice,
+        badgeLabel: rule.badgeLabel && rule.badgeLabel.trim() ? rule.badgeLabel.trim() : null,
+        isDiscounted: true
+      }
+    }
+  }
+
+  return {
+    price: basePrice ?? 0,
+    compareAtPrice: null,
+    badgeLabel: null,
+    isDiscounted: false
+  }
+}

@@ -159,6 +159,7 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
             trackId,
             supercarId: String(supercarId),
             isRideAlong,
+            isMulticar,
             rules: discountRules
           })
 
@@ -223,7 +224,7 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
                       rawPrice: rawSchedulePrice,
                       discountAmount,
                       discountLabel:
-                        discountResult.badgeLabel || 'Early sessions',
+                        discountResult.badgeLabel || null,
                       rateTypePrice: rateTypePrice
                         ? {
                             ...rateTypePrice,

@@ -56,7 +56,7 @@ export class BookingConfigService {
       }
       return (promo.rules ?? []).map((rule) => ({
         ...rule,
-        badgeLabel: rule.badgeLabel || promo.badgeLabel || null
+        badgeLabel: (rule.badgeLabel && rule.badgeLabel.trim()) || null
       }))
     })
 

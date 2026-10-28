@@ -11,6 +11,8 @@ import { CoreCta } from '../core-cta'
 import { CoreImage } from '../core-image'
 import { CorePrice } from '../core-price'
 import { CoreTextMarkdown } from '../core-text-markdown'
+import { useOptionalBookingWizardState } from '../booking-wizard/context'
+import { getAddonDiscount } from '../../utils/get-schedule-discount'
 import styles from './style.module.scss'
 
 export type CoreAddonsCardProps = {
@@ -39,7 +41,37 @@ export const CoreAddonsCard: FC<CoreAddonsCardProps> = (props) => {
   const parsedType = RocketRezProductTypeSchema.safeParse(rocketRezType)
   const validProductType = parsedType.success ? parsedType.data : null
 
-  if (!title || !price) {
+  const wizardContext = useOptionalBookingWizardState()
+  const discountRules = wizardContext?.state?.configData?.discountRules
+
+  const addonDiscount = getAddonDiscount({
+    addonId: props.addon?.id,
+    basePrice: price?.price ?? null,
+    rules: discountRules
+  })
+
+  const displayPriceData = price
+    ? addonDiscount.isDiscounted
+      ? {
+          ...price,
+          price: addonDiscount.price,
+          compareAtPrice: addonDiscount.compareAtPrice
+        }
+      : price
+    : null
+
+  const activeBadge =
+    addonDiscount.badgeLabel && addonDiscount.isDiscounted
+      ? {
+          id: `discount-badge-${id ?? 'addon'}`,
+          __typename: 'CoreBadgeRecord' as const,
+          label: addonDiscount.badgeLabel,
+          backgroundColor: null,
+          color: null
+        }
+      : badge
+
+  if (!title || !price || !displayPriceData) {
     return null
   }
 
@@ -52,9 +84,9 @@ export const CoreAddonsCard: FC<CoreAddonsCardProps> = (props) => {
   return (
     <article className={clsx(styles.card, layout && styles[`card--${layout}`])}>
       <div className={styles.card__media}>
-        {badge && (
+        {activeBadge && (
           <div className={styles.card__badge}>
-            <CoreBadge data={badge} />
+            <CoreBadge data={activeBadge} />
           </div>
         )}
 
@@ -86,7 +118,7 @@ export const CoreAddonsCard: FC<CoreAddonsCardProps> = (props) => {
           <div className={styles.card__header}>
             <h2 className={styles.card__title}>{title}</h2>
 
-            <CorePrice data={price} showPrefix={true} />
+            <CorePrice data={displayPriceData} showPrefix={true} />
           </div>
 
           {description && (

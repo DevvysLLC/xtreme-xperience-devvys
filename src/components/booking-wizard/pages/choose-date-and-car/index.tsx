@@ -339,6 +339,7 @@ export const DateAndCarPage = () => {
                   date: day.date,
                   eventId: state.selectedEvent?.id,
                   trackId,
+                  isMulticar: isMulticarGroup,
                   rules: state.configData?.discountRules
                 })
 

@@ -230,6 +230,7 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
         trackId,
         supercarId: String(supercar.id),
         isRideAlong: bookingSupercar.isRideAlong,
+        isMulticar,
         rules: discountRules
       })
 
@@ -256,6 +257,7 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
     trackId,
     supercar.id,
     bookingSupercar.isRideAlong,
+    isMulticar,
     discountRules
   ])
 
