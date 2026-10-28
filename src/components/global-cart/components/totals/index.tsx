@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 import type { FC } from 'react'
-import { useCart } from '../../../../features/cart'
+import { useCart, useCartLineItemsTotal } from '../../../../features/cart'
 import { CoreRocketRezPrice } from '../../../core-rocketrez-price'
 import styles from './style.module.scss'
 
@@ -17,6 +17,8 @@ const getTaxAmount = (tax: unknown): number => {
 export const CartTotals: FC = () => {
   const t = useTranslations('global_cart')
   const { data: cart } = useCart()
+  const lineItemsSubtotal = useCartLineItemsTotal(cart?.cartData?.lineItems)
+  const subtotal = lineItemsSubtotal > 0 ? lineItemsSubtotal : (cart?.cartData?.subTotal ?? 0)
   const cartTaxFromBreakdown = (cart?.cartData?.taxes ?? []).reduce(
     (sum, tax) => sum + getTaxAmount(tax),
     0
@@ -38,7 +40,9 @@ export const CartTotals: FC = () => {
   const discountTotal = cart?.cartData?.discountTotal ?? 0
   const variableFeeTotal = cart?.cartData?.variableFeeTotal ?? 0
   const total = cart?.cartData?.total ?? 0
-  const roundedVariableFeeTotal = Math.ceil(variableFeeTotal)
+  const houseServiceChargeTotal = cart?.cartData?.houseServiceChargeTotal ?? 0
+  const feeTotal = variableFeeTotal + houseServiceChargeTotal
+  const roundedFeeTotal = Math.ceil(feeTotal)
 
   return (
     <div className={styles.cartTotals}>
@@ -48,7 +52,7 @@ export const CartTotals: FC = () => {
           <CoreRocketRezPrice
             data={{
               id: 'subtotal-price',
-              price: cart?.cartData?.subTotal ?? 0
+              price: subtotal
             }}
             valueInCents={false}
           />
@@ -73,14 +77,14 @@ export const CartTotals: FC = () => {
         </div>
       )}
 
-      {roundedVariableFeeTotal > 0 && (
+      {roundedFeeTotal > 0 && (
         <div className={styles.cartTotals__row}>
           <span className={styles.cartTotals__label}>{t('totals.fees')}</span>
           <span className={styles.cartTotals__value}>
             <CoreRocketRezPrice
               data={{
                 id: 'fees-price',
-                price: roundedVariableFeeTotal
+                price: roundedFeeTotal
               }}
               valueInCents={false}
             />
