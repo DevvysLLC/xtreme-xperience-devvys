@@ -334,6 +334,8 @@ export type BookingDiscountRuleRecord = RecordInterface & {
   id: Scalars['ItemId']['output'];
   startTime: Maybe<Scalars['String']['output']>;
   supercars: Array<SupercarRecord>;
+  packages?: Array<SupercarRecord>;
+  addons?: Array<AddonRecord>;
   targetType: Maybe<Scalars['String']['output']>;
   timeWindow: Scalars['String']['output'];
   title: Scalars['String']['output'];
@@ -4749,6 +4751,8 @@ export type SectionSupercarFleetGridRecord = RecordInterface & {
   id: Scalars['ItemId']['output'];
   supercarGridConfig: Maybe<SectionSupercarGridConfigRecord>;
   supercars: Array<SupercarRecord>;
+  packages?: Array<SupercarRecord>;
+  addons?: Array<AddonRecord>;
   title: Maybe<Scalars['String']['output']>;
 };
 
@@ -4851,6 +4855,8 @@ export type SectionSupercarShowcaseRecord = RecordInterface & {
   config: Maybe<SectionConfigRecord>;
   id: Scalars['ItemId']['output'];
   supercars: Array<SupercarRecord>;
+  packages?: Array<SupercarRecord>;
+  addons?: Array<AddonRecord>;
   title: Maybe<Scalars['String']['output']>;
   titleColor: Maybe<ColorField>;
 };
@@ -5203,6 +5209,8 @@ export type SupercarModelRecord = RecordInterface & {
   specModalDescription: Maybe<Scalars['String']['output']>;
   specModalImage: Maybe<CoreImageRecord>;
   supercars: Array<SupercarRecord>;
+  packages?: Array<SupercarRecord>;
+  addons?: Array<AddonRecord>;
   tagline: Maybe<Scalars['String']['output']>;
   thumbnail: Maybe<CoreImageRecord>;
   title: Maybe<Scalars['String']['output']>;
@@ -5466,6 +5474,8 @@ export type TrackModelRecord = RecordInterface & {
   specTitle: Maybe<Scalars['String']['output']>;
   state: Maybe<Scalars['String']['output']>;
   supercars: Array<SupercarRecord>;
+  packages?: Array<SupercarRecord>;
+  addons?: Array<AddonRecord>;
   thumbnail: Maybe<CoreImageRecord>;
   title: Maybe<Scalars['String']['output']>;
   trackSvg: Maybe<FileField>;
@@ -6248,6 +6258,12 @@ export const BookingDiscountRuleFragmentDoc = /*#__PURE__*/ gql`
     id
   }
   supercars {
+    id
+  }
+  packages {
+    id
+  }
+  addons {
     id
   }
 }
