@@ -309,6 +309,7 @@ type BookingDiscountRuleRecord implements RecordInterface {
   _unpublishingScheduledAt: DateTime
   _updatedAt: DateTime!
   applyToAllEvents: BooleanType!
+  addons: [AddonRecord!]!
   badgeLabel: String
   cardBadgeBackgroundColor: ColorField
   cardBadgeTextColor: ColorField
@@ -321,7 +322,9 @@ type BookingDiscountRuleRecord implements RecordInterface {
   endTime: String
   events: [EventRecord!]!
   excludedTracks: [TrackRecord!]!
+  giftCards: [AddonRecord!]!
   id: ItemId!
+  packages: [SupercarRecord!]!
   startTime: String
   supercars: [SupercarRecord!]!
   targetType: String

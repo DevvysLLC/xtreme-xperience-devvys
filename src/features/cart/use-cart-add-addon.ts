@@ -21,6 +21,8 @@ export type UseCartAddAddonInput = {
   addon: AddonFragment
   lineItem: RocketRezAddLineItemAddon
   date?: string | null
+  referenceValue?: number | null
+  savings?: number | null
 }
 
 export const useCartAddAddon = (): UseMutationResult<
@@ -48,7 +50,9 @@ export const useCartAddAddon = (): UseMutationResult<
       const metadata = getAddToCartLineItemAddonMetadata({
         addon: input.addon,
         lineItem: input.lineItem,
-        date: input.date ?? null
+        date: input.date ?? null,
+        referenceValue: input.referenceValue ?? null,
+        savings: input.savings ?? null
       })
       const current =
         qc.getQueryData<CartState>(CART_QUERY_KEY) ?? initialCartState
@@ -59,6 +63,15 @@ export const useCartAddAddon = (): UseMutationResult<
         const next = {
           ...current,
           metadata: [...current.metadata, metadata]
+        }
+        qc.setQueryData<CartState>(CART_QUERY_KEY, next)
+        cartRepository.write(next)
+      } else if (input.referenceValue != null || input.savings != null) {
+        const next = {
+          ...current,
+          metadata: current.metadata.map((meta) =>
+            meta.key === metadata.key ? metadata : meta
+          )
         }
         qc.setQueryData<CartState>(CART_QUERY_KEY, next)
         cartRepository.write(next)

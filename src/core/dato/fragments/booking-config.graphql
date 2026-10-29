@@ -98,6 +98,9 @@ fragment BookingDiscountRule on BookingDiscountRuleRecord {
   addons {
     id
   }
+  giftCards {
+    id
+  }
 }
 
 fragment BookingConfig on BookingConfigRecord {

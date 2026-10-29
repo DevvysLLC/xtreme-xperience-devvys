@@ -11,6 +11,7 @@ import { CoreCta } from '../core-cta'
 import { CoreImage } from '../core-image'
 import { CorePrice } from '../core-price'
 import { CoreTextMarkdown } from '../core-text-markdown'
+import { useBookingConfig } from '../../features/booking'
 import { useOptionalBookingWizardState } from '../booking-wizard/context'
 import { getAddonDiscount } from '../../utils/get-schedule-discount'
 import styles from './style.module.scss'
@@ -42,13 +43,36 @@ export const CoreAddonsCard: FC<CoreAddonsCardProps> = (props) => {
   const validProductType = parsedType.success ? parsedType.data : null
 
   const wizardContext = useOptionalBookingWizardState()
-  const discountRules = wizardContext?.state?.configData?.discountRules
+  const { data: bookingConfig } = useBookingConfig({
+    enabled: !wizardContext?.state?.configData
+  })
+  const discountRules =
+    wizardContext?.state?.configData?.discountRules ??
+    bookingConfig?.discountRules
+
+  const isGiftCard =
+    rocketRezType?.toLowerCase() === 'giftcard' &&
+    Boolean(title?.toLowerCase().includes('gift card'))
 
   const addonDiscount = getAddonDiscount({
     addonId: props.addon?.id,
     basePrice: price?.price ?? null,
+    existingCompareAtPrice: price?.compareAtPrice ?? null,
+    isGiftCard,
+    valueInCents: true,
     rules: discountRules
   })
+
+  const unitSavings =
+    addonDiscount.isDiscounted &&
+    price?.price != null &&
+    addonDiscount.price < price.price
+      ? Math.max(0, Math.round((price.price - addonDiscount.price) / 100))
+      : null
+  const unitReferenceValue =
+    unitSavings != null && unitSavings > 0 && price?.price != null
+      ? Math.round(price.price / 100)
+      : null
 
   const displayPriceData = price
     ? addonDiscount.isDiscounted
@@ -66,18 +90,14 @@ export const CoreAddonsCard: FC<CoreAddonsCardProps> = (props) => {
           id: `discount-badge-${id ?? 'addon'}`,
           __typename: 'CoreBadgeRecord' as const,
           label: addonDiscount.badgeLabel,
-          backgroundColor: addonDiscount.cardBadgeBackgroundColor
-            ? {
-                __typename: 'ColorField' as const,
-                hex: addonDiscount.cardBadgeBackgroundColor
-              }
-            : null,
-          color: addonDiscount.cardBadgeTextColor
-            ? {
-                __typename: 'ColorField' as const,
-                hex: addonDiscount.cardBadgeTextColor
-              }
-            : null
+          backgroundColor: {
+            __typename: 'ColorField' as const,
+            hex: addonDiscount.cardBadgeBackgroundColor || '#D32F2F'
+          },
+          color: {
+            __typename: 'ColorField' as const,
+            hex: addonDiscount.cardBadgeTextColor || '#FFFFFF'
+          }
         }
       : badge
 
@@ -162,6 +182,8 @@ export const CoreAddonsCard: FC<CoreAddonsCardProps> = (props) => {
               layoutType="button"
               sizeType="small"
               showQuantitySelector={props.showQuantitySelector}
+              unitReferenceValue={unitReferenceValue}
+              unitSavings={unitSavings}
             />
           ) : null}
         </div>

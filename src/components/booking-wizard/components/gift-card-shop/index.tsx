@@ -3,7 +3,7 @@
 import clsx from 'clsx'
 import Image from 'next/image'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useBookingGiftCards } from '../../../../features/booking'
+import { useBookingConfig, useBookingGiftCards } from '../../../../features/booking'
 import { useCartAddAddon } from '../../../../features/cart'
 import { useToast } from '../../../../features/toast'
 import { DRAWER_REQUEST_OPEN_MESSAGE_NAME } from '../../../../core/messaging/main/messages/open-drawer'
@@ -11,6 +11,8 @@ import { useMainBus } from '../../../../core/messaging/main/react'
 import { CART_DRAWER_ID } from '../../../global-cart/layouts/drawer'
 import type { AddonFragment } from '../../../../core/dato/fragments/addon.typegen'
 import { RocketRezProductType } from '../../../../io/schemas'
+import { getAddonDiscount } from '../../../../utils/get-schedule-discount'
+import { useOptionalBookingWizardState } from '../../context'
 import styles from './style.module.scss'
 
 export const FALLBACK_GIFT_OPTIONS: [number, string][] = [
@@ -32,6 +34,11 @@ type Props = {
 
 type ResolvedGiftItem = {
   amount: number
+  discountedAmount: number
+  isDiscounted: boolean
+  badgeLabel: string | null
+  cardBadgeBackgroundColor: string | null
+  cardBadgeTextColor: string | null
   description: string
   addon?: AddonFragment
   rocketRezId?: string
@@ -39,6 +46,13 @@ type ResolvedGiftItem = {
 
 export const GiftCardShop: React.FC<Props> = ({ className }) => {
   const { data: cmsGiftCards } = useBookingGiftCards()
+  const wizardContext = useOptionalBookingWizardState()
+  const { data: bookingConfig } = useBookingConfig({
+    enabled: !wizardContext?.state?.configData
+  })
+  const discountRules =
+    wizardContext?.state?.configData?.discountRules ??
+    bookingConfig?.discountRules
   const { mutateAsync, isPending } = useCartAddAddon()
   const { showToast } = useToast()
   const bus = useMainBus(DRAWER_REQUEST_OPEN_MESSAGE_NAME, () => {})
@@ -55,8 +69,21 @@ export const GiftCardShop: React.FC<Props> = ({ className }) => {
           const price = rawPrice >= 10000 ? Math.round(rawPrice / 100) : rawPrice
           const fallbackDesc =
             FALLBACK_GIFT_OPTIONS.find(([val]) => val === price)?.[1] ?? ''
+          const discount = getAddonDiscount({
+            addonId: addon.id,
+            basePrice: price,
+            isGiftCard: true,
+            valueInCents: false,
+            rules: discountRules
+          })
+          const isDiscounted = discount.isDiscounted && discount.price < price
           return {
             amount: price,
+            discountedAmount: isDiscounted ? discount.price : price,
+            isDiscounted,
+            badgeLabel: discount.isDiscounted ? (discount.badgeLabel ?? null) : null,
+            cardBadgeBackgroundColor: discount.cardBadgeBackgroundColor ?? null,
+            cardBadgeTextColor: discount.cardBadgeTextColor ?? null,
             description: addon.model?.description || fallbackDesc,
             addon,
             rocketRezId: addon.model?.rocketRezId ?? price.toString()
@@ -66,12 +93,27 @@ export const GiftCardShop: React.FC<Props> = ({ className }) => {
         .sort((a, b) => a.amount - b.amount)
     }
 
-    return FALLBACK_GIFT_OPTIONS.map(([val, desc]) => ({
-      amount: val,
-      description: desc,
-      rocketRezId: val.toString()
-    }))
-  }, [cmsGiftCards])
+    return FALLBACK_GIFT_OPTIONS.map(([val, desc]) => {
+      const discount = getAddonDiscount({
+        addonId: null,
+        basePrice: val,
+        isGiftCard: true,
+        valueInCents: false,
+        rules: discountRules
+      })
+      const isDiscounted = discount.isDiscounted && discount.price < val
+      return {
+        amount: val,
+        discountedAmount: isDiscounted ? discount.price : val,
+        isDiscounted,
+        badgeLabel: discount.isDiscounted ? (discount.badgeLabel ?? null) : null,
+        cardBadgeBackgroundColor: discount.cardBadgeBackgroundColor ?? null,
+        cardBadgeTextColor: discount.cardBadgeTextColor ?? null,
+        description: desc,
+        rocketRezId: val.toString()
+      }
+    })
+  }, [cmsGiftCards, discountRules])
 
   const [selectedAmount, setSelectedAmount] = useState<number>(() => {
     return giftItems[0]?.amount ?? 100
@@ -97,6 +139,11 @@ export const GiftCardShop: React.FC<Props> = ({ className }) => {
 
   const defaultItem: ResolvedGiftItem = {
     amount: 100,
+    discountedAmount: 100,
+    isDiscounted: false,
+    badgeLabel: null,
+    cardBadgeBackgroundColor: null,
+    cardBadgeTextColor: null,
     description: FALLBACK_GIFT_OPTIONS[0]?.[1] ?? '',
     rocketRezId: '100'
   }
@@ -148,13 +195,18 @@ export const GiftCardShop: React.FC<Props> = ({ className }) => {
       : selectedAmount
 
     try {
+      const itemSavings = activeItem.isDiscounted
+        ? Math.max(0, activeItem.amount - activeItem.discountedAmount)
+        : null
       await mutateAsync({
         addon: addonToSubmit,
         lineItem: {
           id: lineItemId,
           type: RocketRezProductType.GIFTCARD,
           quantity: 1
-        }
+        },
+        referenceValue: itemSavings ? activeItem.amount : null,
+        savings: itemSavings
       })
       showToast({
         message: `$${selectedAmount.toLocaleString()} Gift Card added to your cart.`,
@@ -175,6 +227,18 @@ export const GiftCardShop: React.FC<Props> = ({ className }) => {
   return (
     <section className={clsx(styles.giftshop, className)}>
       <div className={styles.giftcard_image}>
+        {activeItem.badgeLabel && (
+          <span
+            className={styles.giftcard_badge}
+            style={{
+              backgroundColor:
+                activeItem.cardBadgeBackgroundColor || '#D32F2F',
+              color: activeItem.cardBadgeTextColor || '#FFFFFF'
+            }}
+          >
+            {activeItem.badgeLabel}
+          </span>
+        )}
         <Image
           src="/images/gift-card-template.webp"
           alt="Xtreme Xperience gift card — A special gift for you, featuring cars on a racetrack"
@@ -215,7 +279,27 @@ export const GiftCardShop: React.FC<Props> = ({ className }) => {
               aria-pressed={selectedAmount === item.amount}
               onClick={() => handleSelectAmount(item.amount)}
             >
-              ${item.amount.toLocaleString()}
+              {item.badgeLabel && (
+                <span
+                  className={styles.amount_button__badge}
+                  style={{
+                    backgroundColor: item.cardBadgeBackgroundColor || '#D32F2F',
+                    color: item.cardBadgeTextColor || '#FFFFFF'
+                  }}
+                >
+                  {item.badgeLabel}
+                </span>
+              )}
+              {item.isDiscounted ? (
+                <span className={styles.amount_button__prices}>
+                  <s className={styles.amount_button__compare}>
+                    ${item.amount.toLocaleString()}
+                  </s>
+                  <span>${item.discountedAmount.toLocaleString()}</span>
+                </span>
+              ) : (
+                `$${item.amount.toLocaleString()}`
+              )}
             </button>
           ))}
         </div>
@@ -241,7 +325,9 @@ export const GiftCardShop: React.FC<Props> = ({ className }) => {
         >
           {isPending
             ? 'ADDING...'
-            : `ADD $${selectedAmount.toLocaleString()} GIFT CARD →`}
+            : activeItem.isDiscounted
+              ? `ADD $${selectedAmount.toLocaleString()} GIFT CARD — $${activeItem.discountedAmount.toLocaleString()} →`
+              : `ADD $${selectedAmount.toLocaleString()} GIFT CARD →`}
         </button>
 
         <p className={styles.note}>

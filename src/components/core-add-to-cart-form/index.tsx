@@ -34,6 +34,8 @@ export type CoreAddToCartFormProps = {
   sizeType?: SizeType
   className?: string
   showQuantitySelector?: boolean
+  unitReferenceValue?: number | null
+  unitSavings?: number | null
   onSuccess?: () => void
   onError?: (error: Error) => void
 }
@@ -52,6 +54,8 @@ export const CoreAddToCartForm: FC<CoreAddToCartFormProps> = (props) => {
     sizeType = 'medium',
     className,
     showQuantitySelector = false,
+    unitReferenceValue = null,
+    unitSavings = null,
     onSuccess,
     onError
   } = props
@@ -94,10 +98,14 @@ export const CoreAddToCartForm: FC<CoreAddToCartFormProps> = (props) => {
         null
 
       try {
+        const qty = value.quantity ?? 1
         await mutateAsync({
           addon,
           lineItem,
-          date: selectedDateTime
+          date: selectedDateTime,
+          referenceValue:
+            unitReferenceValue != null ? unitReferenceValue * qty : null,
+          savings: unitSavings != null ? unitSavings * qty : null
         })
         showToast({
           message: t('notifications.added_to_cart'),

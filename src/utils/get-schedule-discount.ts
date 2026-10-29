@@ -11,6 +11,7 @@ export type BookingDiscountRule = {
   supercars?: Array<{ id: string }> | null
   packages?: Array<{ id: string }> | null
   addons?: Array<{ id: string }> | null
+  giftCards?: Array<{ id: string }> | null
   excludedTracks?: Array<{ id: string; [key: string]: unknown }> | null
   daysOfWeek?: 'all' | 'weekdays' | 'monday_thursday' | 'weekends' | 'friday' | 'saturday' | 'sunday' | string | null
   targetType?: 'all' | 'supercars' | 'ride_along' | 'packages' | 'addons' | 'gift_cards' | string | null
@@ -462,16 +463,22 @@ export type AddonDiscountResult = {
 export const getAddonDiscount = ({
   addonId,
   basePrice,
+  existingCompareAtPrice = null,
+  isGiftCard = false,
+  valueInCents = true,
   rules
 }: {
   addonId?: string | null
   basePrice: number | null
+  existingCompareAtPrice?: number | null
+  isGiftCard?: boolean
+  valueInCents?: boolean
   rules?: BookingDiscountRule[] | null
 }): AddonDiscountResult => {
   if (basePrice === null || !rules || rules.length === 0) {
     return {
       price: basePrice ?? 0,
-      compareAtPrice: null,
+      compareAtPrice: existingCompareAtPrice,
       badgeLabel: null,
       cardBadgeBackgroundColor: null,
       cardBadgeTextColor: null,
@@ -480,12 +487,46 @@ export const getAddonDiscount = ({
   }
 
   for (const rule of rules) {
-    if (rule.targetType && rule.targetType !== 'all' && rule.targetType !== 'addons') {
+    const targetType = rule.targetType || 'all'
+    if (
+      targetType !== 'all' &&
+      targetType !== 'addons' &&
+      targetType !== 'gift_cards'
+    ) {
       continue
     }
 
-    if (rule.addons && rule.addons.length > 0) {
-      if (!addonId || !rule.addons.some((a) => a.id === addonId)) {
+    const ruleAddons = rule.addons ?? []
+    const ruleGiftCards = rule.giftCards ?? []
+
+    if (targetType === 'addons') {
+      if (ruleAddons.length > 0) {
+        if (!addonId || !ruleAddons.some((a) => a.id === addonId)) {
+          continue
+        }
+      } else if (isGiftCard) {
+        continue
+      }
+    } else if (targetType === 'gift_cards') {
+      const targetGiftList =
+        ruleGiftCards.length > 0 ? ruleGiftCards : ruleAddons
+      if (targetGiftList.length > 0) {
+        if (!addonId || !targetGiftList.some((g) => g.id === addonId)) {
+          continue
+        }
+      } else if (!isGiftCard) {
+        continue
+      }
+    } else {
+      const combinedTargets = [...ruleAddons, ...ruleGiftCards]
+      if (combinedTargets.length > 0) {
+        if (!addonId || !combinedTargets.some((t) => t.id === addonId)) {
+          continue
+        }
+      } else if (
+        (rule.supercars && rule.supercars.length > 0) ||
+        (rule.packages && rule.packages.length > 0)
+      ) {
         continue
       }
     }
@@ -500,18 +541,41 @@ export const getAddonDiscount = ({
       const discountAmount = (calculatedPrice * discountVal) / 100
       calculatedPrice = Math.max(0, Math.round(calculatedPrice - discountAmount))
     } else if (discountVal > 0) {
-      const dollarDiscount = discountVal > 1000 ? discountVal / 100 : discountVal
-      calculatedPrice = Math.max(0, Math.round(calculatedPrice - dollarDiscount))
+      if (valueInCents) {
+        const centsDiscount = discountVal >= 100 ? discountVal : discountVal * 100
+        calculatedPrice = Math.max(0, Math.round(calculatedPrice - centsDiscount))
+      } else {
+        const dollarDiscount = discountVal >= 1000 ? discountVal / 100 : discountVal
+        calculatedPrice = Math.max(0, Math.round(calculatedPrice - dollarDiscount))
+      }
     }
 
+    const normalizedOverride =
+      rule.compareAtOverride != null
+        ? valueInCents
+          ? rule.compareAtOverride >= 100
+            ? rule.compareAtOverride
+            : rule.compareAtOverride * 100
+          : rule.compareAtOverride >= 1000
+            ? rule.compareAtOverride / 100
+            : rule.compareAtOverride
+        : null
+
     const hasDiscount = calculatedPrice < basePrice
-    const hasOverride = rule.compareAtOverride != null && rule.compareAtOverride > calculatedPrice
+    const hasOverride =
+      normalizedOverride != null && normalizedOverride > calculatedPrice
 
     if (hasDiscount || hasOverride) {
       return {
         price: calculatedPrice,
-        compareAtPrice: rule.compareAtOverride != null ? rule.compareAtOverride : basePrice,
-        badgeLabel: rule.badgeLabel && rule.badgeLabel.trim() ? rule.badgeLabel.trim() : null,
+        compareAtPrice:
+          normalizedOverride != null
+            ? normalizedOverride
+            : Math.max(basePrice, existingCompareAtPrice ?? 0),
+        badgeLabel:
+          rule.badgeLabel && rule.badgeLabel.trim()
+            ? rule.badgeLabel.trim()
+            : null,
         cardBadgeBackgroundColor: rule.cardBadgeBackgroundColor ?? null,
         cardBadgeTextColor: rule.cardBadgeTextColor ?? null,
         isDiscounted: true
@@ -521,7 +585,7 @@ export const getAddonDiscount = ({
 
   return {
     price: basePrice ?? 0,
-    compareAtPrice: null,
+    compareAtPrice: existingCompareAtPrice,
     badgeLabel: null,
     cardBadgeBackgroundColor: null,
     cardBadgeTextColor: null,

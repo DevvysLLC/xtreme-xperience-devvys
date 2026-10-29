@@ -10,12 +10,16 @@ type GetAddToCartAddonLineItemMetadataProps = {
   addon: AddonFragment
   lineItem: RocketRezAddLineItemAddon
   date?: string | null
+  referenceValue?: number | null
+  savings?: number | null
 }
 
 export const getAddToCartLineItemAddonMetadata = ({
   addon,
   lineItem,
-  date
+  date,
+  referenceValue,
+  savings
 }: GetAddToCartAddonLineItemMetadataProps): CartLineItemMetadata => {
   const key = getAddToCartLineItemWriteMetadataKey({ lineItem })
   const metadata = {
@@ -24,7 +28,9 @@ export const getAddToCartLineItemAddonMetadata = ({
     title: addon.model?.title ?? '',
     image: addon.model?.thumbnail?.image?.url ?? '',
     properties: {
-      date: date ?? null
+      date: date ?? null,
+      referenceValue: referenceValue ?? null,
+      savings: savings ?? null
     }
   }
   return metadata

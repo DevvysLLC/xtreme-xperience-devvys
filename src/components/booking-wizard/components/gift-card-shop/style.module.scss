@@ -31,6 +31,20 @@
   }
 }
 
+.giftcard_badge {
+  position: absolute;
+  top: u.rem-calc(12);
+  left: u.rem-calc(12);
+  z-index: 2;
+  padding: u.rem-calc(4) u.rem-calc(8);
+  font-family: sg.font-family(barlow-semi-condensed);
+  font-size: u.rem-calc(12);
+  font-weight: 600;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
 .giftcard_value {
   position: absolute;
   left: 7.4%;
@@ -85,6 +99,12 @@
 }
 
 .amount_button {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: u.rem-calc(3);
   background: #fff;
   border: 1px solid #111;
   border-radius: 0;
@@ -109,6 +129,29 @@
     &:hover {
       background: #fff2e9;
     }
+  }
+
+  &__badge {
+    display: inline-block;
+    padding: u.rem-calc(2) u.rem-calc(5);
+    font-family: sg.font-family(barlow-semi-condensed);
+    font-size: u.rem-calc(10);
+    font-weight: 600;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  &__prices {
+    display: inline-flex;
+    align-items: baseline;
+    gap: u.rem-calc(5);
+  }
+
+  &__compare {
+    font-size: u.rem-calc(12);
+    font-weight: 400;
+    color: #888;
   }
 }
 
