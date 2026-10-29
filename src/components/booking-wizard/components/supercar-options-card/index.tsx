@@ -241,8 +241,8 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
         minCompareAt = disc.compareAtPrice ?? rtp.price
         if (disc.badgeLabel) {
           matchedBadge = disc.badgeLabel
-          matchedBadgeBg = disc.badgeBackgroundColor ?? null
-          matchedBadgeText = disc.badgeTextColor ?? null
+          matchedBadgeBg = disc.cardBadgeBackgroundColor ?? null
+          matchedBadgeText = disc.cardBadgeTextColor ?? null
         }
       }
     }

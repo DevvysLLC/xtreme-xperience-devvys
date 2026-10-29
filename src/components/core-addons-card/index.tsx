@@ -66,16 +66,16 @@ export const CoreAddonsCard: FC<CoreAddonsCardProps> = (props) => {
           id: `discount-badge-${id ?? 'addon'}`,
           __typename: 'CoreBadgeRecord' as const,
           label: addonDiscount.badgeLabel,
-          backgroundColor: addonDiscount.badgeBackgroundColor
+          backgroundColor: addonDiscount.cardBadgeBackgroundColor
             ? {
                 __typename: 'ColorField' as const,
-                hex: addonDiscount.badgeBackgroundColor
+                hex: addonDiscount.cardBadgeBackgroundColor
               }
             : null,
-          color: addonDiscount.badgeTextColor
+          color: addonDiscount.cardBadgeTextColor
             ? {
                 __typename: 'ColorField' as const,
-                hex: addonDiscount.badgeTextColor
+                hex: addonDiscount.cardBadgeTextColor
               }
             : null
         }

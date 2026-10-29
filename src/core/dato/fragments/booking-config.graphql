@@ -68,10 +68,16 @@ fragment BookingDiscountRule on BookingDiscountRuleRecord {
   endTime
   applyToAllEvents
   badgeLabel
-  badgeBackgroundColor {
+  dateBadgeBackgroundColor {
     hex
   }
-  badgeTextColor {
+  dateBadgeTextColor {
+    hex
+  }
+  cardBadgeBackgroundColor {
+    hex
+  }
+  cardBadgeTextColor {
     hex
   }
   compareAtOverride

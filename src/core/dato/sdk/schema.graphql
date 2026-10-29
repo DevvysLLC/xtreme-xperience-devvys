@@ -310,7 +310,11 @@ type BookingDiscountRuleRecord implements RecordInterface {
   _updatedAt: DateTime!
   applyToAllEvents: BooleanType!
   badgeLabel: String
+  cardBadgeBackgroundColor: ColorField
+  cardBadgeTextColor: ColorField
   compareAtOverride: FloatType
+  dateBadgeBackgroundColor: ColorField
+  dateBadgeTextColor: ColorField
   daysOfWeek: String
   discountType: String!
   discountValue: FloatType!
@@ -5146,6 +5150,10 @@ type PromotionRecord implements RecordInterface {
   _updatedAt: DateTime!
   active: BooleanType!
   badgeLabel: String
+  cardBadgeBackgroundColor: ColorField
+  cardBadgeTextColor: ColorField
+  dateBadgeBackgroundColor: ColorField
+  dateBadgeTextColor: ColorField
   description(
     """Process content as markdown"""
     markdown: Boolean

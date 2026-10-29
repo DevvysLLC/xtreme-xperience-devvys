@@ -351,8 +351,8 @@ export const DateAndCarPage = () => {
                       rateIds={resolvedRateIds}
                       isActive={state.selectedDayDate === day.date}
                       badgeLabel={dateDiscount?.badgeLabel ?? undefined}
-                      badgeBackgroundColor={dateDiscount?.badgeBackgroundColor}
-                      badgeTextColor={dateDiscount?.badgeTextColor}
+                      badgeBackgroundColor={dateDiscount?.dateBadgeBackgroundColor}
+                      badgeTextColor={dateDiscount?.dateBadgeTextColor}
                       isMulticar={isMulticarGroup}
                       onClick={() => {
                         handleDateSelect(day.date)

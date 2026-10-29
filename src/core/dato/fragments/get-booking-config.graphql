@@ -9,10 +9,16 @@ query getBookingConfig {
     startDate
     endDate
     badgeLabel
-    badgeBackgroundColor {
+    dateBadgeBackgroundColor {
       hex
     }
-    badgeTextColor {
+    dateBadgeTextColor {
+      hex
+    }
+    cardBadgeBackgroundColor {
+      hex
+    }
+    cardBadgeTextColor {
       hex
     }
     headline

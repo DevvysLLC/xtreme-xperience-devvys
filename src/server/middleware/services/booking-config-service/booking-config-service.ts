@@ -59,12 +59,22 @@ export class BookingConfigService {
       return (promo.rules ?? []).map((rule) => ({
         ...rule,
         badgeLabel: (rule.badgeLabel && rule.badgeLabel.trim()) || null,
-        badgeBackgroundColor:
-          rule.badgeBackgroundColor?.hex ||
-          promo.badgeBackgroundColor?.hex ||
+        dateBadgeBackgroundColor:
+          rule.dateBadgeBackgroundColor?.hex ||
+          promo.dateBadgeBackgroundColor?.hex ||
           null,
-        badgeTextColor:
-          rule.badgeTextColor?.hex || promo.badgeTextColor?.hex || null
+        dateBadgeTextColor:
+          rule.dateBadgeTextColor?.hex ||
+          promo.dateBadgeTextColor?.hex ||
+          null,
+        cardBadgeBackgroundColor:
+          rule.cardBadgeBackgroundColor?.hex ||
+          promo.cardBadgeBackgroundColor?.hex ||
+          null,
+        cardBadgeTextColor:
+          rule.cardBadgeTextColor?.hex ||
+          promo.cardBadgeTextColor?.hex ||
+          null
       }))
     })
 
