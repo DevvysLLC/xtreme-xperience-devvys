@@ -85,9 +85,6 @@ export const DateSelect: FC<Props> = ({ label }) => {
     <div className={styles['event-ranges']} role="group" aria-label={label}>
       {events.map((event) => {
         const isSelected = event.model?.id === selectedEventId
-        const year = event.model?.startDate
-          ? new Date(event.model.startDate).getFullYear()
-          : ''
         return (
           <button
             key={event.model?.id}
@@ -97,18 +94,17 @@ export const DateSelect: FC<Props> = ({ label }) => {
             disabled={resetAfter.isPending || setEvent.isPending}
             className={styles['event-range-button']}
           >
-            <div>
-              <strong>
-                {formatEventDateRangeShort(
-                  event.model?.startDate,
-                  event.model?.endDate
-                )}
-              </strong>
-              <small>{year}</small>
-            </div>
-            <span className={styles['event-range-check']} aria-hidden="true">
-              ✓
-            </span>
+            <strong>
+              {formatEventDateRangeShort(
+                event.model?.startDate,
+                event.model?.endDate
+              )}
+            </strong>
+            {isSelected && (
+              <span className={styles['event-range-check']} aria-hidden="true">
+                ✓
+              </span>
+            )}
           </button>
         )
       })}
