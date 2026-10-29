@@ -324,6 +324,8 @@ export type BookingDiscountRuleRecord = RecordInterface & {
   _updatedAt: Scalars['DateTime']['output'];
   applyToAllEvents: Scalars['BooleanType']['output'];
   badgeLabel: Maybe<Scalars['String']['output']>;
+  badgeBackgroundColor?: Maybe<ColorField>;
+  badgeTextColor?: Maybe<ColorField>;
   compareAtOverride: Maybe<Scalars['FloatType']['output']>;
   daysOfWeek: Maybe<Scalars['String']['output']>;
   discountType: Scalars['String']['output'];
@@ -3245,6 +3247,8 @@ export type PromotionRecord = RecordInterface & {
   _updatedAt: Scalars['DateTime']['output'];
   active: Scalars['BooleanType']['output'];
   badgeLabel: Maybe<Scalars['String']['output']>;
+  badgeBackgroundColor?: Maybe<ColorField>;
+  badgeTextColor?: Maybe<ColorField>;
   description: Maybe<Scalars['String']['output']>;
   endDate: Maybe<Scalars['DateTime']['output']>;
   headline: Maybe<Scalars['String']['output']>;
@@ -6248,6 +6252,12 @@ export const BookingDiscountRuleFragmentDoc = /*#__PURE__*/ gql`
   endTime
   applyToAllEvents
   badgeLabel
+  badgeBackgroundColor {
+    hex
+  }
+  badgeTextColor {
+    hex
+  }
   compareAtOverride
   daysOfWeek
   targetType
@@ -8384,6 +8394,12 @@ export const GetBookingConfigDocument = /*#__PURE__*/ gql`
     startDate
     endDate
     badgeLabel
+    badgeBackgroundColor {
+      hex
+    }
+    badgeTextColor {
+      hex
+    }
     headline
     rules {
       ...BookingDiscountRule
