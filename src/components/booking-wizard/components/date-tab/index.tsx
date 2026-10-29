@@ -19,6 +19,8 @@ type Props = {
   rateIds?: number[]
   isActive: boolean
   badgeLabel?: string
+  badgeBackgroundColor?: string | null
+  badgeTextColor?: string | null
   onClick?: (date: string) => void
   isMulticar?: boolean
 }
@@ -29,6 +31,8 @@ export const DayTab: React.FC<Props> = ({
   rateIds,
   isActive,
   badgeLabel,
+  badgeBackgroundColor,
+  badgeTextColor,
   onClick,
   isMulticar
 }) => {
@@ -50,6 +54,17 @@ export const DayTab: React.FC<Props> = ({
 
   const isSoldOut = !lowestPrice
 
+  const badgeStyle = useMemo(() => {
+    const style: React.CSSProperties = {}
+    if (badgeBackgroundColor) {
+      style.backgroundColor = badgeBackgroundColor
+    }
+    if (badgeTextColor) {
+      style.color = badgeTextColor
+    }
+    return Object.keys(style).length > 0 ? style : undefined
+  }, [badgeBackgroundColor, badgeTextColor])
+
   return (
     <button
       type="button"
@@ -63,7 +78,9 @@ export const DayTab: React.FC<Props> = ({
       }}
     >
       {displayBadge && (
-        <span className={styles.date__badge}>{displayBadge}</span>
+        <span className={styles.date__badge} style={badgeStyle}>
+          {displayBadge}
+        </span>
       )}
       <span className={styles.date__weekday}>{weekday}</span>
       <span className={styles.date__day}>{dayNumber}</span>

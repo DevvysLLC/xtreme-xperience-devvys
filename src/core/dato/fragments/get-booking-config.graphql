@@ -9,6 +9,12 @@ query getBookingConfig {
     startDate
     endDate
     badgeLabel
+    badgeBackgroundColor {
+      hex
+    }
+    badgeTextColor {
+      hex
+    }
     headline
     rules {
       ...BookingDiscountRule

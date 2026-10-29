@@ -328,9 +328,9 @@ export const DateAndCarPage = () => {
             </div>
 
             <DateSelect label={t('label.date_select')} />
-            
+
             <p className={styles['day-selector-label']}>Choose a day</p>
-            
+
             <ul className={styles.dates}>
               {state.eventData?.schedules?.map((day) => {
                 const trackId =
@@ -351,6 +351,8 @@ export const DateAndCarPage = () => {
                       rateIds={resolvedRateIds}
                       isActive={state.selectedDayDate === day.date}
                       badgeLabel={dateDiscount?.badgeLabel ?? undefined}
+                      badgeBackgroundColor={dateDiscount?.badgeBackgroundColor}
+                      badgeTextColor={dateDiscount?.badgeTextColor}
                       isMulticar={isMulticarGroup}
                       onClick={() => {
                         handleDateSelect(day.date)
@@ -364,9 +366,9 @@ export const DateAndCarPage = () => {
             {showGiftCards && (
               <div className={styles.giftline}>
                 <span>Not ready to pick a date?</span>
-                <button 
-                  type="button" 
-                  className={styles['gift-shop-cta']} 
+                <button
+                  type="button"
+                  className={styles['gift-shop-cta']}
                   onClick={() => {
                     setActiveTabIndex(GIFTS_TAB_INDEX)
                     const giftsTabBtn =

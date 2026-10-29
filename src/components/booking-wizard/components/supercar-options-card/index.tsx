@@ -199,6 +199,8 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
     let minPrice = lowestPrice.price
     let minCompareAt = lowestPrice.compareAtPrice
     let matchedBadge: string | null = null
+    let matchedBadgeBg: string | null = null
+    let matchedBadgeText: string | null = null
 
     for (const schedule of schedules) {
       if (schedule.scheduleStatus !== RocketRezScheduleStatus.AVAILABLE) {
@@ -239,6 +241,8 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
         minCompareAt = disc.compareAtPrice ?? rtp.price
         if (disc.badgeLabel) {
           matchedBadge = disc.badgeLabel
+          matchedBadgeBg = disc.badgeBackgroundColor ?? null
+          matchedBadgeText = disc.badgeTextColor ?? null
         }
       }
     }
@@ -246,7 +250,9 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
     return {
       price: minPrice,
       compareAtPrice: minCompareAt,
-      promoBadge: matchedBadge
+      promoBadge: matchedBadge,
+      badgeBackgroundColor: matchedBadgeBg,
+      badgeTextColor: matchedBadgeText
     }
   }, [
     schedules,
@@ -659,11 +665,17 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
           label: lowestDiscountedPrice.promoBadge,
           backgroundColor: {
             __typename: 'ColorField' as const,
-            hex: '#D32F2F'
+            hex:
+              ('badgeBackgroundColor' in lowestDiscountedPrice &&
+                lowestDiscountedPrice.badgeBackgroundColor) ||
+              '#D32F2F'
           },
           color: {
             __typename: 'ColorField' as const,
-            hex: '#FFFFFF'
+            hex:
+              ('badgeTextColor' in lowestDiscountedPrice &&
+                lowestDiscountedPrice.badgeTextColor) ||
+              '#FFFFFF'
           }
         }
       : null

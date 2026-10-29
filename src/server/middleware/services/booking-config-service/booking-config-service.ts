@@ -2,11 +2,13 @@ import { initDatoSdk } from '../../../../core/dato/sdk'
 import { logger } from '../../../../core/logger/logger'
 import type { ServiceBookingConfigGetBookingConfigOutput } from '../../../../io/types'
 
-const isPromotionActiveNow = (promo: {
+type PromotionActiveInput = {
   active: boolean
   startDate?: string | null
   endDate?: string | null
-}): boolean => {
+}
+
+const isPromotionActiveNow = (promo: PromotionActiveInput): boolean => {
   if (!promo.active) {
     return false
   }
@@ -56,7 +58,13 @@ export class BookingConfigService {
       }
       return (promo.rules ?? []).map((rule) => ({
         ...rule,
-        badgeLabel: (rule.badgeLabel && rule.badgeLabel.trim()) || null
+        badgeLabel: (rule.badgeLabel && rule.badgeLabel.trim()) || null,
+        badgeBackgroundColor:
+          rule.badgeBackgroundColor?.hex ||
+          promo.badgeBackgroundColor?.hex ||
+          null,
+        badgeTextColor:
+          rule.badgeTextColor?.hex || promo.badgeTextColor?.hex || null
       }))
     })
 

@@ -16,6 +16,8 @@ export type BookingDiscountRule = {
   targetType?: 'all' | 'supercars' | 'ride_along' | 'packages' | 'addons' | 'gift_cards' | string | null
   compareAtOverride?: number | null
   badgeLabel?: string | null
+  badgeBackgroundColor?: string | null
+  badgeTextColor?: string | null
 }
 
 const parseTimeToMinutes = (timeStr?: string | null): number | null => {
@@ -40,6 +42,8 @@ export type ScheduleDiscountResult = {
   price: number
   compareAtPrice: number | null
   badgeLabel?: string | null
+  badgeBackgroundColor?: string | null
+  badgeTextColor?: string | null
   isDiscounted: boolean
 }
 
@@ -166,7 +170,13 @@ export const getDateDiscountRule = ({
   isRideAlong?: boolean | null
   isMulticar?: boolean | null
   rules?: BookingDiscountRule[] | null
-}): { badgeLabel: string; discountPercent?: number; rule: BookingDiscountRule } | null => {
+}): {
+  badgeLabel: string
+  discountPercent?: number
+  badgeBackgroundColor?: string | null
+  badgeTextColor?: string | null
+  rule: BookingDiscountRule
+} | null => {
   if (!rules || rules.length === 0) {
     return null
   }
@@ -243,7 +253,13 @@ export const getDateDiscountRule = ({
     }
 
     if (badge) {
-      return { badgeLabel: badge, discountPercent: percent, rule }
+      return {
+        badgeLabel: badge,
+        discountPercent: percent,
+        badgeBackgroundColor: rule.badgeBackgroundColor ?? null,
+        badgeTextColor: rule.badgeTextColor ?? null,
+        rule
+      }
     }
   }
 
@@ -282,6 +298,9 @@ export const getScheduleDiscount = ({
     return {
       price: basePathPrice(basePrice),
       compareAtPrice: existingCompareAtPrice ?? null,
+      badgeLabel: null,
+      badgeBackgroundColor: null,
+      badgeTextColor: null,
       isDiscounted: false
     }
   }
@@ -412,6 +431,8 @@ export const getScheduleDiscount = ({
         price: calculatedPrice,
         compareAtPrice: compareAt,
         badgeLabel: rule.badgeLabel && rule.badgeLabel.trim() ? rule.badgeLabel.trim() : null,
+        badgeBackgroundColor: rule.badgeBackgroundColor ?? null,
+        badgeTextColor: rule.badgeTextColor ?? null,
         isDiscounted: true
       }
     }
@@ -420,15 +441,19 @@ export const getScheduleDiscount = ({
   return {
     price: basePathPrice(basePrice),
     compareAtPrice: existingCompareAtPrice ?? null,
+    badgeLabel: null,
+    badgeBackgroundColor: null,
+    badgeTextColor: null,
     isDiscounted: false
   }
 }
-
 
 export type AddonDiscountResult = {
   price: number
   compareAtPrice: number | null
   badgeLabel?: string | null
+  badgeBackgroundColor?: string | null
+  badgeTextColor?: string | null
   isDiscounted: boolean
 }
 
@@ -446,6 +471,8 @@ export const getAddonDiscount = ({
       price: basePrice ?? 0,
       compareAtPrice: null,
       badgeLabel: null,
+      badgeBackgroundColor: null,
+      badgeTextColor: null,
       isDiscounted: false
     }
   }
@@ -483,6 +510,8 @@ export const getAddonDiscount = ({
         price: calculatedPrice,
         compareAtPrice: rule.compareAtOverride != null ? rule.compareAtOverride : basePrice,
         badgeLabel: rule.badgeLabel && rule.badgeLabel.trim() ? rule.badgeLabel.trim() : null,
+        badgeBackgroundColor: rule.badgeBackgroundColor ?? null,
+        badgeTextColor: rule.badgeTextColor ?? null,
         isDiscounted: true
       }
     }
@@ -492,6 +521,8 @@ export const getAddonDiscount = ({
     price: basePrice ?? 0,
     compareAtPrice: null,
     badgeLabel: null,
+    badgeBackgroundColor: null,
+    badgeTextColor: null,
     isDiscounted: false
   }
 }
