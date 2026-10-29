@@ -97,6 +97,23 @@ export const CartLineItem: FC<Props> = ({
         ? properties.savings
         : undefined
 
+    const isEstimatedDiscountPage =
+      Boolean(pathname) &&
+      (pathname.includes('/booking/choose-date-and-car') ||
+        pathname.includes('/booking/coverage-options') ||
+        pathname.includes('/booking/ride-along') ||
+        pathname.includes('/booking/media-packages'))
+
+    const itemTotal = price * (lineItem.quantity ?? 1)
+    const originalPrice =
+      referenceValue != null && referenceValue > itemTotal
+        ? referenceValue
+        : itemTotal
+    const discountedPrice =
+      savings != null && savings > 0
+        ? Math.max(0, originalPrice - savings)
+        : itemTotal
+
     const isInsurance = type === 'insurance'
     const isPitPass =
       (lineItem.name != null && lineItem.name.toLowerCase().includes('pit pass')) ||
@@ -210,24 +227,45 @@ export const CartLineItem: FC<Props> = ({
             </div>
 
             <div className={styles.CartLineItemCompact__priceWrapper}>
-              {referenceValue != null &&
-                referenceValue > price * (lineItem.quantity ?? 1) && (
-                  <span className={styles.CartLineItemCompact__cutPrice}>
-                    ${Math.ceil(referenceValue)}
+              {isEstimatedDiscountPage && savings != null && savings > 0 ? (
+                <>
+                  <div className={styles.CartLineItemCompact__priceRow}>
+                    <span className={styles.CartLineItemCompact__cutPrice}>
+                      ${Math.ceil(originalPrice)}
+                    </span>
+                    <span className={styles.CartLineItemCompact__price}>
+                      ${Math.ceil(discountedPrice)}
+                    </span>
+                  </div>
+                  <span className={styles.CartLineItemCompact__saving}>
+                    ${Math.round(savings)} off at checkout
                   </span>
-                )}
-              <CoreRocketRezPrice
-                data={{
-                  id: `${id}-price`,
-                  price: price * (lineItem.quantity ?? 1)
-                }}
-                className={styles.CartLineItemCompact__price}
-                valueInCents={false}
-              />
-              {savings != null && savings > 0 && (
-                <span className={styles.CartLineItemCompact__saving}>
-                  Saving ${Math.round(savings)}
-                </span>
+                  <span className={styles.CartLineItemCompact__discountNote}>
+                    Price after discount
+                  </span>
+                </>
+              ) : (
+                <>
+                  {referenceValue != null &&
+                    referenceValue > price * (lineItem.quantity ?? 1) && (
+                      <span className={styles.CartLineItemCompact__cutPrice}>
+                        ${Math.ceil(referenceValue)}
+                      </span>
+                    )}
+                  <CoreRocketRezPrice
+                    data={{
+                      id: `${id}-price`,
+                      price: price * (lineItem.quantity ?? 1)
+                    }}
+                    className={styles.CartLineItemCompact__price}
+                    valueInCents={false}
+                  />
+                  {savings != null && savings > 0 && (
+                    <span className={styles.CartLineItemCompact__saving}>
+                      Saving ${Math.round(savings)}
+                    </span>
+                  )}
+                </>
               )}
             </div>
           </div>

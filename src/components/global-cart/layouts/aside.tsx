@@ -1,6 +1,7 @@
 'use client'
 
 import clsx from 'clsx'
+import { usePathname } from 'next/navigation'
 import { type FC, useMemo } from 'react'
 import { useBooking } from '../../../features/booking'
 import { useCart, useCartState } from '../../../features/cart'
@@ -15,6 +16,13 @@ type Props = {
 }
 
 export const CartAside: FC<Props> = ({ className }) => {
+  const pathname = usePathname()
+  const isEstimatedDiscountPage =
+    Boolean(pathname) &&
+    (pathname.includes('/booking/choose-date-and-car') ||
+      pathname.includes('/booking/coverage-options') ||
+      pathname.includes('/booking/ride-along') ||
+      pathname.includes('/booking/media-packages'))
   const { data, isLoading, isRefreshing } = useCart()
   const { data: cartState } = useCartState()
   const { data: booking } = useBooking()
@@ -54,6 +62,7 @@ export const CartAside: FC<Props> = ({ className }) => {
   }, [cartState?.metadata, discountTotal])
 
   const subtotal = rawSubtotal
+  const estimatedSubtotal = Math.max(0, subtotal - totalSavings)
 
   if (isEmpty) {
     return (
@@ -106,23 +115,44 @@ export const CartAside: FC<Props> = ({ className }) => {
 
         {totalSavings > 0 && (
           <div className={styles.cart__savings}>
-            <strong>You save ${totalSavings.toLocaleString()}</strong>
-            <small>Already included in these prices.</small>
+            <strong>
+              {isEstimatedDiscountPage ? "You're saving" : 'You save'} $
+              {totalSavings.toLocaleString()}
+            </strong>
+            <small>
+              {isEstimatedDiscountPage
+                ? 'Discount applies automatically at checkout and is already included in the prices shown.'
+                : 'Already included in these prices.'}
+            </small>
           </div>
         )}
 
         <div className={styles.cart__totals}>
           <div className={styles.cart__subtotal_row}>
-            <span>Subtotal</span>
-            <strong>${subtotal.toLocaleString()}</strong>
+            <span>
+              {isEstimatedDiscountPage && totalSavings > 0
+                ? 'Estimated subtotal'
+                : 'Subtotal'}
+            </span>
+            <strong>
+              $
+              {(isEstimatedDiscountPage && totalSavings > 0
+                ? estimatedSubtotal
+                : subtotal
+              ).toLocaleString()}
+            </strong>
           </div>
-          {discountTotal > 0 && (
+          {!isEstimatedDiscountPage && discountTotal > 0 && (
             <div className={styles.cart__discount_row}>
               <span>Discount</span>
               <strong>-${discountTotal.toLocaleString()}</strong>
             </div>
           )}
-          <p className={styles.cart__note}>Before fees and taxes.</p>
+          <p className={styles.cart__note}>
+            {isEstimatedDiscountPage && totalSavings > 0
+              ? 'After discount. Before fees and taxes.'
+              : 'Before fees and taxes.'}
+          </p>
         </div>
 
         <ul className={styles.cart__trust}>

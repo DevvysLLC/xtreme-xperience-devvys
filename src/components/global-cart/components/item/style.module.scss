@@ -256,6 +256,13 @@
     align-items: flex-end;
   }
 
+  &__priceRow {
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-end;
+    gap: u.rem-calc(6);
+  }
+
   &__cutPrice {
     font-size: u.rem-calc(12);
     color: #888;
@@ -279,6 +286,14 @@
     font-size: u.rem-calc(12);
     font-weight: 700;
     color: #ff6900;
+    line-height: 1.2;
+    display: block;
+    margin-top: u.rem-calc(2);
+  }
+
+  &__discountNote {
+    font-size: u.rem-calc(11);
+    color: #777;
     line-height: 1.2;
     display: block;
     margin-top: u.rem-calc(2);
