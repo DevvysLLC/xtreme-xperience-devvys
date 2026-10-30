@@ -3,12 +3,15 @@
 import Image from 'next/image'
 import { type FC, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { useBookingGiftCards } from '../../../../features/booking'
-import { useCartAddAddon, useCartRemoveLineItem } from '../../../../features/cart'
-import { useToast } from '../../../../features/toast'
 import type { AddonFragment } from '../../../../core/dato/fragments/addon.typegen'
-import type { RocketRezLineItem } from '../../../../io/types'
+import { useBookingGiftCards } from '../../../../features/booking'
+import {
+  useCartAddAddon,
+  useCartRemoveLineItem
+} from '../../../../features/cart'
+import { useToast } from '../../../../features/toast'
 import { RocketRezProductType } from '../../../../io/schemas'
+import type { RocketRezLineItem } from '../../../../io/types'
 import { FALLBACK_GIFT_OPTIONS } from '../gift-card-shop'
 import styles from './style.module.scss'
 
@@ -49,7 +52,9 @@ export const EditGiftCardModal: FC<Props> = ({ isOpen, lineItem, onClose }) => {
     return null
   }
 
-  const activeOption = FALLBACK_GIFT_OPTIONS.find(([val]) => val === selectedAmount)
+  const activeOption = FALLBACK_GIFT_OPTIONS.find(
+    ([val]) => val === selectedAmount
+  )
   const benefitCopy =
     activeOption?.[1] ??
     FALLBACK_GIFT_OPTIONS[0]?.[1] ??
@@ -74,9 +79,10 @@ export const EditGiftCardModal: FC<Props> = ({ isOpen, lineItem, onClose }) => {
       return price === selectedAmount
     })
 
-    const rocketRezId = matchedCmsCard?.model?.rocketRezId ?? selectedAmount.toString()
+    const rocketRezId =
+      matchedCmsCard?.model?.rocketRezId ?? selectedAmount.toString()
     const lineItemId = matchedCmsCard?.model?.rocketRezId
-      ? parseInt(matchedCmsCard.model.rocketRezId, 10) || selectedAmount
+      ? Number.parseInt(matchedCmsCard.model.rocketRezId, 10) || selectedAmount
       : selectedAmount
 
     const addonToSubmit: AddonFragment = matchedCmsCard ?? {

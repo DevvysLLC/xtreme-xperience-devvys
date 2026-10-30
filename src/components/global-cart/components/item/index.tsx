@@ -2,32 +2,31 @@
 
 import clsx from 'clsx'
 import { format } from 'date-fns'
+import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { type FC, useState } from 'react'
-import { EditGiftCardModal } from '../../../booking-wizard/components/edit-gift-card-modal'
+import { ROUTES } from '../../../../config/routes'
 import { logger } from '../../../../core/logger/logger'
+import { DRAWER_REQUEST_CLOSE_MESSAGE_NAME } from '../../../../core/messaging/main/messages/close-drawer'
+import { useMainBus } from '../../../../core/messaging/main/react'
 import { sentenceCase } from '../../../../core/string/sentence-case'
+import { useBookingSetIntendedPage } from '../../../../features/booking'
 import {
   useCartLineItemMetadata,
   useCartRemoveLineItem
 } from '../../../../features/cart'
-import { useBookingSetIntendedPage } from '../../../../features/booking'
 import type {
   CartLineItemMetadata,
   RocketRezLineItem
 } from '../../../../io/types'
+import { EditGiftCardModal } from '../../../booking-wizard/components/edit-gift-card-modal'
 import { CoreBadge } from '../../../core-badge'
 import { CoreCta } from '../../../core-cta'
 import { CoreLoadingSpinner } from '../../../core-loading-spinner'
 import { CoreRocketRezPrice } from '../../../core-rocketrez-price'
 import { CoreTextMarkdown } from '../../../core-text-markdown'
+import { CART_DRAWER_ID } from '../../constants'
 import styles from './style.module.scss'
-
-import { usePathname, useRouter } from 'next/navigation'
-import { ROUTES } from '../../../../config/routes'
-import { DRAWER_REQUEST_CLOSE_MESSAGE_NAME } from '../../../../core/messaging/main/messages/close-drawer'
-import { useMainBus } from '../../../../core/messaging/main/react'
-import { CART_DRAWER_ID } from '../../layouts/drawer'
 
 type Props = {
   lineItem: RocketRezLineItem
@@ -116,15 +115,26 @@ export const CartLineItem: FC<Props> = ({
 
     const isInsurance = type === 'insurance'
     const isPitPass =
-      (lineItem.name != null && lineItem.name.toLowerCase().includes('pit pass')) ||
+      (lineItem.name != null &&
+        lineItem.name.toLowerCase().includes('pit pass')) ||
       (displayTitle != null && displayTitle.toLowerCase().includes('pit pass'))
     const isFullThrottleOrMedia =
-      (lineItem.name != null && (lineItem.name.toLowerCase().includes('throttle') || lineItem.name.toLowerCase().includes('media'))) ||
-      (displayTitle != null && (displayTitle.toLowerCase().includes('throttle') || displayTitle.toLowerCase().includes('media')))
+      (lineItem.name != null &&
+        (lineItem.name.toLowerCase().includes('throttle') ||
+          lineItem.name.toLowerCase().includes('media'))) ||
+      (displayTitle != null &&
+        (displayTitle.toLowerCase().includes('throttle') ||
+          displayTitle.toLowerCase().includes('media')))
     const isRideAlong =
       metadata?.isRideAlong === true ||
-      (lineItem.name != null && (lineItem.name.toLowerCase().includes('ride along') || lineItem.name.toLowerCase().includes('ride-along') || lineItem.name.toLowerCase().includes('hellcat'))) ||
-      (displayTitle != null && (displayTitle.toLowerCase().includes('ride along') || displayTitle.toLowerCase().includes('ride-along') || displayTitle.toLowerCase().includes('hellcat')))
+      (lineItem.name != null &&
+        (lineItem.name.toLowerCase().includes('ride along') ||
+          lineItem.name.toLowerCase().includes('ride-along') ||
+          lineItem.name.toLowerCase().includes('hellcat'))) ||
+      (displayTitle != null &&
+        (displayTitle.toLowerCase().includes('ride along') ||
+          displayTitle.toLowerCase().includes('ride-along') ||
+          displayTitle.toLowerCase().includes('hellcat')))
     const shouldHideEdit = isPitPass || isFullThrottleOrMedia
 
     const handleEdit = async () => {
@@ -141,7 +151,10 @@ export const CartLineItem: FC<Props> = ({
           try {
             await setIntendedPage('ride_along')
           } catch (error) {
-            logger.error({ error }, 'cart-line-item.handleEdit.setIntendedPage.error')
+            logger.error(
+              { error },
+              'cart-line-item.handleEdit.setIntendedPage.error'
+            )
           }
           router.push(ROUTES.BOOKING.RIDE_ALONG)
         }
@@ -149,9 +162,12 @@ export const CartLineItem: FC<Props> = ({
       }
 
       // Check if metadata has saved seatTypeId, or fallback to lineItem identifiers
-      const rawProps = properties && typeof properties === 'object' ? properties : null
+      const rawProps =
+        properties && typeof properties === 'object' ? properties : null
       const metaSeatId =
-        rawProps && 'seatTypeId' in rawProps && typeof rawProps.seatTypeId === 'number'
+        rawProps &&
+        'seatTypeId' in rawProps &&
+        typeof rawProps.seatTypeId === 'number'
           ? rawProps.seatTypeId
           : null
       const seatId = metaSeatId || lineItem.productId || lineItem.rateId
@@ -166,20 +182,31 @@ export const CartLineItem: FC<Props> = ({
         // Save target in sessionStorage for page transitions
         try {
           sessionStorage.setItem('pendingEditSeatTypeId', seatId.toString())
-          sessionStorage.setItem('pendingEditLineItemId', lineItem.id.toString())
+          sessionStorage.setItem(
+            'pendingEditLineItemId',
+            lineItem.id.toString()
+          )
         } catch (error) {
-          logger.error({ error }, 'cart-line-item.handleEdit.sessionStorage.error')
+          logger.error(
+            { error },
+            'cart-line-item.handleEdit.sessionStorage.error'
+          )
         }
 
         // Set intended wizard page so BookingWizardGuard allows navigation
         try {
           await setIntendedPage('date_and_car')
         } catch (error) {
-          logger.error({ error }, 'cart-line-item.handleEdit.setIntendedPage.error')
+          logger.error(
+            { error },
+            'cart-line-item.handleEdit.setIntendedPage.error'
+          )
         }
 
         // If not already on the choose-date-and-car page, navigate there
-        if (!window.location.pathname.includes('/booking/choose-date-and-car')) {
+        if (
+          !window.location.pathname.includes('/booking/choose-date-and-car')
+        ) {
           router.push(ROUTES.BOOKING.DATE_AND_CAR)
           return
         }
@@ -204,11 +231,31 @@ export const CartLineItem: FC<Props> = ({
         : displayTitle
 
     return (
-      <article className={clsx(styles.CartLineItemCompact, isInsurance && styles['CartLineItemCompact--insurance'])}>
+      <article
+        className={clsx(
+          styles.CartLineItemCompact,
+          isInsurance && styles['CartLineItemCompact--insurance']
+        )}
+      >
         <div className={styles.CartLineItemCompact__media}>
           {isPitPass ? (
-            <div className={styles.CartLineItemCompact__ticketIcon} aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18v4a2 2 0 0 0 0 4v4H3v-4a2 2 0 0 0 0-4V6Z"></path><path d="M15 6v3m0 2v2m0 2v3"></path></svg>
+            <div
+              className={styles.CartLineItemCompact__ticketIcon}
+              aria-hidden="true"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="24"
+                height="24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M3 6h18v4a2 2 0 0 0 0 4v4H3v-4a2 2 0 0 0 0-4V6Z"></path>
+                <path d="M15 6v3m0 2v2m0 2v3"></path>
+              </svg>
             </div>
           ) : (
             <img
@@ -327,7 +374,10 @@ export const CartLineItem: FC<Props> = ({
                       try {
                         await setIntendedPage('coverage_options')
                       } catch (error) {
-                        logger.error({ error }, 'cart-line-item.editCoverage.error')
+                        logger.error(
+                          { error },
+                          'cart-line-item.editCoverage.error'
+                        )
                       }
                       router.push(ROUTES.BOOKING.COVERAGE_OPTIONS)
                     }}
@@ -345,7 +395,10 @@ export const CartLineItem: FC<Props> = ({
                         try {
                           await setIntendedPage('ride_along')
                         } catch (error) {
-                          logger.error({ error }, 'cart-line-item.editRideAlong.error')
+                          logger.error(
+                            { error },
+                            'cart-line-item.editRideAlong.error'
+                          )
                         }
                         router.push(ROUTES.BOOKING.RIDE_ALONG)
                       }}

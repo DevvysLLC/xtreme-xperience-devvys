@@ -15,9 +15,10 @@ import { CartExpiry } from '../components/expiry'
 import { CartLineItems } from '../components/items'
 import { CartLocation } from '../components/location'
 import { CartTotals } from '../components/totals'
+import { CART_DRAWER_ID } from '../constants'
 import styles from './drawer.module.scss'
 
-export const CART_DRAWER_ID = 'cart-drawer'
+export { CART_DRAWER_ID }
 
 type Props = {
   onCheckout?: () => void

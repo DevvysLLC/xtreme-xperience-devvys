@@ -14,7 +14,7 @@ import { RocketRezProductType } from '../../io/schemas'
 import type { RocketRezAddLineItemAddon } from '../../io/types'
 import { CoreCta } from '../core-cta'
 import type { LayoutType, SizeType, StyleType } from '../core-cta/io'
-import { CART_DRAWER_ID } from '../global-cart/layouts/drawer'
+import { CART_DRAWER_ID } from '../global-cart/constants'
 import { QuantitySelector } from './components/quantity-selector'
 import styles from './style.module.scss'
 

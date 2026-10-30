@@ -3,23 +3,32 @@
 import clsx from 'clsx'
 import Image from 'next/image'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useBookingConfig, useBookingGiftCards } from '../../../../features/booking'
-import { useCartAddAddon } from '../../../../features/cart'
-import { useToast } from '../../../../features/toast'
+import type { AddonFragment } from '../../../../core/dato/fragments/addon.typegen'
 import { DRAWER_REQUEST_OPEN_MESSAGE_NAME } from '../../../../core/messaging/main/messages/open-drawer'
 import { useMainBus } from '../../../../core/messaging/main/react'
-import { CART_DRAWER_ID } from '../../../global-cart/layouts/drawer'
-import type { AddonFragment } from '../../../../core/dato/fragments/addon.typegen'
+import {
+  useBookingConfig,
+  useBookingGiftCards
+} from '../../../../features/booking'
+import { useCartAddAddon } from '../../../../features/cart'
+import { useToast } from '../../../../features/toast'
 import { RocketRezProductType } from '../../../../io/schemas'
 import { getAddonDiscount } from '../../../../utils/get-schedule-discount'
+import { CART_DRAWER_ID } from '../../../global-cart/constants'
 import { useOptionalBookingWizardState } from '../../context'
 import styles from './style.module.scss'
 
 export const FALLBACK_GIFT_OPTIONS: [number, string][] = [
-  [100, 'Charger Hellcat Ride-Along, at-event merchandise, or photo/video add-ons.'],
+  [
+    100,
+    'Charger Hellcat Ride-Along, at-event merchandise, or photo/video add-ons.'
+  ],
   [300, 'Nissan GT-R Track Xperience + Driver Protection.'],
   [400, 'Corvette Z06 or Porsche GT4 RS Track Xperience.'],
-  [500, 'Lamborghini, Ferrari, or Porsche Track Xperience + Driver Protection.'],
+  [
+    500,
+    'Lamborghini, Ferrari, or Porsche Track Xperience + Driver Protection.'
+  ],
   [600, 'Ferrari 296 GTB Track Xperience + Driver Protection.'],
   [800, 'Up to 2 Track Xperiences + Driver Protection.'],
   [1000, 'Up to 3 Track Xperiences + Driver Protection and add-ons.'],
@@ -66,7 +75,8 @@ export const GiftCardShop: React.FC<Props> = ({ className }) => {
           const rawPrice = addon.model?.price?.price ?? 0
           // In DatoCMS / RocketRez, prices are typically stored in cents (e.g. 10000 = $100).
           // If rawPrice >= 10000, convert from cents to dollars.
-          const price = rawPrice >= 10000 ? Math.round(rawPrice / 100) : rawPrice
+          const price =
+            rawPrice >= 10000 ? Math.round(rawPrice / 100) : rawPrice
           const fallbackDesc =
             FALLBACK_GIFT_OPTIONS.find(([val]) => val === price)?.[1] ?? ''
           const discount = getAddonDiscount({
@@ -81,7 +91,9 @@ export const GiftCardShop: React.FC<Props> = ({ className }) => {
             amount: price,
             discountedAmount: isDiscounted ? discount.price : price,
             isDiscounted,
-            badgeLabel: discount.isDiscounted ? (discount.badgeLabel ?? null) : null,
+            badgeLabel: discount.isDiscounted
+              ? (discount.badgeLabel ?? null)
+              : null,
             cardBadgeBackgroundColor: discount.cardBadgeBackgroundColor ?? null,
             cardBadgeTextColor: discount.cardBadgeTextColor ?? null,
             description: addon.model?.description || fallbackDesc,
@@ -106,7 +118,9 @@ export const GiftCardShop: React.FC<Props> = ({ className }) => {
         amount: val,
         discountedAmount: isDiscounted ? discount.price : val,
         isDiscounted,
-        badgeLabel: discount.isDiscounted ? (discount.badgeLabel ?? null) : null,
+        badgeLabel: discount.isDiscounted
+          ? (discount.badgeLabel ?? null)
+          : null,
         cardBadgeBackgroundColor: discount.cardBadgeBackgroundColor ?? null,
         cardBadgeTextColor: discount.cardBadgeTextColor ?? null,
         description: desc,
@@ -148,7 +162,9 @@ export const GiftCardShop: React.FC<Props> = ({ className }) => {
     rocketRezId: '100'
   }
   const activeItem =
-    giftItems.find((item) => item.amount === selectedAmount) ?? giftItems[0] ?? defaultItem
+    giftItems.find((item) => item.amount === selectedAmount) ??
+    giftItems[0] ??
+    defaultItem
   const benefitCopy = activeItem.description
 
   const handleAddToCart = async () => {
@@ -191,7 +207,8 @@ export const GiftCardShop: React.FC<Props> = ({ className }) => {
     }
 
     const lineItemId = activeItem.addon?.model?.rocketRezId
-      ? parseInt(activeItem.addon.model.rocketRezId, 10) || selectedAmount
+      ? Number.parseInt(activeItem.addon.model.rocketRezId, 10) ||
+        selectedAmount
       : selectedAmount
 
     try {
@@ -231,8 +248,7 @@ export const GiftCardShop: React.FC<Props> = ({ className }) => {
           <span
             className={styles.giftcard_badge}
             style={{
-              backgroundColor:
-                activeItem.cardBadgeBackgroundColor || '#D32F2F',
+              backgroundColor: activeItem.cardBadgeBackgroundColor || '#D32F2F',
               color: activeItem.cardBadgeTextColor || '#FFFFFF'
             }}
           >
@@ -304,7 +320,11 @@ export const GiftCardShop: React.FC<Props> = ({ className }) => {
           ))}
         </div>
 
-        <div className={styles.gift_benefit} aria-live="polite" aria-atomic="true">
+        <div
+          className={styles.gift_benefit}
+          aria-live="polite"
+          aria-atomic="true"
+        >
           <h3 className={styles.gift_benefit__title}>
             WHAT ${selectedAmount.toLocaleString()} COVERS
           </h3>
