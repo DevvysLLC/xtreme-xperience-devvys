@@ -51,7 +51,9 @@ export const InsuranceOptionsCard: React.FC<InsuranceOptionsCardProps> = ({
               isSelected && styles['card--selected']
             )}
           >
-            <div className={`${styles.card__title} ${!description && styles.card__title_no_desc}`}>
+            <div
+              className={`${styles.card__title} ${!description && styles.card__title_no_desc}`}
+            >
               <div className={styles.radio}>
                 <input
                   type="radio"
@@ -73,7 +75,10 @@ export const InsuranceOptionsCard: React.FC<InsuranceOptionsCardProps> = ({
 
             <div className={styles.card__coverage}>
               {coverage && (
-                <CoreTextMarkdown type="rte" className={styles.card__coverage__text}>
+                <CoreTextMarkdown
+                  type="rte"
+                  className={styles.card__coverage__text}
+                >
                   {coverage}
                 </CoreTextMarkdown>
               )}
@@ -133,7 +138,9 @@ export const InsuranceOptionsCard: React.FC<InsuranceOptionsCardProps> = ({
               )}
             </div>
 
-            <div className={`${styles.card__description} ${!description && styles.card__nodescription}`}>
+            <div
+              className={`${styles.card__description} ${!description && styles.card__nodescription}`}
+            >
               {description && (
                 <details className={styles.card__details}>
                   <summary className={styles.card__details__summary}>
@@ -141,7 +148,9 @@ export const InsuranceOptionsCard: React.FC<InsuranceOptionsCardProps> = ({
                     {t('learn_more')}
                   </summary>
                   <div className={styles.card__details__content}>
-                    <CoreTextMarkdown type="rte">{description}</CoreTextMarkdown>
+                    <CoreTextMarkdown type="rte">
+                      {description}
+                    </CoreTextMarkdown>
                   </div>
                 </details>
               )}

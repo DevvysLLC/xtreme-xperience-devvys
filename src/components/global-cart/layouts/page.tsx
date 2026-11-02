@@ -5,7 +5,10 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import type { FC, ReactNode } from 'react'
 import { ROUTES } from '../../../config/routes'
-import { useBookingConfig, useBookingPageReview } from '../../../features/booking'
+import {
+  useBookingConfig,
+  useBookingPageReview
+} from '../../../features/booking'
 import { useCart } from '../../../features/cart'
 import { CoreTextMarkdown } from '../../core-text-markdown'
 import { CartActions } from '../components/actions'
@@ -104,19 +107,28 @@ export const CartPage: FC<Props> = ({
             </summary>
             <div className={styles.policySection__content}>
               <p>
-                All Xtreme Xperience Bookings are refundable within 7 calendar days from the purchase date. Note, this does not mean 7 days after your Xperience date. Gift vouchers are final sale and non-refundable.
+                All Xtreme Xperience Bookings are refundable within 7 calendar
+                days from the purchase date. Note, this does not mean 7 days
+                after your Xperience date. Gift vouchers are final sale and
+                non-refundable.
               </p>
               <p>
-                ALL 7-Day refund requests MUST be submitted by email to info@xxspeed.com within 7 days of the original purchase, and are subject to a 5% bank processing fee.
+                ALL 7-Day refund requests MUST be submitted by email to
+                info@xxspeed.com within 7 days of the original purchase, and are
+                subject to a 5% bank processing fee.
               </p>
               <p>
-                7-DAY REFUND GUARANTEE is not applicable if the reserved Event Day is within 7 days of the purchase date.
+                7-DAY REFUND GUARANTEE is not applicable if the reserved Event
+                Day is within 7 days of the purchase date.
               </p>
               <p>
-                TICKETS MAY NOT BE RESCHEDULED OUTSIDE OF THE EVENT WEEKEND. This ticket is fully transferable to another individual and may be gifted or sold.
+                TICKETS MAY NOT BE RESCHEDULED OUTSIDE OF THE EVENT WEEKEND.
+                This ticket is fully transferable to another individual and may
+                be gifted or sold.
               </p>
               <p>
-                See our FAQ page for all agreed upon Refund, Reschedule, and Weather policies and procedures.
+                See our FAQ page for all agreed upon Refund, Reschedule, and
+                Weather policies and procedures.
               </p>
             </div>
           </details>
@@ -130,11 +142,10 @@ export const CartPage: FC<Props> = ({
                 Please refer to our policies page for full terms and conditions.
               </p>
               <p>
-                If you have any other questions, feel free to call (866) 273-7727 or email info@xxspeed.com.
+                If you have any other questions, feel free to call (866)
+                273-7727 or email info@xxspeed.com.
               </p>
-              <p>
-                See you on the track!
-              </p>
+              <p>See you on the track!</p>
             </div>
           </details>
 

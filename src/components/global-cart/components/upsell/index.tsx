@@ -9,9 +9,9 @@ export const Upsell: React.FC = () => {
   const upsell =
     data?.upsell && data.upsell.length > 0
       ? data.upsell
-      : data?.addons?.filter((item) =>
+      : (data?.addons?.filter((item) =>
           item.model?.title?.toLowerCase().includes('pit pass')
-        ) ?? []
+        ) ?? [])
 
   if (!upsell || upsell.length === 0) {
     return null

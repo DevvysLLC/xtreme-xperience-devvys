@@ -64,17 +64,13 @@ export class BookingConfigService {
           promo.dateBadgeBackgroundColor?.hex ||
           null,
         dateBadgeTextColor:
-          rule.dateBadgeTextColor?.hex ||
-          promo.dateBadgeTextColor?.hex ||
-          null,
+          rule.dateBadgeTextColor?.hex || promo.dateBadgeTextColor?.hex || null,
         cardBadgeBackgroundColor:
           rule.cardBadgeBackgroundColor?.hex ||
           promo.cardBadgeBackgroundColor?.hex ||
           null,
         cardBadgeTextColor:
-          rule.cardBadgeTextColor?.hex ||
-          promo.cardBadgeTextColor?.hex ||
-          null
+          rule.cardBadgeTextColor?.hex || promo.cardBadgeTextColor?.hex || null
       }))
     })
 

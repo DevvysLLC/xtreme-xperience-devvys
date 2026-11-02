@@ -79,7 +79,8 @@ export const CompareCarsModal: FC<Props> = ({
                   {comparedCars.map((item) => {
                     const supercar = item.supercar.supercar
                     const make = supercar.model?.make ?? ''
-                    const model = supercar.model?.model ?? supercar.model?.title ?? ''
+                    const model =
+                      supercar.model?.model ?? supercar.model?.title ?? ''
                     const imgUrl =
                       item.supercar.thumbnailOverride?.image?.url ??
                       supercar.model?.thumbnail?.image?.url ??
@@ -116,7 +117,9 @@ export const CompareCarsModal: FC<Props> = ({
                   <th scope="row">Highest standard value</th>
                   {comparedCars.map((item) => (
                     <td key={item.seatTypeId} className={styles.modal__cell}>
-                      {item.standardValue != null ? `$${item.standardValue}` : '—'}
+                      {item.standardValue != null
+                        ? `$${item.standardValue}`
+                        : '—'}
                     </td>
                   ))}
                 </tr>

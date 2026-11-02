@@ -73,7 +73,9 @@ export const CouponForm: FC = () => {
       >
         {(field) => (
           <div className={styles.form__field}>
-            <span className={styles.form__label}>Have a coupon or gift voucher?</span>
+            <span className={styles.form__label}>
+              Have a coupon or gift voucher?
+            </span>
             <div className={styles.form__row}>
               <input
                 type="text"

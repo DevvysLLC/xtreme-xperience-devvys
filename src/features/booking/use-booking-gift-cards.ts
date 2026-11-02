@@ -12,7 +12,9 @@ type GiftCardsApiResponse = {
   }
 }
 
-const isGiftCardsApiResponse = (value: unknown): value is GiftCardsApiResponse => {
+const isGiftCardsApiResponse = (
+  value: unknown
+): value is GiftCardsApiResponse => {
   if (value === null || typeof value !== 'object') {
     return false
   }
@@ -21,7 +23,11 @@ const isGiftCardsApiResponse = (value: unknown): value is GiftCardsApiResponse =
     return false
   }
 
-  if (!('data' in value) || value.data === null || typeof value.data !== 'object') {
+  if (
+    !('data' in value) ||
+    value.data === null ||
+    typeof value.data !== 'object'
+  ) {
     return false
   }
 

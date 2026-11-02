@@ -1312,16 +1312,17 @@ export const UsStateSchema = z.object({
 export const CheckoutStringEmailSchema = z.string().email()
 export const CheckoutStringUsPhoneNumberSchema = z
   .string()
-  .refine(
-    (val) => {
-      const digits = val.replace(/\D/g, '')
-      return digits.length === 10 || (digits.length === 11 && digits.startsWith('1'))
-    },
-    'must match 10-digit phone number'
-  )
+  .refine((val) => {
+    const digits = val.replace(/\D/g, '')
+    return (
+      digits.length === 10 || (digits.length === 11 && digits.startsWith('1'))
+    )
+  }, 'must match 10-digit phone number')
   .transform((val) => {
     const digits = val.replace(/\D/g, '')
-    return digits.length === 11 && digits.startsWith('1') ? digits.slice(1) : digits
+    return digits.length === 11 && digits.startsWith('1')
+      ? digits.slice(1)
+      : digits
   })
 
 export const CheckoutDetailsFormInputSchema = z.object({
@@ -1666,17 +1667,15 @@ export const UserStateSchema = z.object({
 
 export const ContactEmailSchema = z.string().min(1, 'required').email('invalid')
 
-export const ContactPhoneSchema = z
-  .string()
-  .refine((val) => {
-    if (val.trim() === '') {
-      return true
-    }
-    const digits = val.replace(/\D/g, '')
-    return (
-      digits.length === 10 || (digits.length === 11 && digits.startsWith('1'))
-    )
-  }, 'invalid')
+export const ContactPhoneSchema = z.string().refine((val) => {
+  if (val.trim() === '') {
+    return true
+  }
+  const digits = val.replace(/\D/g, '')
+  return (
+    digits.length === 10 || (digits.length === 11 && digits.startsWith('1'))
+  )
+}, 'invalid')
 
 export const ContactPostalCodeSchema = z
   .string()

@@ -13,8 +13,25 @@ export type BookingDiscountRule = {
   addons?: Array<{ id: string }> | null
   giftCards?: Array<{ id: string }> | null
   excludedTracks?: Array<{ id: string; [key: string]: unknown }> | null
-  daysOfWeek?: 'all' | 'weekdays' | 'monday_thursday' | 'weekends' | 'friday' | 'saturday' | 'sunday' | string | null
-  targetType?: 'all' | 'supercars' | 'ride_along' | 'packages' | 'addons' | 'gift_cards' | string | null
+  daysOfWeek?:
+    | 'all'
+    | 'weekdays'
+    | 'monday_thursday'
+    | 'weekends'
+    | 'friday'
+    | 'saturday'
+    | 'sunday'
+    | string
+    | null
+  targetType?:
+    | 'all'
+    | 'supercars'
+    | 'ride_along'
+    | 'packages'
+    | 'addons'
+    | 'gift_cards'
+    | string
+    | null
   compareAtOverride?: number | null
   badgeLabel?: string | null
   dateBadgeBackgroundColor?: string | null
@@ -142,12 +159,25 @@ const checkRuleMatchesDate = (
 
     const d = new Date(dateStr.includes('T') ? dateStr : `${dateStr}T00:00:00`)
     const monthNames = [
-      'jan', 'feb', 'mar', 'apr', 'may', 'jun',
-      'jul', 'aug', 'sep', 'oct', 'nov', 'dec'
+      'jan',
+      'feb',
+      'mar',
+      'apr',
+      'may',
+      'jun',
+      'jul',
+      'aug',
+      'sep',
+      'oct',
+      'nov',
+      'dec'
     ]
     const mName = monthNames[d.getMonth()]
     const dayNum = d.getDate()
-    if (mName && new RegExp(`\\b${mName}[a-z]*\\s*${dayNum}\\b`, 'i').test(titleLower)) {
+    if (
+      mName &&
+      new RegExp(`\\b${mName}[a-z]*\\s*${dayNum}\\b`, 'i').test(titleLower)
+    ) {
       return true
     }
 
@@ -220,16 +250,23 @@ export const getDateDiscountRule = ({
 
     // 3. Event filter
     if (rule.applyToAllEvents === false) {
-      if (!eventId || !rule.events || !rule.events.some((e) => e.id === eventId)) {
+      if (
+        !eventId ||
+        !rule.events ||
+        !rule.events.some((e) => e.id === eventId)
+      ) {
         continue
       }
     }
 
     // 4. Car / Package filter
     if (isMulticar) {
-      const packageList = (rule.packages && rule.packages.length > 0)
-        ? rule.packages
-        : (rule.targetType === 'packages' ? rule.supercars : null)
+      const packageList =
+        rule.packages && rule.packages.length > 0
+          ? rule.packages
+          : rule.targetType === 'packages'
+            ? rule.supercars
+            : null
       if (packageList && packageList.length > 0) {
         if (!supercarId || !packageList.some((p) => p.id === supercarId)) {
           continue
@@ -249,9 +286,16 @@ export const getDateDiscountRule = ({
     }
 
     // Determine badge label - only show if explicit non-empty badgeLabel is provided
-    const badge = rule.badgeLabel && rule.badgeLabel.trim() ? rule.badgeLabel.trim() : undefined
+    const badge =
+      rule.badgeLabel && rule.badgeLabel.trim()
+        ? rule.badgeLabel.trim()
+        : undefined
     let percent: number | undefined
-    if (rule.discountValue && rule.discountValue > 0 && rule.discountType === 'percentage') {
+    if (
+      rule.discountValue &&
+      rule.discountValue > 0 &&
+      rule.discountType === 'percentage'
+    ) {
       percent = Math.round(rule.discountValue)
     }
 
@@ -319,11 +363,11 @@ export const getScheduleDiscount = ({
     'saturday'
   ]
   const weekday = scheduleDate
-    ? weekdayNames[
+    ? (weekdayNames[
         new Date(
           scheduleDate.includes('T') ? scheduleDate : `${scheduleDate}T00:00:00`
         ).getDay()
-      ] ?? ''
+      ] ?? '')
     : ''
 
   for (const rule of rules) {
@@ -350,16 +394,23 @@ export const getScheduleDiscount = ({
 
     // 3. Event filter
     if (rule.applyToAllEvents === false) {
-      if (!eventId || !rule.events || !rule.events.some((e) => e.id === eventId)) {
+      if (
+        !eventId ||
+        !rule.events ||
+        !rule.events.some((e) => e.id === eventId)
+      ) {
         continue
       }
     }
 
     // 4. Car / Package filter
     if (isMulticar) {
-      const packageList = (rule.packages && rule.packages.length > 0)
-        ? rule.packages
-        : (rule.targetType === 'packages' ? rule.supercars : null)
+      const packageList =
+        rule.packages && rule.packages.length > 0
+          ? rule.packages
+          : rule.targetType === 'packages'
+            ? rule.supercars
+            : null
       if (packageList && packageList.length > 0) {
         if (!supercarId || !packageList.some((p) => p.id === supercarId)) {
           continue
@@ -414,15 +465,23 @@ export const getScheduleDiscount = ({
     let calculatedPrice = basePathPrice(basePrice)
     if (rule.discountType === 'percentage' && discountVal > 0) {
       const discountAmount = (calculatedPrice * discountVal) / 100
-      calculatedPrice = Math.max(0, Math.round(calculatedPrice - discountAmount))
+      calculatedPrice = Math.max(
+        0,
+        Math.round(calculatedPrice - discountAmount)
+      )
     } else if (discountVal > 0) {
       // Fixed dollar discount (handle value in cents or dollars)
-      const dollarDiscount = discountVal > 1000 ? discountVal / 100 : discountVal
-      calculatedPrice = Math.max(0, Math.round(calculatedPrice - dollarDiscount))
+      const dollarDiscount =
+        discountVal > 1000 ? discountVal / 100 : discountVal
+      calculatedPrice = Math.max(
+        0,
+        Math.round(calculatedPrice - dollarDiscount)
+      )
     }
 
     const hasPriceDiscount = calculatedPrice < basePathPrice(basePrice)
-    const hasCompareAtOverride = rule.compareAtOverride != null && rule.compareAtOverride > calculatedPrice
+    const hasCompareAtOverride =
+      rule.compareAtOverride != null && rule.compareAtOverride > calculatedPrice
 
     if (hasPriceDiscount || hasCompareAtOverride) {
       const compareAt =
@@ -433,7 +492,10 @@ export const getScheduleDiscount = ({
       return {
         price: calculatedPrice,
         compareAtPrice: compareAt,
-        badgeLabel: rule.badgeLabel && rule.badgeLabel.trim() ? rule.badgeLabel.trim() : null,
+        badgeLabel:
+          rule.badgeLabel && rule.badgeLabel.trim()
+            ? rule.badgeLabel.trim()
+            : null,
         cardBadgeBackgroundColor: rule.cardBadgeBackgroundColor ?? null,
         cardBadgeTextColor: rule.cardBadgeTextColor ?? null,
         isDiscounted: true
@@ -539,14 +601,25 @@ export const getAddonDiscount = ({
     let calculatedPrice = basePrice
     if (rule.discountType === 'percentage' && discountVal > 0) {
       const discountAmount = (calculatedPrice * discountVal) / 100
-      calculatedPrice = Math.max(0, Math.round(calculatedPrice - discountAmount))
+      calculatedPrice = Math.max(
+        0,
+        Math.round(calculatedPrice - discountAmount)
+      )
     } else if (discountVal > 0) {
       if (valueInCents) {
-        const centsDiscount = discountVal >= 100 ? discountVal : discountVal * 100
-        calculatedPrice = Math.max(0, Math.round(calculatedPrice - centsDiscount))
+        const centsDiscount =
+          discountVal >= 100 ? discountVal : discountVal * 100
+        calculatedPrice = Math.max(
+          0,
+          Math.round(calculatedPrice - centsDiscount)
+        )
       } else {
-        const dollarDiscount = discountVal >= 1000 ? discountVal / 100 : discountVal
-        calculatedPrice = Math.max(0, Math.round(calculatedPrice - dollarDiscount))
+        const dollarDiscount =
+          discountVal >= 1000 ? discountVal / 100 : discountVal
+        calculatedPrice = Math.max(
+          0,
+          Math.round(calculatedPrice - dollarDiscount)
+        )
       }
     }
 

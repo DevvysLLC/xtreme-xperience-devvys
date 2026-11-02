@@ -3,8 +3,10 @@
 import clsx from 'clsx'
 // import { format } from 'date-fns'
 import { useEffect, useMemo, useState } from 'react'
-import { logger } from '../../../../core/logger/logger'
 import type { BookingSupercarGroupFragment } from '../../../../core/dato/fragments/booking-config.typegen'
+import { logger } from '../../../../core/logger/logger'
+import { useBookingSupercarSchedule } from '../../../../features/booking'
+import { useToast } from '../../../../features/toast'
 // import { parseLocalDate } from '../../../../utils/date-time'
 import { getSeatTypeIdWithOverride } from '../../../../utils/get-seat-type-id-with-override'
 import {
@@ -12,13 +14,8 @@ import {
   sortSupercarsByAvailability,
   sortSupercarsByPrice
 } from '../../../../utils/sort-supercars-by-availability'
-import { useBookingSupercarSchedule } from '../../../../features/booking'
-import { useToast } from '../../../../features/toast'
 import { useBookingWizardState } from '../../context'
-import {
-  CompareCarsModal,
-  type ComparedCarItem
-} from '../compare-cars-modal'
+import { CompareCarsModal, type ComparedCarItem } from '../compare-cars-modal'
 import { GiftCardShop } from '../gift-card-shop'
 import { SupercarOptionsCard } from '../supercar-options-card'
 import styles from './style.module.scss'
@@ -35,7 +32,9 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
   const { lowestAvailablePrice, getEffectivePrice } =
     useBookingSupercarSchedule()
   const [selectedCarKey, setSelectedCarKey] = useState<string | null>(null)
-  const [editingLineItemId, setEditingLineItemId] = useState<string | null>(null)
+  const [editingLineItemId, setEditingLineItemId] = useState<string | null>(
+    null
+  )
   const [sortBy, setSortBy] = useState<'featured' | 'low' | 'high'>('featured')
   const [comparedSeatTypeIds, setComparedSeatTypeIds] = useState<number[]>([])
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false)
@@ -65,7 +64,8 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
   // Get schedules for the selected day to check sold-out status
   const selectedDaySchedules =
     state.eventData?.schedules?.find(
-      (schedule: { date?: string | null }) => schedule.date === state.selectedDayDate
+      (schedule: { date?: string | null }) =>
+        schedule.date === state.selectedDayDate
     ) ?? null
   const schedules = useMemo(
     () => selectedDaySchedules?.schedules ?? [],
@@ -73,7 +73,8 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
   )
   // Gather all schedules for all days of the event to check if a car is assigned to the event
   const allEventSchedules = useMemo(
-    () => state.eventData?.schedules?.flatMap((day) => day.schedules ?? []) ?? [],
+    () =>
+      state.eventData?.schedules?.flatMap((day) => day.schedules ?? []) ?? [],
     [state.eventData?.schedules]
   )
   // Filter & sort supercars: filter out unassigned cars, and sort sold-out ones to the bottom
@@ -94,16 +95,12 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
     )
 
     if (sortBy === 'low' || sortBy === 'high') {
-      return sortSupercarsByPrice(
-        filtered,
-        schedules,
-        sortBy,
-        (supercar) =>
-          getSeatTypeIdWithOverride({
-            defaultSeatTypeId: supercar.rocketRezSeatTypeId,
-            overrides: supercar.rocketRezSeatTypeIdOverrides,
-            selectedEventId
-          })
+      return sortSupercarsByPrice(filtered, schedules, sortBy, (supercar) =>
+        getSeatTypeIdWithOverride({
+          defaultSeatTypeId: supercar.rocketRezSeatTypeId,
+          overrides: supercar.rocketRezSeatTypeIdOverrides,
+          selectedEventId
+        })
       )
     }
 
@@ -114,11 +111,20 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
         selectedEventId
       })
     )
-  }, [activeGroup?.supercars, schedules, allEventSchedules, selectedEventId, sortBy])
+  }, [
+    activeGroup?.supercars,
+    schedules,
+    allEventSchedules,
+    selectedEventId,
+    sortBy
+  ])
 
   // Handle opening and scrolling to a specific car or package schedule
   useEffect(() => {
-    const openTarget = (targetSeatTypeId: number, targetLineItemId?: string) => {
+    const openTarget = (
+      targetSeatTypeId: number,
+      targetLineItemId?: string
+    ) => {
       if (targetLineItemId) {
         setEditingLineItemId(targetLineItemId)
       }
@@ -157,7 +163,9 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
 
       // Schedule scrolling into view and opening card schedule
       const attemptOpen = (attemptsLeft: number) => {
-        const cardEl = document.getElementById(`supercar-card-${targetSeatTypeId}`)
+        const cardEl = document.getElementById(
+          `supercar-card-${targetSeatTypeId}`
+        )
         if (cardEl) {
           cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
           const selectBtn = cardEl.querySelector(
@@ -183,11 +191,13 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
       }
       const eventDetail = event.detail
       const targetSeatTypeId =
-        'seatTypeId' in eventDetail && typeof eventDetail.seatTypeId === 'number'
+        'seatTypeId' in eventDetail &&
+        typeof eventDetail.seatTypeId === 'number'
           ? eventDetail.seatTypeId
           : undefined
       const targetLineItemId =
-        'lineItemId' in eventDetail && typeof eventDetail.lineItemId === 'string'
+        'lineItemId' in eventDetail &&
+        typeof eventDetail.lineItemId === 'string'
           ? eventDetail.lineItemId
           : undefined
       if (targetSeatTypeId) {
@@ -204,7 +214,7 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
         if (pendingLineId) {
           sessionStorage.removeItem('pendingEditLineItemId')
         }
-        const pendingSeat = parseInt(pendingSeatStr, 10)
+        const pendingSeat = Number.parseInt(pendingSeatStr, 10)
         if (!isNaN(pendingSeat) && pendingSeat > 0) {
           setTimeout(() => {
             openTarget(pendingSeat, pendingLineId ?? undefined)
@@ -219,12 +229,7 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
     return () => {
       window.removeEventListener('open-supercar-schedule', handleOpenSchedule)
     }
-  }, [
-    activeTabIndex,
-    supercarGroups,
-    selectedEventId,
-    setActiveTabIndex
-  ])
+  }, [activeTabIndex, supercarGroups, selectedEventId, setActiveTabIndex])
 
   // const formattedDate = useMemo(() => {
   //   if (!state.selectedDayDate) {
@@ -296,8 +301,13 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
       }
 
       const isMulticar = option.isMulticar ?? false
-      const lowestPrice = lowestAvailablePrice(schedules, seatTypeId, isMulticar)
-      const drivePrice = lowestPrice?.price != null ? Math.ceil(lowestPrice.price) : null
+      const lowestPrice = lowestAvailablePrice(
+        schedules,
+        seatTypeId,
+        isMulticar
+      )
+      const drivePrice =
+        lowestPrice?.price != null ? Math.ceil(lowestPrice.price) : null
 
       let highest = 0
       if (!isMulticar) {
@@ -312,7 +322,7 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
       const referenceValue =
         option.priceOverride?.compareAtPrice != null
           ? option.priceOverride.compareAtPrice / 100
-          : standardValue ?? (lowestPrice?.compareAtPrice ?? 0)
+          : (standardValue ?? lowestPrice?.compareAtPrice ?? 0)
 
       const savings =
         drivePrice != null && referenceValue > drivePrice
@@ -380,7 +390,9 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
                   aria-pressed={!isGiftsTab && activeTabIndex === index}
                 >
                   <span className={styles.tabs__tab_title}>{title}</span>
-                  <span className={styles.tabs__tab_description}>{description}</span>
+                  <span className={styles.tabs__tab_description}>
+                    {description}
+                  </span>
                 </button>
               </li>
             )
@@ -400,7 +412,9 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
                 data-tab="gifts"
               >
                 <span className={styles.tabs__tab_title}>Gift cards</span>
-                <span className={styles.tabs__tab_description}>Let them choose</span>
+                <span className={styles.tabs__tab_description}>
+                  Let them choose
+                </span>
               </button>
             </li>
           )}
@@ -529,7 +543,9 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
               if (match >= 0) {
                 const targetKey = `${activeTabIndex}-${seatTypeId}-${match}`
                 setSelectedCarKey(targetKey)
-                const cardEl = document.getElementById(`supercar-card-${seatTypeId}`)
+                const cardEl = document.getElementById(
+                  `supercar-card-${seatTypeId}`
+                )
                 if (cardEl) {
                   cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
                 }

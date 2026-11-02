@@ -18,7 +18,8 @@ export const CartTotals: FC = () => {
   const t = useTranslations('global_cart')
   const { data: cart } = useCart()
   const lineItemsSubtotal = useCartLineItemsTotal(cart?.cartData?.lineItems)
-  const subtotal = lineItemsSubtotal > 0 ? lineItemsSubtotal : (cart?.cartData?.subTotal ?? 0)
+  const subtotal =
+    lineItemsSubtotal > 0 ? lineItemsSubtotal : (cart?.cartData?.subTotal ?? 0)
   const cartTaxFromBreakdown = (cart?.cartData?.taxes ?? []).reduce(
     (sum, tax) => sum + getTaxAmount(tax),
     0
@@ -98,7 +99,9 @@ export const CartTotals: FC = () => {
 
       {roundedVariableFeeTotal > 0 && (
         <div className={styles.cartTotals__row}>
-          <span className={styles.cartTotals__label}>{t('summary.ticketing_fee')}</span>
+          <span className={styles.cartTotals__label}>
+            {t('summary.ticketing_fee')}
+          </span>
           <span className={styles.cartTotals__value}>
             <CoreRocketRezPrice
               data={{

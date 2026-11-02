@@ -176,11 +176,19 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
     if (supercar.model?.make && supercar.model?.model) {
       return `${supercar.model.make} ${supercar.model.model}`.toUpperCase()
     }
-    return (supercar.model?.title ?? `SUPERCAR ${rocketRezSeatTypeId}`).toUpperCase()
+    return (
+      supercar.model?.title ?? `SUPERCAR ${rocketRezSeatTypeId}`
+    ).toUpperCase()
   }, [bookingSupercar.titleOverride, supercar.model, rocketRezSeatTypeId])
 
   const lapsText = useMemo(() => {
-    const laps = lapsPerSession ?? (isMulticar ? (bookingSupercar.multicarCount ? bookingSupercar.multicarCount * 4 : 8) : 4)
+    const laps =
+      lapsPerSession ??
+      (isMulticar
+        ? bookingSupercar.multicarCount
+          ? bookingSupercar.multicarCount * 4
+          : 8
+        : 4)
     return `${laps} total laps on track. `
   }, [lapsPerSession, isMulticar, bookingSupercar.multicarCount])
 
@@ -282,7 +290,12 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
       }
     }
     return highest > 0 ? highest : null
-  }, [state.eventData?.schedules, getEffectivePrice, rocketRezSeatTypeId, isMulticar])
+  }, [
+    state.eventData?.schedules,
+    getEffectivePrice,
+    rocketRezSeatTypeId,
+    isMulticar
+  ])
 
   // For packages (isMulticar), resolve all required rate IDs from the first available schedule
   // to determine sold-out status accurately
@@ -355,10 +368,10 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
     const selectedSlotPrice =
       cardState.selectedDaySchedule?.rateTypePrice?.price
     const currentPrice =
-      ((selectedSlotPrice ??
+      (selectedSlotPrice ??
         (bookingSupercar.priceOverride?.price != null
           ? bookingSupercar.priceOverride.price / 100
-          : null)) ??
+          : null) ??
         0) * quantity
     const selectedCompareAt =
       (bookingSupercar.priceOverride?.compareAtPrice != null
@@ -595,7 +608,10 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
         try {
           sessionStorage.removeItem('pendingEditLineItemId')
         } catch (error) {
-          logger.debug({ error }, 'supercar-options-card.sessionStorage.remove.error')
+          logger.debug(
+            { error },
+            'supercar-options-card.sessionStorage.remove.error'
+          )
         }
       }
 
@@ -630,7 +646,10 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
     try {
       sessionStorage.removeItem('pendingEditLineItemId')
     } catch (error) {
-      logger.debug({ error }, 'supercar-options-card.handleRemove.sessionStorage.error')
+      logger.debug(
+        { error },
+        'supercar-options-card.handleRemove.sessionStorage.error'
+      )
     }
   }
 
@@ -651,7 +670,9 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
 
   const trackName = state.selectedEvent?.model?.track?.model?.nickname ?? ''
   const panelTitle =
-    supercar.model?.make && supercar.model?.model && !bookingSupercar.titleOverride
+    supercar.model?.make &&
+    supercar.model?.model &&
+    !bookingSupercar.titleOverride
       ? `${supercar.model.make} ${supercar.model.model}`
       : null
 
@@ -683,17 +704,16 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
   const cmsBadge = badge ?? promoBadge ?? supercar.model?.badges?.[0] ?? null
 
   const renderPrice = (selectedMode: boolean) => {
-    const showSelected =
-      selectedMode && !!cardState.selectedDaySchedule?.price
+    const showSelected = selectedMode && !!cardState.selectedDaySchedule?.price
     const quantity = showSelected ? (cardState.selectedQuantity ?? 1) : 1
     const selectedSlotPrice =
       cardState.selectedDaySchedule?.rateTypePrice?.price
     const activeLowest = lowestDiscountedPrice ?? lowestPrice
     const currentPrice = showSelected
-      ? ((selectedSlotPrice ??
+      ? (selectedSlotPrice ??
           (bookingSupercar.priceOverride?.price != null
             ? bookingSupercar.priceOverride.price / 100
-            : null)) ??
+            : null) ??
           0) * quantity
       : bookingSupercar.priceOverride?.price != null
         ? bookingSupercar.priceOverride.price / 100
@@ -854,8 +874,8 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
                         ? 'Ride with a professional driver.'
                         : isMulticar
                           ? 'Experience more than one dream car.'
-                          : (state.configData?.whatsIncludedLead ||
-                            'You drive. A professional instructor rides with you.'))}
+                          : state.configData?.whatsIncludedLead ||
+                            'You drive. A professional instructor rides with you.')}
                   </strong>
                 </p>
                 <p className={styles.modal__desc}>
@@ -863,24 +883,24 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
                   {bookingSupercar.whatsIncludedDescriptionOverride ||
                     (bookingSupercar.isRideAlong
                       ? 'A passenger experience.'
-                      : (state.configData?.whatsIncludedDescription ||
-                        'No prior track experience needed. Instruction included.'))}
+                      : state.configData?.whatsIncludedDescription ||
+                        'No prior track experience needed. Instruction included.')}
                 </p>
 
-                <div className={styles.modal__price}>
-                  {renderPrice(false)}
-                </div>
+                <div className={styles.modal__price}>{renderPrice(false)}</div>
 
                 <div className={styles.modal__notice}>
                   {bookingSupercar.whatsIncludedNoticeOverride ||
                     (isMulticar &&
-                    (bookingSupercar.titleOverride?.toLowerCase().includes('fleet') ||
+                    (bookingSupercar.titleOverride
+                      ?.toLowerCase()
+                      .includes('fleet') ||
                       bookingSupercar.multicarCount === 8)
                       ? 'Includes all 8 cars, track insurance, a lead-car ride, Full-Throttle and skip-the-line access.'
                       : bookingSupercar.isRideAlong
                         ? 'Confirm passenger eligibility in the live booking flow.'
-                        : (state.configData?.whatsIncludedNotice ||
-                          'Required coverage is additional and shown before you continue. Photos, video, and ride-alongs are optional.'))}
+                        : state.configData?.whatsIncludedNotice ||
+                          'Required coverage is additional and shown before you continue. Photos, video, and ride-alongs are optional.')}
                 </div>
 
                 <button
@@ -1046,7 +1066,9 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
                     ? t('button.update_cart')
                     : t('button.add_to_cart')
                 }
-                disabled={!cardState.selectedDaySchedule || isPending || isRemoving}
+                disabled={
+                  !cardState.selectedDaySchedule || isPending || isRemoving
+                }
                 onClick={() => {
                   form.handleSubmit()
                 }}

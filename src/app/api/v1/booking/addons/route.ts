@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
-import { initLogger } from '../../../../../core/logger/index'
 import type { SectionAddonsGridFragment } from '../../../../../components/section-addons-grid/section-addons-grid.typegen'
 import { initDatoSdk } from '../../../../../core/dato/sdk'
+import { initLogger } from '../../../../../core/logger/index'
 
 const logger = initLogger().child({ name: 'gift-cards-api' })
 
@@ -15,7 +15,9 @@ export const GET = async (): Promise<NextResponse> => {
     const sections = page?.content?.sections ?? []
 
     // Look for SectionAddonsGridRecord
-    const isSectionAddonsGrid = (sec: (typeof sections)[number]): sec is SectionAddonsGridFragment => {
+    const isSectionAddonsGrid = (
+      sec: (typeof sections)[number]
+    ): sec is SectionAddonsGridFragment => {
       return sec?.__typename === 'SectionAddonsGridRecord'
     }
 

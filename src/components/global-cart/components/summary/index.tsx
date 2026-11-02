@@ -12,15 +12,14 @@ import {
 } from '../../../../features/cart'
 import type { RocketRezLineItem } from '../../../../io/types'
 import { getCartLineItemReadMetadataKey } from '../../../../utils/get-cart-line-item-metadata-key'
+import { useOptionalBookingWizardState } from '../../../booking-wizard/context'
 import { CoreRocketRezPrice } from '../../../core-rocketrez-price'
+import { CoreTextMarkdown } from '../../../core-text-markdown'
 import { CouponForm } from '../coupon-form'
 import { CouponRemove } from '../coupon-remove'
-import { useOptionalBookingWizardState } from '../../../booking-wizard/context'
 import { CartExpiry } from '../expiry'
 import { CartLocation } from '../location'
 import styles from './style.module.scss'
-
-import { CoreTextMarkdown } from '../../../core-text-markdown'
 
 const SummaryLineItem: FC<{ lineItem: RocketRezLineItem }> = ({ lineItem }) => {
   const { metadata } = useCartLineItemMetadata({ lineItem })
@@ -40,7 +39,8 @@ const SummaryLineItem: FC<{ lineItem: RocketRezLineItem }> = ({ lineItem }) => {
     rawName.toLowerCase().includes('ride-along') ||
     rawName.toLowerCase().includes('hellcat')
 
-  let displayName = metaTitle || rawName || `${lineItem.type} #${lineItem.productId}`
+  let displayName =
+    metaTitle || rawName || `${lineItem.type} #${lineItem.productId}`
 
   if (isInsurance) {
     displayName = metaTitle || 'Damage Protection – Base'
@@ -201,27 +201,27 @@ export const CartSummary: FC = () => {
             const matchedLineItem = cart.cartData.lineItems.find(
               (li) => li.id === lineItemId
             )
-              const lineItemKey = matchedLineItem
-                ? getCartLineItemReadMetadataKey({ lineItem: matchedLineItem })
-                : null
-              const matchedMeta = lineItemKey
-                ? cartState?.metadata?.find((m) => m.key === lineItemKey)
-                : null
-              const name = matchedMeta?.title
-                ? getCleanName(matchedMeta.title)
-                : matchedLineItem?.name || matchedLineItem?.type || 'Product'
+            const lineItemKey = matchedLineItem
+              ? getCartLineItemReadMetadataKey({ lineItem: matchedLineItem })
+              : null
+            const matchedMeta = lineItemKey
+              ? cartState?.metadata?.find((m) => m.key === lineItemKey)
+              : null
+            const name = matchedMeta?.title
+              ? getCleanName(matchedMeta.title)
+              : matchedLineItem?.name || matchedLineItem?.type || 'Product'
 
-              items.push({
-                name,
-                category: couponLabel,
-                amount
-              })
-              accountedRRDiscounts += amount
-              processedLineItemIds.add(lineItemId)
-            }
+            items.push({
+              name,
+              category: couponLabel,
+              amount
+            })
+            accountedRRDiscounts += amount
+            processedLineItemIds.add(lineItemId)
           }
         }
       }
+    }
 
     if (cart?.cartData?.lineItems) {
       for (const lineItem of cart.cartData.lineItems) {
@@ -292,7 +292,6 @@ export const CartSummary: FC = () => {
           ))}
         </div>
       )}
-
 
       {lineItems.length > 0 && (
         <div className={styles.summary__itemsList}>
@@ -444,7 +443,9 @@ export const CartSummary: FC = () => {
           />
         </svg>
         <div className={styles.summary__secureText}>
-          <strong className={styles.summary__secureTitle}>Secure checkout</strong>
+          <strong className={styles.summary__secureTitle}>
+            Secure checkout
+          </strong>
           <span className={styles.summary__secureSubtitle}>
             Your payment information is encrypted and secure.
           </span>

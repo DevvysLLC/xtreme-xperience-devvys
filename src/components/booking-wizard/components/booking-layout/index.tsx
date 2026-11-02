@@ -86,10 +86,7 @@ export const BookingLayout: FC<Props> = ({ children, className }) => {
                 <CoreIcon icon={isCartOpen ? 'close' : 'chevron-down'} />
               </button>
 
-              <div
-                className={styles.popup__content}
-                aria-hidden={!isCartOpen}
-              >
+              <div className={styles.popup__content} aria-hidden={!isCartOpen}>
                 <CartAside />
               </div>
 

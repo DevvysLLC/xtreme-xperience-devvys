@@ -51,9 +51,12 @@ export const computeContents = (
       normalizedLineItemType === 'giftcard' ||
       normalizedLineItemType === 'gift_card' ||
       normalizedLineItemType === 'gift card' ||
-      (metadata?.type != null && String(metadata.type).toLowerCase().includes('gift')) ||
-      (lineItem.name != null && lineItem.name.toLowerCase().includes('gift card')) ||
-      (metadata?.title != null && metadata.title.toLowerCase().includes('gift card'))
+      (metadata?.type != null &&
+        String(metadata.type).toLowerCase().includes('gift')) ||
+      (lineItem.name != null &&
+        lineItem.name.toLowerCase().includes('gift card')) ||
+      (metadata?.title != null &&
+        metadata.title.toLowerCase().includes('gift card'))
     const inferredType =
       normalizedLineItemType === 'event'
         ? 'car'

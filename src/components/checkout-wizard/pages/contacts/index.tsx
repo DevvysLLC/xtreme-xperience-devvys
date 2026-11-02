@@ -2,8 +2,8 @@
 
 import { useForm } from '@tanstack/react-form'
 import { useQueryClient } from '@tanstack/react-query'
-import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { type FC, useEffect, useMemo, useRef, useState } from 'react'
 import { UNAVAILABLE_ANALYTICS_VALUE } from '../../../../config/analytics'
 import { ROUTES } from '../../../../config/routes'

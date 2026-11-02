@@ -43,10 +43,7 @@ export const ReviewPage = () => {
   return (
     <BookingLayout>
       <section>
-        <CartPage
-          showActions={false}
-          title="MY CART"
-        />
+        <CartPage showActions={false} title="MY CART" />
         <PageFooter
           title={t('footer.title')}
           isPending={false}

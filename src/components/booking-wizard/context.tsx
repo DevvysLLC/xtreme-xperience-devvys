@@ -144,7 +144,6 @@ export const BookingWizardProvider = ({ children }: Props) => {
   const resolvedIsLoadingEventData =
     isLoadingEventData || (eventId > 0 && resolvedEventData === null)
 
-
   const { lowestAvailablePriceFromRates } = useBookingSupercarSchedule()
 
   const activeTabIndex = useMemo(() => {

@@ -8,12 +8,12 @@ import type {
   RocketRezEventScheduleItem
 } from '../../../../../../io/types'
 import { getRateTypePrice } from '../../../../../../utils/get-rate-type-price'
+import { getScheduleDiscount } from '../../../../../../utils/get-schedule-discount'
 import { isScheduleSoldOut } from '../../../../../../utils/is-schedule-sold-out'
 import { CoreRocketRezPrice } from '../../../../../core-rocketrez-price'
 import { formatStartTimeForUsLocale } from '../../../../config'
 import { useBookingWizardState } from '../../../../context'
 import { useSupercarOptionsCard } from '../../context'
-import { getScheduleDiscount } from '../../../../../../utils/get-schedule-discount'
 import styles from './style.module.scss'
 
 type Props = {
@@ -66,9 +66,7 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
       <p className={styles.times__subtitle}>
         9:00 and 9:30 AM starts have lower prices.
       </p>
-      <p className={styles.times__key}>
-        Number badge = spots available
-      </p>
+      <p className={styles.times__key}>Number badge = spots available</p>
       <div className={styles.times__options}>
         {schedules.map((schedule) => {
           const scheduleId = schedule.id ?? 0
@@ -171,15 +169,16 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
           const quantity = cardState.selectedQuantity ?? 1
           const unitPrice = discountResult.price
           const unitCompareAtPrice = discountResult.compareAtPrice
-          const displayPrice =
-            unitPrice != null ? unitPrice * quantity : null
+          const displayPrice = unitPrice != null ? unitPrice * quantity : null
           const displayCompareAtPrice =
             unitCompareAtPrice != null ? unitCompareAtPrice * quantity : null
           const hasPrice = rateTypePrice?.hasPrice ?? false
           const isSoldOut =
             isScheduleSoldOut(
               schedule,
-              isMulticar && packageRateIds ? packageRateIds : rocketRezSeatTypeId
+              isMulticar && packageRateIds
+                ? packageRateIds
+                : rocketRezSeatTypeId
             ) ||
             (matchingSeatTypeAvailable !== null &&
               matchingSeatTypeAvailable < quantity)
@@ -223,8 +222,7 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
                       price: unitPrice,
                       rawPrice: rawSchedulePrice,
                       discountAmount,
-                      discountLabel:
-                        discountResult.badgeLabel || null,
+                      discountLabel: discountResult.badgeLabel || null,
                       rateTypePrice: rateTypePrice
                         ? {
                             ...rateTypePrice,

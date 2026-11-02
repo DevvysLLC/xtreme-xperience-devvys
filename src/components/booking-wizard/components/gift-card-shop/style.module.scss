@@ -200,7 +200,9 @@
   cursor: pointer;
   width: 100%;
   font-family: sg.font-family(barlow);
-  transition: background 0.15s ease, opacity 0.15s ease;
+  transition:
+    background 0.15s ease,
+    opacity 0.15s ease;
 
   &:hover:not(:disabled) {
     background: #e04e00;

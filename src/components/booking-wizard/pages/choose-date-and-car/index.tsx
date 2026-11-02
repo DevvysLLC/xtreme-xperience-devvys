@@ -16,10 +16,13 @@ import {
 } from '../../../../features/booking'
 import { useDialog } from '../../../../features/dialog'
 import { useToast } from '../../../../features/toast'
-import type { BookingCarLineItem, RocketRezEventScheduleDate } from '../../../../io/types'
+import type {
+  BookingCarLineItem,
+  RocketRezEventScheduleDate
+} from '../../../../io/types'
 import { getCartLineItemReadMetadataKey } from '../../../../utils/get-cart-line-item-metadata-key'
-import { getSeatTypeIdWithOverride } from '../../../../utils/get-seat-type-id-with-override'
 import { getDateDiscountRule } from '../../../../utils/get-schedule-discount'
+import { getSeatTypeIdWithOverride } from '../../../../utils/get-seat-type-id-with-override'
 import { CoreCta } from '../../../core-cta'
 import { CoreLoadingSpinner } from '../../../core-loading-spinner'
 import { BookingLayout } from '../../components/booking-layout'
@@ -27,7 +30,10 @@ import { DateSelect } from '../../components/date-select'
 import { DayTab } from '../../components/date-tab'
 import { PageFooter } from '../../components/page-footer'
 import { PageHeader } from '../../components/page-header'
-import { SupercarOptions, GIFTS_TAB_INDEX } from '../../components/supercar-options'
+import {
+  GIFTS_TAB_INDEX,
+  SupercarOptions
+} from '../../components/supercar-options'
 import { useBookingWizardState } from '../../context'
 import styles from './style.module.scss'
 
@@ -44,7 +50,8 @@ export const DateAndCarPage = () => {
     canSkipBooking
   } = contents ?? {}
   const router = useRouter()
-  const { state, setSelectedDayDate, setActiveTabIndex } = useBookingWizardState()
+  const { state, setSelectedDayDate, setActiveTabIndex } =
+    useBookingWizardState()
   const { showDialog } = useDialog()
   const { showToast } = useToast()
   const pathname = usePathname()
@@ -317,7 +324,11 @@ export const DateAndCarPage = () => {
   return (
     <BookingLayout>
       <section className={styles.section}>
-        <PageHeader title={title} description={description} centeredDesktop={true} />
+        <PageHeader
+          title={title}
+          description={description}
+          centeredDesktop={true}
+        />
         <div>
           <div className={styles.panel}>
             <div className={styles.datehead}>
@@ -351,7 +362,9 @@ export const DateAndCarPage = () => {
                       rateIds={resolvedRateIds}
                       isActive={state.selectedDayDate === day.date}
                       badgeLabel={dateDiscount?.badgeLabel ?? undefined}
-                      badgeBackgroundColor={dateDiscount?.dateBadgeBackgroundColor}
+                      badgeBackgroundColor={
+                        dateDiscount?.dateBadgeBackgroundColor
+                      }
                       badgeTextColor={dateDiscount?.dateBadgeTextColor}
                       isMulticar={isMulticarGroup}
                       onClick={() => {
@@ -377,9 +390,13 @@ export const DateAndCarPage = () => {
                       giftsTabBtn.click()
                     }
                     const target =
-                      document.getElementById('experience-section') ?? giftsTabBtn
+                      document.getElementById('experience-section') ??
+                      giftsTabBtn
                     if (target instanceof HTMLElement) {
-                      target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                      target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                      })
                     }
                   }}
                 >

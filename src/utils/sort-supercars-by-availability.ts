@@ -252,8 +252,8 @@ export const sortSupercarsByPrice = (
       const fallbackPrice =
         supercar.priceOverride?.price != null
           ? supercar.priceOverride.price / 100
-          : supercar.supercar.model?.displayPrice?.price ??
-            (direction === 'low' ? Number.POSITIVE_INFINITY : 0)
+          : (supercar.supercar.model?.displayPrice?.price ??
+            (direction === 'low' ? Number.POSITIVE_INFINITY : 0))
       const sortPrice = lowestSchedulePrice ?? fallbackPrice
 
       return { supercar, soldOut, sortPrice, index }

@@ -3,8 +3,8 @@
 import { type UseQueryResult, useQuery } from '@tanstack/react-query'
 import { ROUTES } from '../../config/routes'
 import type { BookingConfigFragment } from '../../core/dato/fragments/booking-config.typegen'
-import type { BookingDiscountRule } from '../../utils/get-schedule-discount'
 import { ApiBookingConfigGetBookingConfigResponseSchema } from '../../io'
+import type { BookingDiscountRule } from '../../utils/get-schedule-discount'
 import {
   BOOKING_ERRORS,
   BOOKING_QUERY_KEYS,
