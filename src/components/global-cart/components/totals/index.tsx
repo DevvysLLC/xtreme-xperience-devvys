@@ -72,7 +72,7 @@ export const CartTotals: FC = () => {
               prefix="-"
               data={{
                 id: 'discount-price',
-                price: -discountTotal
+                price: discountTotal
               }}
               valueInCents={false}
             />
