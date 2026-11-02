@@ -172,8 +172,11 @@ export const DateAndCarPage = () => {
   )
 
   const title = pageMetadata?.title ?? t('title')
-  const activeGroup =
-    state.configData?.supercars?.[state.activeTabIndex ?? 0] ?? null
+  const isGiftsTab =
+    showGiftCards && (state.activeTabIndex ?? 0) === GIFTS_TAB_INDEX
+  const activeGroup = isGiftsTab
+    ? null
+    : (state.configData?.supercars?.[state.activeTabIndex ?? 0] ?? null)
   const selectedEventId = state.selectedEvent?.model?.rocketRezId ?? null
   const resolvedRateIds = useMemo(() => {
     const mappedRateIds =
@@ -198,6 +201,20 @@ export const DateAndCarPage = () => {
   const isMulticarGroup = useMemo(
     () =>
       activeGroup?.supercars?.some((supercar) => supercar.isMulticar) ?? false,
+    [activeGroup]
+  )
+
+  const isRideAlongGroup = useMemo(
+    () =>
+      activeGroup?.supercars?.some((supercar) => supercar.isRideAlong) ?? false,
+    [activeGroup]
+  )
+
+  const activeGroupSupercarIds = useMemo(
+    () =>
+      activeGroup?.supercars
+        ?.map((supercar) => supercar.supercar?.id)
+        .filter((id): id is string => Boolean(id)) ?? [],
     [activeGroup]
   )
 
@@ -346,13 +363,17 @@ export const DateAndCarPage = () => {
               {state.eventData?.schedules?.map((day) => {
                 const trackId =
                   state.selectedEvent?.model?.track?.config?.id ?? null
-                const dateDiscount = getDateDiscountRule({
-                  date: day.date,
-                  eventId: state.selectedEvent?.id,
-                  trackId,
-                  isMulticar: isMulticarGroup,
-                  rules: state.configData?.discountRules
-                })
+                const dateDiscount = isGiftsTab
+                  ? null
+                  : getDateDiscountRule({
+                      date: day.date,
+                      eventId: state.selectedEvent?.id,
+                      trackId,
+                      groupSupercarIds: activeGroupSupercarIds,
+                      isRideAlong: isRideAlongGroup,
+                      isMulticar: isMulticarGroup,
+                      rules: state.configData?.discountRules
+                    })
 
                 return (
                   <li key={day.date} style={{ display: 'flex' }}>

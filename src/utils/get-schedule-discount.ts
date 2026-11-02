@@ -192,6 +192,7 @@ export const getDateDiscountRule = ({
   eventId,
   trackId,
   supercarId,
+  groupSupercarIds,
   isRideAlong,
   isMulticar,
   rules
@@ -200,6 +201,7 @@ export const getDateDiscountRule = ({
   eventId?: string | null
   trackId?: string | null
   supercarId?: string | null
+  groupSupercarIds?: string[] | null
   isRideAlong?: boolean | null
   isMulticar?: boolean | null
   rules?: BookingDiscountRule[] | null
@@ -226,6 +228,15 @@ export const getDateDiscountRule = ({
   ]
   const weekday = weekdayNames[dateObj.getDay()] ?? ''
 
+  let bestMatch: {
+    badgeLabel: string
+    discountPercent?: number
+    dateBadgeBackgroundColor?: string | null
+    dateBadgeTextColor?: string | null
+    rule: BookingDiscountRule
+  } | null = null
+  let bestScore = -1
+
   for (const rule of rules) {
     // 1. Excluded Tracks check (e.g. COTA, Sonoma)
     if (trackId && rule.excludedTracks && rule.excludedTracks.length > 0) {
@@ -248,6 +259,16 @@ export const getDateDiscountRule = ({
       continue
     }
 
+    const hasAddonOrGiftTargets =
+      (rule.addons && rule.addons.length > 0) ||
+      (rule.giftCards && rule.giftCards.length > 0)
+    const hasCarOrPackageTargets =
+      (rule.supercars && rule.supercars.length > 0) ||
+      (rule.packages && rule.packages.length > 0)
+    if (hasAddonOrGiftTargets && !hasCarOrPackageTargets) {
+      continue
+    }
+
     // 3. Event filter
     if (rule.applyToAllEvents === false) {
       if (
@@ -264,18 +285,43 @@ export const getDateDiscountRule = ({
       const packageList =
         rule.packages && rule.packages.length > 0
           ? rule.packages
-          : rule.targetType === 'packages'
+          : rule.supercars && rule.supercars.length > 0
             ? rule.supercars
             : null
       if (packageList && packageList.length > 0) {
-        if (!supercarId || !packageList.some((p) => p.id === supercarId)) {
-          continue
+        if (supercarId) {
+          if (!packageList.some((p) => p.id === supercarId)) {
+            continue
+          }
+        } else if (groupSupercarIds) {
+          if (
+            groupSupercarIds.length === 0 ||
+            !packageList.some((p) => groupSupercarIds.includes(p.id))
+          ) {
+            continue
+          }
         }
       }
     } else {
-      if (supercarId && rule.supercars && rule.supercars.length > 0) {
-        if (!rule.supercars.some((s) => s.id === supercarId)) {
-          continue
+      if (
+        rule.packages &&
+        rule.packages.length > 0 &&
+        (!rule.supercars || rule.supercars.length === 0)
+      ) {
+        continue
+      }
+      if (rule.supercars && rule.supercars.length > 0) {
+        if (supercarId) {
+          if (!rule.supercars.some((s) => s.id === supercarId)) {
+            continue
+          }
+        } else if (groupSupercarIds) {
+          if (
+            groupSupercarIds.length === 0 ||
+            !rule.supercars.some((s) => groupSupercarIds.includes(s.id))
+          ) {
+            continue
+          }
         }
       }
     }
@@ -300,17 +346,27 @@ export const getDateDiscountRule = ({
     }
 
     if (badge) {
-      return {
-        badgeLabel: badge,
-        discountPercent: percent,
-        dateBadgeBackgroundColor: rule.dateBadgeBackgroundColor ?? null,
-        dateBadgeTextColor: rule.dateBadgeTextColor ?? null,
-        rule
+      const rawVal = rule.discountValue ?? 0
+      const score =
+        rule.discountType === 'percentage'
+          ? rawVal
+          : rawVal >= 500
+            ? rawVal / 100
+            : rawVal
+      if (bestMatch === null || score > bestScore) {
+        bestScore = score
+        bestMatch = {
+          badgeLabel: badge,
+          discountPercent: percent,
+          dateBadgeBackgroundColor: rule.dateBadgeBackgroundColor ?? null,
+          dateBadgeTextColor: rule.dateBadgeTextColor ?? null,
+          rule
+        }
       }
     }
   }
 
-  return null
+  return bestMatch
 }
 
 /**
@@ -392,6 +448,16 @@ export const getScheduleDiscount = ({
       continue
     }
 
+    const hasAddonOrGiftTargets =
+      (rule.addons && rule.addons.length > 0) ||
+      (rule.giftCards && rule.giftCards.length > 0)
+    const hasCarOrPackageTargets =
+      (rule.supercars && rule.supercars.length > 0) ||
+      (rule.packages && rule.packages.length > 0)
+    if (hasAddonOrGiftTargets && !hasCarOrPackageTargets) {
+      continue
+    }
+
     // 3. Event filter
     if (rule.applyToAllEvents === false) {
       if (
@@ -408,7 +474,7 @@ export const getScheduleDiscount = ({
       const packageList =
         rule.packages && rule.packages.length > 0
           ? rule.packages
-          : rule.targetType === 'packages'
+          : rule.supercars && rule.supercars.length > 0
             ? rule.supercars
             : null
       if (packageList && packageList.length > 0) {
@@ -417,6 +483,13 @@ export const getScheduleDiscount = ({
         }
       }
     } else {
+      if (
+        rule.packages &&
+        rule.packages.length > 0 &&
+        (!rule.supercars || rule.supercars.length === 0)
+      ) {
+        continue
+      }
       if (rule.supercars && rule.supercars.length > 0) {
         if (!supercarId || !rule.supercars.some((s) => s.id === supercarId)) {
           continue

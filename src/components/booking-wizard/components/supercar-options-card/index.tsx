@@ -206,6 +206,7 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
     }
     let minPrice = lowestPrice.price
     let minCompareAt = lowestPrice.compareAtPrice
+    let maxSavings = 0
     let matchedBadge: string | null = null
     let matchedBadgeBg: string | null = null
     let matchedBadgeText: string | null = null
@@ -213,6 +214,16 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
     for (const schedule of schedules) {
       if (schedule.scheduleStatus !== RocketRezScheduleStatus.AVAILABLE) {
         continue
+      }
+      if (isMulticar) {
+        const requiredRateIds = getRequiredRateIdsForSupercar(
+          schedule,
+          rocketRezSeatTypeId,
+          true
+        )
+        if (isScheduleSoldOut(schedule, requiredRateIds)) {
+          continue
+        }
       }
       const matchedSeatType = (schedule.seatTypes ?? []).find(
         (seatType) =>
@@ -247,7 +258,12 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
       if (disc.price < minPrice) {
         minPrice = disc.price
         minCompareAt = disc.compareAtPrice ?? rtp.price
-        if (disc.badgeLabel) {
+      }
+
+      if (disc.isDiscounted && disc.badgeLabel) {
+        const slotSavings = Math.max(0, rtp.price - disc.price)
+        if (matchedBadge === null || slotSavings > maxSavings) {
+          maxSavings = slotSavings
           matchedBadge = disc.badgeLabel
           matchedBadgeBg = disc.cardBadgeBackgroundColor ?? null
           matchedBadgeText = disc.cardBadgeTextColor ?? null
@@ -701,7 +717,11 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
         }
       : null
 
-  const cmsBadge = badge ?? promoBadge ?? supercar.model?.badges?.[0] ?? null
+  const cmsBadge =
+    promoBadge ??
+    (badge?.label?.trim() ? badge : null) ??
+    supercar.model?.badges?.[0] ??
+    null
 
   const renderPrice = (selectedMode: boolean) => {
     const showSelected = selectedMode && !!cardState.selectedDaySchedule?.price
