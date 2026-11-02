@@ -472,7 +472,7 @@ export const getScheduleDiscount = ({
     } else if (discountVal > 0) {
       // Fixed dollar discount (handle value in cents or dollars)
       const dollarDiscount =
-        discountVal > 1000 ? discountVal / 100 : discountVal
+        discountVal >= 500 ? discountVal / 100 : discountVal
       calculatedPrice = Math.max(
         0,
         Math.round(calculatedPrice - dollarDiscount)
@@ -615,7 +615,7 @@ export const getAddonDiscount = ({
         )
       } else {
         const dollarDiscount =
-          discountVal >= 1000 ? discountVal / 100 : discountVal
+          discountVal >= 500 ? discountVal / 100 : discountVal
         calculatedPrice = Math.max(
           0,
           Math.round(calculatedPrice - dollarDiscount)
