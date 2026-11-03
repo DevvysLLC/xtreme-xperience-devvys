@@ -11,12 +11,13 @@ export type Props = {
 
 export const SectionAnnouncementBar: FC<Props> = ({ data }) => {
   const { config, id, cards = [] } = data
+  const validCards = cards.filter((card) => Boolean(card.title?.trim()))
 
-  if (cards.length === 0) {
+  if (config?.enabled === false || validCards.length === 0) {
     return null
   }
 
-  const announcementCards = cards.map((card) => (
+  const announcementCards = validCards.map((card) => (
     <CoreAnnouncement key={card.id} data={card} />
   ))
 
