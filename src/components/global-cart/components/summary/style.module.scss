@@ -282,6 +282,15 @@
     font-family: sg.font-family(barlow);
   }
 
+  &__itemInfo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: u.rem-calc(12);
+    row-gap: u.rem-calc(4);
+    min-width: 0;
+  }
+
   &__itemName {
     color: #222;
     font-weight: 500;
@@ -296,6 +305,32 @@
     strong {
       font-weight: 700;
       color: inherit;
+    }
+  }
+
+  &__itemActions {
+    display: inline-flex;
+    align-items: center;
+    gap: u.rem-calc(12);
+
+    @include sg.min(laptopSmall) {
+      display: none;
+    }
+  }
+
+  &__itemActionBtn {
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: #666;
+    font-size: u.rem-calc(12);
+    font-weight: 500;
+    text-decoration: underline;
+    cursor: pointer;
+    font-family: inherit;
+
+    &:hover {
+      color: sg.color(orange);
     }
   }
 

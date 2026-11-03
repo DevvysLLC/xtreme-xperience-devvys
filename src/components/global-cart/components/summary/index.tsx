@@ -1,17 +1,24 @@
 'use client'
 
-// import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { type FC, useMemo } from 'react'
-import { useBooking } from '../../../../features/booking'
+import { type FC, useMemo, useState } from 'react'
+import { ROUTES } from '../../../../config/routes'
+import { logger } from '../../../../core/logger/logger'
+import {
+  useBooking,
+  useBookingSetIntendedPage
+} from '../../../../features/booking'
 import {
   useCart,
   useCartLineItemMetadata,
   useCartLineItemsTotal,
+  useCartRemoveLineItem,
   useCartState
 } from '../../../../features/cart'
 import type { RocketRezLineItem } from '../../../../io/types'
 import { getCartLineItemReadMetadataKey } from '../../../../utils/get-cart-line-item-metadata-key'
+import { EditGiftCardModal } from '../../../booking-wizard/components/edit-gift-card-modal'
 import { useOptionalBookingWizardState } from '../../../booking-wizard/context'
 import { CoreRocketRezPrice } from '../../../core-rocketrez-price'
 import { CoreTextMarkdown } from '../../../core-text-markdown'
@@ -21,8 +28,16 @@ import { CartExpiry } from '../expiry'
 import { CartLocation } from '../location'
 import styles from './style.module.scss'
 
-const SummaryLineItem: FC<{ lineItem: RocketRezLineItem }> = ({ lineItem }) => {
+const SummaryLineItem: FC<{
+  lineItem: RocketRezLineItem
+  isReviewPage?: boolean
+}> = ({ lineItem, isReviewPage = false }) => {
+  const router = useRouter()
+  const t = useTranslations('global_cart')
   const { metadata } = useCartLineItemMetadata({ lineItem })
+  const { mutateAsync: removeLineItem } = useCartRemoveLineItem()
+  const { mutateAsync: setIntendedPage } = useBookingSetIntendedPage()
+  const [isGiftModalOpen, setIsGiftModalOpen] = useState(false)
   const { price, quantity = 1 } = lineItem
   const type = (lineItem.type || '').toLowerCase()
   const metaType = (metadata?.type || '').toLowerCase()
@@ -30,14 +45,27 @@ const SummaryLineItem: FC<{ lineItem: RocketRezLineItem }> = ({ lineItem }) => {
   const metaTitle = (metadata?.title || '').trim()
 
   const isInsurance = type === 'insurance' || metaType === 'insurance'
+  const isGiftCard =
+    type === 'giftcard' ||
+    rawName.toLowerCase().includes('gift') ||
+    metaTitle.toLowerCase().includes('gift')
   const isPitPass =
     rawName.toLowerCase().includes('pit pass') ||
     metaTitle.toLowerCase().includes('pit pass')
+  const isFullThrottleOrMedia =
+    rawName.toLowerCase().includes('throttle') ||
+    rawName.toLowerCase().includes('media') ||
+    metaTitle.toLowerCase().includes('throttle') ||
+    metaTitle.toLowerCase().includes('media')
   const isRideAlong =
     metadata?.isRideAlong === true ||
     rawName.toLowerCase().includes('ride along') ||
     rawName.toLowerCase().includes('ride-along') ||
-    rawName.toLowerCase().includes('hellcat')
+    rawName.toLowerCase().includes('hellcat') ||
+    metaTitle.toLowerCase().includes('ride along') ||
+    metaTitle.toLowerCase().includes('ride-along') ||
+    metaTitle.toLowerCase().includes('hellcat')
+  const shouldHideEdit = isRideAlong || isPitPass || isFullThrottleOrMedia
 
   let displayName =
     metaTitle || rawName || `${lineItem.type} #${lineItem.productId}`
@@ -67,14 +95,96 @@ const SummaryLineItem: FC<{ lineItem: RocketRezLineItem }> = ({ lineItem }) => {
 
   const totalPrice = price * quantity
 
+  const handleRemove = async () => {
+    try {
+      await removeLineItem({ lineItem })
+    } catch (error) {
+      logger.error({ error, lineItem }, 'summary-item.handleRemove.error')
+    }
+  }
+
+  const handleEdit = async () => {
+    if (typeof window === 'undefined') {
+      return
+    }
+    if (isGiftCard) {
+      setIsGiftModalOpen(true)
+      return
+    }
+
+    const properties = metadata?.properties
+    const rawProps =
+      properties && typeof properties === 'object' ? properties : null
+    const metaSeatId =
+      rawProps &&
+      'seatTypeId' in rawProps &&
+      typeof rawProps.seatTypeId === 'number'
+        ? rawProps.seatTypeId
+        : null
+    const seatId = metaSeatId || lineItem.productId || lineItem.rateId
+
+    if (seatId) {
+      try {
+        sessionStorage.setItem('pendingEditSeatTypeId', seatId.toString())
+        sessionStorage.setItem('pendingEditLineItemId', lineItem.id.toString())
+      } catch (error) {
+        logger.error(
+          { error },
+          'summary-item.handleEdit.sessionStorage.error'
+        )
+      }
+
+      try {
+        await setIntendedPage('date_and_car')
+      } catch (error) {
+        logger.error(
+          { error },
+          'summary-item.handleEdit.setIntendedPage.error'
+        )
+      }
+
+      router.push(ROUTES.BOOKING.DATE_AND_CAR)
+    }
+  }
+
   return (
     <div className={styles.summary__itemRow}>
-      <CoreTextMarkdown className={styles.summary__itemName}>
-        {displayName}
-      </CoreTextMarkdown>
+      <div className={styles.summary__itemInfo}>
+        <CoreTextMarkdown className={styles.summary__itemName}>
+          {displayName}
+        </CoreTextMarkdown>
+        {isReviewPage && !isInsurance && (
+          <span className={styles.summary__itemActions}>
+            {!shouldHideEdit && (
+              <button
+                type="button"
+                className={styles.summary__itemActionBtn}
+                onClick={handleEdit}
+              >
+                Edit
+              </button>
+            )}
+            <button
+              type="button"
+              className={styles.summary__itemActionBtn}
+              onClick={handleRemove}
+              aria-label={t('item.remove')}
+            >
+              {t('item.remove')}
+            </button>
+          </span>
+        )}
+      </div>
       <span className={styles.summary__itemPrice}>
         ${totalPrice.toLocaleString()}
       </span>
+      {isGiftCard && (
+        <EditGiftCardModal
+          isOpen={isGiftModalOpen}
+          lineItem={lineItem}
+          onClose={() => setIsGiftModalOpen(false)}
+        />
+      )}
     </div>
   )
 }
@@ -112,8 +222,8 @@ const getLineItemDiscount = (
 
 export const CartSummary: FC = () => {
   const t = useTranslations('global_cart')
-  // const pathname = usePathname()
-  // const isReviewPage = pathname?.includes('/review')
+  const pathname = usePathname()
+  const isReviewPage = Boolean(pathname?.includes('/review'))
   // const isCheckoutPage = pathname?.includes('/checkout')
   const { data: booking } = useBooking()
   const { data: cart } = useCart()
@@ -296,7 +406,11 @@ export const CartSummary: FC = () => {
       {lineItems.length > 0 && (
         <div className={styles.summary__itemsList}>
           {lineItems.map((item) => (
-            <SummaryLineItem key={item.id} lineItem={item} />
+            <SummaryLineItem
+              key={item.id}
+              lineItem={item}
+              isReviewPage={isReviewPage}
+            />
           ))}
         </div>
       )}
