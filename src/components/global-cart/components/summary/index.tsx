@@ -128,19 +128,13 @@ const SummaryLineItem: FC<{
         sessionStorage.setItem('pendingEditSeatTypeId', seatId.toString())
         sessionStorage.setItem('pendingEditLineItemId', lineItem.id.toString())
       } catch (error) {
-        logger.error(
-          { error },
-          'summary-item.handleEdit.sessionStorage.error'
-        )
+        logger.error({ error }, 'summary-item.handleEdit.sessionStorage.error')
       }
 
       try {
         await setIntendedPage('date_and_car')
       } catch (error) {
-        logger.error(
-          { error },
-          'summary-item.handleEdit.setIntendedPage.error'
-        )
+        logger.error({ error }, 'summary-item.handleEdit.setIntendedPage.error')
       }
 
       router.push(ROUTES.BOOKING.DATE_AND_CAR)
