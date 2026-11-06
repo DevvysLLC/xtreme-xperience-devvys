@@ -7,6 +7,7 @@ import type {
   RocketRezEventRateTypeWithId,
   RocketRezEventScheduleItem
 } from '../../../../../../io/types'
+import { getBookingLapQuantityDiscount } from '../../../../../../utils/get-booking-laps-per-session'
 import { getRateTypePrice } from '../../../../../../utils/get-rate-type-price'
 import { getScheduleDiscount } from '../../../../../../utils/get-schedule-discount'
 import { isScheduleSoldOut } from '../../../../../../utils/is-schedule-sold-out'
@@ -167,9 +168,21 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
               : 0
 
           const quantity = cardState.selectedQuantity ?? 1
+          const lapQuantityDiscount = getBookingLapQuantityDiscount({
+            quantity,
+            configData: wizardState.configData,
+            selectedEventId: wizardState.selectedEvent?.id,
+            isMulticar,
+            isRideAlong
+          })
           const unitPrice = discountResult.price
-          const unitCompareAtPrice = discountResult.compareAtPrice
-          const displayPrice = unitPrice != null ? unitPrice * quantity : null
+          const unitCompareAtPrice =
+            discountResult.compareAtPrice ??
+            (lapQuantityDiscount > 0 ? rawSchedulePrice : null)
+          const displayPrice =
+            unitPrice != null
+              ? Math.max(0, unitPrice * quantity - lapQuantityDiscount)
+              : null
           const displayCompareAtPrice =
             unitCompareAtPrice != null ? unitCompareAtPrice * quantity : null
           const hasPrice = rateTypePrice?.hasPrice ?? false

@@ -27,7 +27,10 @@ import type {
   RocketRezAddLineItemCar
 } from '../../../../io/types'
 import { getAddToCartLineItemCarMetadata } from '../../../../utils/get-add-to-cart-line-item-car-metadata'
-import { getBookingLapsPerSession } from '../../../../utils/get-booking-laps-per-session'
+import {
+  getBookingLapQuantityDiscount,
+  getBookingLapsPerSession
+} from '../../../../utils/get-booking-laps-per-session'
 import { getRateTypePrice } from '../../../../utils/get-rate-type-price'
 import { getScheduleDiscount } from '../../../../utils/get-schedule-discount'
 import { getSeatTypeIdWithOverride } from '../../../../utils/get-seat-type-id-with-override'
@@ -381,14 +384,23 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
 
     // Compute currentPrice, referenceValue, and savings for this car
     const quantity = cardState.selectedQuantity ?? 1
+    const lapQuantityDiscount = getBookingLapQuantityDiscount({
+      quantity,
+      configData: state.configData,
+      selectedEventId: state.selectedEvent?.id,
+      isMulticar,
+      isRideAlong: bookingSupercar.isRideAlong,
+      hideLapSelection: bookingSupercar.hideLapSelection
+    })
     const selectedSlotPrice =
       cardState.selectedDaySchedule?.rateTypePrice?.price
-    const currentPrice =
+    const rawCurrentPrice =
       (selectedSlotPrice ??
         (bookingSupercar.priceOverride?.price != null
           ? bookingSupercar.priceOverride.price / 100
           : null) ??
         0) * quantity
+    const currentPrice = Math.max(0, rawCurrentPrice - lapQuantityDiscount)
     const selectedCompareAt =
       (bookingSupercar.priceOverride?.compareAtPrice != null
         ? bookingSupercar.priceOverride.compareAtPrice / 100
@@ -406,7 +418,7 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
       refVal > currentPrice ? Math.floor(refVal - currentPrice) : 0
 
     const earlyPerUnit = cardState.selectedDaySchedule?.discountAmount ?? 0
-    const earlySavings = earlyPerUnit * quantity
+    const earlySavings = earlyPerUnit * quantity + lapQuantityDiscount
     const savingsBreakdown: Array<{ category: string; amount: number }> = []
     if (earlySavings > 0) {
       const label =
@@ -726,15 +738,27 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
   const renderPrice = (selectedMode: boolean) => {
     const showSelected = selectedMode && !!cardState.selectedDaySchedule?.price
     const quantity = showSelected ? (cardState.selectedQuantity ?? 1) : 1
+    const lapQuantityDiscount = showSelected
+      ? getBookingLapQuantityDiscount({
+          quantity,
+          configData: state.configData,
+          selectedEventId: state.selectedEvent?.id,
+          isMulticar,
+          isRideAlong: bookingSupercar.isRideAlong,
+          hideLapSelection: bookingSupercar.hideLapSelection
+        })
+      : 0
     const selectedSlotPrice =
       cardState.selectedDaySchedule?.rateTypePrice?.price
     const activeLowest = lowestDiscountedPrice ?? lowestPrice
+    const rawSelectedPrice =
+      (selectedSlotPrice ??
+        (bookingSupercar.priceOverride?.price != null
+          ? bookingSupercar.priceOverride.price / 100
+          : null) ??
+        0) * quantity
     const currentPrice = showSelected
-      ? (selectedSlotPrice ??
-          (bookingSupercar.priceOverride?.price != null
-            ? bookingSupercar.priceOverride.price / 100
-            : null) ??
-          0) * quantity
+      ? Math.max(0, rawSelectedPrice - lapQuantityDiscount)
       : bookingSupercar.priceOverride?.price != null
         ? bookingSupercar.priceOverride.price / 100
         : (activeLowest?.price ?? null)
