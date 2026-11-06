@@ -13,6 +13,7 @@ import {
   useBooking,
   useBookingResetAfter,
   useBookingSetEvent,
+  useBookingSetIntendedPage,
   useBookingSetTrack
 } from '../../features/booking'
 import { useCart } from '../../features/cart'
@@ -55,6 +56,7 @@ export const BookingEventCta: FC<Props> = ({
   const { data: booking } = useBooking()
   const setEvent = useBookingSetEvent()
   const setTrack = useBookingSetTrack()
+  const setIntendedPage = useBookingSetIntendedPage()
   const resetAfter = useBookingResetAfter()
   const setLocationTrack = useLocationSetTrack()
   const { showDialog } = useDialog()
@@ -107,7 +109,8 @@ export const BookingEventCta: FC<Props> = ({
         await Promise.all([
           setEvent.mutateAsync(event),
           setTrack.mutateAsync(formattedTrack),
-          setLocationTrack.mutateAsync(formattedTrack)
+          setLocationTrack.mutateAsync(formattedTrack),
+          setIntendedPage.mutateAsync('date_and_car')
         ])
       } catch (error) {
         logger.error(
@@ -130,6 +133,7 @@ export const BookingEventCta: FC<Props> = ({
       setEvent,
       setTrack,
       setLocationTrack,
+      setIntendedPage,
       onReadyNavigate,
       navigateToBookingHome
     ]
@@ -194,7 +198,7 @@ export const BookingEventCta: FC<Props> = ({
 
     try {
       await performMutations({
-        shouldClearCart: true
+        shouldClearCart: isNewTrack || isNewEvent
       })
     } catch (error) {
       logger.error('Error performing mutations:', { error })

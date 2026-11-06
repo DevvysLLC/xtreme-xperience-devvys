@@ -157,6 +157,9 @@ const sortEventsByDistance = (
     if (a.isPassed !== b.isPassed) {
       return a.isPassed ? 1 : -1
     }
+    if (a.distance === b.distance) {
+      return 0
+    }
     return a.distance - b.distance
   })
 }
@@ -201,12 +204,12 @@ export const LocationPickerCore = ({
   const { data: location } = useLocation()
   const sectionContentId = `event-finder-content-${useId()}`
 
-  // Derive initial value: prop takes precedence, then location store track nickname
-  const homeTrackNickname = location?.track?.model?.nickname
-  const effectiveInitialValue = initialSearchValue ?? homeTrackNickname ?? ''
+  // Use explicit initialSearchValue when provided (e.g. state name on Choose Location page);
+  // otherwise default to empty string so the map shows all locations by default.
+  const effectiveInitialValue = initialSearchValue ?? ''
 
   const [searchQuery, setSearchQuery] = useState(effectiveInitialValue)
-  const [filterSortBy, setFilterSortBy] = useState('date-asc')
+  const [filterSortBy, setFilterSortBy] = useState('distance-asc')
   const [filterStartDate, setFilterStartDate] = useState<Date | null>(null)
   const [filterEndDate, setFilterEndDate] = useState<Date | null>(null)
   const [selectedMarkerCoordinates, setSelectedMarkerCoordinates] = useState<{
@@ -217,13 +220,11 @@ export const LocationPickerCore = ({
     effectiveInitialValue.trim() ? 'track' : 'user'
   )
 
-  // Track the previous values to detect changes from store hydration
+  // Track the previous initialSearchValue to detect changes from store hydration
   const prevInitialSearchValue = useRef(initialSearchValue)
-  const prevHomeTrackNickname = useRef(homeTrackNickname)
 
-  // Sync search query when initialSearchValue or home track nickname changes
+  // Sync search query when initialSearchValue changes
   useEffect(() => {
-    // Prop value changed
     if (
       initialSearchValue &&
       initialSearchValue !== prevInitialSearchValue.current
@@ -232,41 +233,49 @@ export const LocationPickerCore = ({
       setSearchQuery(initialSearchValue)
       setFilterSortBy('distance-asc')
       prevInitialSearchValue.current = initialSearchValue
-      return
     }
+  }, [initialSearchValue])
 
-    // Home track nickname changed (e.g., after store hydration)
-    if (
-      !initialSearchValue &&
-      homeTrackNickname &&
-      homeTrackNickname !== prevHomeTrackNickname.current
-    ) {
-      setSearchSource('track')
-      setSearchQuery(homeTrackNickname)
-      setFilterSortBy('distance-asc')
-      prevHomeTrackNickname.current = homeTrackNickname
-    }
-  }, [initialSearchValue, homeTrackNickname])
-
-  // Sync search query when the derived location label changes
+  // Sync search query when user explicitly triggers "Find My Location" or clears it
+  const prevCoordsRef = useRef<{
+    lat: number | null | undefined
+    lng: number | null | undefined
+  }>({
+    lat: location?.latitude,
+    lng: location?.longitude
+  })
   const handleLocationLabelChange = useCallback(
     (label: string) => {
-      if (label) {
-        const isTrackLabel = label === location?.track?.model?.nickname
-        setSearchSource(isTrackLabel ? 'track' : 'location')
-        setSelectedMarkerCoordinates(null)
-        setSearchQuery(label)
-        setFilterSortBy('distance-asc')
-        onSearchChange?.(label)
-      } else {
+      const coordsChanged =
+        location?.latitude !== prevCoordsRef.current.lat ||
+        location?.longitude !== prevCoordsRef.current.lng
+      prevCoordsRef.current = {
+        lat: location?.latitude,
+        lng: location?.longitude
+      }
+
+      // Ignore label changes caused only by a persisted track nickname;
+      // keep default view showing all locations sorted by nearest coordinates.
+      const isTrackNickname = label === location?.track?.model?.nickname
+      if (isTrackNickname && !coordsChanged) {
+        return
+      }
+
+      if (!label && !initialSearchValue) {
         setSearchSource('user')
         setSelectedMarkerCoordinates(null)
         setSearchQuery('')
-        setFilterSortBy('date-asc')
+        setFilterSortBy('distance-asc')
         onSearchChange?.('')
       }
     },
-    [location?.track?.model?.nickname, onSearchChange]
+    [
+      initialSearchValue,
+      location?.latitude,
+      location?.longitude,
+      location?.track?.model?.nickname,
+      onSearchChange
+    ]
   )
   useLocationSearchLabel(handleLocationLabelChange)
 
@@ -304,9 +313,13 @@ export const LocationPickerCore = ({
     const normalizedHomeTrackNickname = homeTrack?.model?.nickname
       ?.trim()
       .toLowerCase()
+    const normalizedHomeTrackState = homeTrack?.model?.state
+      ?.trim()
+      .toLowerCase()
     const homeTrackLocation = homeTrack?.model?.location
     if (
-      normalizedHomeTrackNickname === normalizedQuery &&
+      (normalizedHomeTrackNickname === normalizedQuery ||
+        normalizedHomeTrackState === normalizedQuery) &&
       homeTrackLocation?.latitude &&
       homeTrackLocation?.longitude
     ) {
@@ -318,7 +331,8 @@ export const LocationPickerCore = ({
 
     const matchedTrack = tracks.find((track) => {
       const nickname = track.model?.nickname?.trim().toLowerCase()
-      return nickname === normalizedQuery
+      const state = track.model?.state?.trim().toLowerCase()
+      return nickname === normalizedQuery || state === normalizedQuery
     })
 
     const matchedTrackLocation = matchedTrack?.model?.location
@@ -337,7 +351,7 @@ export const LocationPickerCore = ({
     coordinates:
       selectedMarkerCoordinates ??
       selectedTrackCoordinates ??
-      (searchSource === 'location' ? locationCoordinates : null)
+      locationCoordinates
   })
 
   const tracksDistanceMap = useMemo(() => {

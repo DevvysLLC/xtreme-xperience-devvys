@@ -11,6 +11,7 @@ import {
 import type { BookingWizardPage } from '../../config'
 import {
   bookingWizardConfig,
+  getMaxAccessiblePageIndex,
   isPageBlockedByRules,
   isPageDataComplete
 } from '../../config'
@@ -25,6 +26,7 @@ export const ProgressBar: React.FC = () => {
   const { mutate: setIntendedPage } = useBookingSetIntendedPage()
   const pages = bookingWizardConfig.pages.filter((page) => page.enabled)
   const currentPageIndex = pages.findIndex((page) => page.path === pathname)
+  const maxAccessibleIndex = getMaxAccessiblePageIndex(booking)
 
   const blockCtx = useMemo(
     () => ({
@@ -78,6 +80,7 @@ export const ProgressBar: React.FC = () => {
           const isAccessible =
             !isBlocked &&
             ((currentPageIndex >= 0 && index <= currentPageIndex) ||
+              index <= maxAccessibleIndex ||
               isCompleted)
           const title = t(`${pageId}.progress_bar.title`)
 
