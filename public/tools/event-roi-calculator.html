@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Field Event Revenue Calculator</title>
+<style>
+  :root{
+    --ink:#14171a; --muted:#5b626b; --line:#e6e8eb;
+    --bg:#ffffff; --surface:#f6f7f9;
+    --accent:#e11d2e; --accent-soft:#fdeced; --accent-ink:#9a1420;
+    --good:#0f7a4d;
+    --radius:14px; --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);line-height:1.5;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:860px;margin:0 auto;padding:32px 20px 56px;}
+  .eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:12px;font-weight:600;color:var(--accent);margin:0 0 8px;}
+  h1{font-size:30px;line-height:1.15;margin:0 0 10px;font-weight:700;letter-spacing:-.01em;}
+  .lede{font-size:16px;color:var(--muted);margin:0 0 28px;max-width:620px;}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin-bottom:22px;}
+  .panel h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 18px;font-weight:600;}
+  .grid{display:grid;gap:16px 22px;}
+  .g3{grid-template-columns:repeat(3,1fr);}
+  @media(max-width:640px){.g3{grid-template-columns:1fr 1fr;}}
+  .field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px;font-weight:500;}
+  .field input[type=number]{width:100%;font-size:16px;font-family:var(--font);padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);}
+  .field input[type=number]:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+  .slider .row{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);font-weight:500;margin-bottom:4px;}
+  .slider .val{color:var(--ink);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--accent);height:22px;}
+  .scenarios{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:22px;}
+  @media(max-width:640px){.scenarios{grid-template-columns:1fr;}}
+  .scen{border-radius:var(--radius);padding:20px;border:1px solid var(--line);}
+  .scen.avg{background:var(--surface);}
+  .scen.exp{background:var(--accent-soft);border-color:#f6c9cd;}
+  .scen .top{display:flex;justify-content:space-between;align-items:baseline;}
+  .scen .name{font-size:13px;font-weight:600;}
+  .scen.exp .name,.scen.exp .lbl,.scen.exp .rev{color:var(--accent-ink);}
+  .scen .pct{font-size:15px;font-weight:700;}
+  .scen .lbl{font-size:13px;color:var(--muted);margin-top:10px;}
+  .scen .rev{font-size:30px;font-weight:700;letter-spacing:-.01em;margin-top:2px;}
+  .scen .det{font-size:12px;color:var(--muted);margin-top:4px;}
+  .scen.exp .det{color:var(--accent-ink);opacity:.85;}
+  .delta{text-align:center;border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin-bottom:22px;background:#fff;}
+  .delta .lbl{font-size:13px;color:var(--muted);}
+  .delta .big{font-size:38px;font-weight:800;color:var(--good);letter-spacing:-.02em;margin:2px 0;}
+  .delta .sub{font-size:13px;color:var(--muted);}
+  .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  @media(max-width:640px){.metrics{grid-template-columns:1fr;}}
+  .metric{background:var(--surface);border-radius:12px;padding:16px 18px;}
+  .metric .k{font-size:13px;color:var(--muted);}
+  .metric .v{font-size:24px;font-weight:700;margin-top:2px;}
+  .foot{margin-top:26px;font-size:12px;color:var(--muted);text-align:center;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">Field Event ROI</p>
+  <h1>What a no-show actually costs you</h1>
+  <p class="lede">Same invite list. Same spend. The only thing that changes is how many people show up. See what that's worth in pipeline.</p>
+
+  <div class="panel">
+    <h2>Your numbers</h2>
+    <div class="grid g3">
+      <div class="field"><label for="invites">Invites sent</label><input type="number" id="invites" value="500" min="1" step="1" /></div>
+      <div class="field"><label for="acv">Average deal value ($)</label><input type="number" id="acv" value="25000" min="0" step="1000" /></div>
+      <div class="field"><label for="cost">Event cost ($)</label><input type="number" id="cost" value="50000" min="0" step="1000" /></div>
+      <div class="field slider"><div class="row"><span>Registration rate</span><span class="val" id="reg-out">40%</span></div><input type="range" id="reg" min="1" max="100" value="40" step="1" aria-label="Registration rate" /></div>
+      <div class="field slider"><div class="row"><span>Attendee → opportunity</span><span class="val" id="opp-out">20%</span></div><input type="range" id="opp" min="1" max="100" value="20" step="1" aria-label="Attendee to opportunity rate" /></div>
+      <div class="field slider"><div class="row"><span>Win rate</span><span class="val" id="win-out">25%</span></div><input type="range" id="win" min="1" max="100" value="25" step="1" aria-label="Win rate" /></div>
+    </div>
+  </div>
+
+  <div class="scenarios">
+    <div class="scen avg">
+      <div class="top"><span class="name">Industry-average show rate</span><span class="pct" id="a-show-out">50%</span></div>
+      <input type="range" id="a-show" min="1" max="100" value="50" step="1" aria-label="Industry-average show rate" />
+      <div class="lbl">Revenue from this event</div>
+      <div class="rev" id="a-rev">$125,000</div>
+      <div class="det" id="a-det">100 attend → 5 deals</div>
+    </div>
+    <div class="scen exp">
+      <div class="top"><span class="name">Experience-driven show rate</span><span class="pct" id="b-show-out">90%</span></div>
+      <input type="range" id="b-show" min="1" max="100" value="90" step="1" aria-label="Experience-driven show rate" />
+      <div class="lbl">Revenue from this event</div>
+      <div class="rev" id="b-rev">$225,000</div>
+      <div class="det" id="b-det">180 attend → 9 deals</div>
+    </div>
+  </div>
+
+  <div class="delta">
+    <div class="lbl">Revenue left on the table from no-shows</div>
+    <div class="big" id="delta">+$100,000</div>
+    <div class="sub" id="delta-sub">4 more deals from the same invite list</div>
+  </div>
+
+  <div class="metrics">
+    <div class="metric"><div class="k">Cost per deal (average)</div><div class="v" id="cpd-a">$10,000</div></div>
+    <div class="metric"><div class="k">Cost per deal (experience)</div><div class="v" id="cpd-b">$5,556</div></div>
+    <div class="metric"><div class="k">ROI (experience event)</div><div class="v" id="roi-b">350%</div></div>
+  </div>
+
+  <p class="foot">Default benchmarks are illustrative. Adjust the inputs to match your own numbers.</p>
+</div>
+
+<script>
+(function(){
+  var $ = function(id){return document.getElementById(id);};
+  var money = function(n){return '$' + Math.round(n).toLocaleString('en-US');};
+  var dealsTxt = function(n){var v=Math.round(Math.abs(n)*10)/10; return v.toLocaleString('en-US',{maximumFractionDigits:1})+(v===1?' deal':' deals');};
+  function chain(invites, reg, show, opp, win){
+    var attend = invites * reg/100 * show/100;
+    // Round deals to 0.1 so every number on screen ties out: revenue = shown deals x deal value.
+    var deals = Math.round(attend * opp/100 * win/100 * 10) / 10;
+    return {attend:attend, deals:deals};
+  }
+  function update(){
+    var invites=+$('invites').value||0, acv=+$('acv').value||0, cost=+$('cost').value||0;
+    var reg=+$('reg').value, opp=+$('opp').value, win=+$('win').value;
+    var aShow=+$('a-show').value, bShow=+$('b-show').value;
+    $('reg-out').textContent=reg+'%'; $('opp-out').textContent=opp+'%'; $('win-out').textContent=win+'%';
+    $('a-show-out').textContent=aShow+'%'; $('b-show-out').textContent=bShow+'%';
+    var A=chain(invites,reg,aShow,opp,win), B=chain(invites,reg,bShow,opp,win);
+    var aRev=A.deals*acv, bRev=B.deals*acv;
+    $('a-rev').textContent=money(aRev); $('b-rev').textContent=money(bRev);
+    $('a-det').textContent=Math.round(A.attend)+' attend → '+dealsTxt(A.deals);
+    $('b-det').textContent=Math.round(B.attend)+' attend → '+dealsTxt(B.deals);
+    var d=bRev-aRev;
+    $('delta').textContent=(d>=0?'+':'')+money(d);
+    $('delta-sub').textContent=(function(x){x=Math.round(x*10)/10; return x===0?'Same number of deals from the same invite list':dealsTxt(x).replace(/ deals?$/, function(s){return (x>0?' more':' fewer')+s;})+' from the same invite list';})(B.deals-A.deals);
+    $('cpd-a').textContent=A.deals>0?money(cost/A.deals):'—';
+    $('cpd-b').textContent=B.deals>0?money(cost/B.deals):'—';
+    $('roi-b').textContent=cost>0?Math.round((bRev-cost)/cost*100)+'%':'—';
+    postHeight();
+  }
+  // When embedded in an iframe, tell the parent page how tall we are (see README).
+  function postHeight(){
+    if (window.parent !== window) {
+      window.parent.postMessage({type:'xx-roi-calc-height', height: document.documentElement.scrollHeight}, '*');
+    }
+  }
+  ['invites','acv','cost','reg','opp','win','a-show','b-show'].forEach(function(id){$(id).addEventListener('input',update);});
+  window.addEventListener('resize', postHeight);
+  update();
+})();
+</script>
+</body>
+</html>
+
