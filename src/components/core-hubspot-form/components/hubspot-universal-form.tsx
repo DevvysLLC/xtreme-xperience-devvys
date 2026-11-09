@@ -75,6 +75,16 @@ export const HubspotUniversalForm: FC<Props> = ({ embedForm, className }) => {
 
     void executeScriptsSequentially()
 
+    const isRoiCalculatorForm = embedForm.includes(
+      '749d006d-3152-4e0c-8bb2-f689911a64f7'
+    )
+
+    const handleV4SubmissionSuccess = () => {
+      if (isRoiCalculatorForm && typeof window !== 'undefined') {
+        window.location.href = '/tools/event-roi-calculator'
+      }
+    }
+
     // Also inject a global message listener to debug and manually trigger RevenueHero
     const handleMessage = (event: MessageEvent) => {
       if (event.data && event.data.type === 'hsFormCallback') {
@@ -86,6 +96,11 @@ export const HubspotUniversalForm: FC<Props> = ({ embedForm, className }) => {
           event.data.eventName === 'onFormSubmit' ||
           event.data.eventName === 'onFormSubmitted'
         ) {
+          if (isRoiCalculatorForm && typeof window !== 'undefined') {
+            window.location.href = '/tools/event-roi-calculator'
+            return
+          }
+
           // Debugging keys
           if (typeof window !== 'undefined' && window.hero) {
             const heroKeys = Object.keys(window.hero).join(', ')
@@ -107,6 +122,10 @@ export const HubspotUniversalForm: FC<Props> = ({ embedForm, className }) => {
       }
     }
     window.addEventListener('message', handleMessage)
+    window.addEventListener(
+      'hs-form-event:on-submission:success',
+      handleV4SubmissionSuccess
+    )
 
     return () => {
       isCancelled = true
@@ -126,6 +145,10 @@ export const HubspotUniversalForm: FC<Props> = ({ embedForm, className }) => {
 
       container.innerHTML = ''
       window.removeEventListener('message', handleMessage)
+      window.removeEventListener(
+        'hs-form-event:on-submission:success',
+        handleV4SubmissionSuccess
+      )
     }
   }, [embedForm])
 
