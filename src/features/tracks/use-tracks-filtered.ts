@@ -60,13 +60,14 @@ const getEventsFromTracks = (
     }
 
     for (const event of trackEvents) {
+      if (!event.model?.enabled) {
+        continue
+      }
+
       const isPassed = isEventPassed(
         event.model?.startDate,
         event.model?.endDate
       )
-      if (!event.model?.enabled && !isPassed) {
-        continue
-      }
 
       // If this is a past event, skip it if the track has future events scheduled
       if (isPassed && tracksWithFutureEvents.has(track.id)) {
