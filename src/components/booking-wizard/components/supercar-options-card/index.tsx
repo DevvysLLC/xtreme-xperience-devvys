@@ -735,6 +735,88 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
     supercar.model?.badges?.[0] ??
     null
 
+  const packageCallout = useMemo(() => {
+    const rawLead = bookingSupercar.whatsIncludedLeadOverride?.trim() || ''
+    const rawDescription =
+      bookingSupercar.whatsIncludedDescriptionOverride?.trim() || ''
+    const rawNotice = bookingSupercar.whatsIncludedNoticeOverride?.trim() || ''
+
+    if (rawLead || rawDescription || rawNotice) {
+      return {
+        lead: rawLead || null,
+        includedCars: rawDescription || null,
+        extrasNotice: rawNotice || null
+      }
+    }
+
+    if (!isMulticar) {
+      return null
+    }
+
+    const normalizedTitle = (
+      bookingSupercar.titleOverride ||
+      supercar.model?.title ||
+      ''
+    )
+      .replace(/<[^>]*>/g, '')
+      .trim()
+      .toLowerCase()
+
+    if (normalizedTitle.includes('drive the fleet')) {
+      return {
+        lead: '7 SUPERCARS + INCLUDED EXTRAS',
+        includedCars:
+          '**Includes:** Ferrari 296 & 488 • Huracán • GT3 • GT4 RS • Z06 • GT-R',
+        extrasNotice:
+          '**Included extras:** Base insurance, ride-along, Full Throttle photo + video package, pit pass & T-shirt'
+      }
+    }
+    if (normalizedTitle.includes('apex')) {
+      return {
+        lead: null,
+        includedCars: 'Huracán • GT3 • Ferrari 296 • Z06',
+        extrasNotice: null
+      }
+    }
+    if (normalizedTitle.includes('podium')) {
+      return {
+        lead: null,
+        includedCars: 'Ferrari 488 • Huracán • GT3',
+        extrasNotice: null
+      }
+    }
+    if (normalizedTitle.includes('italian legends')) {
+      return {
+        lead: null,
+        includedCars: 'Ferrari 488 GTB • Lamborghini Huracán',
+        extrasNotice: null
+      }
+    }
+    if (normalizedTitle.includes('porsche gt')) {
+      return {
+        lead: null,
+        includedCars: '911 GT3 (992) • Cayman GT4 RS',
+        extrasNotice: null
+      }
+    }
+    if (normalizedTitle.includes('track attack')) {
+      return {
+        lead: null,
+        includedCars: 'Corvette Z06 • Cayman GT4 RS',
+        extrasNotice: null
+      }
+    }
+
+    return null
+  }, [
+    bookingSupercar.whatsIncludedLeadOverride,
+    bookingSupercar.whatsIncludedDescriptionOverride,
+    bookingSupercar.whatsIncludedNoticeOverride,
+    bookingSupercar.titleOverride,
+    supercar.model?.title,
+    isMulticar
+  ])
+
   const renderPrice = (selectedMode: boolean) => {
     const showSelected = selectedMode && !!cardState.selectedDaySchedule?.price
     const quantity = showSelected ? (cardState.selectedQuantity ?? 1) : 1
@@ -788,15 +870,28 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
         : 0
     return (
       <div
-        className={styles.price_display}
+        className={clsx(
+          styles.price_display,
+          isMulticar && !showSelected && styles['price_display--inline']
+        )}
         data-price={currentPrice}
         data-savings={savings}
       >
         {savings > 0 && (
-          <span className={styles.price_display__reference}>
-            {isMulticar ? 'Full value' : 'Standard value'}{' '}
-            <del>${Math.ceil(referenceValue)}</del>
-          </span>
+          <>
+            <span className={styles.price_display__reference}>
+              {isMulticar ? 'Full value' : 'Standard value'}{' '}
+              <del>${Math.ceil(referenceValue)}</del>
+            </span>
+            {isMulticar && !showSelected && (
+              <span
+                className={styles.price_display__separator}
+                aria-hidden="true"
+              >
+                |
+              </span>
+            )}
+          </>
         )}
         <div className={styles.price_display__line}>
           <span className={styles.price_display__money}>
@@ -850,6 +945,57 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
           <h3 className={styles.card__title}>
             <CoreTextMarkdown>{title}</CoreTextMarkdown>
           </h3>
+          {packageCallout && (
+            <div className={styles.card__package_info}>
+              {packageCallout.lead && (
+                <p className={styles.card__package_lead}>
+                  {packageCallout.lead}
+                </p>
+              )}
+              {packageCallout.includedCars && (
+                <div
+                  className={clsx(
+                    styles.card__package_cars,
+                    packageCallout.lead &&
+                      styles['card__package_cars--with-divider']
+                  )}
+                >
+                  <CoreTextMarkdown>
+                    {packageCallout.includedCars}
+                  </CoreTextMarkdown>
+                </div>
+              )}
+              {packageCallout.extrasNotice && (
+                <div className={styles.card__package_extras}>
+                  <span
+                    className={styles.card__package_extras_icon}
+                    aria-hidden="true"
+                  >
+                    <svg
+                      viewBox="0 0 16 16"
+                      width="10"
+                      height="10"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M3.5 8.2L6.5 11.2L12.5 5.2"
+                        stroke="currentColor"
+                        strokeWidth="2.2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </span>
+                  <div className={styles.card__package_extras_text}>
+                    <CoreTextMarkdown>
+                      {packageCallout.extrasNotice}
+                    </CoreTextMarkdown>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
           <div className={styles.card__price}>
             {soldOut ? (
               <CoreBadge

@@ -160,14 +160,121 @@
     }
   }
 
+  &__package_info {
+    display: flex;
+    flex-direction: column;
+    gap: u.rem-calc(6);
+    margin: u.rem-calc(4) 0 u.rem-calc(8);
+
+    @include sg.min(tabletLandscape) {
+      gap: u.rem-calc(8);
+      margin: u.rem-calc(4) 0 u.rem-calc(12);
+    }
+  }
+
+  &__package_lead {
+    margin: 0;
+    font-family: sg.font-family(barlow);
+    font-size: u.rem-calc(11);
+    font-weight: 800;
+    line-height: 1.25;
+    text-transform: uppercase;
+    letter-spacing: u.rem-calc(0.2);
+    color: #111;
+
+    @include sg.min(tabletLandscape) {
+      font-size: u.rem-calc(13.5);
+    }
+  }
+
+  &__package_cars {
+    font-family: sg.font-family(barlow);
+    font-size: u.rem-calc(11.5);
+    font-weight: 500;
+    line-height: 1.35;
+    color: #111;
+
+    @include sg.min(tabletLandscape) {
+      font-size: u.rem-calc(14);
+    }
+
+    &--with-divider {
+      padding-top: u.rem-calc(6);
+      border-top: 1px dashed #bfbcb9;
+
+      @include sg.min(tabletLandscape) {
+        padding-top: u.rem-calc(8);
+      }
+    }
+
+    p {
+      margin: 0;
+    }
+
+    strong {
+      font-weight: 700;
+    }
+  }
+
+  &__package_extras {
+    display: flex;
+    align-items: center;
+    gap: u.rem-calc(8);
+    padding: u.rem-calc(6) u.rem-calc(8);
+    background: #efeeec;
+    border-radius: u.rem-calc(6);
+
+    @include sg.min(tabletLandscape) {
+      gap: u.rem-calc(10);
+      padding: u.rem-calc(8) u.rem-calc(12);
+    }
+  }
+
+  &__package_extras_icon {
+    width: u.rem-calc(16);
+    height: u.rem-calc(16);
+    border-radius: 50%;
+    background: sg.color(lime);
+    color: #111;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    @include sg.min(tabletLandscape) {
+      width: u.rem-calc(18);
+      height: u.rem-calc(18);
+    }
+  }
+
+  &__package_extras_text {
+    font-family: sg.font-family(barlow);
+    font-size: u.rem-calc(11);
+    font-weight: 500;
+    line-height: 1.35;
+    color: #111;
+
+    @include sg.min(tabletLandscape) {
+      font-size: u.rem-calc(13);
+    }
+
+    p {
+      margin: 0;
+    }
+
+    strong {
+      font-weight: 700;
+    }
+  }
+
   &__price {
     display: block;
-    margin: u.rem-calc(8) 0 u.rem-calc(6);
+    margin: auto 0 u.rem-calc(6);
     padding-top: u.rem-calc(8);
     border-top: 1px dashed #bfbcb9;
 
     @include sg.min(tabletLandscape) {
-      margin: u.rem-calc(12) 0;
+      margin: auto 0 u.rem-calc(12);
       padding-top: u.rem-calc(12);
     }
   }
@@ -189,7 +296,6 @@
     flex-direction: column;
     gap: sg.spacing(small);
     width: 100%;
-    margin-top: auto;
 
     & > * {
       width: 100% !important;
@@ -299,6 +405,21 @@
 }
 
 .price_display {
+  &--inline {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: u.rem-calc(4);
+
+    @include sg.min(tabletLandscape) {
+      gap: u.rem-calc(10);
+    }
+
+    .price_display__reference {
+      margin-bottom: 0;
+    }
+  }
+
   &__reference {
     display: block;
     font-size: u.rem-calc(10);
