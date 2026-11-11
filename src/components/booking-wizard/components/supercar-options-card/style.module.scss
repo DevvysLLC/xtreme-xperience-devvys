@@ -556,6 +556,206 @@
     }
   }
 
+  &__dates_section {
+    display: flex;
+    flex-direction: column;
+    gap: u.rem-calc(8);
+    padding-bottom: u.rem-calc(12);
+    border-bottom: 1px solid #e2e0dd;
+
+    @include sg.min(tabletLandscape) {
+      flex-direction: row;
+      align-items: center;
+      gap: u.rem-calc(16);
+      padding-bottom: u.rem-calc(14);
+    }
+  }
+
+  &__dates_head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: u.rem-calc(8);
+
+    @include sg.min(tabletLandscape) {
+      flex-shrink: 0;
+    }
+  }
+
+  &__dates_label {
+    display: inline-flex;
+    align-items: center;
+    gap: u.rem-calc(6);
+    font-family: sg.font-family(barlow);
+    font-size: u.rem-calc(13);
+    font-weight: 800;
+    letter-spacing: u.rem-calc(0.3);
+    text-transform: uppercase;
+    color: #111;
+
+    svg {
+      color: #f15a24;
+      flex-shrink: 0;
+    }
+
+    @include sg.min(tabletLandscape) {
+      font-family: sg.font-family(barlow-semi-condensed);
+      font-size: u.rem-calc(15);
+      gap: u.rem-calc(8);
+    }
+  }
+
+  &__dates_label_mobile {
+    @include sg.min(tabletLandscape) {
+      display: none;
+    }
+  }
+
+  &__dates_label_desktop {
+    display: none;
+
+    @include sg.min(tabletLandscape) {
+      display: inline;
+    }
+  }
+
+  &__dates_count {
+    font-family: sg.font-family(barlow);
+    font-size: u.rem-calc(11.5);
+    font-weight: 500;
+    letter-spacing: u.rem-calc(0.2);
+    text-transform: uppercase;
+    color: #666;
+
+    @include sg.min(tabletLandscape) {
+      display: none;
+    }
+  }
+
+  &__dates_list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(u.rem-calc(54), 1fr));
+    gap: u.rem-calc(6);
+
+    @include sg.min(tabletLandscape) {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: stretch;
+      gap: u.rem-calc(8);
+    }
+  }
+
+  &__date_box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: u.rem-calc(3);
+    padding: u.rem-calc(6) u.rem-calc(4) u.rem-calc(7);
+    background: #fff;
+    border: 1px solid #d5d3d0;
+    border-radius: u.rem-calc(4);
+    color: #111;
+    cursor: pointer;
+    text-align: center;
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease;
+
+    @include sg.min(tabletLandscape) {
+      min-width: u.rem-calc(116);
+      padding: u.rem-calc(6) u.rem-calc(12) u.rem-calc(8);
+      gap: u.rem-calc(4);
+    }
+
+    &:hover:not(:disabled) {
+      border-color: #111;
+    }
+
+    &--active {
+      background: #111;
+      border-color: #111;
+      color: #fff;
+
+      .inline__date_weekday {
+        color: rgba(255, 255, 255, 0.85);
+      }
+    }
+
+    &--sold-out {
+      opacity: 0.45;
+      cursor: not-allowed;
+      background: #f2f2f2;
+    }
+  }
+
+  &__date_badge {
+    display: inline-block;
+    padding: u.rem-calc(2) u.rem-calc(4);
+    background: sg.color(lime);
+    color: #111;
+    font-family: sg.font-family(barlow);
+    font-size: u.rem-calc(8.5);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: u.rem-calc(0.1);
+    text-transform: uppercase;
+    border-radius: u.rem-calc(3);
+    white-space: nowrap;
+
+    @include sg.min(tabletLandscape) {
+      font-size: u.rem-calc(10);
+      padding: u.rem-calc(2) u.rem-calc(6);
+    }
+  }
+
+  &__date_mobile_content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: u.rem-calc(1);
+
+    @include sg.min(tabletLandscape) {
+      display: none;
+    }
+  }
+
+  &__date_weekday {
+    font-family: sg.font-family(barlow);
+    font-size: u.rem-calc(10.5);
+    font-weight: 500;
+    line-height: 1.15;
+    text-transform: uppercase;
+    color: #555;
+  }
+
+  &__date_daynum {
+    font-family: sg.font-family(barlow);
+    font-size: u.rem-calc(19);
+    font-weight: 800;
+    line-height: 1.1;
+  }
+
+  &__date_desktop_content {
+    display: none;
+
+    @include sg.min(tabletLandscape) {
+      display: inline;
+      font-family: sg.font-family(barlow-semi-condensed);
+      font-size: u.rem-calc(14);
+      font-weight: 500;
+      line-height: 1.2;
+      letter-spacing: u.rem-calc(0.3);
+      text-transform: uppercase;
+      white-space: nowrap;
+
+      strong {
+        font-weight: 800;
+      }
+    }
+  }
+
   &__body {
     display: grid;
     grid-template-columns: minmax(0, 1fr);

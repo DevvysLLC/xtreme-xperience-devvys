@@ -2,13 +2,17 @@
 
 import { useForm } from '@tanstack/react-form'
 import clsx from 'clsx'
+import { format } from 'date-fns'
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { BOOKING_LAP_QUANTITY_OPTIONS } from '../../../../config/settings'
 import type { BookingSupercarFragment } from '../../../../core/dato/fragments/booking-config.typegen'
 import { logger } from '../../../../core/logger/logger'
-import { useBookingSupercarSchedule } from '../../../../features/booking'
+import {
+  useBookingResetAfter,
+  useBookingSupercarSchedule
+} from '../../../../features/booking'
 import { getRequiredRateIdsForSupercar } from '../../../../features/booking/use-booking-supercar-schedule'
 import {
   useCart,
@@ -26,13 +30,17 @@ import type {
   CartLineItemMetadata,
   RocketRezAddLineItemCar
 } from '../../../../io/types'
+import { parseLocalDate } from '../../../../utils/date-time'
 import { getAddToCartLineItemCarMetadata } from '../../../../utils/get-add-to-cart-line-item-car-metadata'
 import {
   getBookingLapQuantityDiscount,
   getBookingLapsPerSession
 } from '../../../../utils/get-booking-laps-per-session'
 import { getRateTypePrice } from '../../../../utils/get-rate-type-price'
-import { getScheduleDiscount } from '../../../../utils/get-schedule-discount'
+import {
+  getDateDiscountRule,
+  getScheduleDiscount
+} from '../../../../utils/get-schedule-discount'
 import { getSeatTypeIdWithOverride } from '../../../../utils/get-seat-type-id-with-override'
 import { isScheduleSoldOut } from '../../../../utils/is-schedule-sold-out'
 import { CoreBadge } from '../../../core-badge'
@@ -76,8 +84,12 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
   const tDialog = useTranslations(
     'booking_wizard.dialog_cannot_add_car_for_different_date'
   )
+  const tChangeDialog = useTranslations(
+    'booking_wizard.pages.date_and_car.change_dialog'
+  )
   const tToast = useTranslations('booking_wizard')
-  const { state } = useBookingWizardState()
+  const { state, setSelectedDayDate } = useBookingWizardState()
+  const resetAfter = useBookingResetAfter()
   const { state: cardState } = useSupercarOptionsCard()
   const { lowestAvailablePrice, getEffectivePrice } =
     useBookingSupercarSchedule()
@@ -647,23 +659,97 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
     }
   })
 
-  // Reset card state when selected day changes
+  // Reset selected time slot when selected day changes (keep panel open)
   const prevSelectedDayDateRef = useRef(state.selectedDayDate)
   useEffect(() => {
     if (prevSelectedDayDateRef.current !== state.selectedDayDate) {
       prevSelectedDayDateRef.current = state.selectedDayDate
       setSelectedDaySchedule(null)
-      setSelectedQuantity(1)
-      closeSelected()
-      form.reset()
+      form.setFieldValue('scheduleId', null)
+      form.setFieldValue('rateId', null)
+      form.setFieldValue('rateType', null)
     }
+  }, [state.selectedDayDate, form, setSelectedDaySchedule])
+
+  const inlineDays = useMemo(() => {
+    const eventDays = state.eventData?.schedules ?? []
+    return eventDays.map((day) => {
+      const parsedDate = parseLocalDate(day.date)
+      const shortWeekday = format(parsedDate, 'EEE').toUpperCase()
+      const dayNumber = format(parsedDate, 'd')
+      const monthDay = format(parsedDate, 'MMM d').toUpperCase()
+      const isDaySoldOut =
+        lowestAvailablePrice(day.schedules, rocketRezSeatTypeId, isMulticar) ===
+        null
+      const dateDiscount = getDateDiscountRule({
+        date: day.date,
+        eventId: state.selectedEvent?.id,
+        trackId,
+        supercarId: String(supercar.id),
+        isRideAlong: bookingSupercar.isRideAlong,
+        isMulticar,
+        rules: discountRules
+      })
+
+      return {
+        date: day.date,
+        shortWeekday,
+        dayNumber,
+        monthDay,
+        isSoldOut: isDaySoldOut,
+        badgeLabel: dateDiscount?.badgeLabel?.trim() || null,
+        badgeBackgroundColor: dateDiscount?.dateBadgeBackgroundColor ?? null,
+        badgeTextColor: dateDiscount?.dateBadgeTextColor ?? null
+      }
+    })
   }, [
-    state.selectedDayDate,
-    form,
-    setSelectedDaySchedule,
-    setSelectedQuantity,
-    closeSelected
+    state.eventData?.schedules,
+    lowestAvailablePrice,
+    rocketRezSeatTypeId,
+    isMulticar,
+    state.selectedEvent?.id,
+    trackId,
+    supercar.id,
+    bookingSupercar.isRideAlong,
+    discountRules
   ])
+
+  const availableInlineDaysCount = useMemo(
+    () => inlineDays.filter((d) => !d.isSoldOut).length,
+    [inlineDays]
+  )
+
+  const handleInlineDateSelect = (date: string, isDaySoldOut: boolean) => {
+    if (isDaySoldOut || state.selectedDayDate === date) {
+      return
+    }
+
+    const existingCartDate = getExistingCartDate()
+    if (existingCartDate !== null && existingCartDate !== date) {
+      showDialog({
+        translations: {
+          title: tChangeDialog('title'),
+          description: tChangeDialog('description'),
+          confirmButton: tChangeDialog('button.confirm'),
+          cancelButton: tChangeDialog('button.cancel')
+        },
+        onConfirm: async () => {
+          try {
+            await resetAfter.mutateAsync({ pageId: 'location' })
+            setSelectedDayDate(date)
+          } catch (error) {
+            logger.error(
+              { error, date },
+              'supercar-options-card.handleInlineDateSelect.onConfirm.error'
+            )
+          }
+        }
+      })
+      return
+    }
+
+    setSelectedDayDate(date)
+  }
 
   const handleRemove = () => {
     closeSelected()
@@ -1151,6 +1237,111 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
               ×
             </button>
           </div>
+
+          {inlineDays.length > 0 && (
+            <div className={styles.inline__dates_section}>
+              <div className={styles.inline__dates_head}>
+                <span className={styles.inline__dates_label}>
+                  <svg
+                    viewBox="0 0 20 20"
+                    width="18"
+                    height="18"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                  >
+                    <rect
+                      x="2.5"
+                      y="3.5"
+                      width="15"
+                      height="14"
+                      rx="2"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                    />
+                    <path
+                      d="M2.5 7.5H17.5"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                    />
+                    <path
+                      d="M6.5 2V5M13.5 2V5"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <span className={styles.inline__dates_label_mobile}>
+                    CHOOSE A DAY
+                  </span>
+                  <span className={styles.inline__dates_label_desktop}>
+                    CHOOSE A DATE
+                  </span>
+                </span>
+                <span className={styles.inline__dates_count}>
+                  {availableInlineDaysCount}{' '}
+                  {availableInlineDaysCount === 1 ? 'DATE' : 'DATES'} AVAILABLE
+                </span>
+              </div>
+              <div className={styles.inline__dates_list} role="group">
+                {inlineDays.map((dayItem) => {
+                  const isActiveDay = state.selectedDayDate === dayItem.date
+                  const badgeStyle: React.CSSProperties | undefined =
+                    dayItem.badgeBackgroundColor || dayItem.badgeTextColor
+                      ? {
+                          ...(dayItem.badgeBackgroundColor
+                            ? { backgroundColor: dayItem.badgeBackgroundColor }
+                            : {}),
+                          ...(dayItem.badgeTextColor
+                            ? { color: dayItem.badgeTextColor }
+                            : {})
+                        }
+                      : undefined
+
+                  return (
+                    <button
+                      key={dayItem.date}
+                      type="button"
+                      disabled={dayItem.isSoldOut}
+                      aria-pressed={isActiveDay}
+                      onClick={() =>
+                        handleInlineDateSelect(dayItem.date, dayItem.isSoldOut)
+                      }
+                      className={clsx(
+                        styles.inline__date_box,
+                        isActiveDay &&
+                          !dayItem.isSoldOut &&
+                          styles['inline__date_box--active'],
+                        dayItem.isSoldOut &&
+                          styles['inline__date_box--sold-out']
+                      )}
+                    >
+                      {dayItem.badgeLabel && (
+                        <span
+                          className={styles.inline__date_badge}
+                          style={badgeStyle}
+                        >
+                          {dayItem.badgeLabel}
+                        </span>
+                      )}
+                      <span className={styles.inline__date_mobile_content}>
+                        <span className={styles.inline__date_weekday}>
+                          {dayItem.shortWeekday}
+                        </span>
+                        <span className={styles.inline__date_daynum}>
+                          {dayItem.dayNumber}
+                        </span>
+                      </span>
+                      <span className={styles.inline__date_desktop_content}>
+                        {dayItem.shortWeekday},{' '}
+                        <strong>{dayItem.monthDay}</strong>
+                      </span>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          )}
 
           <div className={styles.card__form} role="form">
             <form.Field name="id">
