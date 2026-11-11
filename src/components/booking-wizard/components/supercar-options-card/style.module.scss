@@ -633,25 +633,31 @@
   }
 
   &__dates_list {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(u.rem-calc(54), 1fr));
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: stretch;
     gap: u.rem-calc(6);
+    overflow-x: auto;
+    padding-bottom: u.rem-calc(2);
+    -webkit-overflow-scrolling: touch;
 
     @include sg.min(tabletLandscape) {
-      display: flex;
       flex-wrap: wrap;
-      align-items: stretch;
+      overflow-x: visible;
+      padding-bottom: 0;
       gap: u.rem-calc(8);
     }
   }
 
   &__date_box {
+    width: auto;
+    flex: 0 0 auto;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: u.rem-calc(3);
-    padding: u.rem-calc(6) u.rem-calc(4) u.rem-calc(7);
+    padding: u.rem-calc(6) u.rem-calc(8) u.rem-calc(7);
     background: #fff;
     border: 1px solid #d5d3d0;
     border-radius: u.rem-calc(4);
