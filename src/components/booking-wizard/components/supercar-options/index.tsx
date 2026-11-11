@@ -56,10 +56,10 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
   const activeGroup = isGiftsTab ? null : supercarGroups[activeTabIndex]
   const selectedEventId = state.selectedEvent?.model?.rocketRezId ?? null
 
-  // Reset selected card when active tab or day changes
+  // Reset selected card when active tab changes
   useEffect(() => {
     setSelectedCarKey(null)
-  }, [activeTabIndex, state.selectedDayDate])
+  }, [activeTabIndex])
 
   // Get schedules for the selected day to check sold-out status
   const selectedDaySchedules =
@@ -129,7 +129,6 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
         setEditingLineItemId(targetLineItemId)
       }
       let targetGroupIdx = -1
-      let targetCarIndex = -1
 
       // Search in other groups or current group
       for (let gIdx = 0; gIdx < supercarGroups.length; gIdx++) {
@@ -148,7 +147,6 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
           }) ?? -1
         if (cIdx >= 0) {
           targetGroupIdx = gIdx
-          targetCarIndex = cIdx
           break
         }
       }
@@ -157,7 +155,7 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
         if (targetGroupIdx !== activeTabIndex) {
           setActiveTabIndex(targetGroupIdx)
         }
-        const targetCarKey = `${targetGroupIdx}-${targetSeatTypeId}-${targetCarIndex}`
+        const targetCarKey = `${targetGroupIdx}-${targetSeatTypeId}`
         setSelectedCarKey(targetCarKey)
       }
 
@@ -468,7 +466,7 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
                 overrides: option.rocketRezSeatTypeIdOverrides,
                 selectedEventId
               })
-              const carKey = `${activeTabIndex}-${seatTypeId}-${index}`
+              const carKey = `${activeTabIndex}-${seatTypeId}`
               const isSelected = selectedCarKey === carKey
               const isCompared = comparedSeatTypeIds.includes(seatTypeId)
 

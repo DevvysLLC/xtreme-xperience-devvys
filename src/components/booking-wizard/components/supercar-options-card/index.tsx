@@ -719,6 +719,15 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
     [inlineDays]
   )
 
+  const scrollInlinePanelIntoView = useCallback(() => {
+    setTimeout(() => {
+      inlineRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      })
+    }, 50)
+  }, [])
+
   const handleInlineDateSelect = (date: string, isDaySoldOut: boolean) => {
     if (isDaySoldOut || state.selectedDayDate === date) {
       return
@@ -737,6 +746,7 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
           try {
             await resetAfter.mutateAsync({ pageId: 'location' })
             setSelectedDayDate(date)
+            scrollInlinePanelIntoView()
           } catch (error) {
             logger.error(
               { error, date },
@@ -749,6 +759,7 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
     }
 
     setSelectedDayDate(date)
+    scrollInlinePanelIntoView()
   }
 
   const handleRemove = () => {
