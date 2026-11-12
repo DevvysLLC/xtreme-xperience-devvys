@@ -207,9 +207,20 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
     return `${laps} total laps on track. `
   }, [lapsPerSession, isMulticar, bookingSupercar.multicarCount])
 
+  const isEventSoldOut = Boolean(state.selectedEvent?.model?.soldOut)
+
   const lowestPrice = useMemo(
-    () => lowestAvailablePrice(schedules, rocketRezSeatTypeId, isMulticar),
-    [schedules, rocketRezSeatTypeId, lowestAvailablePrice, isMulticar]
+    () =>
+      isEventSoldOut
+        ? null
+        : lowestAvailablePrice(schedules, rocketRezSeatTypeId, isMulticar),
+    [
+      isEventSoldOut,
+      schedules,
+      rocketRezSeatTypeId,
+      lowestAvailablePrice,
+      isMulticar
+    ]
   )
 
   const discountRules = state.configData?.discountRules
@@ -347,11 +358,13 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
     )
   }, [isMulticar, schedules, rocketRezSeatTypeId])
 
-  // Check if sold out: no schedules, all unavailable, all prices are 0, or all have 0 availability
-  const soldOut = isScheduleSoldOut(
-    schedules,
-    isMulticar && packageRateIds ? packageRateIds : rocketRezSeatTypeId
-  )
+  // Check if sold out: DatoCMS manual override, no schedules, all unavailable, all prices are 0, or all have 0 availability
+  const soldOut =
+    isEventSoldOut ||
+    isScheduleSoldOut(
+      schedules,
+      isMulticar && packageRateIds ? packageRateIds : rocketRezSeatTypeId
+    )
 
   // Check if cart has cars with a different date than the selected date
   const getExistingCartDate = (): string | null => {
@@ -679,8 +692,9 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
       const dayNumber = format(parsedDate, 'd')
       const monthDay = format(parsedDate, 'MMM d').toUpperCase()
       const isDaySoldOut =
+        isEventSoldOut ||
         lowestAvailablePrice(day.schedules, rocketRezSeatTypeId, isMulticar) ===
-        null
+          null
       const dateDiscount = getDateDiscountRule({
         date: day.date,
         eventId: state.selectedEvent?.id,
@@ -703,6 +717,7 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
       }
     })
   }, [
+    isEventSoldOut,
     state.eventData?.schedules,
     lowestAvailablePrice,
     rocketRezSeatTypeId,

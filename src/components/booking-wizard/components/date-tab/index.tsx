@@ -79,7 +79,12 @@ export const DayTab: React.FC<Props> = ({
     state.selectedEvent?.model?.rocketRezId
   ])
 
+  const isEventSoldOut = Boolean(state.selectedEvent?.model?.soldOut)
+
   const lowestPrice = useMemo(() => {
+    if (isEventSoldOut) {
+      return null
+    }
     const baseLowest = lowestAvailablePriceFromRates(
       schedules,
       rateIds ?? [],
@@ -158,6 +163,7 @@ export const DayTab: React.FC<Props> = ({
       compareAtPrice: baseLowest.compareAtPrice
     }
   }, [
+    isEventSoldOut,
     schedules,
     rateIds,
     lowestAvailablePriceFromRates,

@@ -56,10 +56,10 @@ export const SupercarOptions: React.FC<Props> = ({ initialTabIndex = 0 }) => {
   const activeGroup = isGiftsTab ? null : supercarGroups[activeTabIndex]
   const selectedEventId = state.selectedEvent?.model?.rocketRezId ?? null
 
-  // Reset selected card when active tab changes
+  // Reset selected card when active tab or selected event changes
   useEffect(() => {
     setSelectedCarKey(null)
-  }, [activeTabIndex])
+  }, [activeTabIndex, selectedEventId])
 
   // Get schedules for the selected day to check sold-out status
   const selectedDaySchedules =

@@ -218,9 +218,11 @@ export const DateAndCarPage = () => {
     [activeGroup]
   )
 
+  const isEventSoldOut = Boolean(state.selectedEvent?.model?.soldOut)
+
   const isDayAvailable = useCallback(
     (day: RocketRezEventScheduleDate) => {
-      if (resolvedRateIds.length === 0) {
+      if (isEventSoldOut || resolvedRateIds.length === 0) {
         return false
       }
       const price = lowestAvailablePriceFromRates(
@@ -230,7 +232,12 @@ export const DateAndCarPage = () => {
       )
       return price !== null
     },
-    [lowestAvailablePriceFromRates, resolvedRateIds, isMulticarGroup]
+    [
+      isEventSoldOut,
+      lowestAvailablePriceFromRates,
+      resolvedRateIds,
+      isMulticarGroup
+    ]
   )
 
   // If a day is completely sold out, select the next available day by default

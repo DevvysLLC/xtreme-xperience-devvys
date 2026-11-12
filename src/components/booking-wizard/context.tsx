@@ -189,8 +189,13 @@ export const BookingWizardProvider = ({ children }: Props) => {
     [resolvedEventData?.schedules]
   )
 
+  const isEventSoldOut = Boolean(bookingEvent?.model?.soldOut)
+
   const isScheduleDayAvailable = useCallback(
     (date: string) => {
+      if (isEventSoldOut) {
+        return false
+      }
       const dayObj = resolvedEventData?.schedules?.find(
         (day) => day.date === date
       )
@@ -215,6 +220,7 @@ export const BookingWizardProvider = ({ children }: Props) => {
       })
     },
     [
+      isEventSoldOut,
       resolvedEventData?.schedules,
       resolvedRateIds,
       lowestAvailablePriceFromRates,
