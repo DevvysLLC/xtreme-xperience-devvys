@@ -51,6 +51,16 @@
     font-weight: 600;
     line-height: 1.25;
   }
+
+  &:disabled,
+  &[aria-disabled='true'] {
+    opacity: 1;
+    background: #fafafa;
+    border-color: #e5e5e5;
+    color: #999;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
 }
 
 .event-range-check {

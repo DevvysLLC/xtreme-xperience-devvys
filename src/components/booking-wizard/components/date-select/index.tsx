@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import type { FC } from 'react'
+import { type FC, useEffect, useMemo } from 'react'
 import type { EventDataFragment } from '../../../../core/dato/fragments/event-data.typegen'
 import { logger } from '../../../../core/logger/logger'
 import {
@@ -13,6 +13,7 @@ import { useCart } from '../../../../features/cart'
 import { useDialog } from '../../../../features/dialog'
 import { formatEventDateRangeShort } from '../../../../utils/date-time'
 import { getEventDataFragment } from '../../../../utils/get-event-data-fragment'
+import { isEventPassed } from '../../../../utils/is-event-passed'
 // import { CoreIcon } from '../../../core-icon'
 import { useBookingWizardState } from '../../context'
 import styles from './style.module.scss'
@@ -31,17 +32,72 @@ export const DateSelect: FC<Props> = ({ label }) => {
   const hasCartItems = (contents?.totalItems ?? 0) > 0
   const { showDialog } = useDialog()
   const { setSelectedDayDate } = useBookingWizardState()
-  const events = booking?.track?.model?.events ?? []
+  const events = useMemo(
+    () => booking?.track?.model?.events ?? [],
+    [booking?.track?.model?.events]
+  )
   const selectedEventId = booking?.event?.model?.id ?? ''
+
+  useEffect(() => {
+    if (
+      !booking?.track ||
+      hasCartItems ||
+      setEvent.isPending ||
+      resetAfter.isPending
+    ) {
+      return
+    }
+
+    const currentEventInList = events.find(
+      (e) => e.model?.id === selectedEventId
+    )
+    const isCurrentSoldOut = Boolean(
+      booking?.event?.model?.soldOut || currentEventInList?.model?.soldOut
+    )
+
+    if (!isCurrentSoldOut) {
+      return
+    }
+
+    const nextAvailableEvent = events.find(
+      (e) =>
+        e.model &&
+        !e.model.soldOut &&
+        !isEventPassed(e.model.startDate, e.model.endDate)
+    )
+
+    if (!nextAvailableEvent?.model) {
+      return
+    }
+
+    const eventFragment: EventDataFragment = getEventDataFragment(
+      nextAvailableEvent.id,
+      nextAvailableEvent.model,
+      booking.track.config,
+      booking.track.model
+    )
+
+    setSelectedDayDate(null)
+    setEvent.mutate(eventFragment)
+  }, [
+    booking?.track,
+    booking?.event?.model?.soldOut,
+    events,
+    selectedEventId,
+    hasCartItems,
+    setEvent,
+    resetAfter.isPending,
+    setSelectedDayDate
+  ])
 
   const handleChange = async (newEventId: string) => {
     const isNewEvent = newEventId !== selectedEventId
+    const newEvent = events.find((event) => event.model?.id === newEventId)
+    if (!newEvent?.model || newEvent.model.soldOut || !booking?.track) {
+      return
+    }
     if (isNewEvent) {
       setSelectedDayDate(null)
-    }
-    const newEvent = events.find((event) => event.model?.id === newEventId)
-    if (!newEvent?.model || !booking?.track) {
-      return
     }
 
     const eventFragment: EventDataFragment = getEventDataFragment(
@@ -84,14 +140,22 @@ export const DateSelect: FC<Props> = ({ label }) => {
   return (
     <div className={styles['event-ranges']} role="group" aria-label={label}>
       {events.map((event) => {
-        const isSelected = event.model?.id === selectedEventId
+        const isSoldOut =
+          Boolean(event.model?.soldOut) ||
+          isEventPassed(event.model?.startDate, event.model?.endDate)
+        const isSelected = !isSoldOut && event.model?.id === selectedEventId
         return (
           <button
             key={event.model?.id}
             type="button"
             aria-pressed={isSelected}
-            onClick={() => handleChange(event.model?.id ?? '')}
-            disabled={resetAfter.isPending || setEvent.isPending}
+            aria-disabled={isSoldOut}
+            onClick={() => {
+              if (!isSoldOut) {
+                handleChange(event.model?.id ?? '')
+              }
+            }}
+            disabled={isSoldOut || resetAfter.isPending || setEvent.isPending}
             className={styles['event-range-button']}
           >
             <strong>
