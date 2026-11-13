@@ -54,6 +54,9 @@
 
   &:disabled,
   &[aria-disabled='true'] {
+    flex-direction: column;
+    gap: u.rem-calc(2);
+    padding: u.rem-calc(8) u.rem-calc(24);
     opacity: 1;
     background: #fafafa;
     border-color: #e5e5e5;
@@ -61,6 +64,16 @@
     cursor: not-allowed;
     pointer-events: none;
   }
+}
+
+.event-range-sold-out {
+  font-family: sg.font-family('barlow-semi-condensed');
+  font-size: u.rem-calc(11);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #555;
 }
 
 .event-range-check {

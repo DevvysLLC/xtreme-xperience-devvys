@@ -164,6 +164,9 @@ export const DateSelect: FC<Props> = ({ label }) => {
                 event.model?.endDate
               )}
             </strong>
+            {isSoldOut && (
+              <span className={styles['event-range-sold-out']}>SOLD OUT</span>
+            )}
             {isSelected && (
               <span className={styles['event-range-check']} aria-hidden="true">
                 ✓
