@@ -68,12 +68,13 @@
 
 .event-range-sold-out {
   font-family: sg.font-family('barlow-semi-condensed');
-  font-size: u.rem-calc(11);
+  font-size: u.rem-calc(12);
   font-weight: 700;
   line-height: 1.1;
   letter-spacing: 0.03em;
   text-transform: uppercase;
-  color: #555;
+  color: #999;
+  margin-top: 2px;
 }
 
 .event-range-check {
