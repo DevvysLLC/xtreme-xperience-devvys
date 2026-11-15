@@ -389,6 +389,9 @@ type BookingDiscountRuleRecord implements RecordInterface {
   badgeLabel: String
   cardBadgeBackgroundColor: ColorField
   cardBadgeTextColor: ColorField
+  showTimeBadge: BooleanType
+  timeBadgeBackgroundColor: ColorField
+  timeBadgeTextColor: ColorField
   compareAtOverride: FloatType
   dateBadgeBackgroundColor: ColorField
   dateBadgeTextColor: ColorField

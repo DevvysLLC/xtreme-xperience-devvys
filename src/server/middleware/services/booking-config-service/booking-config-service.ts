@@ -70,7 +70,23 @@ export class BookingConfigService {
           promo.cardBadgeBackgroundColor?.hex ||
           null,
         cardBadgeTextColor:
-          rule.cardBadgeTextColor?.hex || promo.cardBadgeTextColor?.hex || null
+          rule.cardBadgeTextColor?.hex || promo.cardBadgeTextColor?.hex || null,
+        showTimeBadge:
+          promo.showTimeBadge === false || rule.showTimeBadge === false
+            ? false
+            : true,
+        timeBadgeBackgroundColor:
+          rule.timeBadgeBackgroundColor?.hex ||
+          promo.timeBadgeBackgroundColor?.hex ||
+          rule.cardBadgeBackgroundColor?.hex ||
+          promo.cardBadgeBackgroundColor?.hex ||
+          '#C6FF00',
+        timeBadgeTextColor:
+          rule.timeBadgeTextColor?.hex ||
+          promo.timeBadgeTextColor?.hex ||
+          rule.cardBadgeTextColor?.hex ||
+          promo.cardBadgeTextColor?.hex ||
+          '#000000'
       }))
     })
 

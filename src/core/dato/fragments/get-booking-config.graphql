@@ -21,6 +21,13 @@ query getBookingConfig {
     cardBadgeTextColor {
       hex
     }
+    showTimeBadge
+    timeBadgeBackgroundColor {
+      hex
+    }
+    timeBadgeTextColor {
+      hex
+    }
     headline
     rules {
       ...BookingDiscountRule

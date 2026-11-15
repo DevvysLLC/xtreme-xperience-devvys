@@ -70,9 +70,9 @@
   position: relative;
   width: 100%;
   box-sizing: border-box;
-  min-height: u.rem-calc(48);
-  padding: u.rem-calc(8) u.rem-calc(4) u.rem-calc(6);
-  margin-top: u.rem-calc(5);
+  min-height: u.rem-calc(52);
+  padding: u.rem-calc(11) u.rem-calc(4) u.rem-calc(6);
+  margin-top: u.rem-calc(6);
   background: sg.color(white);
   color: #111;
   border: 1px solid #ccc;
@@ -108,10 +108,15 @@
 
     .time__title,
     .time__label,
-    span,
+    span:not(.time__sticker):not(.time__available),
     s {
       color: #fff !important;
       -webkit-text-fill-color: #fff !important;
+    }
+
+    .time__sticker {
+      color: var(--time-sticker-color, #000000) !important;
+      -webkit-text-fill-color: var(--time-sticker-color, #000000) !important;
     }
   }
 
@@ -161,6 +166,48 @@
       font-size: inherit;
       font-weight: inherit;
       line-height: inherit;
+    }
+  }
+
+  &__sticker {
+    position: absolute;
+    top: u.rem-calc(-8);
+    left: u.rem-calc(-3);
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    padding: u.rem-calc(3) u.rem-calc(9) u.rem-calc(3) u.rem-calc(5);
+    font-family: sg.font-family('barlow-semi-condensed');
+    font-size: u.rem-calc(10);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--time-sticker-color, #000000);
+    -webkit-text-fill-color: var(--time-sticker-color, #000000);
+    pointer-events: none;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-color: var(--time-sticker-bg, #c6ff00);
+      clip-path: polygon(0 0, 100% 0, calc(100% - #{u.rem-calc(6)}) 100%, 0 100%);
+      z-index: -1;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: u.rem-calc(-3);
+      width: u.rem-calc(3);
+      height: u.rem-calc(3);
+      background-color: var(--time-sticker-bg, #c6ff00);
+      filter: brightness(0.65);
+      clip-path: polygon(0 0, 100% 0, 100% 100%);
+      z-index: -1;
     }
   }
 

@@ -38,6 +38,9 @@ export type BookingDiscountRule = {
   dateBadgeTextColor?: string | null
   cardBadgeBackgroundColor?: string | null
   cardBadgeTextColor?: string | null
+  showTimeBadge?: boolean | null
+  timeBadgeBackgroundColor?: string | null
+  timeBadgeTextColor?: string | null
 }
 
 const parseTimeToMinutes = (timeStr?: string | null): number | null => {
@@ -64,6 +67,9 @@ export type ScheduleDiscountResult = {
   badgeLabel?: string | null
   cardBadgeBackgroundColor?: string | null
   cardBadgeTextColor?: string | null
+  showTimeBadge?: boolean | null
+  timeBadgeBackgroundColor?: string | null
+  timeBadgeTextColor?: string | null
   isDiscounted: boolean
 }
 
@@ -571,6 +577,13 @@ export const getScheduleDiscount = ({
             : null,
         cardBadgeBackgroundColor: rule.cardBadgeBackgroundColor ?? null,
         cardBadgeTextColor: rule.cardBadgeTextColor ?? null,
+        showTimeBadge: rule.showTimeBadge ?? true,
+        timeBadgeBackgroundColor:
+          rule.timeBadgeBackgroundColor ??
+          rule.cardBadgeBackgroundColor ??
+          '#C6FF00',
+        timeBadgeTextColor:
+          rule.timeBadgeTextColor ?? rule.cardBadgeTextColor ?? '#000000',
         isDiscounted: true
       }
     }

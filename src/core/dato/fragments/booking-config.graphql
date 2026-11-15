@@ -80,6 +80,13 @@ fragment BookingDiscountRule on BookingDiscountRuleRecord {
   cardBadgeTextColor {
     hex
   }
+  showTimeBadge
+  timeBadgeBackgroundColor {
+    hex
+  }
+  timeBadgeTextColor {
+    hex
+  }
   compareAtOverride
   daysOfWeek
   targetType

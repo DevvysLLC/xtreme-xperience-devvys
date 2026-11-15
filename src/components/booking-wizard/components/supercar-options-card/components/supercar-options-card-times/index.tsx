@@ -202,6 +202,30 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
             matchingSeatTypeAvailable !== null && matchingSeatTypeAvailable > 0
               ? Math.min(matchingSeatTypeAvailable, SHOW_AVAILABLE_THRESHOLD)
               : null
+          const slotSavings =
+            !isSoldOut &&
+            hasPrice &&
+            isAvailable &&
+            displayCompareAtPrice != null &&
+            displayPrice != null &&
+            displayCompareAtPrice > displayPrice
+              ? Math.round(displayCompareAtPrice - displayPrice)
+              : 0
+          const showTimeSticker =
+            slotSavings > 0 && (discountResult.showTimeBadge ?? true)
+          const timeStickerBg =
+            discountResult.timeBadgeBackgroundColor ||
+            discountResult.cardBadgeBackgroundColor ||
+            '#C6FF00'
+          const timeStickerColor =
+            discountResult.timeBadgeTextColor ||
+            discountResult.cardBadgeTextColor ||
+            '#000000'
+          const timeStickerStyle: React.CSSProperties &
+            Record<string, string> = {
+            '--time-sticker-bg': timeStickerBg,
+            '--time-sticker-color': timeStickerColor
+          }
 
           return (
             <label
@@ -252,6 +276,14 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
                   }
                 }}
               />
+              {showTimeSticker && (
+                <span
+                  className={styles.time__sticker}
+                  style={timeStickerStyle}
+                >
+                  SAVE ${slotSavings.toLocaleString()}
+                </span>
+              )}
               {!isSoldOut && availableDisplay !== null && (
                 <span className={styles.time__available}>
                   {availableDisplay}
