@@ -12,6 +12,7 @@ import { useMainBus } from '../../../../core/messaging/main/react'
 import { sentenceCase } from '../../../../core/string/sentence-case'
 import { useBookingSetIntendedPage } from '../../../../features/booking'
 import {
+  useCart,
   useCartLineItemMetadata,
   useCartRemoveLineItem
 } from '../../../../features/cart'
@@ -48,6 +49,7 @@ export const CartLineItem: FC<Props> = ({
   const t = useTranslations('global_cart')
   const { mutateAsync } = useCartRemoveLineItem()
   const { mutateAsync: setIntendedPage } = useBookingSetIntendedPage()
+  const { data: cart } = useCart()
   const cartMetadata = useCartLineItemMetadata({ lineItem })
   const metadata =
     externalMetadata !== undefined ? externalMetadata : cartMetadata.metadata
@@ -62,6 +64,63 @@ export const CartLineItem: FC<Props> = ({
   const displayTitle = title?.trim() || lineItem.name?.trim() || fallbackTitle
   const { date, laps } = properties ?? {}
   const displaySubtitle = label ? sentenceCase(label) : subtitle
+
+  const referenceValue =
+    properties &&
+    typeof properties === 'object' &&
+    'referenceValue' in properties &&
+    typeof properties.referenceValue === 'number'
+      ? properties.referenceValue
+      : undefined
+
+  const metaSavings =
+    properties &&
+    typeof properties === 'object' &&
+    'savings' in properties &&
+    typeof properties.savings === 'number'
+      ? properties.savings
+      : undefined
+
+  let rrItemDiscount = 0
+  for (const coupon of cart?.cartData?.coupons ?? []) {
+    if (Array.isArray(coupon.lineItemDiscounts)) {
+      for (const rawEntry of coupon.lineItemDiscounts) {
+        if (
+          rawEntry &&
+          typeof rawEntry === 'object' &&
+          'lineItemId' in rawEntry &&
+          'discountAmount' in rawEntry &&
+          rawEntry.lineItemId === lineItem.id &&
+          typeof rawEntry.discountAmount === 'number' &&
+          rawEntry.discountAmount > 0
+        ) {
+          rrItemDiscount += rawEntry.discountAmount
+        }
+      }
+    }
+  }
+  if (rrItemDiscount === 0 && (lineItem.discountAmount ?? 0) > 0) {
+    rrItemDiscount = lineItem.discountAmount ?? 0
+  }
+
+  const itemTotal = price * (lineItem.quantity ?? 1)
+  const effectiveSavings = rrItemDiscount > 0 ? rrItemDiscount : metaSavings
+  const originalPrice =
+    rrItemDiscount > 0
+      ? Math.max(itemTotal, referenceValue ?? 0)
+      : referenceValue != null && referenceValue > itemTotal
+        ? referenceValue
+        : itemTotal
+  const discountedPrice =
+    rrItemDiscount > 0
+      ? Math.max(0, itemTotal - rrItemDiscount)
+      : effectiveSavings != null && effectiveSavings > 0
+        ? Math.max(0, originalPrice - effectiveSavings)
+        : itemTotal
+  const savings =
+    originalPrice > discountedPrice
+      ? originalPrice - discountedPrice
+      : effectiveSavings
 
   const handleRemove = async () => {
     try {
@@ -80,38 +139,12 @@ export const CartLineItem: FC<Props> = ({
       (displayTitle != null && displayTitle.toLowerCase().includes('gift'))
     const trackNickname = subtitle || ''
 
-    const referenceValue =
-      properties &&
-      typeof properties === 'object' &&
-      'referenceValue' in properties &&
-      typeof properties.referenceValue === 'number'
-        ? properties.referenceValue
-        : undefined
-
-    const savings =
-      properties &&
-      typeof properties === 'object' &&
-      'savings' in properties &&
-      typeof properties.savings === 'number'
-        ? properties.savings
-        : undefined
-
     const isEstimatedDiscountPage =
       Boolean(pathname) &&
       (pathname.includes('/booking/choose-date-and-car') ||
         pathname.includes('/booking/coverage-options') ||
         pathname.includes('/booking/ride-along') ||
         pathname.includes('/booking/media-packages'))
-
-    const itemTotal = price * (lineItem.quantity ?? 1)
-    const originalPrice =
-      referenceValue != null && referenceValue > itemTotal
-        ? referenceValue
-        : itemTotal
-    const discountedPrice =
-      savings != null && savings > 0
-        ? Math.max(0, originalPrice - savings)
-        : itemTotal
 
     const isInsurance = type === 'insurance'
     const isPitPass =
@@ -293,20 +326,21 @@ export const CartLineItem: FC<Props> = ({
                 </>
               ) : (
                 <>
-                  {referenceValue != null &&
-                    referenceValue > price * (lineItem.quantity ?? 1) && (
+                  <div className={styles.CartLineItemCompact__priceRow}>
+                    {originalPrice > discountedPrice && (
                       <span className={styles.CartLineItemCompact__cutPrice}>
-                        ${Math.ceil(referenceValue)}
+                        ${Math.ceil(originalPrice).toLocaleString()}
                       </span>
                     )}
-                  <CoreRocketRezPrice
-                    data={{
-                      id: `${id}-price`,
-                      price: price * (lineItem.quantity ?? 1)
-                    }}
-                    className={styles.CartLineItemCompact__price}
-                    valueInCents={false}
-                  />
+                    <CoreRocketRezPrice
+                      data={{
+                        id: `${id}-price`,
+                        price: Math.ceil(discountedPrice)
+                      }}
+                      className={styles.CartLineItemCompact__price}
+                      valueInCents={false}
+                    />
+                  </div>
                   {savings != null && savings > 0 && (
                     <span className={styles.CartLineItemCompact__saving}>
                       Saving ${Math.round(savings)}
@@ -542,15 +576,22 @@ export const CartLineItem: FC<Props> = ({
             )}
 
             <div className={styles.CartLineItem__inner}>
-              <CoreRocketRezPrice
-                className={styles.CartLineItem__price}
-                priceClassName="u-color-orange"
-                data={{
-                  id: `${id}-price`,
-                  price: price * (lineItem.quantity ?? 1)
-                }}
-                valueInCents={false}
-              />
+              <div className={styles.CartLineItem__priceGroup}>
+                {originalPrice > discountedPrice && (
+                  <span className={styles.CartLineItem__cutPrice}>
+                    ${Math.ceil(originalPrice).toLocaleString()}
+                  </span>
+                )}
+                <CoreRocketRezPrice
+                  className={styles.CartLineItem__price}
+                  priceClassName="u-color-orange"
+                  data={{
+                    id: `${id}-price`,
+                    price: Math.ceil(discountedPrice)
+                  }}
+                  valueInCents={false}
+                />
+              </div>
 
               {!readOnly && type !== 'insurance' && (
                 <CoreCta

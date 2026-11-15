@@ -151,8 +151,23 @@
     text-transform: uppercase;
   }
 
-  &__price {
+  &__priceGroup {
+    display: inline-flex;
+    align-items: baseline;
+    justify-content: flex-end;
+    gap: u.rem-calc(8);
     min-width: u.rem-calc(110);
+  }
+
+  &__cutPrice {
+    font-size: sg.font-size(mediuml);
+    line-height: sg.line-height('100%');
+    color: #222;
+    font-weight: 700;
+    text-decoration: line-through;
+  }
+
+  &__price {
     font-size: sg.font-size(mediuml);
     line-height: sg.line-height('100%');
     color: sg.color(orange);

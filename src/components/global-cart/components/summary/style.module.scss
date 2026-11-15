@@ -43,6 +43,25 @@
     }
   }
 
+  &__valueGroup {
+    display: inline-flex;
+    align-items: baseline;
+    gap: u.rem-calc(6);
+    white-space: nowrap;
+
+    [data-price] {
+      font-weight: 700;
+      color: #111;
+    }
+  }
+
+  &__cutPrice {
+    color: #888;
+    font-weight: 500;
+    text-decoration: line-through;
+    margin-right: u.rem-calc(4);
+  }
+
   &__discountValue {
     color: #ff6900;
     font-weight: 700;
@@ -216,6 +235,21 @@
     }
   }
 
+  &__totalPriceGroup {
+    display: inline-flex;
+    align-items: baseline;
+    gap: u.rem-calc(8);
+    white-space: nowrap;
+  }
+
+  &__totalCutPrice {
+    font-size: u.rem-calc(18);
+    font-weight: 500;
+    color: #888;
+    text-decoration: line-through;
+    font-family: sg.font-family(barlow);
+  }
+
   &__legalNote {
     font-size: u.rem-calc(11);
     color: #777;
@@ -335,6 +369,9 @@
   }
 
   &__itemPrice {
+    display: inline-flex;
+    align-items: baseline;
+    gap: u.rem-calc(4);
     color: #111;
     font-weight: 700;
     white-space: nowrap;

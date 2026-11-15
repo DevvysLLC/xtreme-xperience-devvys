@@ -132,13 +132,19 @@ export const CartAside: FC<Props> = ({ className }) => {
                 ? 'Estimated subtotal'
                 : 'Subtotal'}
             </span>
-            <strong>
-              $
-              {(isEstimatedDiscountPage && totalSavings > 0
-                ? estimatedSubtotal
-                : subtotal
-              ).toLocaleString()}
-            </strong>
+            <span className={styles.cart__subtotal_price}>
+              {totalSavings > 0 && subtotal > estimatedSubtotal && (
+                <span className={styles.cart__subtotal_cut}>
+                  ${Math.round(subtotal).toLocaleString()}
+                </span>
+              )}
+              <strong>
+                $
+                {Math.round(
+                  totalSavings > 0 ? estimatedSubtotal : subtotal
+                ).toLocaleString()}
+              </strong>
+            </span>
           </div>
           {!isEstimatedDiscountPage && discountTotal > 0 && (
             <div className={styles.cart__discount_row}>

@@ -150,6 +150,19 @@
     }
   }
 
+  &__subtotal_price {
+    display: inline-flex;
+    align-items: baseline;
+    gap: u.rem-calc(8);
+  }
+
+  &__subtotal_cut {
+    font-size: u.rem-calc(16);
+    font-weight: 500;
+    color: #888 !important;
+    text-decoration: line-through;
+  }
+
   &__discount_row {
     display: flex;
     justify-content: space-between;

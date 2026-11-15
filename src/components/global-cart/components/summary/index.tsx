@@ -34,6 +34,7 @@ const SummaryLineItem: FC<{
 }> = ({ lineItem, isReviewPage = false }) => {
   const router = useRouter()
   const t = useTranslations('global_cart')
+  const { data: cart } = useCart()
   const { metadata } = useCartLineItemMetadata({ lineItem })
   const { mutateAsync: removeLineItem } = useCartRemoveLineItem()
   const { mutateAsync: setIntendedPage } = useBookingSetIntendedPage()
@@ -94,6 +95,80 @@ const SummaryLineItem: FC<{
   }
 
   const totalPrice = price * quantity
+
+  const rrItemDiscount = useMemo(() => {
+    let couponDiscount = 0
+    const coupons = cart?.cartData?.coupons
+    if (Array.isArray(coupons)) {
+      for (const coupon of coupons) {
+        if (Array.isArray(coupon.lineItemDiscounts)) {
+          for (const rawEntry of coupon.lineItemDiscounts) {
+            if (
+              rawEntry &&
+              typeof rawEntry === 'object' &&
+              'lineItemId' in rawEntry &&
+              'discountAmount' in rawEntry &&
+              rawEntry.lineItemId === lineItem.id &&
+              typeof rawEntry.discountAmount === 'number' &&
+              rawEntry.discountAmount > 0
+            ) {
+              couponDiscount += rawEntry.discountAmount
+            }
+          }
+        }
+      }
+    }
+    if (couponDiscount > 0) {
+      return couponDiscount
+    }
+    return typeof lineItem.discountAmount === 'number' &&
+      lineItem.discountAmount > 0
+      ? lineItem.discountAmount
+      : 0
+  }, [cart?.cartData?.coupons, lineItem.discountAmount, lineItem.id])
+
+  const { originalPrice, discountedPrice } = useMemo(() => {
+    const rawProps =
+      metadata?.properties && typeof metadata.properties === 'object'
+        ? metadata.properties
+        : null
+    const metaReferenceValue =
+      rawProps &&
+      'referenceValue' in rawProps &&
+      typeof rawProps.referenceValue === 'number'
+        ? rawProps.referenceValue
+        : 0
+    const metaSavings =
+      rawProps && 'savings' in rawProps && typeof rawProps.savings === 'number'
+        ? rawProps.savings
+        : 0
+
+    if (rrItemDiscount > 0) {
+      return {
+        originalPrice: Math.max(totalPrice, metaReferenceValue),
+        discountedPrice: Math.max(0, totalPrice - rrItemDiscount)
+      }
+    }
+
+    if (metaReferenceValue > totalPrice) {
+      return {
+        originalPrice: metaReferenceValue,
+        discountedPrice: totalPrice
+      }
+    }
+
+    if (metaSavings > 0) {
+      return {
+        originalPrice: totalPrice,
+        discountedPrice: Math.max(0, totalPrice - metaSavings)
+      }
+    }
+
+    return {
+      originalPrice: totalPrice,
+      discountedPrice: totalPrice
+    }
+  }, [metadata?.properties, rrItemDiscount, totalPrice])
 
   const handleRemove = async () => {
     try {
@@ -170,7 +245,12 @@ const SummaryLineItem: FC<{
         )}
       </div>
       <span className={styles.summary__itemPrice}>
-        ${totalPrice.toLocaleString()}
+        {originalPrice > discountedPrice && (
+          <span className={styles.summary__cutPrice}>
+            ${Math.round(originalPrice).toLocaleString()}
+          </span>
+        )}
+        <span>${Math.round(discountedPrice).toLocaleString()}</span>
       </span>
       {isGiftCard && (
         <EditGiftCardModal
@@ -379,6 +459,9 @@ export const CartSummary: FC = () => {
     )
   }, [savingsBreakdownItems])
 
+  const discountedSubtotal = Math.max(0, subtotal - totalSavings)
+  const originalTotal = total + totalSavings
+
   return (
     <div className={styles.summary}>
       <h2 className={styles.summary__title}>{t('summary.title')}</h2>
@@ -418,13 +501,20 @@ export const CartSummary: FC = () => {
               {t('summary.subtotal')}
             </strong>
 
-            <CoreRocketRezPrice
-              className={styles.summary__value}
-              data={{
-                id: 'summary-subtotal',
-                price: subtotal
-              }}
-            />
+            <span className={styles.summary__valueGroup}>
+              {totalSavings > 0 && subtotal > discountedSubtotal && (
+                <span className={styles.summary__cutPrice}>
+                  ${Math.round(subtotal).toLocaleString()}
+                </span>
+              )}
+              <CoreRocketRezPrice
+                className={styles.summary__value}
+                data={{
+                  id: 'summary-subtotal',
+                  price: totalSavings > 0 ? discountedSubtotal : subtotal
+                }}
+              />
+            </span>
           </div>
         </>
       )}
@@ -525,13 +615,20 @@ export const CartSummary: FC = () => {
       <div className={styles.summary__total}>
         <strong className={styles.summary__totalTitle}>Total</strong>
 
-        <CoreRocketRezPrice
-          className={styles.summary__totalAmount}
-          data={{
-            id: 'summary-total',
-            price: total
-          }}
-        />
+        <span className={styles.summary__totalPriceGroup}>
+          {totalSavings > 0 && originalTotal > total && (
+            <span className={styles.summary__totalCutPrice}>
+              ${Math.round(originalTotal).toLocaleString()}
+            </span>
+          )}
+          <CoreRocketRezPrice
+            className={styles.summary__totalAmount}
+            data={{
+              id: 'summary-total',
+              price: total
+            }}
+          />
+        </span>
       </div>
 
       <CartExpiry />
