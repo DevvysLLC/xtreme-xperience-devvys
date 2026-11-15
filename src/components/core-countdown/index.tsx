@@ -8,12 +8,18 @@ export type Props = {
   data: {
     end: string
     showDays?: boolean
+    showHours?: boolean
   }
   className?: string | null
+  onExpire?: () => void
 }
 
-export const CoreCountdown: FC<Props> = ({ data, className = null }) => {
-  const { end, showDays = false } = data
+export const CoreCountdown: FC<Props> = ({
+  data,
+  className = null,
+  onExpire
+}) => {
+  const { end, showDays = false, showHours = true } = data
   const [timeRemaining, setTimeRemaining] = useState<{
     days: number
     hours: number
@@ -34,6 +40,7 @@ export const CoreCountdown: FC<Props> = ({ data, className = null }) => {
     }
 
     let interval: NodeJS.Timeout | null = null
+    let hasNotifiedExpire = false
 
     const updateCountdown = () => {
       const now = new Date()
@@ -45,18 +52,24 @@ export const CoreCountdown: FC<Props> = ({ data, className = null }) => {
           clearInterval(interval)
           interval = null
         }
+        if (!hasNotifiedExpire) {
+          hasNotifiedExpire = true
+          onExpire?.()
+        }
         return
       }
 
       const daysRemaining = showDays
         ? Math.floor(difference / (1000 * 60 * 60 * 24))
         : 0
-      const hoursRemaining = showDays
-        ? Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-        : Math.floor(difference / (1000 * 60 * 60))
-      const minutesRemaining = Math.floor(
-        (difference % (1000 * 60 * 60)) / (1000 * 60)
-      )
+      const hoursRemaining = showHours
+        ? showDays
+          ? Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+          : Math.floor(difference / (1000 * 60 * 60))
+        : 0
+      const minutesRemaining = showHours
+        ? Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60))
+        : Math.floor(difference / (1000 * 60))
       const secondsRemaining = Math.floor((difference % (1000 * 60)) / 1000)
 
       setTimeRemaining({
@@ -75,7 +88,7 @@ export const CoreCountdown: FC<Props> = ({ data, className = null }) => {
         clearInterval(interval)
       }
     }
-  }, [end, showDays])
+  }, [end, showDays, showHours, onExpire])
 
   if (!timeRemaining) {
     return null
@@ -91,7 +104,14 @@ export const CoreCountdown: FC<Props> = ({ data, className = null }) => {
           :
         </>
       )}
-      <span data-hours>{timeRemaining.hours.toString().padStart(2, '0')}</span>:
+      {showHours && (
+        <>
+          <span data-hours>
+            {timeRemaining.hours.toString().padStart(2, '0')}
+          </span>
+          :
+        </>
+      )}
       <span data-minutes>
         {timeRemaining.minutes.toString().padStart(2, '0')}
       </span>

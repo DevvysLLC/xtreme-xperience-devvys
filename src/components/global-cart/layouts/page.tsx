@@ -7,9 +7,11 @@ import type { FC, ReactNode } from 'react'
 import { ROUTES } from '../../../config/routes'
 import {
   useBookingConfig,
-  useBookingPageReview
+  useBookingPageReview,
+  useBookingSetIntendedPage
 } from '../../../features/booking'
-import { useCart } from '../../../features/cart'
+import { useCart, useCartRecreateHold } from '../../../features/cart'
+import { useToast } from '../../../features/toast'
 import { CoreTextMarkdown } from '../../core-text-markdown'
 import { CartActions } from '../components/actions'
 import { CartLineItems } from '../components/items'
@@ -34,6 +36,9 @@ export const CartPage: FC<Props> = ({
   const { data, isLoading, isRefreshing } = useCart()
   const lineItems = data?.cartData?.lineItems ?? []
   const pageHook = useBookingPageReview()
+  const { mutateAsync: setIntendedPage } = useBookingSetIntendedPage()
+  const { recreateHold, isRecreating } = useCartRecreateHold()
+  const { showToast } = useToast()
   const { data: config } = useBookingConfig()
   const upsellsTitle = config?.upsellsTitle || 'ADD A PIT PASS'
   const upsellsDescription =
@@ -41,6 +46,42 @@ export const CartPage: FC<Props> = ({
   const router = useRouter()
 
   const handleCheckout = async () => {
+    const holdResult = await recreateHold()
+    if (holdResult.status === 'sold_out') {
+      showToast({
+        message: 'That time just sold out.',
+        type: 'error'
+      })
+      try {
+        if (holdResult.seatTypeId) {
+          sessionStorage.setItem(
+            'pendingEditSeatTypeId',
+            String(holdResult.seatTypeId)
+          )
+        }
+        if (holdResult.failedLineItem?.id != null) {
+          sessionStorage.setItem(
+            'pendingEditLineItemId',
+            String(holdResult.failedLineItem.id)
+          )
+        }
+      } catch {
+        // ignore sessionStorage error
+      }
+      await setIntendedPage('date_and_car')
+      router.push(ROUTES.BOOKING.DATE_AND_CAR)
+      return
+    }
+
+    if (holdResult.status === 'available' && holdResult.priceChanged) {
+      showToast({
+        message:
+          'The price in your cart has been updated. Please review your updated total before continuing to payment.',
+        type: 'info'
+      })
+      return
+    }
+
     const pageIsValid = pageHook.isValid()
     await pageHook.set({
       value: {
@@ -66,7 +107,10 @@ export const CartPage: FC<Props> = ({
         <CartSummary />
 
         {!readOnly && showActions && (
-          <CartActions onCheckout={handleCheckout} />
+          <CartActions
+            onCheckout={handleCheckout}
+            isLoading={isRecreating}
+          />
         )}
       </div>
 

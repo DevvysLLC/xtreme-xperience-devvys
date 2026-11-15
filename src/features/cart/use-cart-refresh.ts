@@ -28,6 +28,10 @@ import {
 import { LOG_NAMESPACE } from './config'
 import { CART_QUERY_KEY, CART_REFRESH_QUERY_KEY } from './keys'
 import { cartRepository, initialCartState } from './repository'
+import {
+  isCartHoldExpired,
+  releaseCartHoldInRocketRez
+} from './use-cart-recreate-hold'
 import { useCartState } from './use-cart-state'
 
 const clearAllStores = (qc: ReturnType<typeof useQueryClient>) => {
@@ -42,10 +46,33 @@ const clearAllStores = (qc: ReturnType<typeof useQueryClient>) => {
   checkoutRepository.clear()
 }
 
+const preserveExpiredCartState = (
+  qc: ReturnType<typeof useQueryClient>,
+  base: CartState
+) => {
+  const next: CartState = {
+    ...base,
+    cartKey: null,
+    tokenExpiry: null,
+    holdExpired: true,
+    isMutating: false,
+    isLoading: false
+  }
+  qc.setQueryData(CART_QUERY_KEY, next)
+  cartRepository.write(next)
+}
+
 export const useCartRefresh = () => {
   const qc = useQueryClient()
   const { data: cartState } = useCartState()
   const cartKey = cartState.cartKey ?? null
+  const holdExpired = isCartHoldExpired(cartState)
+
+  useEffect(() => {
+    if (holdExpired && (!cartState.holdExpired || cartState.cartKey !== null)) {
+      void releaseCartHoldInRocketRez(qc)
+    }
+  }, [holdExpired, cartState.holdExpired, cartState.cartKey, qc])
 
   useEffect(() => {
     logger.info(
@@ -64,7 +91,7 @@ export const useCartRefresh = () => {
 
   const query = useQuery({
     queryKey: [...CART_REFRESH_QUERY_KEY, cartKey],
-    enabled: !!cartKey,
+    enabled: !!cartKey && !holdExpired,
     refetchOnMount: true,
     retry: false,
     queryFn: async ({ signal }): Promise<ApiCartResponse | null> => {
@@ -109,6 +136,7 @@ export const useCartRefresh = () => {
     }
 
     const base = qc.getQueryData<CartState>(CART_QUERY_KEY) ?? initialCartState
+    const baseHasItems = (base.cartData?.lineItems?.length ?? 0) > 0
 
     if (base.isMutating) {
       logger.info({}, `${LOG_NAMESPACE}: refresh.skip — mutation in progress`)
@@ -116,6 +144,14 @@ export const useCartRefresh = () => {
     }
 
     if (!query.data || query.data.status !== 'success') {
+      if (baseHasItems) {
+        logger.info(
+          {},
+          `${LOG_NAMESPACE}: refresh.invalid — preserving cart as expired hold`
+        )
+        preserveExpiredCartState(qc, base)
+        return
+      }
       logger.info({}, `${LOG_NAMESPACE}: refresh.invalid — clearing all stores`)
       clearAllStores(qc)
       return
@@ -124,11 +160,29 @@ export const useCartRefresh = () => {
     const cartData = query.data.data
 
     if (cartData.cart.status !== CartStatus.ACTIVE) {
+      if (baseHasItems) {
+        logger.info(
+          { status: cartData.cart.status },
+          `${LOG_NAMESPACE}: refresh.inactive — preserving cart as expired hold`
+        )
+        preserveExpiredCartState(qc, base)
+        return
+      }
       logger.info(
         { status: cartData.cart.status },
         `${LOG_NAMESPACE}: refresh.inactive — clearing all stores`
       )
       clearAllStores(qc)
+      return
+    }
+
+    const hasItems = (cartData.cart.lineItems?.length ?? 0) > 0
+    if (!hasItems && baseHasItems) {
+      logger.info(
+        {},
+        `${LOG_NAMESPACE}: refresh.emptyRemote — preserving local cart items as expired hold`
+      )
+      preserveExpiredCartState(qc, base)
       return
     }
 
@@ -142,9 +196,12 @@ export const useCartRefresh = () => {
       next = { ...next, cartKey: newCartKey, tokenExpiry: cartData.tokenExpiry }
     }
 
-    const hasItems = (cartData.cart.lineItems?.length ?? 0) > 0
     if (hasItems && !next.timerStartedAt) {
-      next = { ...next, timerStartedAt: new Date().toISOString() }
+      next = {
+        ...next,
+        timerStartedAt: new Date().toISOString(),
+        holdExpired: false
+      }
     }
 
     next = { ...next, cartData: cartData.cart }

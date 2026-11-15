@@ -47,12 +47,26 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
     gap: sg.spacing(medium);
     width: 100%;
 
     @include sg.min(tabletLandscape) {
+      flex-wrap: nowrap;
       justify-content: flex-end;
       width: auto;
+    }
+  }
+
+  &__expiry {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+
+    @include sg.min(tabletLandscape) {
+      width: auto;
+      justify-content: flex-end;
+      text-align: right;
     }
   }
 

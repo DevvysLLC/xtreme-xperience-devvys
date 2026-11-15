@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { ROUTES } from '../../../../config/routes'
 import { CoreCta } from '../../../core-cta'
+import { CartExpiry } from '../../../global-cart/components/expiry'
 import styles from './style.module.scss'
 
 type FormState = {
@@ -51,6 +52,8 @@ export const PageFooter: React.FC<Props> = ({
 
   const renderActions = (canSubmit: boolean, isSubmitting: boolean) => (
     <div className={styles.footer__actions}>
+      <CartExpiry variant="inline" className={styles.footer__expiry} />
+
       <CoreCta
         type="button"
         onClick={handleBack}

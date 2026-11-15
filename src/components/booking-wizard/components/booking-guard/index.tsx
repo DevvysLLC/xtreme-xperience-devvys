@@ -126,7 +126,16 @@ export const BookingWizardGuard: FC<Props> = ({ children }) => {
         enabledPages.indexOf(targetPage) <= maxAccessibleIndex &&
         !isBlocked(targetPage.id) &&
         !intendedIsStaleLocation
-      const resolvedPage = intendedIsAccessible ? targetPage : maxAccessiblePage
+      const reviewPage = enabledPages.find((p) => p.id === 'review')
+      const shouldLandOnReview =
+        cart.contents.hasCars &&
+        maxAccessiblePage?.id === 'review' &&
+        reviewPage !== undefined
+      const resolvedPage = shouldLandOnReview
+        ? reviewPage
+        : intendedIsAccessible
+          ? targetPage
+          : maxAccessiblePage
       const resolvedPath = resolvedPage?.path ?? ROUTES.BOOKING.LOCATION
       const resolvedId = resolvedPage?.id ?? 'location'
 

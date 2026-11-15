@@ -52,7 +52,57 @@ export const useCartMutation = <TInput>(
         return Promise.reject(new Error(CART_ERRORS.OPERATION_IN_PROGRESS))
       }
 
+      const endpoint =
+        typeof options.endpoint === 'function'
+          ? options.endpoint(input)
+          : options.endpoint
+
       if (options.requireCartKey && !cartState.cartKey) {
+        if (options.method === 'DELETE' && cartState.cartData) {
+          const currentCart = cartState.cartData
+          if (endpoint.includes('lineItemId=')) {
+            const idParam = endpoint.split('lineItemId=')[1]?.split('&')[0]
+            const removedId = Number(idParam)
+            const remainingItems = (currentCart.lineItems ?? []).filter(
+              (li) =>
+                li.id !== removedId && li.parentLineItemId !== removedId
+            )
+            const nextSubTotal = remainingItems.reduce(
+              (sum, li) => sum + li.price * (li.quantity ?? 1),
+              0
+            )
+            const updatedCart = {
+              ...currentCart,
+              lineItems: remainingItems,
+              subTotal: nextSubTotal,
+              total: Math.max(
+                0,
+                nextSubTotal -
+                  (currentCart.discountTotal ?? 0) +
+                  (currentCart.taxTotal ?? 0) +
+                  (currentCart.variableFeeTotal ?? 0)
+              )
+            }
+            return {
+              status: 'success',
+              data: {
+                cart: updatedCart,
+                cartToken: '',
+                tokenExpiry: new Date().toISOString()
+              }
+            }
+          }
+
+          return {
+            status: 'success',
+            data: {
+              cart: { ...currentCart, lineItems: [], subTotal: 0, total: 0 },
+              cartToken: '',
+              tokenExpiry: new Date().toISOString()
+            }
+          }
+        }
+
         return Promise.reject(new Error(CART_ERRORS.NO_CART_KEY))
       }
 
@@ -63,11 +113,6 @@ export const useCartMutation = <TInput>(
       })
 
       const existingCartKey = cartState.cartKey ?? null
-
-      const endpoint =
-        typeof options.endpoint === 'function'
-          ? options.endpoint(input)
-          : options.endpoint
 
       const headers: HeadersInit = {}
 
@@ -192,7 +237,7 @@ export const useCartMutation = <TInput>(
       }
 
       const result = CartKeyHelpers.fromApiResponse(response.data)
-      if (result) {
+      if (result && response.data.cartToken) {
         next = {
           ...next,
           cartKey: result.cartKey,
@@ -204,8 +249,17 @@ export const useCartMutation = <TInput>(
         const hadItems = (base.cartData?.lineItems?.length ?? 0) > 0
         const hasItems = (response.data.cart.lineItems?.length ?? 0) > 0
 
-        if (!hadItems && hasItems && !next.timerStartedAt) {
-          next = { ...next, timerStartedAt: new Date().toISOString() }
+        if (
+          hasItems &&
+          result &&
+          response.data.cartToken &&
+          (!hadItems || base.holdExpired || !next.timerStartedAt)
+        ) {
+          next = {
+            ...next,
+            timerStartedAt: new Date().toISOString(),
+            holdExpired: false
+          }
         }
 
         next = { ...next, cartData: response.data.cart }

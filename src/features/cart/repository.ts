@@ -10,6 +10,7 @@ export const initialCartState: CartState = {
   metadata: [],
   chooseOnDriveDay: false,
   timerStartedAt: null,
+  holdExpired: false,
   isOpen: false,
   isLoading: false,
   isMutating: false,
@@ -49,7 +50,8 @@ const toPersistedState = (state: CartState): PersistedCartState => ({
   cartData: normalizeCartData(state.cartData),
   metadata: state.metadata,
   chooseOnDriveDay: state.chooseOnDriveDay,
-  timerStartedAt: state.timerStartedAt ?? null
+  timerStartedAt: state.timerStartedAt ?? null,
+  holdExpired: state.holdExpired ?? false
 })
 
 const readFromStorage = (): CartState => {

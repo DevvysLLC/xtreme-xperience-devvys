@@ -101,8 +101,6 @@ export const CartAside: FC<Props> = ({ className }) => {
 
         {track && <CartLocation track={track} />}
 
-        <CartExpiry />
-
         <div
           className={clsx(
             styles.cart__content,
@@ -153,6 +151,7 @@ export const CartAside: FC<Props> = ({ className }) => {
               ? 'After discount. Before fees and taxes.'
               : 'Before fees and taxes.'}
           </p>
+          <CartExpiry />
         </div>
 
         <ul className={styles.cart__trust}>

@@ -1236,7 +1236,8 @@ export const PersistedCartStateSchema = z.object({
   cartData: RocketRezCartSchema.nullable().optional(),
   metadata: z.array(CartLineItemMetadataSchema).default([]),
   chooseOnDriveDay: z.boolean().default(false),
-  timerStartedAt: z.string().nullable().optional()
+  timerStartedAt: z.string().nullable().optional(),
+  holdExpired: z.boolean().default(false)
 })
 
 // =============================================================================
@@ -1280,7 +1281,8 @@ export const CartStateSchema = PersistedCartStateSchema.extend({
   isInitializing: z.boolean(),
   error: z.string().nullable(),
   chooseOnDriveDay: z.boolean().default(false),
-  timerStartedAt: z.string().nullable().optional()
+  timerStartedAt: z.string().nullable().optional(),
+  holdExpired: z.boolean().default(false)
 })
 
 export const CartUpdateLineItemInputSchema = z.object({

@@ -385,8 +385,6 @@ export const CartSummary: FC = () => {
 
       {track && <CartLocation track={track} />}
 
-      <CartExpiry />
-
       <CouponForm />
 
       {cart?.cartData?.coupons && cart.cartData.coupons.length > 0 && (
@@ -535,6 +533,8 @@ export const CartSummary: FC = () => {
           }}
         />
       </div>
+
+      <CartExpiry />
 
       <div className={styles.summary__secure}>
         <svg
