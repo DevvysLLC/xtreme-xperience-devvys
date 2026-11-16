@@ -9,10 +9,7 @@ import { createPortal } from 'react-dom'
 import { BOOKING_LAP_QUANTITY_OPTIONS } from '../../../../config/settings'
 import type { BookingSupercarFragment } from '../../../../core/dato/fragments/booking-config.typegen'
 import { logger } from '../../../../core/logger/logger'
-import {
-  useBookingResetAfter,
-  useBookingSupercarSchedule
-} from '../../../../features/booking'
+import { useBookingSupercarSchedule } from '../../../../features/booking'
 import { getRequiredRateIdsForSupercar } from '../../../../features/booking/use-booking-supercar-schedule'
 import {
   useCart,
@@ -81,15 +78,11 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
   const t = useTranslations(
     'booking_wizard.pages.date_and_car.supercar_options_card'
   )
-  const tDialog = useTranslations(
-    'booking_wizard.dialog_cannot_add_car_for_different_date'
-  )
   const tChangeDialog = useTranslations(
     'booking_wizard.pages.date_and_car.change_dialog'
   )
   const tToast = useTranslations('booking_wizard')
   const { state, setSelectedDayDate } = useBookingWizardState()
-  const resetAfter = useBookingResetAfter()
   const { state: cardState } = useSupercarOptionsCard()
   const { lowestAvailablePrice, getEffectivePrice } =
     useBookingSupercarSchedule()
@@ -623,13 +616,22 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
       if (hasDateConflict) {
         showDialog({
           translations: {
-            title: tDialog('title'),
-            description: tDialog('description'),
-            confirmButton: tDialog('confirm'),
-            cancelButton: tDialog('cancel')
+            title: tChangeDialog('title'),
+            description: tChangeDialog('description'),
+            confirmButton: tChangeDialog('button.confirm'),
+            cancelButton: tChangeDialog('button.cancel')
           },
           onConfirm: async () => {
             try {
+              onClearEditing?.()
+              try {
+                sessionStorage.removeItem('pendingEditLineItemId')
+              } catch (error) {
+                logger.debug(
+                  { error },
+                  'supercar-options-card.sessionStorage.remove.error'
+                )
+              }
               await clearCart.mutateAsync(undefined)
               await addToCart(lineItem, isoDate)
             } catch (error) {
@@ -745,31 +747,6 @@ const SupercarOptionsCardContent: React.FC<Props> = ({
 
   const handleInlineDateSelect = (date: string, isDaySoldOut: boolean) => {
     if (isDaySoldOut || state.selectedDayDate === date) {
-      return
-    }
-
-    const existingCartDate = getExistingCartDate()
-    if (existingCartDate !== null && existingCartDate !== date) {
-      showDialog({
-        translations: {
-          title: tChangeDialog('title'),
-          description: tChangeDialog('description'),
-          confirmButton: tChangeDialog('button.confirm'),
-          cancelButton: tChangeDialog('button.cancel')
-        },
-        onConfirm: async () => {
-          try {
-            await resetAfter.mutateAsync({ pageId: 'location' })
-            setSelectedDayDate(date)
-            scrollInlinePanelIntoView()
-          } catch (error) {
-            logger.error(
-              { error, date },
-              'supercar-options-card.handleInlineDateSelect.onConfirm.error'
-            )
-          }
-        }
-      })
       return
     }
 

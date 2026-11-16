@@ -10,11 +10,9 @@ import {
   useBookingPageChooseDateAndCar,
   useBookingPageMetadata,
   useBookingRequestBackNavigation,
-  useBookingResetAfter,
   useBookingSupercarSchedule,
   useBookingWithCart
 } from '../../../../features/booking'
-import { useDialog } from '../../../../features/dialog'
 import { useToast } from '../../../../features/toast'
 import type {
   BookingCarLineItem,
@@ -52,11 +50,9 @@ export const DateAndCarPage = () => {
   const router = useRouter()
   const { state, setSelectedDayDate, setActiveTabIndex } =
     useBookingWizardState()
-  const { showDialog } = useDialog()
   const { showToast } = useToast()
   const pathname = usePathname()
   const { mutate: requestBackNavigation } = useBookingRequestBackNavigation()
-  const resetAfter = useBookingResetAfter()
   const pageHook = useBookingPageChooseDateAndCar()
   const { lowestAvailablePriceFromRates } = useBookingSupercarSchedule()
   const pageMetadata = useBookingPageMetadata({
@@ -101,12 +97,16 @@ export const DateAndCarPage = () => {
         }
       }
 
+      const carMetadata = metadata?.find((m) => m.type === 'car')
+      const cartCarDate = carMetadata?.properties?.date?.split('T')[0] ?? null
+      const savedDayDate = cartCarDate ?? state.selectedDayDate ?? null
+
       const formValue = {
         ...value,
         cars: carLineItems,
-        selectedDate: state.selectedDayDate ?? null,
+        selectedDate: savedDayDate,
         selectedEvent: state.selectedEvent?.model?.rocketRezId ?? null,
-        selectedDay: state.selectedDayDate ?? null,
+        selectedDay: savedDayDate,
         activeTabIndex: state.activeTabIndex ?? 0
       }
 
@@ -285,31 +285,6 @@ export const DateAndCarPage = () => {
       (day) => day.date === date
     )
     if (!matchingDay || !isDayAvailable(matchingDay)) {
-      return
-    }
-
-    const isNewDay = state.selectedDayDate !== date
-
-    if (hasCars && isNewDay) {
-      showDialog({
-        translations: {
-          title: t('change_dialog.title'),
-          description: t('change_dialog.description'),
-          confirmButton: t('change_dialog.button.confirm'),
-          cancelButton: t('change_dialog.button.cancel')
-        },
-        onConfirm: async () => {
-          try {
-            await resetAfter.mutateAsync({ pageId: 'location' })
-            setSelectedDayDate(matchingDay.date ?? null)
-          } catch (error) {
-            logger.error(
-              { error, date },
-              'date-and-car-page.handleDateSelect.onConfirm.error'
-            )
-          }
-        }
-      })
       return
     }
 
