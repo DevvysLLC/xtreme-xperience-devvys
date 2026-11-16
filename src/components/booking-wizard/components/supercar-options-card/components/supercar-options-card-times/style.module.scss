@@ -130,6 +130,10 @@
       text-decoration: line-through;
       color: #888;
     }
+
+    .time__label {
+      color: #888;
+    }
   }
 
   &__input {
@@ -157,7 +161,7 @@
     font-weight: 400;
     line-height: 1.2;
     margin-top: u.rem-calc(2);
-    color: #555;
+    color: #000000;
     text-transform: uppercase;
 
     [data-compare-at-price],
