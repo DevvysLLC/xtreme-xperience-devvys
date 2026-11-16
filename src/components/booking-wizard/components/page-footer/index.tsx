@@ -1,6 +1,7 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import clsx from 'clsx'
+import { usePathname, useRouter } from 'next/navigation'
 import { ROUTES } from '../../../../config/routes'
 import { CoreCta } from '../../../core-cta'
 import { CartExpiry } from '../../../global-cart/components/expiry'
@@ -44,6 +45,8 @@ export const PageFooter: React.FC<Props> = ({
   onSubmit
 }) => {
   const router = useRouter()
+  const pathname = usePathname()
+  const isReviewPage = Boolean(pathname?.includes('/review'))
   const handleBack =
     onBack ??
     (() => {
@@ -52,7 +55,13 @@ export const PageFooter: React.FC<Props> = ({
 
   const renderActions = (canSubmit: boolean, isSubmitting: boolean) => (
     <div className={styles.footer__actions}>
-      <CartExpiry variant="inline" className={styles.footer__expiry} />
+      <CartExpiry
+        variant="inline"
+        className={clsx(
+          styles.footer__expiry,
+          !isReviewPage && styles['footer__expiry--desktop-only']
+        )}
+      />
 
       <CoreCta
         type="button"

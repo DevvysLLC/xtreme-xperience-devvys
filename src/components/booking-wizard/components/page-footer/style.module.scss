@@ -63,6 +63,14 @@
     justify-content: center;
     text-align: center;
 
+    &--desktop-only {
+      display: none !important;
+
+      @include sg.min(tabletLandscape) {
+        display: flex !important;
+      }
+    }
+
     @include sg.min(tabletLandscape) {
       width: auto;
       justify-content: flex-end;
