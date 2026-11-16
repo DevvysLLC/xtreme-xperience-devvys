@@ -318,7 +318,7 @@ export const CartLineItem: FC<Props> = ({
                     </span>
                   </div>
                   <span className={styles.CartLineItemCompact__saving}>
-                    ${Math.round(savings)} off at checkout
+                    ${Math.round(savings)} OFF
                   </span>
                   <span className={styles.CartLineItemCompact__discountNote}>
                     Price after discount
