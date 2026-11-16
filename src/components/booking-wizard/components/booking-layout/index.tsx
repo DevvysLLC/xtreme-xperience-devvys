@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { type FC, type ReactNode, useState } from 'react'
 import { useBookingWithCart } from '../../../../features/booking'
-import { CoreCta } from '../../../core-cta'
 import { CoreIcon } from '../../../core-icon'
 import { CartAside } from '../../../global-cart'
 import type { SectionAnnouncementBarFragment } from '../../../section-announcement-bar/section-announcement-bar.typegen'
@@ -90,19 +89,7 @@ export const BookingLayout: FC<Props> = ({ children, className }) => {
                 <CartAside />
               </div>
 
-              <div className={styles.popup__actions}>
-                <CoreCta
-                  text={t('continue')}
-                  className={styles.popup__button}
-                  href={null}
-                  layoutType="button"
-                  sizeType="small"
-                  styleType="black"
-                  onClick={() => {
-                    setIsCartOpen(!isCartOpen)
-                  }}
-                />
-              </div>
+              <div className={styles.popup__actions} />
             </div>
           </div>
         )}
