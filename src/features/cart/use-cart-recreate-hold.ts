@@ -6,6 +6,7 @@ import { ROUTES } from '../../config/routes'
 import { logger } from '../../core/logger/logger'
 import {
   ApiCartResponseSchema,
+  ApiEventsGetEventResponseSchema,
   RocketRezProductType,
   RocketRezScheduleStatus
 } from '../../io/schemas'
@@ -14,7 +15,6 @@ import type {
   CartLineItemMetadata,
   CartState,
   RocketRezCart,
-  RocketRezEventScheduleDate,
   RocketRezLineItem
 } from '../../io/types'
 import { CartKeyHelpers } from '../../utils/cart-key'
@@ -213,23 +213,15 @@ export const useCartRecreateHold = () => {
         }
         try {
           const res = await fetch(
-            `${ROUTES.API.BOOKING.EVENTS}?eventId=${eventItem.productId}`,
+            `${ROUTES.API.BOOKING.EVENTS}/${eventItem.productId}`,
             { cache: 'no-store' }
           )
           if (res.ok) {
             const json: unknown = await res.json()
-            const schedules: RocketRezEventScheduleDate[] | undefined =
-              json &&
-              typeof json === 'object' &&
-              'data' in json &&
-              json.data &&
-              typeof json.data === 'object' &&
-              'event' in json.data &&
-              json.data.event &&
-              typeof json.data.event === 'object' &&
-              'schedules' in json.data.event &&
-              Array.isArray(json.data.event.schedules)
-                ? (json.data.event.schedules as RocketRezEventScheduleDate[])
+            const parsedEvent = ApiEventsGetEventResponseSchema.safeParse(json)
+            const schedules =
+              parsedEvent.success && parsedEvent.data.status === 'success'
+                ? parsedEvent.data.data?.event.schedules
                 : undefined
 
             if (schedules) {
@@ -263,11 +255,12 @@ export const useCartRecreateHold = () => {
                       rateId,
                       true
                     )
-                  : rateId > 0
-                    ? rateId
-                    : undefined
+                  : rateId
 
-              if (isScheduleSoldOut(matchedSchedule, requiredRateIds)) {
+              if (
+                rateId > 0 &&
+                isScheduleSoldOut(matchedSchedule, requiredRateIds)
+              ) {
                 return {
                   status: 'sold_out',
                   failedLineItem: eventItem,
