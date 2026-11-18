@@ -17,9 +17,7 @@ export const LocationPage = () => {
   const { booking } = useBookingWithCart()
   const { data: location } = useLocation()
   const initialSearchValue =
-    booking?.track?.model?.state ??
-    location?.track?.model?.state ??
-    undefined
+    booking?.track?.model?.state ?? location?.track?.model?.state ?? undefined
 
   const renderEvent = useCallback(
     (event: EventDataFragment, tracks: TrackDataFragment[]) => {

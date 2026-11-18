@@ -221,11 +221,11 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
             discountResult.timeBadgeTextColor ||
             discountResult.cardBadgeTextColor ||
             '#000000'
-          const timeStickerStyle: React.CSSProperties &
-            Record<string, string> = {
-            '--time-sticker-bg': timeStickerBg,
-            '--time-sticker-color': timeStickerColor
-          }
+          const timeStickerStyle: React.CSSProperties & Record<string, string> =
+            {
+              '--time-sticker-bg': timeStickerBg,
+              '--time-sticker-color': timeStickerColor
+            }
 
           return (
             <label
@@ -277,10 +277,7 @@ export const SupercarOptionsCardTimes: React.FC<Props> = ({
                 }}
               />
               {showTimeSticker && (
-                <span
-                  className={styles.time__sticker}
-                  style={timeStickerStyle}
-                >
+                <span className={styles.time__sticker} style={timeStickerStyle}>
                   SAVE ${slotSavings.toLocaleString()}
                 </span>
               )}

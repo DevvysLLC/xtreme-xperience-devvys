@@ -250,11 +250,7 @@ export const useCartRecreateHold = () => {
 
               const requiredRateIds =
                 isMulticar && rateId > 0
-                  ? getRequiredRateIdsForSupercar(
-                      matchedSchedule,
-                      rateId,
-                      true
-                    )
+                  ? getRequiredRateIdsForSupercar(matchedSchedule, rateId, true)
                   : rateId
 
               if (
@@ -272,8 +268,7 @@ export const useCartRecreateHold = () => {
               if (!isMulticar && rateId > 0) {
                 const matchedSeat = (matchedSchedule.seatTypes ?? []).find(
                   (st) =>
-                    st != null &&
-                    (st.rates ?? []).some((r) => r.id === rateId)
+                    st != null && (st.rates ?? []).some((r) => r.id === rateId)
                 )
                 if (
                   !matchedSeat ||
@@ -513,4 +508,3 @@ export const useCartRecreateHold = () => {
 
   return { recreateHold, isRecreating }
 }
-

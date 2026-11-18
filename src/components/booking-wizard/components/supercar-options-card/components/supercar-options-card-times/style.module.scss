@@ -197,7 +197,12 @@
       position: absolute;
       inset: 0;
       background-color: var(--time-sticker-bg, #c6ff00);
-      clip-path: polygon(0 0, 100% 0, calc(100% - #{u.rem-calc(6)}) 100%, 0 100%);
+      clip-path: polygon(
+        0 0,
+        100% 0,
+        calc(100% - #{u.rem-calc(6)}) 100%,
+        0 100%
+      );
       z-index: -1;
     }
 

@@ -64,8 +64,7 @@ export const useCartMutation = <TInput>(
             const idParam = endpoint.split('lineItemId=')[1]?.split('&')[0]
             const removedId = Number(idParam)
             const remainingItems = (currentCart.lineItems ?? []).filter(
-              (li) =>
-                li.id !== removedId && li.parentLineItemId !== removedId
+              (li) => li.id !== removedId && li.parentLineItemId !== removedId
             )
             const nextSubTotal = remainingItems.reduce(
               (sum, li) => sum + li.price * (li.quantity ?? 1),

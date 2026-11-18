@@ -107,10 +107,7 @@ export const CartPage: FC<Props> = ({
         <CartSummary />
 
         {!readOnly && showActions && (
-          <CartActions
-            onCheckout={handleCheckout}
-            isLoading={isRecreating}
-          />
+          <CartActions onCheckout={handleCheckout} isLoading={isRecreating} />
         )}
       </div>
 
