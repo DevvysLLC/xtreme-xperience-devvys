@@ -1,16 +1,195 @@
-import { readFile } from 'node:fs/promises'
-import { join } from 'node:path'
+export const dynamic = 'force-static'
+
+const EVENT_ROI_CALCULATOR_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Field Event Revenue Calculator | Xtreme Xperience</title>
+<link rel="icon" type="image/png" href="/images/favicon.png" />
+<link rel="icon" type="image/svg+xml" href="/images/xx-logo.svg" />
+<link rel="apple-touch-icon" href="/images/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Semi+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#111111; --muted:#5b626b; --line:#e4e2df;
+    --bg:#ffffff; --surface:#f4f3f1;
+    --accent:#ff5a00; --accent-soft:#fff2eb; --accent-ink:#c84300;
+    --good:#0f7a4d;
+    --radius:14px;
+    --font:'Barlow',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --font-display:'Anton',Impact,sans-serif;
+    --font-condensed:'Barlow Semi Condensed',sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);line-height:1.5;-webkit-font-smoothing:antialiased;}
+  .site-header{border-bottom:1px solid var(--line);background:#fff;padding:16px 24px;}
+  .site-header-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;}
+  .site-logo{display:inline-flex;align-items:center;color:var(--ink);text-decoration:none;}
+  .site-logo svg{height:28px;width:auto;display:block;}
+  .site-back{font-family:var(--font-condensed);font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);text-decoration:none;border-bottom:2px solid var(--accent);padding-bottom:2px;}
+  .site-back:hover{color:var(--accent);}
+  .wrap{max-width:860px;margin:0 auto;padding:32px 20px 56px;}
+  .eyebrow{font-family:var(--font-condensed);text-transform:uppercase;letter-spacing:.12em;font-size:13px;font-weight:700;color:var(--accent);margin:0 0 8px;}
+  h1{font-family:var(--font-display);font-size:38px;line-height:1.08;margin:0 0 10px;font-weight:400;text-transform:uppercase;letter-spacing:.02em;}
+  .lede{font-size:16px;color:var(--muted);margin:0 0 28px;max-width:620px;}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin-bottom:22px;}
+  .panel h2{font-family:var(--font-condensed);font-size:14px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 18px;font-weight:700;}
+  .grid{display:grid;gap:16px 22px;}
+  .g3{grid-template-columns:repeat(3,1fr);}
+  @media(max-width:640px){.g3{grid-template-columns:1fr 1fr;}}
+  .field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px;font-weight:500;}
+  .field input[type=number]{width:100%;font-size:16px;font-family:var(--font);padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);}
+  .field input[type=number]:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+  .slider .row{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);font-weight:500;margin-bottom:4px;}
+  .slider .val{color:var(--ink);font-weight:700;}
+  input[type=range]{width:100%;accent-color:var(--accent);height:22px;}
+  .scenarios{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:22px;}
+  @media(max-width:640px){.scenarios{grid-template-columns:1fr;}}
+  .scen{border-radius:var(--radius);padding:20px;border:1px solid var(--line);}
+  .scen.avg{background:var(--surface);}
+  .scen.exp{background:var(--accent-soft);border-color:#ffd0b5;}
+  .scen .top{display:flex;justify-content:space-between;align-items:baseline;}
+  .scen .name{font-size:13px;font-weight:600;}
+  .scen.exp .name,.scen.exp .lbl,.scen.exp .rev{color:var(--accent-ink);}
+  .scen .pct{font-size:15px;font-weight:700;}
+  .scen .lbl{font-size:13px;color:var(--muted);margin-top:10px;}
+  .scen .rev{font-size:30px;font-weight:700;letter-spacing:-.01em;margin-top:2px;}
+  .scen .det{font-size:12px;color:var(--muted);margin-top:4px;}
+  .scen.exp .det{color:var(--accent-ink);opacity:.85;}
+  .delta{text-align:center;border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin-bottom:22px;background:#fff;}
+  .delta .lbl{font-size:13px;color:var(--muted);}
+  .delta .big{font-size:38px;font-weight:800;color:var(--good);letter-spacing:-.02em;margin:2px 0;}
+  .delta .sub{font-size:13px;color:var(--muted);}
+  .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  @media(max-width:640px){.metrics{grid-template-columns:1fr;}}
+  .metric{background:var(--surface);border-radius:12px;padding:16px 18px;}
+  .metric .k{font-size:13px;color:var(--muted);}
+  .metric .v{font-size:24px;font-weight:700;margin-top:2px;}
+  .foot{margin-top:26px;font-size:12px;color:var(--muted);text-align:center;}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="site-header-inner">
+    <a href="/" class="site-logo" aria-label="Xtreme Xperience">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 130.8" width="200" height="28" aria-label="Xtreme Xperience">
+        <polygon points="127.4 0 66.1 0 108.1 63.2 0 130.8 64.5 130.8 170.9 63.2 127.4 0" fill="currentColor" />
+        <polygon points="349.5 0 287.7 0 228.9 37 203.4 0 142.1 0 184.1 63.2 76.5 130.8 141.3 130.8 203.3 91.2 229.6 130.8 293.8 130.8 247.1 63.3 247 63.3 247 63.3 349.5 0" fill="#ff5a00" />
+        <polygon points="417.6 59.5 439.2 59.5 422.8 36.5 458.8 12.4 433.5 12.4 414.6 24.8 405.7 12.4 384.4 12.4 399.5 33.5 360.2 59.5 386.3 59.5 407.5 45.3 417.6 59.5" fill="currentColor" />
+        <path d="M480.2,59.61,505,22.41h20.8l5.8-8.8,5.8,8.8h33.1c3.5,0,5.4,1,4,3.2l-1.7,2.7c-1.3,1.9-3.7,2.6-7,2.6H532.2L513,59.61h20.8l12.6-18.9h12.5c3.4,0,4.4,2.1,3.6,4.3l-4.9,14.7h20.8l4-16c.9-3.4-1.2-6-6.6-6.8,5.5-.2,13-1.2,15.9-5.6l5.8-8.8c3.2-4.8,2.1-9.9-10.8-9.9H466.3l-6.6,9.9h24.5l-24.8,37.2h20.8Z" transform="translate(0 -0.11)" fill="currentColor" />
+        <polygon points="590.6 59.5 661.6 59.5 654.2 48.4 618.7 48.4 624.3 40 655.1 40 661.3 30.8 630.4 30.8 636.2 22.3 675 22.3 681.6 12.4 608.8 12.4 615.4 22.3 590.6 59.5" fill="currentColor" />
+        <path d="M667.8,59.61h20.8l24.8-37.2h18.1c3.2,0,5.1,1.6,3.2,4.3l-21.9,32.9h20.8l24.9-37.2h17.9c3.6,0,5.1,1.6,3.2,4.4l-21.9,32.9h20.8l24.7-37.2c2.7-4,2.1-9.9-10.7-9.9H758.8c-6.5,0-9.7,2.1-11.9,4.1-1-2.1-4.4-4.1-8.9-4.1H686l6.6,9.9Z" transform="translate(0 -0.11)" fill="currentColor" />
+        <polygon points="796.1 59.5 867 59.5 859.7 48.4 824.2 48.4 829.8 40 860.5 40 866.7 30.8 835.9 30.8 841.7 22.3 880.5 22.3 887.1 12.4 814.3 12.4 820.9 22.3 796.1 59.5" fill="currentColor" />
+        <polygon points="500.6 71.1 475.1 71.1 456.2 83.6 447.3 71.1 425.8 71.1 441 92.3 401.6 118.4 427.8 118.4 449.1 104.1 459.2 118.4 480.9 118.4 464.5 95.4 500.6 71.1" fill="currentColor" />
+        <path d="M561.3,92.41l7.6-11.2c3.1-4.7,2.1-9.9-10.8-9.9H502.2l6.6,9.9H542c3.5,0,5.4,1,4,3.2l-1.7,2.7c-1.3,1.9-3.7,2.6-7.1,2.6H503.5l-19.4,28.8H505l12.6-19h23.7C552.5,99.51,558.4,96.61,561.3,92.41Z" transform="translate(0 -0.11)" fill="currentColor" />
+        <polygon points="587.3 107.3 592.9 98.9 623.8 98.9 630 89.6 599 89.6 604.8 81 643.8 81 650.4 71.1 577.3 71.1 583.9 81 559 118.4 630.3 118.4 622.9 107.3 587.3 107.3" fill="currentColor" />
+        <path d="M715.4,90l5.8-8.8c3.2-4.8,2.1-9.9-10.8-9.9h-56l6.6,9.9h33.2c3.5,0,5.4,1,4,3.2l-1.8,2.7c-1.3,1.9-3.7,2.6-7.1,2.6H655.6l-19.1,28.8h20.8l12.6-19h12.6c3.4,0,4.5,2.1,3.7,4.3l-4.9,14.7h20.8l4-16.1c.9-3.4-1.2-6-6.6-6.8C704.9,95.41,712.5,94.41,715.4,90Z" transform="translate(0 -0.11)" fill="currentColor" />
+        <polygon points="746 71.1 714.4 118.4 735.2 118.4 766.8 71.1 746 71.1" fill="currentColor" />
+        <polygon points="781.9 107.3 787.6 98.9 818.4 98.9 824.6 89.6 793.7 89.6 799.5 81 838.4 81 845 71.1 772 71.1 778.6 81 753.7 118.4 824.9 118.4 817.5 107.3 781.9 107.3" fill="currentColor" />
+        <path d="M911.4,71.21h-62l6.6,9.9-24.9,37.4H852l24.9-37.4h18.4c3.2,0,5,1.4,3,4.4l-22.1,33h21l24.9-37.4C924.8,77.11,924.2,71.21,911.4,71.21Z" transform="translate(0 -0.11)" fill="currentColor" />
+        <path d="M943,107.41l14.6-21.9c2.2-3.3,4.7-4.4,9.4-4.4h27.7l6.7-9.9H957.1c-4.1,0-10.9,0-17.5,9.9l-17.4,26.2c-5.2,7.9,1.4,11.1,7.6,11.1h50.6l-7.4-11.1H943Z" transform="translate(0 -0.11)" fill="currentColor" />
+        <polygon points="1073.4 81 1080 71.1 1006.9 71.1 1013.5 81 988.6 118.4 1059.9 118.4 1052.5 107.3 1016.9 107.3 1022.5 98.9 1053.4 98.9 1059.6 89.6 1028.6 89.6 1034.4 81 1073.4 81" fill="currentColor" />
+      </svg>
+    </a>
+    <a href="/corporate-outings-and-groups" class="site-back">Corporate Outings &amp; Groups</a>
+  </div>
+</header>
+<div class="wrap">
+  <p class="eyebrow">Field Event ROI</p>
+  <h1>What a no-show actually costs you</h1>
+  <p class="lede">Same invite list. Same spend. The only thing that changes is how many people show up. See what that's worth in pipeline.</p>
+
+  <div class="panel">
+    <h2>Your numbers</h2>
+    <div class="grid g3">
+      <div class="field"><label for="invites">Invites sent</label><input type="number" id="invites" value="500" min="1" step="1" /></div>
+      <div class="field"><label for="acv">Average deal value ($)</label><input type="number" id="acv" value="25000" min="0" step="1000" /></div>
+      <div class="field"><label for="cost">Event cost ($)</label><input type="number" id="cost" value="50000" min="0" step="1000" /></div>
+      <div class="field slider"><div class="row"><span>Registration rate</span><span class="val" id="reg-out">40%</span></div><input type="range" id="reg" min="1" max="100" value="40" step="1" aria-label="Registration rate" /></div>
+      <div class="field slider"><div class="row"><span>Attendee → opportunity</span><span class="val" id="opp-out">20%</span></div><input type="range" id="opp" min="1" max="100" value="20" step="1" aria-label="Attendee to opportunity rate" /></div>
+      <div class="field slider"><div class="row"><span>Win rate</span><span class="val" id="win-out">25%</span></div><input type="range" id="win" min="1" max="100" value="25" step="1" aria-label="Win rate" /></div>
+    </div>
+  </div>
+
+  <div class="scenarios">
+    <div class="scen avg">
+      <div class="top"><span class="name">Industry-average show rate</span><span class="pct" id="a-show-out">50%</span></div>
+      <input type="range" id="a-show" min="1" max="100" value="50" step="1" aria-label="Industry-average show rate" />
+      <div class="lbl">Revenue from this event</div>
+      <div class="rev" id="a-rev">$125,000</div>
+      <div class="det" id="a-det">100 attend → 5 deals</div>
+    </div>
+    <div class="scen exp">
+      <div class="top"><span class="name">Experience-driven show rate</span><span class="pct" id="b-show-out">90%</span></div>
+      <input type="range" id="b-show" min="1" max="100" value="90" step="1" aria-label="Experience-driven show rate" />
+      <div class="lbl">Revenue from this event</div>
+      <div class="rev" id="b-rev">$225,000</div>
+      <div class="det" id="b-det">180 attend → 9 deals</div>
+    </div>
+  </div>
+
+  <div class="delta">
+    <div class="lbl">Revenue left on the table from no-shows</div>
+    <div class="big" id="delta">+$100,000</div>
+    <div class="sub" id="delta-sub">4 more deals from the same invite list</div>
+  </div>
+
+  <div class="metrics">
+    <div class="metric"><div class="k">Cost per deal (average)</div><div class="v" id="cpd-a">$10,000</div></div>
+    <div class="metric"><div class="k">Cost per deal (experience)</div><div class="v" id="cpd-b">$5,556</div></div>
+    <div class="metric"><div class="k">ROI (experience event)</div><div class="v" id="roi-b">350%</div></div>
+  </div>
+
+  <p class="foot">Default benchmarks are illustrative. Adjust the inputs to match your own numbers.</p>
+</div>
+
+<script>
+(function(){
+  var $ = function(id){return document.getElementById(id);};
+  var money = function(n){return '$' + Math.round(n).toLocaleString('en-US');};
+  var dealsTxt = function(n){var v=Math.round(Math.abs(n)*10)/10; return v.toLocaleString('en-US',{maximumFractionDigits:1})+(v===1?' deal':' deals');};
+  function chain(invites, reg, show, opp, win){
+    var attend = invites * reg/100 * show/100;
+    var deals = Math.round(attend * opp/100 * win/100 * 10) / 10;
+    return {attend:attend, deals:deals};
+  }
+  function update(){
+    var invites=+$('invites').value||0, acv=+$('acv').value||0, cost=+$('cost').value||0;
+    var reg=+$('reg').value, opp=+$('opp').value, win=+$('win').value;
+    var aShow=+$('a-show').value, bShow=+$('b-show').value;
+    $('reg-out').textContent=reg+'%'; $('opp-out').textContent=opp+'%'; $('win-out').textContent=win+'%';
+    $('a-show-out').textContent=aShow+'%'; $('b-show-out').textContent=bShow+'%';
+    var A=chain(invites,reg,aShow,opp,win), B=chain(invites,reg,bShow,opp,win);
+    var aRev=A.deals*acv, bRev=B.deals*acv;
+    $('a-rev').textContent=money(aRev); $('b-rev').textContent=money(bRev);
+    $('a-det').textContent=Math.round(A.attend)+' attend → '+dealsTxt(A.deals);
+    $('b-det').textContent=Math.round(B.attend)+' attend → '+dealsTxt(B.deals);
+    var d=bRev-aRev;
+    $('delta').textContent=(d>=0?'+':'')+money(d);
+    $('delta-sub').textContent=(function(x){x=Math.round(x*10)/10; return x===0?'Same number of deals from the same invite list':dealsTxt(x).replace(/ deals?$/, function(s){return (x>0?' more':' fewer')+s;})+' from the same invite list';})(B.deals-A.deals);
+    $('cpd-a').textContent=A.deals>0?money(cost/A.deals):'—';
+    $('cpd-b').textContent=B.deals>0?money(cost/B.deals):'—';
+    $('roi-b').textContent=cost>0?Math.round((bRev-cost)/cost*100)+'%':'—';
+    postHeight();
+  }
+  function postHeight(){
+    if (window.parent !== window) {
+      window.parent.postMessage({type:'xx-roi-calc-height', height: document.documentElement.scrollHeight}, '*');
+    }
+  }
+  ['invites','acv','cost','reg','opp','win','a-show','b-show'].forEach(function(id){$(id).addEventListener('input',update);});
+  window.addEventListener('resize', postHeight);
+  update();
+})();
+</script>
+</body>
+</html>`
 
 export const GET = async () => {
-  const filePath = join(
-    process.cwd(),
-    'public',
-    'tools',
-    'event-roi-calculator.html'
-  )
-  const html = await readFile(filePath, 'utf8')
-
-  return new Response(html, {
+  return new Response(EVENT_ROI_CALCULATOR_HTML, {
     headers: {
       'Content-Type': 'text/html; charset=utf-8'
     }
