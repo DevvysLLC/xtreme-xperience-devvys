@@ -114,6 +114,7 @@ fragment BookingConfig on BookingConfigRecord {
   id
   showBackLink
   showGiftCards
+  couponSectionOpenByDefault
   selectCarButtonLabel
   removeCarButtonLabel
   addToCartErrorMessage

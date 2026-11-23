@@ -1,12 +1,14 @@
 'use client'
 
+import clsx from 'clsx'
 import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { type FC, useMemo, useState } from 'react'
+import { type FC, useEffect, useMemo, useState } from 'react'
 import { ROUTES } from '../../../../config/routes'
 import { logger } from '../../../../core/logger/logger'
 import {
   useBooking,
+  useBookingConfig,
   useBookingSetIntendedPage
 } from '../../../../features/booking'
 import {
@@ -302,6 +304,23 @@ export const CartSummary: FC = () => {
   const { data: booking } = useBooking()
   const { data: cart } = useCart()
   const wizardContext = useOptionalBookingWizardState()
+  const { data: fetchedConfigData } = useBookingConfig({
+    enabled: !wizardContext?.state?.configData
+  })
+  const configData =
+    wizardContext?.state?.configData ?? fetchedConfigData ?? null
+  const couponSectionOpenByDefault = Boolean(
+    configData?.couponSectionOpenByDefault
+  )
+  const [isCouponOpen, setIsCouponOpen] = useState(couponSectionOpenByDefault)
+  const [hasToggledCoupon, setHasToggledCoupon] = useState(false)
+
+  useEffect(() => {
+    if (!hasToggledCoupon) {
+      setIsCouponOpen(couponSectionOpenByDefault)
+    }
+  }, [couponSectionOpenByDefault, hasToggledCoupon])
+
   const wizardTrack = wizardContext?.state?.selectedEvent?.model?.track
   const track = booking?.track ?? wizardTrack ?? null
   const rawLineItems = cart?.cartData?.lineItems
@@ -468,16 +487,6 @@ export const CartSummary: FC = () => {
 
       {track && <CartLocation track={track} />}
 
-      <CouponForm />
-
-      {cart?.cartData?.coupons && cart.cartData.coupons.length > 0 && (
-        <div className={styles.summary__coupons}>
-          {cart.cartData.coupons.map((coupon) => (
-            <CouponRemove key={coupon.id} coupon={coupon} />
-          ))}
-        </div>
-      )}
-
       {lineItems.length > 0 && (
         <div className={styles.summary__itemsList}>
           {lineItems.map((item) => (
@@ -629,6 +638,40 @@ export const CartSummary: FC = () => {
             }}
           />
         </span>
+      </div>
+
+      <div className={styles.summary__couponSection}>
+        <button
+          type="button"
+          className={clsx(
+            styles.summary__couponToggle,
+            isCouponOpen && styles['summary__couponToggle--open']
+          )}
+          aria-expanded={isCouponOpen}
+          onClick={() => {
+            setHasToggledCoupon(true)
+            setIsCouponOpen((prev) => !prev)
+          }}
+        >
+          <span className={styles.summary__couponArrow} aria-hidden="true" />
+          <span className={styles.summary__couponToggleText}>
+            Have a promo or voucher code?
+          </span>
+        </button>
+
+        {isCouponOpen && (
+          <div className={styles.summary__couponBody}>
+            <CouponForm hideLabel />
+          </div>
+        )}
+
+        {cart?.cartData?.coupons && cart.cartData.coupons.length > 0 && (
+          <div className={styles.summary__coupons}>
+            {cart.cartData.coupons.map((coupon) => (
+              <CouponRemove key={coupon.id} coupon={coupon} />
+            ))}
+          </div>
+        )}
       </div>
 
       <CartExpiry />

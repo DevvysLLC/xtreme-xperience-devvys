@@ -263,6 +263,57 @@
     gap: sg.spacing(xsmall);
   }
 
+  &__couponSection {
+    display: flex;
+    flex-direction: column;
+    gap: u.rem-calc(10);
+    margin-top: u.rem-calc(4);
+  }
+
+  &__couponToggle {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    gap: u.rem-calc(8);
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: #111;
+    font-family: sg.font-family(barlow);
+    font-size: u.rem-calc(14);
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+
+    &:hover {
+      color: #000;
+    }
+  }
+
+  &__couponArrow {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-top: u.rem-calc(5) solid transparent;
+    border-bottom: u.rem-calc(5) solid transparent;
+    border-left: u.rem-calc(7) solid #111;
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  &__couponToggle--open &__couponArrow {
+    transform: rotate(90deg);
+  }
+
+  &__couponToggleText {
+    text-decoration: underline;
+    text-underline-offset: u.rem-calc(3);
+  }
+
+  &__couponBody {
+    padding-top: u.rem-calc(2);
+  }
+
   &__secure {
     display: flex;
     align-items: center;

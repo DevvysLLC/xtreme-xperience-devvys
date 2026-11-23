@@ -90,9 +90,18 @@ export class BookingConfigService {
       }))
     })
 
+    const couponSectionOpenByDefault = Boolean(
+      response.bookingConfig?.couponSectionOpenByDefault ||
+        (response.allPromotions ?? []).some(
+          (promo) =>
+            isPromotionActiveNow(promo) && promo.couponSectionOpenByDefault
+        )
+    )
+
     const data = {
       config: {
         ...(response.bookingConfig ?? {}),
+        couponSectionOpenByDefault,
         pages: response.bookingConfig?.pages ?? [],
         discountRules: promotionRules,
         promotions: response.allPromotions ?? []

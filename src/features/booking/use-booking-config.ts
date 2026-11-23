@@ -14,6 +14,7 @@ import {
 
 export type BookingConfigWithPromotions = BookingConfigFragment & {
   discountRules?: BookingDiscountRule[]
+  couponSectionOpenByDefault?: boolean | null
 }
 
 export type UseBookingConfigOptions = {

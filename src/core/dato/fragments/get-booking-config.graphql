@@ -28,6 +28,7 @@ query getBookingConfig {
     timeBadgeTextColor {
       hex
     }
+    couponSectionOpenByDefault
     headline
     rules {
       ...BookingDiscountRule

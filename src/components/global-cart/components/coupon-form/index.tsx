@@ -8,7 +8,11 @@ import { useToast } from '../../../../features/toast'
 import { RocketRezAddCouponRequestSchema } from '../../../../io/schemas'
 import styles from './style.module.scss'
 
-export const CouponForm: FC = () => {
+type Props = {
+  hideLabel?: boolean
+}
+
+export const CouponForm: FC<Props> = ({ hideLabel = false }) => {
   const t = useTranslations('global_cart.coupon')
   const { showToast } = useToast()
   const { mutateAsync, isPending } = useCartCouponAdd()
@@ -73,9 +77,11 @@ export const CouponForm: FC = () => {
       >
         {(field) => (
           <div className={styles.form__field}>
-            <span className={styles.form__label}>
-              Have a coupon or gift voucher?
-            </span>
+            {!hideLabel && (
+              <span className={styles.form__label}>
+                Have a coupon or gift voucher?
+              </span>
+            )}
             <div className={styles.form__row}>
               <input
                 type="text"
