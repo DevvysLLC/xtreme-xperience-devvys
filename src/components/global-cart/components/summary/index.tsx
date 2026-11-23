@@ -674,7 +674,7 @@ export const CartSummary: FC = () => {
         )}
       </div>
 
-      <CartExpiry />
+      {!isReviewPage && <CartExpiry />}
 
       <div className={styles.summary__secure}>
         <svg
