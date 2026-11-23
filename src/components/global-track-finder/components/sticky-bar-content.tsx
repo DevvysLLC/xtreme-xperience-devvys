@@ -34,6 +34,7 @@ const darkenHex = (hex: string, amount: number = 40): string => {
 }
 
 type StickyBarContentProps = {
+  enableBookingBar?: boolean
   hideBookingBarOnPaths: string | null | undefined
   stickyTrackFinderHeading: string | null | undefined
   stickyTrackFinderLinks:
@@ -67,6 +68,7 @@ const normalizePath = (path: string): string => {
 }
 
 export const StickyBarContent: React.FC<StickyBarContentProps> = ({
+  enableBookingBar = true,
   hideBookingBarOnPaths,
   stickyTrackFinderHeading,
   stickyTrackFinderLinks
@@ -82,15 +84,11 @@ export const StickyBarContent: React.FC<StickyBarContentProps> = ({
     .filter((path) => path.length > 0)
     .map(normalizePath)
 
-  if (hiddenPaths.includes(normalizedPathname)) {
-    return null
-  }
-
   // Show sticky bar if there's a location track AND not at the bottom AND header is offscreen
   const headerIsOffscreen = isScrolled && isOffscreen
   const shouldShowStickyBar = !isAtBottom && headerIsOffscreen
 
-  // Campaign Override Layout
+  // Campaign Override Layout takes precedence over global hideBookingBarOnPaths
   if (override?.enableCampaignStickyBar) {
     return (
       <div
@@ -164,6 +162,10 @@ export const StickyBarContent: React.FC<StickyBarContentProps> = ({
         </div>
       </div>
     )
+  }
+
+  if (!enableBookingBar || hiddenPaths.includes(normalizedPathname)) {
+    return null
   }
 
   return (
