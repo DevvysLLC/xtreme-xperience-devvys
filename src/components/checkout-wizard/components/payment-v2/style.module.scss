@@ -35,7 +35,7 @@
   margin-right: -#{sg.spacing(regular)};
   width: calc(100% + #{sg.spacing(regular)} * 2);
 
-  @include sg.min(tablet) {
+  @include sg.min(tabletLandscape) {
     height: u.rem-calc(1320);
     min-height: u.rem-calc(1320);
   }
