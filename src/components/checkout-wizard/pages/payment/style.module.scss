@@ -5,7 +5,7 @@
   display: grid;
   grid-template-columns: 1fr;
   row-gap: sg.spacing(xlarge);
-  padding-block: sg.spacing(medium) u.rem-calc(140);
+  padding-block: sg.spacing(medium) u.rem-calc(16);
   padding-inline: sg.spacing(regular);
 
   @include sg.min(tabletLandscape) {
@@ -82,7 +82,7 @@
     gap: sg.spacing(xlarge);
 
     @include sg.min(laptopSmall) {
-      padding-bottom: sg.spacing(xxlarge);
+      padding-bottom: sg.spacing(medium);
       padding-inline: sg.spacing(xlarge);
     }
   }
