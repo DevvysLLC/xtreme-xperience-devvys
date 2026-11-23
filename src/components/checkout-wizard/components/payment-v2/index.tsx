@@ -537,6 +537,7 @@ export const PaymentV2 = ({
             src={iframeUrl}
             title={t('iframe.title')}
             className={styles.iframe}
+            scrolling="no"
             onLoad={initIframe}
           />
         </div>
