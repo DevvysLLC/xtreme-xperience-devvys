@@ -22,6 +22,7 @@ export const CheckoutWizard: FC<Props> = ({ children, className }) => {
   const [isCartOpen, setIsCartOpen] = useState(false)
   const pathname = usePathname()
   const isComplete = pathname?.includes('/checkout/complete')
+  const isPayment = Boolean(pathname?.includes('/checkout/payment'))
   const { data: cart } = useCart()
   const lineItems = cart?.cartData?.lineItems ?? []
   const totalItems = lineItems.reduce(
@@ -41,7 +42,8 @@ export const CheckoutWizard: FC<Props> = ({ children, className }) => {
                 <div
                   className={clsx(
                     styles.popup,
-                    isCartOpen && styles['popup--open']
+                    isCartOpen && styles['popup--open'],
+                    isPayment && styles['popup--no-footer']
                   )}
                 >
                   <button

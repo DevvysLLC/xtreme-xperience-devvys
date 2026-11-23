@@ -1,5 +1,6 @@
 'use client'
 
+import clsx from 'clsx'
 import { useRouter } from 'next/navigation'
 import { CoreCta } from '../../../core-cta'
 import styles from './style.module.scss'
@@ -26,6 +27,7 @@ type Props = {
   backHref?: string | null
   submitText: string
   savingText?: string
+  className?: string
   onSubmit?: () => void
 }
 
@@ -39,6 +41,7 @@ export const PageFooter: React.FC<Props> = ({
   backHref = null,
   submitText,
   savingText,
+  className,
   onSubmit
 }) => {
   const router = useRouter()
@@ -78,7 +81,7 @@ export const PageFooter: React.FC<Props> = ({
   )
 
   return (
-    <div className={styles.footer}>
+    <div className={clsx(styles.footer, className)}>
       {(title || subtitle) && (
         <div className={styles.footer__content}>
           {title && <p className={styles.footer__title}>{title}</p>}

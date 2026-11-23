@@ -98,6 +98,7 @@ export const PaymentPage = () => {
       </div>
 
       <PageFooter
+        className={styles.payment__footer}
         backText={t('button.back')}
         backHref={ROUTES.CHECKOUT.CONTACTS}
         submitText={t('button.checkout')}

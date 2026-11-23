@@ -86,4 +86,12 @@
       padding-inline: sg.spacing(xlarge);
     }
   }
+
+  &__footer {
+    display: none !important;
+
+    @include sg.min(laptopSmall) {
+      display: flex !important;
+    }
+  }
 }
