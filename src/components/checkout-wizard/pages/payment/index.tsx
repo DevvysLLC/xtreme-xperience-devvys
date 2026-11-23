@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { ROUTES } from '../../../../config/routes'
 import { useAnalyticsEcommerceEvent } from '../../../../features/analytics'
 import { useCart } from '../../../../features/cart'
@@ -9,7 +9,6 @@ import { useCheckoutPagePayment } from '../../../../features/checkout'
 import { useToast } from '../../../../features/toast'
 import { CoreCta } from '../../../core-cta'
 import { CartSummary } from '../../../global-cart/components/summary'
-import { PageFooter } from '../../components/page-footer'
 import { PaymentV2 } from '../../components/payment-v2'
 import { Placeholder } from '../../components/placeholder'
 
@@ -24,7 +23,6 @@ export const PaymentPage = () => {
   const addPaymentInfoTrackedRef = useRef(false)
   const { isValid, save } = useCheckoutPagePayment()
   const { showToast } = useToast()
-  const [isPaymentComplete, setIsPaymentComplete] = useState(false)
 
   // Track add_payment_info when user lands on payment page
   useEffect(() => {
@@ -46,7 +44,6 @@ export const PaymentPage = () => {
         pageIsValid: isValid,
         userHasSubmitted: true
       })
-      setIsPaymentComplete(true)
       showToast({
         message: t('toast.success'),
         type: 'success'
@@ -96,14 +93,6 @@ export const PaymentPage = () => {
       <div className={styles.payment__summary}>
         <CartSummary />
       </div>
-
-      <PageFooter
-        className={styles.payment__footer}
-        backText={t('button.back')}
-        backHref={ROUTES.CHECKOUT.CONTACTS}
-        submitText={t('button.checkout')}
-        disabled={!isPaymentComplete}
-      />
     </section>
   )
 }
