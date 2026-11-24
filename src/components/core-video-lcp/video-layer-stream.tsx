@@ -39,10 +39,6 @@ const shouldSkipAutoplayInit = (): boolean => {
     return false
   }
 
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    return true
-  }
-
   const connection = hasConnectionSupport(navigator)
     ? navigator.connection
     : undefined
@@ -122,10 +118,14 @@ export const VideoLayer: FC<Props> = ({
       if (playPromiseRef.current != null) {
         return
       }
+      videoElement.muted = true
       playPromiseRef.current = videoElement
         .play()
         .then(() => undefined)
         .catch(() => undefined)
+        .finally(() => {
+          playPromiseRef.current = null
+        })
     }
 
     const onPlaying = (): void => {
@@ -133,7 +133,13 @@ export const VideoLayer: FC<Props> = ({
       setVisible(true)
     }
 
+    const onLoadedData = (): void => {
+      setVisible(true)
+      tryPlay()
+    }
+
     videoElement.addEventListener('playing', onPlaying)
+    videoElement.addEventListener('loadeddata', onLoadedData)
 
     const supportsNativeHls = (): boolean => {
       const t = videoElement.canPlayType('application/vnd.apple.mpegurl')
@@ -146,36 +152,43 @@ export const VideoLayer: FC<Props> = ({
         return
       }
 
+      const HlsCtor = await hlsLoadPromise
+      if (cancelled) {
+        return
+      }
+
+      // 1. Prefer hls.js for robust MSE playback (Chrome, Firefox, Edge, Desktop Safari)
+      // Chrome 126+ returns "maybe" for canPlayType('application/vnd.apple.mpegurl')
+      // even though native <video src="...m3u8"> playback is not supported without MSE.
+      if (HlsCtor.isSupported()) {
+        const instance = new HlsCtor(BASE_HLS_CONFIG)
+        hls = instance
+
+        // Register MANIFEST_PARSED before loadSource so the event is never missed.
+        instance.on(HlsCtor.Events.MANIFEST_PARSED, () => {
+          tryPlay()
+        })
+
+        // loadSource starts the manifest fetch immediately without waiting for
+        // MEDIA_ATTACHED, overlapping the manifest round-trip with media setup.
+        instance.loadSource(streamUrl)
+        instance.attachMedia(videoElement)
+        return
+      }
+
+      // 2. Fallback to Native HLS (iOS Safari where MSE is not supported)
       if (supportsNativeHls()) {
         videoElement.src = streamUrl
         videoElement.load()
         tryPlay()
-        return
       }
-
-      const HlsCtor = await hlsLoadPromise
-      if (cancelled || !HlsCtor.isSupported()) {
-        return
-      }
-
-      const instance = new HlsCtor(BASE_HLS_CONFIG)
-      hls = instance
-
-      // Register MANIFEST_PARSED before loadSource so the event is never missed.
-      instance.on(HlsCtor.Events.MANIFEST_PARSED, () => {
-        tryPlay()
-      })
-
-      // loadSource starts the manifest fetch immediately without waiting for
-      // MEDIA_ATTACHED, overlapping the manifest round-trip with media setup.
-      instance.loadSource(streamUrl)
-      instance.attachMedia(videoElement)
     }
 
     if (autoplay && shouldSkipAutoplayInit()) {
       return () => {
         cancelled = true
         videoElement.removeEventListener('playing', onPlaying)
+        videoElement.removeEventListener('loadeddata', onLoadedData)
         cleanup()
       }
     }
@@ -200,6 +213,7 @@ export const VideoLayer: FC<Props> = ({
         document.removeEventListener('visibilitychange', onVisibilityChange)
       }
       videoElement.removeEventListener('playing', onPlaying)
+      videoElement.removeEventListener('loadeddata', onLoadedData)
       if (hls != null) {
         hls.detachMedia()
         hls.destroy()
