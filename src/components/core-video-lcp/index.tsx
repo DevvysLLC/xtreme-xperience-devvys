@@ -46,7 +46,7 @@ enum VideoRender {
   Stream = 'stream'
 }
 
-const VIDEO_RENDER: VideoRender = VideoRender.Mp4
+const VIDEO_RENDER: VideoRender = VideoRender.Stream
 
 export const CoreVideoLcp: FC<Props> = ({
   data,
@@ -83,20 +83,20 @@ export const CoreVideoLcp: FC<Props> = ({
   }
 
   const videoLayer =
-    VIDEO_RENDER === VideoRender.Mp4 ? (
-      <VideoLayerMp4
+    VIDEO_RENDER === VideoRender.Stream ? (
+      <VideoLayer
         video={video?.video ?? null}
         desktopVideo={desktopVideo?.video}
-        videoRawMp4FileUrl={data.videoRawMp4FileUrl}
-        desktopVideoRawMp4FileUrl={data.desktopVideoRawMp4FileUrl}
         isDesktop={effectiveIsDesktop}
         autoplay={data.autoplay}
         loop={data.loop}
       />
     ) : (
-      <VideoLayer
+      <VideoLayerMp4
         video={video?.video ?? null}
         desktopVideo={desktopVideo?.video}
+        videoRawMp4FileUrl={data.videoRawMp4FileUrl}
+        desktopVideoRawMp4FileUrl={data.desktopVideoRawMp4FileUrl}
         isDesktop={effectiveIsDesktop}
         autoplay={data.autoplay}
         loop={data.loop}
